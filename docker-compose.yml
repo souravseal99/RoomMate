@@ -1,0 +1,21 @@
+services:
+  client:
+    build: ./roommate-app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./roommate-app:/app
+      - /app/node_modules
+    depends_on:
+      - server
+
+  server:
+    build: ./roommate-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./roommate-server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
