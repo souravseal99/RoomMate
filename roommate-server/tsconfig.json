@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "lib": ["es6"],
+    "target": "es6",
+    "module": "esnext",
+    "baseUrl": "./src",
+    "rootDir": "./",
+    "paths": {
+      "@services/*": ["./services/*"],
+      "@config/*": ["./config/*"],
+      "@common/*": ["./common/*"],
+      "@src/*": ["./*"],
+      "@api/*": ["api/*"],
+      "@test/*": ["../test/*"]
+    },
+    "outDir": "./build",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src", "./**/*.ts", "./tests/**/*"],
+  "exclude": ["cfn", "node_modules", "jest.config.js"],
+  "ts-node": {
+    // Do not forget to `npm i -D tsconfig-paths`
+    "require": ["tsconfig-paths/register"]
+  }
+}

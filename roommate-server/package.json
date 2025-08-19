@@ -1,0 +1,29 @@
+{
+  "name": "roommate-server",
+  "version": "1.0.0",
+  "main": "src/server.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/server.ts",
+    "dev": "npx vite-node --watch src/server.ts",
+    "dev:server": "nodemon --watch src --exec \"vite-node src/server.ts\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "typescript": "^5.9.2",
+    "vite-node": "^3.2.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
