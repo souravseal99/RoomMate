@@ -6,22 +6,34 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node src/server.ts",
-    "dev": "npx vite-node --watch src/server.ts",
-    "dev:server": "nodemon --watch src --exec \"vite-node src/server.ts\""
+    "dev": "nodemon",
+    "dev:serve": "nodemon --legacy-watch --watch /app/src --ext ts,js,json --exec \"vite-node src/server.ts\"",
+    "db:migrate": "prisma migrate dev",
+    "prisma:migrate": "npx prisma migrate dev --name ",
+    "docker:up": "docker-compose up --build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "express-validator": "^7.2.1"
+    "express-validator": "^7.2.1",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
     "@types/node": "^24.3.0",
+    "morgan": "^1.10.1",
     "nodemon": "^3.1.10",
+    "prisma": "^6.14.0",
     "typescript": "^5.9.2",
     "vite-node": "^3.2.4",
     "vite-tsconfig-paths": "^5.1.4"
