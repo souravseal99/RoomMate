@@ -18,10 +18,13 @@ class AuthController {
     });
   }
 
-  login(_request: any, response: any) {
-    return response.json({
-      status: 200,
-      message: "hello from auth 2/login",
+  async login(request: Request, response: Response) {
+    const { email, password } = request.body;
+    const { status, data, message } = await authService.login(email, password);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
     });
   }
 }

@@ -1,3 +1,4 @@
+import { INTERNAL_SERVER_ERROR } from "@common/config";
 import { StatusCodes } from "http-status-codes";
 
 export class ApiResponse<T = any> {
@@ -19,7 +20,7 @@ export class ApiResponse<T = any> {
     return new ApiResponse(status, data, message);
   }
   static error<T>(
-    message = "Internal Server Error",
+    message = INTERNAL_SERVER_ERROR,
     status: number = StatusCodes.INTERNAL_SERVER_ERROR,
     data?: T
   ) {

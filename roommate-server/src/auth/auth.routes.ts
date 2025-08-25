@@ -12,4 +12,10 @@ authRoutes.post(
   AuthController.register
 );
 
+authRoutes.post(
+  "/login",
+
+  AuthController.login
+);
+
 export default authRoutes;
