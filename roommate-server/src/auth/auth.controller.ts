@@ -4,22 +4,18 @@ import authService from "./auth.service";
 class AuthController {
   constructor() {}
 
-  testAuthRoute(_request: any, response: any) {
-    return response.json({
-      status: 200,
-      message: "hello from auth",
-    });
-  }
+  async register(request: Request, response: Response) {
+    const { name, email, password } = request.body;
+    const { status, data, message } = await authService.registerUser(
+      name,
+      email,
+      password
+    );
 
-  testAuthRoute2(_request: any, response: any) {
-    return response.json({
-      status: 200,
-      message: "hello from auth 2",
+    return response.status(status).json({
+      message: message,
+      data: data,
     });
-  }
-
-  register(request: Request, response: Response) {
-    return authService.registerUser(request, response);
   }
 
   login(_request: any, response: any) {
