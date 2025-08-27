@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import userService from "./user.service";
+import { UserService } from "@src/users/user.service";
+import { getUserFromRequest } from "@common/utils/utils";
 
-class UserController {
-  constructor() {}
+export class UserController {
+  static async profile(request: Request, response: Response) {
+    const { userId } = getUserFromRequest(request);
 
-  async profile(request: Request, response: Response) {
-    const userId: string = request?.user?.userId || "";
-
-    const { status, data, message } = await userService.profile(userId);
+    const { status, data, message } = await UserService.profile(userId);
 
     return response.status(status).json({
       message: message,
@@ -15,5 +14,3 @@ class UserController {
     });
   }
 }
-
-export default new UserController();

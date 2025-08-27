@@ -1,45 +1,21 @@
-import prisma from "@common/utils/prisma";
-import { StatusCodes } from "http-status-codes";
 import bcrypt from "bcrypt";
+import { StatusCodes } from "http-status-codes";
+import prisma from "@common/utils/prisma";
 import {
   generateTokens,
   getNewAccessToken,
-  validateAccessToken,
   validateRefreshToken,
 } from "@common/utils/jwtHandler";
 import User from "@src/users/types/User";
 import { ApiResponse } from "@common/utils/ApiResponse";
 import { BCRYPT_SALT_ROUNDS } from "@common/config";
-import refreshTokenSetter from "@src/auth/refreshTokenSetter";
-import { Response } from "express";
-interface RegisterUserResponse {
-  status: number;
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    email: string;
-    refreshToken: string;
-    accessToken: string;
-  };
-}
-interface UserLoginResponse {
-  status: number;
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    email: string;
-    refreshToken: string;
-    accessToken: string;
-  };
-}
-class AuthService {
-  private prisma = prisma;
+import { RegisterUserResponse } from "@src/auth/types/RegisterUserResponse";
+import { UserLoginResponse } from "@src/auth/types/UserLoginResponse";
 
-  constructor() {}
+export class AuthService {
+  private static prisma = prisma;
 
-  public async registerUser(
+  static async registerUser(
     name: string,
     email: string,
     password: string
@@ -69,7 +45,7 @@ class AuthService {
         return ApiResponse.error("Unable to create user", StatusCodes.CONFLICT);
 
       const { accessToken, refreshToken } = generateTokens({
-        userId: createdUser.id,
+        userId: createdUser.userId,
       });
 
       return ApiResponse.success(
@@ -88,7 +64,7 @@ class AuthService {
     }
   }
 
-  public async login(
+  static async login(
     email: string,
     password: string
   ): Promise<UserLoginResponse | ApiResponse> {
@@ -106,7 +82,7 @@ class AuthService {
         return ApiResponse.error("Password mismatch", StatusCodes.FORBIDDEN);
 
       const { accessToken, refreshToken } = generateTokens({
-        userId: user.id,
+        userId: user.userId,
       });
 
       return ApiResponse.success(
@@ -124,7 +100,7 @@ class AuthService {
     }
   }
 
-  public async refresh(refreshToken: any) {
+  static async refresh(refreshToken: any) {
     try {
       const decodedRefreshToken = await validateRefreshToken(refreshToken);
 
@@ -132,9 +108,13 @@ class AuthService {
 
       const { userId } = decodedRefreshToken;
 
-      const accessToken = getNewAccessToken({ userId: userId });
+      if (!userId || userId === "")
+        ApiResponse.error("unable to get the user id from the token");
+
+      const accessToken = await getNewAccessToken({ userId: userId });
 
       return ApiResponse.success({
+        userId: userId,
         accessToken: accessToken,
       });
     } catch (error) {
@@ -146,5 +126,3 @@ class AuthService {
     }
   }
 }
-
-export default new AuthService();

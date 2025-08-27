@@ -16,7 +16,7 @@ datasource db {
 
 /// User of the app
 model User {
-  user_id   String   @id @default(uuid())
+  userId   String   @id @default(uuid()) @map("user_id")
   name      String
   email     String   @unique
   password  String
@@ -31,7 +31,7 @@ model User {
 
 /// Household (shared living group)
 model Household {
-  household_id String   @id @default(uuid())
+  householdId String   @id @default(uuid()) @map("household_id")
   name         String
   inviteCode   String   @unique
   createdAt    DateTime @default(now())
@@ -51,8 +51,8 @@ model HouseholdMember {
   role                Role   @default(MEMBER)
 
   // Relations
-  user      User      @relation(fields: [user_id], references: [user_id])
-  household Household @relation(fields: [household_id], references: [household_id])
+  user      User      @relation(fields: [user_id], references: [userId])
+  household Household @relation(fields: [household_id], references: [householdId])
 
   @@unique([user_id, household_id])
 }
@@ -73,8 +73,8 @@ model Expense {
   paid_by_id   String
 
   // Relations
-  household Household      @relation(fields: [household_id], references: [household_id])
-  paidBy    User           @relation("UserExpensesPaid", fields: [paid_by_id], references: [user_id])
+  household Household      @relation(fields: [household_id], references: [householdId])
+  paidBy    User           @relation("UserExpensesPaid", fields: [paid_by_id], references: [userId])
   splits    ExpenseSplit[]
 }
 
@@ -87,7 +87,7 @@ model ExpenseSplit {
 
   // Relations
   expense Expense @relation(fields: [expense_id], references: [expense_id])
-  user    User    @relation(fields: [user_id], references: [user_id])
+  user    User    @relation(fields: [user_id], references: [userId])
 
   @@unique([expense_id, user_id]) // each user appears once per expense
 }
@@ -104,8 +104,8 @@ model Chore {
   assigned_to_id String?
 
   // Relations
-  household  Household @relation(fields: [household_id], references: [household_id])
-  assignedTo User?     @relation("UserChoresAssigned", fields: [assigned_to_id], references: [user_id])
+  household  Household @relation(fields: [household_id], references: [householdId])
+  assignedTo User?     @relation("UserChoresAssigned", fields: [assigned_to_id], references: [userId])
 }
 
 /// Inventory items in a household
@@ -119,5 +119,5 @@ model InventoryItem {
   household_id String
 
   // Relations
-  household Household @relation(fields: [household_id], references: [household_id])
+  household Household @relation(fields: [household_id], references: [householdId])
 }
