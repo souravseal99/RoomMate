@@ -14,33 +14,110 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// User of the app
 model User {
-  id          String     @id @default(uuid())
-  name        String
-  email       String     @unique
-  password    String
-  households  HouseholdMember[]
-  createdAt   DateTime   @default(now())
+  user_id   String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  households HouseholdMember[]
+  expenses   Expense[]         @relation("UserExpensesPaid")
+  chores     Chore[]           @relation("UserChoresAssigned")
+  splits     ExpenseSplit[]
 }
 
+/// Household (shared living group)
 model Household {
-  id          String     @id @default(uuid())
-  name        String
-  inviteCode  String     @unique
-  members     HouseholdMember[]
-  createdAt   DateTime   @default(now())
+  household_id String   @id @default(uuid())
+  name         String
+  inviteCode   String   @unique
+  createdAt    DateTime @default(now())
+
+  // Relations
+  members   HouseholdMember[]
+  expenses  Expense[]
+  chores    Chore[]
+  inventory InventoryItem[]
 }
 
+/// Many-to-many relation between users & households
 model HouseholdMember {
-  id          String   @id @default(uuid())
-  userId      String
-  householdId String
-  role        String   // "ADMIN" or "MEMBER"
+  household_member_id String @id @default(uuid())
+  user_id             String
+  household_id        String
+  role                Role   @default(MEMBER)
 
-  user        User      @relation(fields: [userId], references: [id])
-  household   Household @relation(fields: [householdId], references: [id])
+  // Relations
+  user      User      @relation(fields: [user_id], references: [user_id])
+  household Household @relation(fields: [household_id], references: [household_id])
 
-  @@unique([userId, householdId])
+  @@unique([user_id, household_id])
 }
 
+enum Role {
+  MEMBER
+  ADMIN
+}
 
+/// Expenses tracked in a household
+model Expense {
+  expense_id  String   @id @default(uuid())
+  description String
+  amount      Float
+  createdAt   DateTime @default(now())
+
+  household_id String
+  paid_by_id   String
+
+  // Relations
+  household Household      @relation(fields: [household_id], references: [household_id])
+  paidBy    User           @relation("UserExpensesPaid", fields: [paid_by_id], references: [user_id])
+  splits    ExpenseSplit[]
+}
+
+/// Tracks how an expense is split among members
+model ExpenseSplit {
+  expense_split_id String @id @default(uuid())
+  expense_id       String
+  user_id          String
+  shareAmount      Float
+
+  // Relations
+  expense Expense @relation(fields: [expense_id], references: [expense_id])
+  user    User    @relation(fields: [user_id], references: [user_id])
+
+  @@unique([expense_id, user_id]) // each user appears once per expense
+}
+
+/// Chores assigned to members
+model Chore {
+  chore_id    String   @id @default(uuid())
+  description String
+  frequency   String
+  nextDue     DateTime
+  completed   Boolean  @default(false)
+
+  household_id   String
+  assigned_to_id String?
+
+  // Relations
+  household  Household @relation(fields: [household_id], references: [household_id])
+  assignedTo User?     @relation("UserChoresAssigned", fields: [assigned_to_id], references: [user_id])
+}
+
+/// Inventory items in a household
+model InventoryItem {
+  inventory_item_id String   @id @default(uuid())
+  name              String
+  quantity          Int
+  lowThreshold      Int
+  lastUpdated       DateTime @default(now())
+
+  household_id String
+
+  // Relations
+  household Household @relation(fields: [household_id], references: [household_id])
+}

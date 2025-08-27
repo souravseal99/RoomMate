@@ -12,10 +12,8 @@ authRoutes.post(
   AuthController.register
 );
 
-authRoutes.post(
-  "/login",
+authRoutes.post("/login", AuthController.login);
 
-  AuthController.login
-);
+authRoutes.get("/refresh", AuthController.refresh);
 
 export default authRoutes;

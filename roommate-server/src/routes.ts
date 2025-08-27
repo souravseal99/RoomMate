@@ -1,5 +1,5 @@
 import { Router } from "express";
-import userRoutes from "@src/users/userRoutes";
+import userRoutes from "@src/users/user.routes";
 import authRoutes from "@src/auth/auth.routes";
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);

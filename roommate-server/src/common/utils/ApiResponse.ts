@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 
 export class ApiResponse<T = any> {
   public status: number;
-  public data: T | null;
+  public data: T | null | object;
   public message: string;
 
   constructor(status?: number, data?: T, message?: string) {

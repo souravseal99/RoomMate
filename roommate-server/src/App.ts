@@ -4,6 +4,7 @@ import morgan from "morgan";
 import routes from "@src/routes";
 import errorHandler from "@common/middlewares/errorHandlder";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
+import cookieParser from "cookie-parser";
 
 // This should provide necessary methods to run an app
 class App {
@@ -45,6 +46,9 @@ class App {
     //NOTE - req body parsers
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+
+    //NOTE - cookie parser
+    this.app.use(cookieParser());
   }
 }
 

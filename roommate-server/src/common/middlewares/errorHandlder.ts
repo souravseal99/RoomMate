@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { StatusCodes } from "http-status-codes";
 import { INTERNAL_SERVER_ERROR } from "@common/config";
 import { ApiError } from "@common/errors/ApiError";
 
@@ -18,7 +19,7 @@ function errorHandler(
 
   console.error("Error: Roommate-server: Unexpected Error:", error);
 
-  return resp.status(500).json({
+  return resp.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     success: false,
     errorMessage: INTERNAL_SERVER_ERROR,
   });
