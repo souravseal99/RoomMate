@@ -24,8 +24,6 @@ export default async function ensureAuthenticated(
   try {
     const decoded = await validateAccessToken(token);
 
-    console.log(decoded);
-
     request.user = decoded; // NOTE - Binding the user propertry to the global express scope
     next();
   } catch (error) {

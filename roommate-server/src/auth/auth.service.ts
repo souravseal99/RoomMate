@@ -6,7 +6,7 @@ import {
   getNewAccessToken,
   validateRefreshToken,
 } from "@common/utils/jwtHandler";
-import User from "@src/users/types/User";
+import User from "@src/common/types/User";
 import { ApiResponse } from "@common/utils/ApiResponse";
 import { BCRYPT_SALT_ROUNDS } from "@common/config";
 import { RegisterUserResponse } from "@src/auth/types/RegisterUserResponse";

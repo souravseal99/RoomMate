@@ -1,8 +1,8 @@
 import { StatusCodes } from "http-status-codes";
 import prisma from "@common/utils/prisma";
-import User from "@src/users/types/User";
+import User from "@common/types/User";
 import { ApiResponse } from "@common/utils/ApiResponse";
-import sanitizeUser from "@src/users/utils/sanitizeUser";
+import sanitizeUser from "@common/utils/sanitizeUser";
 
 export class UserService {
   static async profile(userId: string) {

@@ -16,7 +16,7 @@ datasource db {
 
 /// User of the app
 model User {
-  userId   String   @id @default(uuid()) @map("user_id")
+  userId    String   @id @default(uuid()) @map("user_id")
   name      String
   email     String   @unique
   password  String
@@ -32,9 +32,9 @@ model User {
 /// Household (shared living group)
 model Household {
   householdId String   @id @default(uuid()) @map("household_id")
-  name         String
-  inviteCode   String   @unique
-  createdAt    DateTime @default(now())
+  name        String
+  inviteCode  String   @unique
+  createdAt   DateTime @default(now())
 
   // Relations
   members   HouseholdMember[]
@@ -45,16 +45,16 @@ model Household {
 
 /// Many-to-many relation between users & households
 model HouseholdMember {
-  household_member_id String @id @default(uuid())
-  user_id             String
-  household_id        String
-  role                Role   @default(MEMBER)
+  householdMemberId String @id @default(uuid()) @map("household_member_id")
+  userId            String @map("user_id")
+  householdId       String @map("household_id")
+  role              Role   @default(MEMBER)
 
   // Relations
-  user      User      @relation(fields: [user_id], references: [userId])
-  household Household @relation(fields: [household_id], references: [householdId])
+  user      User      @relation(fields: [userId], references: [userId])
+  household Household @relation(fields: [householdId], references: [householdId])
 
-  @@unique([user_id, household_id])
+  @@unique([userId, householdId])
 }
 
 enum Role {

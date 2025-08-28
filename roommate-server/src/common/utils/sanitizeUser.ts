@@ -1,8 +1,8 @@
-import User from "@src/users/types/User";
+import User from "@src/common/types/User";
 
 export default function sanitizeUser(user: User) {
   return {
-    userId: user.id,
+    userId: user.userId,
     name: user.name,
     email: user.email,
   };

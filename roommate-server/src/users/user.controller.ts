@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { UserService } from "@src/users/user.service";
-import { getUserFromRequest } from "@common/utils/utils";
+import { getUserFromRequestBody } from "@common/utils/utils";
 
 export class UserController {
   static async profile(request: Request, response: Response) {
-    const { userId } = getUserFromRequest(request);
+    const { userId } = getUserFromRequestBody(request);
 
     const { status, data, message } = await UserService.profile(userId);
 

@@ -6,11 +6,11 @@
     "baseUrl": "./src",
     "rootDir": "./",
     "paths": {
-      "@services/*": ["./services/*"],
-      "@config/*": ["./config/*"],
-      "@common/*": ["./common/*"],
       "@src/*": ["./*"],
-      "@api/*": ["api/*"],
+      "@common/*": ["./common/*"],
+      "@types/*": ["./common/types/*"],
+      "@generated/*": ["../generated/*"],
+      "@config/*": ["./config/*"],
       "@test/*": ["../test/*"]
     },
     "outDir": "./build",

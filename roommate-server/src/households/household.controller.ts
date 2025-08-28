@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import { ApiResponse } from "@common/utils/ApiResponse";
-import { getUserFromRequest } from "@common/utils/utils";
+import { getUserFromRequestBody } from "@common/utils/utils";
+import { HouseholdService } from "@src/households/household.service";
 
-class HouseholdController {
-  constructor() {}
+export class HouseholdController {
+  static async create(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { name } = request.body;
 
-  public create(request: Request, response: Response) {
-    const { userId } = getUserFromRequest(request);
-    const { status, data, message } = ApiResponse.success(
-      "create household: " + userId
+    const { status, data, message } = await HouseholdService.create(
+      userId,
+      name
     );
 
     return response.status(status).json({
@@ -17,5 +18,3 @@ class HouseholdController {
     });
   }
 }
-
-export default new HouseholdController();
