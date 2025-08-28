@@ -1,6 +1,6 @@
 import { ApiResponse } from "@common/utils/ApiResponse";
 import { validateAccessToken } from "@common/utils/jwtHandler";
-import { Request, Response, NextFunction, response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 
 export default async function ensureAuthenticated(

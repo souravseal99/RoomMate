@@ -6,11 +6,12 @@ import {
   getNewAccessToken,
   validateRefreshToken,
 } from "@common/utils/jwtHandler";
-import User from "@src/common/types/User";
+import { User } from "@generated/prisma";
 import { ApiResponse } from "@common/utils/ApiResponse";
 import { BCRYPT_SALT_ROUNDS } from "@common/config";
 import { RegisterUserResponse } from "@src/auth/types/RegisterUserResponse";
 import { UserLoginResponse } from "@src/auth/types/UserLoginResponse";
+import { UserRepo } from "@src/users/user.repo";
 
 export class AuthService {
   private static prisma = prisma;
@@ -21,9 +22,7 @@ export class AuthService {
     password: string
   ): Promise<RegisterUserResponse | ApiResponse> {
     try {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email },
-      });
+      const existingUser: User | null = await UserRepo.getUserByEmail(email);
 
       if (existingUser)
         return ApiResponse.error(
@@ -33,13 +32,11 @@ export class AuthService {
 
       const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
-      const createdUser: User = await this.prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-        },
-      });
+      const createdUser: User = await UserRepo.createUser(
+        name,
+        email,
+        hashedPassword
+      );
 
       if (!createdUser)
         return ApiResponse.error("Unable to create user", StatusCodes.CONFLICT);
@@ -69,9 +66,7 @@ export class AuthService {
     password: string
   ): Promise<UserLoginResponse | ApiResponse> {
     try {
-      const user: User | null = await this.prisma.user.findUnique({
-        where: { email },
-      });
+      const user: User | null = await UserRepo.getUserByEmail(email);
 
       if (!user)
         return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);

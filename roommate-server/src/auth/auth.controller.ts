@@ -6,6 +6,7 @@ import refreshTokenSetter from "./refreshTokenSetter";
 export class AuthController {
   static async register(request: Request, response: Response) {
     const { name, email, password } = request.body;
+
     const { status, data, message } = await AuthService.registerUser(
       name,
       email,
@@ -26,6 +27,7 @@ export class AuthController {
 
   static async login(request: Request, response: Response) {
     const { email, password } = request.body;
+
     const { status, data, message } = await AuthService.login(email, password);
 
     if (!data?.refreshToken || !data?.responseData)
