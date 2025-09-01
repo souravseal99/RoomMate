@@ -88,7 +88,7 @@ export class AuthService {
           },
           refreshToken: refreshToken,
         },
-        "Welcome to Roommate " + user.name
+        `Welcome to Roommate ${user.name}`
       );
     } catch (error) {
       return ApiResponse.error("Unable to login");
@@ -99,12 +99,12 @@ export class AuthService {
     try {
       const decodedRefreshToken = await validateRefreshToken(refreshToken);
 
-      if (!decodedRefreshToken) ApiResponse.error("refresh token invalid");
+      if (!decodedRefreshToken) ApiResponse.error("Refresh token invalid");
 
       const { userId } = decodedRefreshToken;
 
       if (!userId || userId === "")
-        ApiResponse.error("unable to get the user id from the token");
+        ApiResponse.error("Unable to get the user id from the token");
 
       const accessToken = await getNewAccessToken({ userId: userId });
 
@@ -115,8 +115,9 @@ export class AuthService {
     } catch (error) {
       console.error(error);
       return ApiResponse.error(
-        "Unable to refresh token: " + error,
-        StatusCodes.UNAUTHORIZED
+        `Unable to refresh the token: ${error}`,
+        StatusCodes.UNAUTHORIZED,
+        { refreshToken: refreshToken }
       );
     }
   }

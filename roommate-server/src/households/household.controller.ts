@@ -17,4 +17,31 @@ export class HouseholdController {
       data: data,
     });
   }
+
+  static async join(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { inviteCode } = request.params;
+
+    const { status, data, message } = await HouseholdService.join(
+      inviteCode,
+      userId
+    );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async getHouseholdsByUser(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+
+    const { status, data, message } =
+      await HouseholdService.getHouseholdsByUser(userId);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
 }

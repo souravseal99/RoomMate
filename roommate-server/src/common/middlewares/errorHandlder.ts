@@ -17,11 +17,11 @@ function errorHandler(
     });
   }
 
-  console.error("Error: Roommate-server: Unexpected Error:", error);
+  console.error("Error: Roommate-server: Unexpected Error:", error.message);
 
   return resp.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     success: false,
-    errorMessage: INTERNAL_SERVER_ERROR,
+    errorMessage: error.message || INTERNAL_SERVER_ERROR,
   });
 }
 

@@ -1,18 +1,18 @@
 import { ApiResponse } from "@common/utils/ApiResponse";
 import { Role } from "@generated/prisma";
-import HouseholdMember from "@common/types/HouseholdMember";
+import { HouseholdMemberDto } from "@common/dtos/HouseholdMemberDto";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import { StatusCodes } from "http-status-codes";
 
 export class HouseholdMemberService {
   static async create(userId: string, householdId?: string, role?: Role) {
-    const householdMemberBody: HouseholdMember = {
+    const householdMemberBody: HouseholdMemberDto = {
       userId: userId,
       householdId: householdId,
       role: role || Role.MEMBER,
     };
 
-    const createdHouseholdMember: HouseholdMember =
+    const createdHouseholdMember: HouseholdMemberDto =
       await HouseholdMemberRepo.create(householdMemberBody);
 
     if (!createdHouseholdMember)

@@ -10,4 +10,16 @@ householdRouter.post(
   HouseholdController.create
 );
 
+householdRouter.post(
+  "/join/:inviteCode",
+  ensureAuthenticated,
+  HouseholdController.join
+);
+
+householdRouter.get(
+  "/all",
+  ensureAuthenticated,
+  HouseholdController.getHouseholdsByUser
+);
+
 export default householdRouter;

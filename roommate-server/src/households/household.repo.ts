@@ -19,4 +19,14 @@ export class HouseholdRepository {
       include: { members: true },
     });
   }
+
+  static async getHouseholdByInviteCode(inviteCode: string) {
+    return await prisma.household.findUnique({ where: { inviteCode } });
+  }
+
+  static async getHouseholdsByUser(userId: string) {
+    return await prisma.household.findMany({
+      where: { members: { some: { userId } } },
+    });
+  }
 }
