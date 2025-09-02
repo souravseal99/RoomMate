@@ -30,4 +30,12 @@ export class UserRepo {
       },
     });
   }
+
+  static async getAllUsers() {
+    try {
+      return await prisma.user.findMany();
+    } catch (error) {
+      return null;
+    }
+  }
 }

@@ -13,4 +13,13 @@ export class UserController {
       data: data,
     });
   }
+
+  static async getUsers(_request: Request, response: Response) {
+    const { status, data, message } = await UserService.getUsers();
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
 }

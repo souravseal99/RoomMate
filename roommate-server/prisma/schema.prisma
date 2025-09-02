@@ -64,32 +64,32 @@ enum Role {
 
 /// Expenses tracked in a household
 model Expense {
-  expense_id  String   @id @default(uuid())
+  expenseId   String   @id @default(uuid()) @map("expense_id")
   description String
   amount      Float
   createdAt   DateTime @default(now())
 
-  household_id String
-  paid_by_id   String
+  householdId String @map("household_id")
+  paidById    String @map("paid_by_id")
 
   // Relations
-  household Household      @relation(fields: [household_id], references: [householdId])
-  paidBy    User           @relation("UserExpensesPaid", fields: [paid_by_id], references: [userId])
+  household Household      @relation(fields: [householdId], references: [householdId])
+  paidBy    User           @relation("UserExpensesPaid", fields: [paidById], references: [userId])
   splits    ExpenseSplit[]
 }
 
 /// Tracks how an expense is split among members
 model ExpenseSplit {
-  expense_split_id String @id @default(uuid())
-  expense_id       String
-  user_id          String
-  shareAmount      Float
+  expenseSplitId String @id @default(uuid()) @map("expense_split_id")
+  expenseId      String @map("expense_id")
+  userId         String @map("user_id")
+  shareAmount    Float
 
   // Relations
-  expense Expense @relation(fields: [expense_id], references: [expense_id])
-  user    User    @relation(fields: [user_id], references: [userId])
+  expense Expense @relation(fields: [expenseId], references: [expenseId])
+  user    User    @relation(fields: [userId], references: [userId])
 
-  @@unique([expense_id, user_id]) // each user appears once per expense
+  @@unique([expenseId, userId]) // each user appears once per expense
 }
 
 /// Chores assigned to members

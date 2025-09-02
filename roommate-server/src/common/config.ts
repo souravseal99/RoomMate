@@ -9,8 +9,7 @@ export const JWT_SECRET = env("JWT_SECRET") || "default_sercret_key";
 export const JWT_EXPIRES_IN = env("JWT_EXPIRES_IN") as SignOptions["expiresIn"];
 
 export const JWT_REFRESH_SECRET = env("JWT_SECRET") || "default_sercret_key";
-export const JWT_REFRESH_EXPIRES_IN = env(
-  "JWT_EXPIRES_IN"
-) as SignOptions["expiresIn"];
+export const JWT_REFRESH_EXPIRES_IN = (env("JWT_EXPIRES_IN") ||
+  "7d") as SignOptions["expiresIn"];
 
 export const USE_SECURE_COOKIE = env("USE_SECURE_COOKIE") || true;

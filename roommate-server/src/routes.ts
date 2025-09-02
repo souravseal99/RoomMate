@@ -2,6 +2,8 @@ import { Router } from "express";
 import userRoutes from "@src/users/user.routes";
 import authRoutes from "@src/auth/auth.routes";
 import householdRouter from "@src/households/household.routes";
+import expenseRouter from "@src/expenses/expense.routes";
+
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);
 
@@ -18,5 +20,7 @@ routes.use("/user", userRoutes);
 routes.use("/auth", authRoutes);
 
 routes.use("/household", householdRouter);
+
+routes.use("/expense", expenseRouter);
 
 export default routes;
