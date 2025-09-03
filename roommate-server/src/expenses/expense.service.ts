@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { Expense } from "@generated/prisma";
 import ExpenseDto from "@src/common/dtos/ExpenseDto";
 import ExpenseSplitDto from "@src/common/dtos/ExpenseSplitDto";
@@ -5,7 +6,7 @@ import { ApiResponse } from "@src/common/utils/ApiResponse";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
-import { StatusCodes } from "http-status-codes";
+import calculateBalance from "@src/expenses/calculateBalance";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith: string[]) {
@@ -48,5 +49,26 @@ export class ExpenseService {
     } catch (error) {
       return ApiResponse.error("Unable to add Expense", StatusCodes.CONFLICT);
     }
+  }
+
+  static async getExpensesByHousehold(householdId: string) {
+    const expenses: Expense[] = await ExpenseRepo.getExpensesByHouseholdId(
+      householdId
+    );
+
+    return ApiResponse.success(expenses);
+  }
+
+  static async getBalances(householdId: string) {
+    const expenses = await ExpenseRepo.getExpensesWithSplits(householdId);
+
+    if (!expenses)
+      return ApiResponse.error(
+        `Unable to fetch expenses for the household: ${householdId}`
+      );
+
+    const balances = calculateBalance(expenses as unknown as ExpenseDto[]);
+
+    return ApiResponse.success(balances);
   }
 }

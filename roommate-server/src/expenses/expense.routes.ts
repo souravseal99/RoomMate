@@ -7,4 +7,16 @@ const expenseRouter = Router();
 // expenseRouter.get("/");
 expenseRouter.post("/add", ensureAuthenticated, ExpenseController.create);
 
+expenseRouter.get(
+  "/for/:householdId",
+  ensureAuthenticated,
+  ExpenseController.getExpensesByHousehold
+);
+
+expenseRouter.get(
+  "/for/:householdId/balances",
+  ensureAuthenticated,
+  ExpenseController.getBalances
+);
+
 export default expenseRouter;

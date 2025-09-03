@@ -5,8 +5,27 @@ import ExpenseDto from "@src/common/dtos/ExpenseDto";
 
 export class ExpenseController {
   static async getExpensesByHousehold(request: Request, response: Response) {
-    return response.send(200).json({
-      data: "getExpensesByHousehold route working",
+    const { householdId } = request.params;
+
+    const { status, message, data } =
+      await ExpenseService.getExpensesByHousehold(householdId);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async getBalances(request: Request, response: Response) {
+    const { householdId } = request.params;
+
+    const { status, message, data } = await ExpenseService.getBalances(
+      householdId
+    );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
     });
   }
 

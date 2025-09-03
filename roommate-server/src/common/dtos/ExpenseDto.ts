@@ -1,6 +1,11 @@
+import ExpenseSplitDto from "@common/dtos/ExpenseSplitDto";
+import UserDto from "@common/dtos//UserDto";
+
 export default interface ExpenseDto {
-  paidById: string;
   householdId: string;
+  paidById: string;
   amount: number;
   description?: string;
+  paidBy?: UserDto;
+  splits?: ExpenseSplitDto[];
 }

@@ -8,4 +8,34 @@ export class ExpenseRepo {
       data: expense as Expense,
     });
   }
+
+  static async getExpensesByHouseholdId(householdId: string) {
+    return await prisma.expense.findMany({
+      where: { householdId: householdId },
+    });
+  }
+
+  static async getExpensesWithSplits(householdId: string) {
+    return await prisma.expense.findMany({
+      where: { householdId },
+      include: {
+        paidBy: {
+          select: {
+            userId: true,
+            name: true,
+          },
+        },
+        splits: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }
