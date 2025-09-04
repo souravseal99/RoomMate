@@ -110,14 +110,14 @@ model Chore {
 
 /// Inventory items in a household
 model InventoryItem {
-  inventory_item_id String   @id @default(uuid())
-  name              String
-  quantity          Int
-  lowThreshold      Int
-  lastUpdated       DateTime @default(now())
+  inventoryItemId String   @id @default(uuid()) @map("inventory_item_id")
+  name            String
+  quantity        Int
+  lowThreshold    Int
+  lastUpdated     DateTime @default(now())
 
-  household_id String
+  householdId String @map("household_id")
 
   // Relations
-  household Household @relation(fields: [household_id], references: [householdId])
+  household Household @relation(fields: [householdId], references: [householdId])
 }

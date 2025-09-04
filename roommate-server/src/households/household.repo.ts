@@ -29,4 +29,10 @@ export class HouseholdRepository {
       where: { members: { some: { userId } } },
     });
   }
+
+  static async getHouseholdById(householdId: string) {
+    return await prisma.household.findFirst({
+      where: { householdId },
+    });
+  }
 }
