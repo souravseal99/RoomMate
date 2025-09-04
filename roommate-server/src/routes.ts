@@ -1,16 +1,32 @@
 import { Router } from "express";
-import userRoutes from "./users/userRoutes";
+import userRoutes from "@src/users/user.routes";
+import authRoutes from "@src/auth/auth.routes";
+import householdRouter from "@src/households/household.routes";
+import expenseRouter from "@src/expenses/expense.routes";
+import choreRouter from "@src/chore/chore.routes";
+import inventoryRouter from "@src/inventory/inventory.routes";
+
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);
 
 const routes = Router();
-
-routes.use("/user", userRoutes);
 
 routes.get("/health", (_request, response) =>
   response.json({
     dateTime: new Date(),
   })
 );
+
+routes.use("/user", userRoutes);
+
+routes.use("/auth", authRoutes);
+
+routes.use("/household", householdRouter);
+
+routes.use("/expense", expenseRouter);
+
+routes.use("/chore", choreRouter);
+
+routes.use("/inventory", inventoryRouter);
 
 export default routes;

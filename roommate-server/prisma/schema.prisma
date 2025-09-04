@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// User of the app
+model User {
+  userId    String   @id @default(uuid()) @map("user_id")
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  // Relations
+  households HouseholdMember[]
+  expenses   Expense[]         @relation("UserExpensesPaid")
+  chores     Chore[]           @relation("UserChoresAssigned")
+  splits     ExpenseSplit[]
+}
+
+/// Household (shared living group)
+model Household {
+  householdId String   @id @default(uuid()) @map("household_id")
+  name        String
+  inviteCode  String   @unique
+  createdAt   DateTime @default(now())
+
+  // Relations
+  members   HouseholdMember[]
+  expenses  Expense[]
+  chores    Chore[]
+  inventory InventoryItem[]
+}
+
+/// Many-to-many relation between users & households
+model HouseholdMember {
+  householdMemberId String @id @default(uuid()) @map("household_member_id")
+  userId            String @map("user_id")
+  householdId       String @map("household_id")
+  role              Role   @default(MEMBER)
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [userId])
+  household Household @relation(fields: [householdId], references: [householdId])
+
+  @@unique([userId, householdId])
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+}
+
+/// Expenses tracked in a household
+model Expense {
+  expenseId   String   @id @default(uuid()) @map("expense_id")
+  description String
+  amount      Float
+  createdAt   DateTime @default(now())
+
+  householdId String @map("household_id")
+  paidById    String @map("paid_by_id")
+
+  // Relations
+  household Household      @relation(fields: [householdId], references: [householdId])
+  paidBy    User           @relation("UserExpensesPaid", fields: [paidById], references: [userId])
+  splits    ExpenseSplit[]
+}
+
+/// Tracks how an expense is split among members
+model ExpenseSplit {
+  expenseSplitId String @id @default(uuid()) @map("expense_split_id")
+  expenseId      String @map("expense_id")
+  userId         String @map("user_id")
+  shareAmount    Float
+
+  // Relations
+  expense Expense @relation(fields: [expenseId], references: [expenseId])
+  user    User    @relation(fields: [userId], references: [userId])
+
+  @@unique([expenseId, userId]) // each user appears once per expense
+}
+
+/// Chores assigned to members
+model Chore {
+  choreId     String   @id @default(uuid()) @map("chore_id")
+  description String
+  frequency   String
+  nextDue     DateTime
+  completed   Boolean  @default(false)
+
+  householdId  String  @map("household_id")
+  assignedToId String? @map("assigned_to_id")
+
+  // Relations
+  household  Household @relation(fields: [householdId], references: [householdId])
+  assignedTo User?     @relation("UserChoresAssigned", fields: [assignedToId], references: [userId])
+}
+
+/// Inventory items in a household
+model InventoryItem {
+  inventoryItemId String   @id @default(uuid()) @map("inventory_item_id")
+  name            String
+  quantity        Int
+  lowThreshold    Int
+  lastUpdated     DateTime @default(now())
+
+  householdId String @map("household_id")
+
+  // Relations
+  household Household @relation(fields: [householdId], references: [householdId])
+}

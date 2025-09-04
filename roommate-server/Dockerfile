@@ -12,4 +12,4 @@ COPY . .
 EXPOSE 5000
 
 # Start your server app (adjust if needed)
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev:serve"]
