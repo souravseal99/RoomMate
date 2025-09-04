@@ -94,18 +94,18 @@ model ExpenseSplit {
 
 /// Chores assigned to members
 model Chore {
-  chore_id    String   @id @default(uuid())
+  choreId     String   @id @default(uuid()) @map("chore_id")
   description String
   frequency   String
   nextDue     DateTime
   completed   Boolean  @default(false)
 
-  household_id   String
-  assigned_to_id String?
+  householdId  String  @map("household_id")
+  assignedToId String? @map("assigned_to_id")
 
   // Relations
-  household  Household @relation(fields: [household_id], references: [householdId])
-  assignedTo User?     @relation("UserChoresAssigned", fields: [assigned_to_id], references: [userId])
+  household  Household @relation(fields: [householdId], references: [householdId])
+  assignedTo User?     @relation("UserChoresAssigned", fields: [assignedToId], references: [userId])
 }
 
 /// Inventory items in a household

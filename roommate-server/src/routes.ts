@@ -3,6 +3,7 @@ import userRoutes from "@src/users/user.routes";
 import authRoutes from "@src/auth/auth.routes";
 import householdRouter from "@src/households/household.routes";
 import expenseRouter from "@src/expenses/expense.routes";
+import choreRouter from "@src/chore/chore.routes";
 
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);
@@ -22,5 +23,7 @@ routes.use("/auth", authRoutes);
 routes.use("/household", householdRouter);
 
 routes.use("/expense", expenseRouter);
+
+routes.use("/chore", choreRouter);
 
 export default routes;
