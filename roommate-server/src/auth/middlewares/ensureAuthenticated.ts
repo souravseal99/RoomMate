@@ -22,7 +22,7 @@ export default async function ensureAuthenticated(
   const token: string = authHeader?.split(" ")[1] || "";
 
   try {
-    const decoded = await validateAccessToken(token);
+    const decoded = validateAccessToken(token);
 
     request.user = decoded; // NOTE - Binding the user propertry to the global express scope
     next();

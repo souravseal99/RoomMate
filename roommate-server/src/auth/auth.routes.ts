@@ -22,4 +22,6 @@ authRoutes.post(
 
 authRoutes.get("/refresh", AuthController.refresh);
 
+authRoutes.get("/logout", AuthController.logout);
+
 export default authRoutes;

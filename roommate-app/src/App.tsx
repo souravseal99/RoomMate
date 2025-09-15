@@ -1,41 +1,47 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Button } from "@/components/ui/button";
+import UnauthenticatedLayout from "@/layouts/UnAuthenticatedLayout";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
+import useAuth from "./hooks/useAuth";
+import { useEffect } from "react";
+import { Navigate, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import DummyDashboard from "./layouts/DummyDashboard";
+import ErrorPage from "./ErrorPage";
+import LoginPage from "./features/auth/LoginPage";
+import RegisterPage from "./features/auth/RegisterPage";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    document.title = "RoomMate - Manage Your Shared Living Space";
+    console.log("Is Authenticated:", isAuthenticated);
+  });
 
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+    <Routes>
+      {/* Unauthenticated routes */}
+      <Route element={<UnauthenticatedLayout />}>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Route>
 
-      <div className="flex min-h-svh flex-col items-center justify-center">
-        <Button>Click me</Button>
-      </div>
+      {/* Authenticated routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <AuthenticatedLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<DummyDashboard />} />
+        <Route path="/chores" element={<div>Chores</div>} />
+      </Route>
 
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      {/* Fallback */}
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
   );
 }
 

@@ -5,6 +5,7 @@ import routes from "@src/routes";
 import errorHandler from "@common/middlewares/errorHandlder";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 // This should provide necessary methods to run an app
 class App {
@@ -20,6 +21,20 @@ class App {
   async start(): Promise<HTTPServer> {
     // register controller routes
     this.middlewares();
+
+    // CORS configuration
+    const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+
+    this.app.use(
+      cors({
+        origin: allowedOrigins,
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+      })
+    );
+
+    // Routes
     this.routes();
 
     // Validation middleware
