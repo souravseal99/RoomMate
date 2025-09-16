@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { StatusCodes } from "http-status-codes";
 import refreshTokenSetter from "./refreshTokenSetter";
+import { USE_SECURE_COOKIE } from "@src/common/config";
 
 export class AuthController {
   static async register(request: Request, response: Response) {
@@ -48,11 +49,22 @@ export class AuthController {
   static async refresh(request: Request, response: Response) {
     const refreshToken = request.cookies.refreshToken;
 
+    console.log("Received refresh token:", "..." + refreshToken.slice(-9, -1));
+
     const { status, data, message } = await AuthService.refresh(refreshToken);
 
     return response.status(status).json({
       message: message,
       data: data,
+    });
+  }
+
+  //TODO - Implement logout in AuthService
+  static async logout(_request: Request, response: Response) {
+    response.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: USE_SECURE_COOKIE as boolean,
+      sameSite: "lax",
     });
   }
 }
