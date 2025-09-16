@@ -1,7 +1,7 @@
 // src/features/auth/RegisterPage.tsx
 import { useNavigate } from "react-router-dom";
-import { AuthForm } from "./AuthForm";
-import { registerUser } from "./api";
+import { AuthForm } from "../../components/auth/AuthForm";
+import { registerUser } from "../../api/authApi";
 import useAuth from "@/hooks/useAuth";
 
 export default function RegisterPage() {

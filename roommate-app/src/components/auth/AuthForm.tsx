@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { AuthFormInputData } from "@/features/auth/types";
+import type { AuthFormInputData } from "@/types/authTypes";
 import {
   Card,
   CardAction,

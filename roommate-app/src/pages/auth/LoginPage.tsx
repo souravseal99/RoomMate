@@ -1,7 +1,7 @@
 // src/features/auth/LoginPage.tsx
 import { useNavigate } from "react-router-dom";
-import { AuthForm } from "./AuthForm";
-import { loginUser } from "./api";
+import { AuthForm } from "../../components/auth/AuthForm";
+import { loginUser } from "../../api/authApi";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 

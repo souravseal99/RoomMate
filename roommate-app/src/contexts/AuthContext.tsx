@@ -1,4 +1,4 @@
-import Axios from "@/lib/axios";
+import api from "@/api/axios";
 import TokenStore from "@/lib/TokenStore";
 import {
   createContext,
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       try {
         setReady(false);
 
-        const res = await Axios.get("/auth/refresh");
+        const res = await api.get("/auth/refresh");
         const accessToken = res?.data?.accessToken;
 
         if (accessToken) {

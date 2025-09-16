@@ -1,5 +1,5 @@
 import axios from "axios";
-import { SERVER_BASE_URL } from "@/lib/config";
+import { SERVER_BASE_URL } from "@/api/config";
 import TokenStore from "@/lib/TokenStore";
 
 const api = axios.create({
@@ -17,7 +17,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-//TODO - Auto-refresh once on 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -33,7 +32,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const res = await Axios.get("/auth/refresh");
+        const res = await Api.get("/auth/refresh");
         TokenStore.setToken(res.data.accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
@@ -47,7 +46,7 @@ api.interceptors.response.use(
   }
 );
 
-export default class Axios {
+export default class Api {
   static async get(route: string) {
     return (await api.get(route)).data;
   }
