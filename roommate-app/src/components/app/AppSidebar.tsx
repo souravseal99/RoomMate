@@ -1,4 +1,10 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  HouseWifi,
+  BrushCleaning,
+  HandCoins,
+  ShoppingBag,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -7,7 +13,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,29 +22,29 @@ import { NavUserDummy } from "./SidebarFooterDummy";
 // Menu items.
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
+    title: "Households",
+    url: "/households",
+    icon: HouseWifi,
   },
   {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
+    title: "Chores",
+    url: "/chores",
+    icon: BrushCleaning,
   },
   {
-    title: "Search",
+    title: "Expenses",
     url: "#",
-    icon: Search,
+    icon: HandCoins,
   },
   {
-    title: "Settings",
+    title: "Inventory",
     url: "#",
-    icon: Settings,
+    icon: ShoppingBag,
   },
 ];
 
