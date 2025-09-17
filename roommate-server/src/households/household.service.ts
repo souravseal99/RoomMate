@@ -6,6 +6,7 @@ import { Role } from "@generated/prisma";
 import { UserRepo } from "@src/users/user.repo";
 import UserDto from "@src/common/dtos/UserDto";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
+import { HouseholdDto } from "@src/common/dtos/HouseholdDto";
 
 export class HouseholdService {
   static async create(userId: string, name: string) {
@@ -52,6 +53,29 @@ export class HouseholdService {
     return ApiResponse.success(
       { household: householdRecords },
       `Households for the user: ${user.name}`
+    );
+  }
+
+  static async delete(householdId: string) {
+    const household: HouseholdDto | null =
+      await HouseholdRepository.getHouseholdById(householdId);
+
+    if (!household)
+      return ApiResponse.error("Household not found", StatusCodes.NOT_FOUND);
+
+    const deleteHouseholdResponse = await HouseholdRepository.delete(
+      householdId
+    );
+
+    if (!deleteHouseholdResponse)
+      return ApiResponse.error(
+        `Unable to delete the Household: ${householdId}`,
+        StatusCodes.CONFLICT
+      );
+
+    return ApiResponse.success(
+      { household: deleteHouseholdResponse },
+      "Household deleted successfully"
     );
   }
 
