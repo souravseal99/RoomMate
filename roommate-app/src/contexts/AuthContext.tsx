@@ -28,11 +28,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [ready, setReady] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // useEffect(() => {
-  //   // TokenStore.accessToken = accessToken;
-  //   setReady(true);
-  // }, [accessToken]);
-
   useEffect(() => {
     const tryRefresh = async () => {
       try {
@@ -63,8 +58,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     console.log("AuthContext - Mounted:: ", accessToken);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  //TODO - Try refresh on first load if no token in memory
 
   const login = (token: string, email?: string) => {
     setAccessToken(token);
