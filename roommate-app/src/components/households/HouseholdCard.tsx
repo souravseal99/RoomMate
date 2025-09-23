@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Clipboard, ClipboardCheck, Edit3, Trash2Icon } from "lucide-react";
 import type { HouseholdResponse } from "@/types/hosueholdTypes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { deleteHousehold } from "@/api/householdApi";
+import householdApi from "@/api/householdApi";
+import useHousehold from "@/hooks/useHousehold";
 
 type Props = {
   household: HouseholdResponse;
-  onDelete: (householdId: string) => void;
 };
 
-function HouseholdCard({ household, onDelete }: Props) {
+function HouseholdCard({ household }: Props) {
   const [copied, setCopied] = useState(false);
+
+  const { fetchAllHouseholds } = useHousehold();
+
+  const HouseholdApi = useMemo(householdApi, []);
 
   const handleCopy = async () => {
     try {
@@ -26,9 +30,8 @@ function HouseholdCard({ household, onDelete }: Props) {
   };
 
   const handleDelete = async () => {
-    await deleteHousehold(household.householdId);
-    await onDelete(household.householdId);
-
+    await HouseholdApi.deleteCascated(household.householdId);
+    await fetchAllHouseholds();
     //TODO: implement a confirmation dialog before deleting, cuz we are hard deleting the household along with expenses, chores, inventoryItems etc.
     // Optionally, show counts of deleted items: dummy response in householdApi.ts
   };

@@ -6,7 +6,9 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import DummyDashboard from "@/pages/dashboard/DummyDashboard";
 import Households from "@/pages/households/Households";
+import Expenses from "@/pages/expenses/Expenses";
 import ErrorPage from "@/pages/ErrorPage";
+import HouseholdProvider from "@/contexts/HouseholdContext";
 
 function AppRouter() {
   return (
@@ -28,7 +30,16 @@ function AppRouter() {
       >
         <Route path="/dashboard" element={<DummyDashboard />} />
         <Route path="/chores" element={<div>Chores</div>} />
-        <Route path="/households" element={<Households />} />
+
+        <Route
+          path="/households"
+          element={
+            <HouseholdProvider>
+              <Households />
+            </HouseholdProvider>
+          }
+        />
+        <Route path="/expenses" element={<Expenses />} />
       </Route>
 
       {/* Fallback */}

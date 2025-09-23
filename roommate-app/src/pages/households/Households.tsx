@@ -1,23 +1,13 @@
-import api from "@/api/axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import HouseholdCard from "@/components/households/HouseholdCard";
-import type { HouseholdResponse } from "@/types/hosueholdTypes";
 import CreateHouseholdSheet from "@/components/households/CreateHouseholdForm";
+import useHousehold from "@/hooks/useHousehold";
 
 function Households() {
-  const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
-
-  const fetchHousehold = async () => {
-    const { data } = await api.get("/household/all");
-    setHouseholds(data.household);
-  };
-
-  const handleDelete = (householdId: string) => {
-    setHouseholds((prev) => prev.filter((h) => h.householdId !== householdId));
-  };
+  const { households, fetchAllHouseholds } = useHousehold();
 
   useEffect(() => {
-    fetchHousehold();
+    fetchAllHouseholds();
   }, []);
 
   return (
@@ -27,17 +17,13 @@ function Households() {
       </div>
 
       <div>
-        <CreateHouseholdSheet onHouseholdCreated={fetchHousehold} />
+        <CreateHouseholdSheet />
       </div>
 
       <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
         {households.length ? (
           households.map((household) => (
-            <HouseholdCard
-              key={household.householdId}
-              household={household}
-              onDelete={handleDelete}
-            />
+            <HouseholdCard key={household.householdId} household={household} />
           ))
         ) : (
           <div className="text-xl font-stretch-75% text-center col-span-full">

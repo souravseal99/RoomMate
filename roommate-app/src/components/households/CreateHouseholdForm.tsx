@@ -3,21 +3,20 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Button } from "../ui/button";
+import { Button } from "@/components//ui/button";
 import { ChevronsUpDown, HousePlusIcon } from "lucide-react";
-import { useState } from "react";
-import { Input } from "../ui/input";
-import { createHousehold } from "@/api/householdApi";
+import { useMemo, useState } from "react";
+import { Input } from "@/components//ui/input";
+import householdApi from "@/api/householdApi";
+import useHousehold from "@/hooks/useHousehold";
 
-type CreateHouseholdFormProps = {
-  onHouseholdCreated?: () => void;
-};
-
-function CreateHouseholdSheet({
-  onHouseholdCreated,
-}: CreateHouseholdFormProps) {
+function CreateHouseholdSheet() {
   const [isOpen, setIsOpen] = useState(false);
   const [householdName, setHouseholdName] = useState("");
+
+  const HouseholdApi = useMemo(householdApi, []);
+
+  const { fetchAllHouseholds } = useHousehold();
 
   const handleCreateHousehold = () => {
     setIsOpen(!isOpen);
@@ -30,12 +29,10 @@ function CreateHouseholdSheet({
   const handleSubmit = async () => {
     if (!householdName.trim()) return;
     try {
-      await createHousehold({ name: householdName });
+      await HouseholdApi.create({ name: householdName });
       setIsOpen(false);
       setHouseholdName("");
-      if (onHouseholdCreated) {
-        onHouseholdCreated();
-      }
+      fetchAllHouseholds();
       // Optionally, show success message or refresh households list
     } catch (error) {
       // Optionally, handle error (e.g., show error message)
