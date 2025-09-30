@@ -35,4 +35,15 @@ export class HouseholdRepository {
       where: { householdId },
     });
   }
+
+  static async delete(householdId: string) {
+    return await prisma.$transaction([
+      prisma.householdMember.deleteMany({ where: { householdId } }),
+      prisma.expenseSplit.deleteMany({ where: { expense: { householdId } } }),
+      prisma.expense.deleteMany({ where: { householdId } }),
+      prisma.chore.deleteMany({ where: { householdId } }),
+      prisma.inventoryItem.deleteMany({ where: { householdId } }),
+      prisma.household.delete({ where: { householdId } }),
+    ]);
+  }
 }

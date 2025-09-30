@@ -33,6 +33,19 @@ export class HouseholdController {
     });
   }
 
+  static async delete(request: Request, response: Response) {
+    const { householdId } = request.body;
+
+    const { status, data, message } = await HouseholdService.delete(
+      householdId
+    );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
   static async getHouseholdsByUser(request: Request, response: Response) {
     const { userId } = getUserFromRequestBody(request);
 

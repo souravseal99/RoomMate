@@ -22,4 +22,10 @@ householdRouter.get(
   HouseholdController.getHouseholdsByUser
 );
 
+householdRouter.post(
+  "/delete",
+  ensureAuthenticated,
+  HouseholdController.delete
+);
+
 export default householdRouter;
