@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { ExpenseService } from "@src/expenses/expense.service";
-import { getUserFromRequestBody } from "@src/common/utils/utils";
 import ExpenseDto from "@src/common/dtos/ExpenseDto";
 
 export class ExpenseController {
@@ -9,6 +8,17 @@ export class ExpenseController {
 
     const { status, message, data } =
       await ExpenseService.getExpensesByHousehold(householdId);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async delete(request: Request, response: Response) {
+    const { expenseId } = request.params;
+
+    const { status, message, data } = await ExpenseService.delete(expenseId);
 
     return response.status(status).json({
       message: message,
@@ -35,9 +45,11 @@ export class ExpenseController {
 
     //TODO - add validaiton
 
+    const amountInNumber = parseFloat(amount);
+
     const expense: ExpenseDto = {
       householdId,
-      amount,
+      amount: amountInNumber,
       description,
       paidById,
     };
