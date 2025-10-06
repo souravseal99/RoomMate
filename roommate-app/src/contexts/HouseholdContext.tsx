@@ -1,13 +1,16 @@
-import { createContext, useMemo, useState } from "react";
-import type { HouseholdResponse } from "@/types/hosueholdTypes";
+import { createContext, useEffect, useMemo, useState } from "react";
+import type {
+  HouseholdOptions,
+  HouseholdResponse,
+} from "@/types/hosueholdTypes";
 import householdApi from "@/api/householdApi";
 
 type HouseholdContextType = {
   households: HouseholdResponse[];
   setHouseholds: (households: HouseholdResponse[]) => void;
   fetchAllHouseholds: () => void;
-  selectedHouseholdId: string | null;
-  setSelectedHouseholdId: (id: string | null) => void;
+  selectedHousehold: HouseholdOptions | null;
+  setSelectedHousehold: (selectedOption: HouseholdOptions | null) => void;
 };
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(
@@ -18,7 +21,12 @@ export default function HouseholdProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
-  const [selectedHouseholdId, setSelectedHouseholdId] = useState<string>("");
+
+  const [selectedHousehold, setSelectedHousehold] =
+    useState<HouseholdOptions | null>(null);
+
+  useEffect(() => {}, [selectedHousehold]);
+
   const HouseholdApi = useMemo(householdApi, []);
 
   const fetchAllHouseholds = async () => {
@@ -26,8 +34,8 @@ export default function HouseholdProvider({
 
     if (householdRecords) setHouseholds(householdRecords);
 
-    if (householdRecords[0]?.householdId && selectedHouseholdId === null)
-      setSelectedHouseholdId(householdRecords[0]?.householdId);
+    if (householdRecords[0]?.householdId && selectedHousehold === null)
+      setSelectedHousehold(householdRecords[0]?.householdId);
   };
 
   const providerValues = useMemo(
@@ -35,10 +43,10 @@ export default function HouseholdProvider({
       households,
       setHouseholds,
       fetchAllHouseholds,
-      selectedHouseholdId,
-      setSelectedHouseholdId,
+      selectedHousehold,
+      setSelectedHousehold,
     }),
-    [households, selectedHouseholdId]
+    [households, selectedHousehold]
   );
 
   return (

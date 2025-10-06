@@ -7,15 +7,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useHousehold from "@/hooks/useHousehold";
+import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import { useEffect } from "react";
 
-export default function HouseholdSelector() {
-  const households = [
-    { id: 1, name: "Household A" },
-    { id: 2, name: "Household B" },
-    { id: 3, name: "Household C" },
-  ];
+type Props = {
+  householdOptions: HouseholdOptions[];
+};
+
+export default function HouseholdSelector(props: Props) {
+  const { householdOptions } = props;
+  const { selectedHousehold, setSelectedHousehold } = useHousehold();
+
+  useEffect(() => {
+    if (householdOptions.length > 0 && !selectedHousehold) {
+      setSelectedHousehold(householdOptions[0]);
+    }
+  }, [householdOptions]);
+
+  const handleValueChange = (value: string) => {
+    const selectedHousehold = householdOptions.find((h) => h.value === value);
+
+    if (selectedHousehold) {
+      setSelectedHousehold({
+        key: selectedHousehold.key,
+        value: selectedHousehold.value,
+      });
+    }
+  };
+
   return (
-    <Select>
+    <Select onValueChange={handleValueChange}>
       <SelectTrigger className="w-[15.8rem] mb-4">
         <SelectValue placeholder="Select a Household" />
       </SelectTrigger>
@@ -23,10 +45,10 @@ export default function HouseholdSelector() {
         <SelectGroup>
           <SelectLabel>Households</SelectLabel>
 
-          {households &&
-            households.map((household) => (
-              <SelectItem key={household.id} value={household.name}>
-                {household.name}
+          {householdOptions &&
+            householdOptions.map((household) => (
+              <SelectItem key={household.key} value={household.value}>
+                {household.value}
               </SelectItem>
             ))}
         </SelectGroup>

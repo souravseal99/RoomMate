@@ -24,21 +24,16 @@ function AppRouter() {
       <Route
         element={
           <ProtectedRoute>
-            <AuthenticatedLayout />
+            <HouseholdProvider>
+              <AuthenticatedLayout />
+            </HouseholdProvider>
           </ProtectedRoute>
         }
       >
         <Route path="/dashboard" element={<DummyDashboard />} />
         <Route path="/chores" element={<div>Chores</div>} />
 
-        <Route
-          path="/households"
-          element={
-            <HouseholdProvider>
-              <Households />
-            </HouseholdProvider>
-          }
-        />
+        <Route path="/households" element={<Households />} />
         <Route path="/expenses" element={<Expenses />} />
       </Route>
 

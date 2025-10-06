@@ -4,3 +4,8 @@ export interface HouseholdResponse {
   name: string;
   createdAt: string;
 }
+
+export interface HouseholdOptions {
+  key: string;
+  value: string;
+}
