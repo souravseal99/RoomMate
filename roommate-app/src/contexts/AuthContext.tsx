@@ -38,7 +38,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
         if (accessToken) {
           setAccessToken(accessToken);
-          console.log("Refresh attempt:", accessToken);
           TokenStore.setToken(accessToken);
           setIsAuthenticated(true);
         } else {
@@ -55,7 +54,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     };
 
     tryRefresh();
-    console.log("AuthContext - Mounted:: ", accessToken);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

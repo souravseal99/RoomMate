@@ -13,6 +13,12 @@ expenseRouter.get(
   ExpenseController.getExpensesByHousehold
 );
 
+expenseRouter.delete(
+  "/:expenseId",
+  ensureAuthenticated,
+  ExpenseController.delete
+);
+
 expenseRouter.get(
   "/for/:householdId/balances",
   ensureAuthenticated,

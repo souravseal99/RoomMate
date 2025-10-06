@@ -19,7 +19,7 @@ export class ExpenseService {
       return ApiResponse.error("User is not a member of the household");
 
     try {
-      if (!sharedWith.length) {
+      if (!sharedWith || !sharedWith?.length) {
         const createdExpense: Expense = await ExpenseRepo.create(expense);
 
         return ApiResponse.success(
@@ -47,6 +47,7 @@ export class ExpenseService {
         );
       }
     } catch (error) {
+      console.error(error);
       return ApiResponse.error("Unable to add Expense", StatusCodes.CONFLICT);
     }
   }
@@ -57,6 +58,23 @@ export class ExpenseService {
     );
 
     return ApiResponse.success(expenses);
+  }
+
+  static async delete(expenseId: string) {
+    const expense = await ExpenseRepo.getExpenseByExpenseId(expenseId);
+
+    if (!expense)
+      return ApiResponse.error("Expense Not found", StatusCodes.NOT_FOUND);
+
+    const deleteExpenseResponse = await ExpenseRepo.delete(expenseId);
+    console.log("Expense Id: ", expenseId);
+    console.log("deleteExpenseResponse: ", deleteExpenseResponse);
+
+    return ApiResponse.success(
+      deleteExpenseResponse,
+      "Expense Deleted",
+      StatusCodes.ACCEPTED
+    );
   }
 
   static async getBalances(householdId: string) {

@@ -12,6 +12,34 @@ export class ExpenseRepo {
   static async getExpensesByHouseholdId(householdId: string) {
     return await prisma.expense.findMany({
       where: { householdId: householdId },
+      include: {
+        paidBy: {
+          select: {
+            name: true,
+            userId: true,
+          },
+        },
+      },
+    });
+  }
+
+  static async getExpenseByExpenseId(expenseId: string) {
+    return await prisma.expense.findUnique({
+      where: { expenseId: expenseId },
+      include: {
+        paidBy: {
+          select: {
+            name: true,
+            userId: true,
+          },
+        },
+      },
+    });
+  }
+
+  static async delete(expenseId: string) {
+    return await prisma.expense.delete({
+      where: { expenseId: expenseId },
     });
   }
 

@@ -47,6 +47,10 @@ export class InventoryService {
 
     const deletedItem = await InventoryRepo.delete(itemId);
 
-    return ApiResponse.success(deletedItem, "Item deleted", StatusCodes.GONE);
+    return ApiResponse.success(
+      deletedItem,
+      "Item deleted",
+      StatusCodes.ACCEPTED
+    );
   }
 }
