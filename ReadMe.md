@@ -90,6 +90,75 @@ roommate/
 - PostgreSQL >= 14
 - npm or yarn
 
+### DB Setup
+
+```
+There are 3 ways to create the DB -
+
+ 1. Local Postgres DB
+ 2. docker instance of postgres
+ 3. Cloud DB (e.g. Neon DB)
+```
+
+#### <u>The postgres way:</u>
+
+Step 1: install postgres from https://www.postgresql.org/download/
+
+Step 2: create a postgres DB using GUI or CLI
+
+```bash
+psql postgres
+
+CREATE DATABASE roommate_db;
+
+\q
+
+CREATE USER roommate_user WITH PASSWORD 'roommate_pass';
+ALTER ROLE roommate_user SET client_encoding TO 'utf8';
+ALTER ROLE roommate_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE roommate_user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE roommate_db TO roommate_user;
+```
+
+Step 3: add your connection url to the .env file
+
+```bash
+DATABASE_URL="postgresql://roommate_user:roommate_pass@localhost:5432/roommate_db"
+```
+
+Step 4: migrate the tables
+
+```bash
+npm run db:migrate
+```
+
+Step 5: verify the databse connection
+
+```bash
+npm run db:studio # a web based DB client should open up
+```
+
+#### <u>The Docker way:</u>
+
+```docker
+docker run --name roommate_db \
+  -e POSTGRES_USER=roommate_user \
+  -e POSTGRES_PASSWORD=roommate_pass \
+  -e POSTGRES_DB=roommate_db \
+  -p 5432:5432 \
+  -d postgres:15
+```
+
+#### <u>The Neon DB way:</u>
+
+```
+Step 1: sign up on Vercel
+Step 2: create a project
+Step 3: go to integrations
+Step 4: search for neon db and install by creating a new account (if setting up for first time)
+Step 5: follow the steps and create the DB
+```
+
 ### Backend Setup
 
 ```bash
