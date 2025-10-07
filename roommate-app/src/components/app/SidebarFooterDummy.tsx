@@ -36,9 +36,9 @@ export function NavUserDummy({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { logout } = useAuth();
+  const { logout, email: userEmail } = useAuth();
+  const displayEmail = userEmail || user.email;
   const handleLogout = () => {
-    // Implement logout functionality here
     logout();
   };
 
@@ -49,19 +49,19 @@ export function NavUserDummy({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="cursor-pointer hover:bg-transparent data-[state=open]:bg-transparent data-[state=open]:text-sidebar-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium bg-white text-black">{user.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {displayEmail}
                 </span>
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className="ml-auto size-4 text-black" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -79,29 +79,29 @@ export function NavUserDummy({
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {displayEmail}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <IconCreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <IconNotification />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-destructive"
+              className="text-destructive cursor-pointer"
               onClick={handleLogout}
             >
               <IconLogout />
