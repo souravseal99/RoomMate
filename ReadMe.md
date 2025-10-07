@@ -207,9 +207,12 @@ Backend will run at `http://localhost:5000`
 Contributions are welcome!
 
 1. Fork the repo
-2. Create a new branch: `git checkout -b feature/your-feature`
-3. Commit changes: `git commit -m "Add your feature"`
-4. Push and open a PR
+2. Pull the latest develop branch
+3. Create a new branch from the latest develop branch: `git checkout -b feature/your-feature`
+4. Commit changes: `git commit -m "Add your feature"`
+5. Push and open a PR
+
+Please checkout [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed guideline.
 
 ---
 
