@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import HouseholdSelector from "@/components/expenses/HouseholdSelector";
 import useHousehold from "@/hooks/useHousehold";
 import type { HouseholdOptions } from "@/types/hosueholdTypes";
@@ -6,10 +6,11 @@ import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
 import expenseApi from "@/api/expenseApi";
+import useExpense from "@/hooks/useExpense";
 
 function Expenses() {
   const { households, fetchAllHouseholds, selectedHousehold } = useHousehold();
-  const [expenses, setExpenses] = useState<any[]>([]);
+  const { expenses, setExpenses } = useExpense();
 
   const ExpenseApi = useMemo(expenseApi, []);
 
@@ -26,8 +27,12 @@ function Expenses() {
     try {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
+        const expenseList = expenses?.filter(
+          (expense) => expense.expenseId !== expenseId
+        );
+
+        setExpenses(expenseList);
         getExpenses();
-        console.log("Deleted Expense :: ", deletedExpense);
       }
     } catch (error) {
       console.error(error);
@@ -66,10 +71,7 @@ function Expenses() {
       {!selectedHousehold?.value ? (
         <SelectHouseholdAlert />
       ) : (
-        <ExpenseViewer
-          expenses={expenses}
-          handleDeleteExpense={handleDeleteExpense}
-        />
+        <ExpenseViewer handleDeleteExpense={handleDeleteExpense} />
       )}
     </section>
   );
