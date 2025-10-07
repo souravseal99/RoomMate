@@ -1,5 +1,9 @@
-import type { ExpenseContextType } from "@/types/expenseTypes";
 import { createContext, useMemo, useState, type ReactNode } from "react";
+import {
+  type Expense,
+  type ExpenseContextType,
+  type ExpenseResponse,
+} from "@/types/expenseTypes";
 
 export const ExpenseContext = createContext<ExpenseContextType | undefined>(
   undefined
@@ -8,7 +12,7 @@ export const ExpenseContext = createContext<ExpenseContextType | undefined>(
 export const ExpenseProvider = ({
   children,
 }: Readonly<{ children: ReactNode }>) => {
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState<ExpenseResponse[] | undefined>([]);
 
   const providerValues = useMemo(
     () =>
