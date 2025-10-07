@@ -10,4 +10,10 @@ hosueholdMemberRouter.post(
   HouseholdMemberController.create
 );
 
+hosueholdMemberRouter.get(
+  "/all/:householdId",
+  ensureAuthenticated,
+  HouseholdMemberController.getAllHouseholdMembers
+);
+
 export default hosueholdMemberRouter;
