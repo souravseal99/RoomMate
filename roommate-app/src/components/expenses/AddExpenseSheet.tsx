@@ -1,5 +1,5 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-
 import {
   Sheet,
   SheetClose,
@@ -13,15 +13,16 @@ import {
 import AddExpenseForm from "./AddExpenseForm";
 import SelectHouseholdAlert from "./SelectHouseholdAlert";
 import type { HouseholdOptions } from "@/types/hosueholdTypes";
-import { useEffect } from "react";
 
 type Props = {
+  householdMemberOptions: { key: string; value: string }[];
   selectedHousehold: HouseholdOptions | null;
   getExpenses: () => void;
 };
 
 export default function AddExpenseSheet({
   selectedHousehold,
+  householdMemberOptions,
   getExpenses,
 }: Props) {
   useEffect(() => {}, [selectedHousehold]);
@@ -41,7 +42,10 @@ export default function AddExpenseSheet({
         </SheetHeader>
 
         {selectedHousehold?.key ? (
-          <AddExpenseForm household={selectedHousehold} members={[]} />
+          <AddExpenseForm
+            householdMemberOptions={householdMemberOptions}
+            getExpenses={getExpenses}
+          />
         ) : (
           <SelectHouseholdAlert />
         )}
