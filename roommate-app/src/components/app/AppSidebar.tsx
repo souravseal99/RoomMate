@@ -5,6 +5,8 @@ import {
   HandCoins,
   ShoppingBag,
 } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import useAuth from "@/hooks/useAuth";
 
 import {
   Sidebar,
@@ -49,6 +51,9 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
+  const { email } = useAuth();
+  
   return (
     <Sidebar>
       <SidebarContent>
@@ -58,7 +63,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -73,8 +78,8 @@ export function AppSidebar() {
       <SidebarFooter>
         <NavUserDummy
           user={{
-            name: "John Doe",
-            email: "you.example@mail.com",
+            name: email?.split('@')[0] || "User",
+            email: email || "user@example.com",
             avatar: "https://github.com/evilrabbit.png",
           }}
         />

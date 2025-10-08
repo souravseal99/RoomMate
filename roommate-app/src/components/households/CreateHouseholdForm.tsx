@@ -50,7 +50,7 @@ function CreateHouseholdSheet() {
         <div className="flex items-center justify-center gap-4 px-4">
           <CollapsibleTrigger asChild>
             <Button
-              className={`m-4 ${isOpen ? "bg-green-600 text-white" : ""}`}
+              className={`m-4 cursor-pointer ${isOpen ? "bg-green-600 text-white" : ""}`}
               variant="outline"
               size="sm"
               onClick={handleCreateHousehold}
@@ -71,13 +71,13 @@ function CreateHouseholdSheet() {
           <div className="grid grid-cols-2 pt-2 pl-2 pr-2">
             <Button
               onClick={handleSubmit}
-              className="bg-green-600 text-white "
+              className="bg-green-600 text-white cursor-pointer"
               size="sm"
             >
               Create Household
             </Button>
             <Button
-              className="ml-2 bg-red-600 text-white "
+              className="ml-2 bg-red-600 text-white cursor-pointer"
               size="sm"
               onClick={handleCreateHousehold}
             >
