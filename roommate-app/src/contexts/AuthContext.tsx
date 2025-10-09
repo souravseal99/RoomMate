@@ -35,11 +35,13 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
         const res = await api.get("/auth/refresh");
         const accessToken = res?.data?.accessToken;
+        const userEmail = res?.data?.email;
 
         if (accessToken) {
           setAccessToken(accessToken);
           TokenStore.setToken(accessToken);
           setIsAuthenticated(true);
+          if (userEmail) setEmail(userEmail);
         } else {
           setIsAuthenticated(false);
           setEmail(null);

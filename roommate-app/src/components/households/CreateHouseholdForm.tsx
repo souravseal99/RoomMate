@@ -45,18 +45,20 @@ function CreateHouseholdSheet() {
       <Collapsible
         open={isOpen}
         onOpenChange={setIsOpen}
-        className="flex w-[20rem] flex-col gap-2 mb-4"
+        className="flex w-full md:w-auto md:min-w-[16rem] flex-col gap-2"
       >
         <div className="flex items-center justify-center gap-4 px-4">
           <CollapsibleTrigger asChild>
             <Button
-              className={`m-4 cursor-pointer ${isOpen ? "bg-green-600 text-white" : ""}`}
+              className={`cursor-pointer text-[9px] md:text-s w-full whitespace-nowrap ${isOpen ? "bg-green-600 text-white" : ""}`}
               variant="outline"
               size="sm"
               onClick={handleCreateHousehold}
             >
-              <HousePlusIcon /> Create New Household (TBD)
-              <ChevronsUpDown />
+              <HousePlusIcon className="w-3 h-3" /> 
+              <span className="hidden md:inline">Create New Household (TBD)</span>
+              <span className="md:hidden">New Household</span>
+              <ChevronsUpDown className="w-3 h-3" />
               <span className="sr-only">Toggle</span>
             </Button>
           </CollapsibleTrigger>
@@ -65,19 +67,19 @@ function CreateHouseholdSheet() {
         <CollapsibleContent className="flex flex-col justify-center gap-2 transition-all duration-600 ease-in-out px-4">
           <Input
             onChange={handleInputChange}
-            className="rounded-md border-0 border-b-emerald-950-1 text-center px-3"
+            className="rounded-md border-0 border-b-emerald-950-1 text-center px-3 text-xs"
             placeholder="Enter Household Name"
           />
           <div className="grid grid-cols-2 pt-2 pl-2 pr-2">
             <Button
               onClick={handleSubmit}
-              className="bg-green-600 text-white cursor-pointer"
+              className="bg-green-600 text-white cursor-pointer text-[8px] md:text-[10px]"
               size="sm"
             >
               Create Household
             </Button>
             <Button
-              className="ml-2 bg-red-600 text-white cursor-pointer"
+              className="ml-2 bg-red-600 text-white cursor-pointer text-[10px] md:text-[10px]"
               size="sm"
               onClick={handleCreateHousehold}
             >
