@@ -56,7 +56,7 @@ function CreateHouseholdSheet() {
               onClick={handleCreateHousehold}
             >
               <HousePlusIcon className="w-3 h-3" /> 
-              <span className="hidden md:inline">Create New Household (TBD)</span>
+              <span className="hidden md:inline">Create New Household</span>
               <span className="md:hidden">New Household</span>
               <ChevronsUpDown className="w-3 h-3" />
               <span className="sr-only">Toggle</span>

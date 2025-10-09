@@ -36,8 +36,9 @@ export function NavUserDummy({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { logout, email: userEmail } = useAuth();
+  const { logout, email: userEmail, name: userName } = useAuth();
   const displayEmail = userEmail || user.email;
+  const displayName = userName || user.name;
   const handleLogout = () => {
     logout();
   };
@@ -56,7 +57,7 @@ export function NavUserDummy({
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{displayEmail.split('@')[0]}</span>
+                <span className="truncate font-medium text-black">{displayName}</span>
                 <span className="text-muted-foreground truncate text-xs">
                   {displayEmail}
                 </span>

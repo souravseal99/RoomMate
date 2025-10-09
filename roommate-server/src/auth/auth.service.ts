@@ -84,6 +84,7 @@ export class AuthService {
         {
           responseData: {
             accessToken: accessToken,
+            name: user.name,
             email: user.email,
           },
           refreshToken: refreshToken,
@@ -113,6 +114,7 @@ export class AuthService {
 
       return ApiResponse.success({
         userId: userId,
+        name: user.name,
         email: user.email,
         accessToken: accessToken,
       });

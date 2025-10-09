@@ -13,7 +13,8 @@ type AuthContextType = {
   accessToken: string | null;
   setAccessToken?: (token: string | null) => void;
   email: string | null;
-  login: (token: string, email?: string | null) => void;
+  name: string | null;
+  login: (token: string, email?: string | null, name?: string | null) => void;
   logout: () => void;
   ready: boolean;
 };
@@ -25,6 +26,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [name, setName] = useState<string | null>(null);
   const [ready, setReady] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -36,20 +38,24 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         const res = await api.get("/auth/refresh");
         const accessToken = res?.data?.accessToken;
         const userEmail = res?.data?.email;
+        const userName = res?.data?.name;
 
         if (accessToken) {
           setAccessToken(accessToken);
           TokenStore.setToken(accessToken);
           setIsAuthenticated(true);
           if (userEmail) setEmail(userEmail);
+          if (userName) setName(userName);
         } else {
           setIsAuthenticated(false);
           setEmail(null);
+          setName(null);
           TokenStore.setToken(null);
         }
       } catch (e) {
         setIsAuthenticated(false);
         setEmail(null);
+        setName(null);
         TokenStore.setToken(null);
       }
       setReady(true); // Only set ready after refresh attempt
@@ -59,10 +65,11 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const login = (token: string, email?: string) => {
+  const login = (token: string, email?: string, name?: string) => {
     setAccessToken(token);
     setIsAuthenticated(true);
     if (email !== undefined) setEmail(email);
+    if (name !== undefined) setName(name);
     TokenStore.setToken(token);
   };
 
@@ -70,6 +77,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const logout = async () => {
     setAccessToken(null);
     setEmail(null);
+    setName(null);
     setIsAuthenticated(false);
     TokenStore.setToken(null);
 
@@ -99,11 +107,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         accessToken,
         setAccessToken,
         email,
+        name,
         login,
         logout,
         ready,
       } as AuthContextType),
-    [isAuthenticated, accessToken, email, ready, login, logout, setAccessToken]
+    [isAuthenticated, accessToken, email, name, ready, login, logout, setAccessToken]
   ); // to escape from the re-renders
 
   return (

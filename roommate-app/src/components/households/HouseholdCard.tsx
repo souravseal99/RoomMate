@@ -34,14 +34,16 @@ function HouseholdCard({ household }: Props) {
   };
 
   const handleDelete = async () => {
+    setIsDeleteOpen(false);
     try {
       await HouseholdApi.deleteCascated(household.householdId);
-      await fetchAllHouseholds();
-      setIsDeleteOpen(false);
       toast({
         title: "Household deleted",
         description: "The household and all related data have been successfully deleted.",
       });
+      setTimeout(() => {
+        fetchAllHouseholds();
+      }, 100);
     } catch (error) {
       console.error('Delete error:', error);
       toast({

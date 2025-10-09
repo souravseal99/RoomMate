@@ -4,6 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { X } from "lucide-react"
 
 import { cn } from "@/utils/utils"
+import { TOAST_AUTO_DISMISS_DURATION } from "@/hooks/use-toast"
 
 const ToastProvider = ToastPrimitives.Provider
 
