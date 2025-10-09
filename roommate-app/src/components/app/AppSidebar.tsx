@@ -52,7 +52,7 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { email } = useAuth();
+  const { email, name } = useAuth();
   
   return (
     <Sidebar>
@@ -78,7 +78,7 @@ export function AppSidebar() {
       <SidebarFooter>
         <NavUserDummy
           user={{
-            name: email?.split('@')[0] || "User",
+            name: name || "User",
             email: email || "user@example.com",
             avatar: "https://github.com/evilrabbit.png",
           }}
