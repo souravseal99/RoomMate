@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+    "types": [],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -29,5 +30,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/test-*.ts", "**/test-*.tsx"]
 }

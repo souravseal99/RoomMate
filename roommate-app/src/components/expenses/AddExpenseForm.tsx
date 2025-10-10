@@ -54,7 +54,7 @@ export default function AddExpenseForm({ household, members }: Props) {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -62,7 +62,7 @@ export default function AddExpenseForm({ household, members }: Props) {
 
   const handleAddShared = (memberId: string) => {
     if (!formData.sharedWith.includes(memberId)) {
-      setFormData((prev) => ({
+      setFormData((prev: typeof formData) => ({
         ...prev,
         sharedWith: [...prev.sharedWith, memberId],
       }));
@@ -70,9 +70,9 @@ export default function AddExpenseForm({ household, members }: Props) {
   };
 
   const handleRemoveShared = (memberId: string) => {
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
-      sharedWith: prev.sharedWith.filter((id) => id !== memberId),
+      sharedWith: prev.sharedWith.filter((id: string) => id !== memberId),
     }));
   };
 
@@ -131,7 +131,7 @@ export default function AddExpenseForm({ household, members }: Props) {
         <Label>Shared With</Label>
         {/* Selected members */}
         <div className="flex flex-wrap gap-2">
-          {formData.sharedWith.map((id) => {
+          {formData.sharedWith.map((id: string) => {
             const member = members.find((m) => m.key === id);
             return (
               <Badge

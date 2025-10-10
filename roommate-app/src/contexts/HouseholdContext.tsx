@@ -47,6 +47,7 @@ export default function HouseholdProvider({
     // TODO: Implement API call to fetch household members
     // const members = await HouseholdApi.fetchMembers(householdId);
     // if (members) setHouseholdMembers(members);
+    console.log('Fetching members for household:', householdId);
   };
 
   const providerValues = useMemo(
