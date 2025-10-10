@@ -13,16 +13,19 @@ import {
 import AddExpenseForm from "./AddExpenseForm";
 import SelectHouseholdAlert from "./SelectHouseholdAlert";
 import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdMemberOptions } from "@/types/householdMemberTypes";
 import { useEffect } from "react";
 
 type Props = {
   selectedHousehold: HouseholdOptions | null;
   getExpenses: () => void;
+  householdMembers?: HouseholdMemberOptions[];
 };
 
 export default function AddExpenseSheet({
   selectedHousehold,
   getExpenses,
+  householdMembers = [],
 }: Props) {
   useEffect(() => {}, [selectedHousehold]);
 
@@ -41,7 +44,7 @@ export default function AddExpenseSheet({
         </SheetHeader>
 
         {selectedHousehold?.key ? (
-          <AddExpenseForm household={selectedHousehold} members={[]} />
+          <AddExpenseForm household={selectedHousehold} members={householdMembers} />
         ) : (
           <SelectHouseholdAlert />
         )}

@@ -14,17 +14,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdMemberOptions } from "@/types/householdMemberTypes";
 import expenseApi from "@/api/expenseApi";
 import { Button } from "../ui/button";
 
-type Member = {
-  key: string;
-  value: string;
-};
-
 type Props = {
   household: HouseholdOptions;
-  members: Member[];
+  members: HouseholdMemberOptions[];
 };
 
 export default function AddExpenseForm({ household, members }: Props) {
@@ -36,8 +32,15 @@ export default function AddExpenseForm({ household, members }: Props) {
       {
         key: "9389284924",
         value: "Jhon",
+        userId: "9389284924",
+        role: "MEMBER" as const,
       },
-      { key: "7294792479", value: "Jane" },
+      { 
+        key: "7294792479", 
+        value: "Jane",
+        userId: "7294792479",
+        role: "ADMIN" as const,
+      },
     ],
     []
   );
@@ -51,7 +54,7 @@ export default function AddExpenseForm({ household, members }: Props) {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -59,7 +62,7 @@ export default function AddExpenseForm({ household, members }: Props) {
 
   const handleAddShared = (memberId: string) => {
     if (!formData.sharedWith.includes(memberId)) {
-      setFormData((prev) => ({
+      setFormData((prev: typeof formData) => ({
         ...prev,
         sharedWith: [...prev.sharedWith, memberId],
       }));
@@ -67,9 +70,9 @@ export default function AddExpenseForm({ household, members }: Props) {
   };
 
   const handleRemoveShared = (memberId: string) => {
-    setFormData((prev) => ({
+    setFormData((prev: typeof formData) => ({
       ...prev,
-      sharedWith: prev.sharedWith.filter((id) => id !== memberId),
+      sharedWith: prev.sharedWith.filter((id: string) => id !== memberId),
     }));
   };
 
@@ -128,7 +131,7 @@ export default function AddExpenseForm({ household, members }: Props) {
         <Label>Shared With</Label>
         {/* Selected members */}
         <div className="flex flex-wrap gap-2">
-          {formData.sharedWith.map((id) => {
+          {formData.sharedWith.map((id: string) => {
             const member = members.find((m) => m.key === id);
             return (
               <Badge

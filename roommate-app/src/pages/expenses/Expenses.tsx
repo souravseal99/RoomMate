@@ -8,7 +8,7 @@ import ExpenseViewer from "@/components/expenses/ExpenseViewer";
 import expenseApi from "@/api/expenseApi";
 
 function Expenses() {
-  const { households, fetchAllHouseholds, selectedHousehold } = useHousehold();
+  const { households, fetchAllHouseholds, selectedHousehold, householdMembers } = useHousehold();
   const [expenses, setExpenses] = useState<any[]>([]);
 
   const ExpenseApi = useMemo(expenseApi, []);
@@ -60,6 +60,12 @@ function Expenses() {
       <AddExpenseSheet
         selectedHousehold={selectedHousehold}
         getExpenses={getExpenses}
+        householdMembers={householdMembers.map(member => ({
+          key: member.userId,
+          value: member.user?.firstName || member.user?.email || 'Unknown',
+          userId: member.userId,
+          role: member.role
+        }))}
       />
       {/* //NOTE - Have to use conteext here to resolve the expenses retention
       problem */}
