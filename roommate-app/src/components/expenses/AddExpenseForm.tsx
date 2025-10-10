@@ -65,8 +65,9 @@ export default function AddExpenseForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const resp = await ExpenseApi.create(formData).then(() => {
+    const resp = await ExpenseApi.create(formData).then((response) => {
       getExpenses();
+      return response;
     });
 
     // TODO: Show success or error to user
