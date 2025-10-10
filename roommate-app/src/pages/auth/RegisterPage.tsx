@@ -13,7 +13,7 @@ export default function RegisterPage() {
       const res = await registerUser(values);
       const token = res.data?.accessToken;
       if (token) {
-        login(token, res.data?.email ?? null);
+        login(token, res.data?.email ?? null, res.data?.name ?? null);
         nav("/dashboard");
       }
     } catch (e: any) {

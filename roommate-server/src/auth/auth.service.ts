@@ -84,6 +84,7 @@ export class AuthService {
         {
           responseData: {
             accessToken: accessToken,
+            name: user.name,
             email: user.email,
           },
           refreshToken: refreshToken,
@@ -106,10 +107,15 @@ export class AuthService {
       if (!userId || userId === "")
         ApiResponse.error("Unable to get the user id from the token");
 
+      const user = await UserRepo.getUserById(userId);
+      if (!user) return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+
       const accessToken = await getNewAccessToken({ userId: userId });
 
       return ApiResponse.success({
         userId: userId,
+        name: user.name,
+        email: user.email,
         accessToken: accessToken,
       });
     } catch (error) {
