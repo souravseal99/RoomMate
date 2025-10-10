@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+  type ChangeEvent,
+} from "react";
 import { X } from "lucide-react";
 import expenseApi from "@/api/expenseApi";
 import useHousehold from "@/hooks/useHousehold";
@@ -39,7 +45,7 @@ export default function AddExpenseForm({
     sharedWith: [] as string[],
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -62,7 +68,7 @@ export default function AddExpenseForm({
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const resp = await ExpenseApi.create(formData).then((response) => {
