@@ -13,7 +13,6 @@ const householdMemberApi = () => {
       }
 
       return data;
-      return [];
     } catch (error) {
       console.error("Error fetching household members:", error);
       return [];
