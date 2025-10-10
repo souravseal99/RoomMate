@@ -57,8 +57,6 @@ function Expenses() {
     const householdMemberRecords =
       await HouseholdMemberApi.getAllHouseholdMembers(householdId);
 
-    console.log("Member Response: ", householdMemberRecords);
-
     if (householdMemberRecords && householdMemberRecords.length > 0) {
       mapHouseholdMembers(householdMemberRecords);
 
@@ -72,8 +70,6 @@ function Expenses() {
       key: member.userId,
     }));
 
-    console.log("householdMembers: ", householdMembers);
-    console.log("mappedHouseholdMembers: ", mappedHouseholdMembers);
     setHouseholdMemberOptions(mappedHouseholdMembers);
   };
 
