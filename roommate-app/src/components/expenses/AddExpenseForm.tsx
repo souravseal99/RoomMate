@@ -14,17 +14,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdMemberOptions } from "@/types/householdMemberTypes";
 import expenseApi from "@/api/expenseApi";
 import { Button } from "../ui/button";
 
-type Member = {
-  key: string;
-  value: string;
-};
-
 type Props = {
   household: HouseholdOptions;
-  members: Member[];
+  members: HouseholdMemberOptions[];
 };
 
 export default function AddExpenseForm({ household, members }: Props) {
@@ -36,8 +32,15 @@ export default function AddExpenseForm({ household, members }: Props) {
       {
         key: "9389284924",
         value: "Jhon",
+        userId: "9389284924",
+        role: "MEMBER" as const,
       },
-      { key: "7294792479", value: "Jane" },
+      { 
+        key: "7294792479", 
+        value: "Jane",
+        userId: "7294792479",
+        role: "ADMIN" as const,
+      },
     ],
     []
   );

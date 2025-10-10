@@ -3,6 +3,7 @@ import type {
   HouseholdOptions,
   HouseholdResponse,
 } from "@/types/hosueholdTypes";
+import type { HouseholdMember } from "@/types/householdMemberTypes";
 import householdApi from "@/api/householdApi";
 
 type HouseholdContextType = {
@@ -11,6 +12,9 @@ type HouseholdContextType = {
   fetchAllHouseholds: () => void;
   selectedHousehold: HouseholdOptions | null;
   setSelectedHousehold: (selectedOption: HouseholdOptions | null) => void;
+  householdMembers: HouseholdMember[];
+  setHouseholdMembers: (members: HouseholdMember[]) => void;
+  fetchHouseholdMembers: (householdId: string) => void;
 };
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(
@@ -21,6 +25,7 @@ export default function HouseholdProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
+  const [householdMembers, setHouseholdMembers] = useState<HouseholdMember[]>([]);
 
   const [selectedHousehold, setSelectedHousehold] =
     useState<HouseholdOptions | null>(null);
@@ -38,6 +43,12 @@ export default function HouseholdProvider({
       setSelectedHousehold(householdRecords[0]?.householdId);
   };
 
+  const fetchHouseholdMembers = async (householdId: string) => {
+    // TODO: Implement API call to fetch household members
+    // const members = await HouseholdApi.fetchMembers(householdId);
+    // if (members) setHouseholdMembers(members);
+  };
+
   const providerValues = useMemo(
     () => ({
       households,
@@ -45,8 +56,11 @@ export default function HouseholdProvider({
       fetchAllHouseholds,
       selectedHousehold,
       setSelectedHousehold,
+      householdMembers,
+      setHouseholdMembers,
+      fetchHouseholdMembers,
     }),
-    [households, selectedHousehold]
+    [households, selectedHousehold, householdMembers]
   );
 
   return (
