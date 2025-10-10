@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { X } from "lucide-react";
+import expenseApi from "@/api/expenseApi";
+import useHousehold from "@/hooks/useHousehold";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PayerDropdown } from "@/components/expenses/PaidByDropdown";
 import {
   Command,
   CommandEmpty,
@@ -12,12 +16,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
-import expenseApi from "@/api/expenseApi";
-import { Button } from "../ui/button";
-import householdMemberApi from "@/api/householdMemberApi";
-import useHousehold from "@/hooks/useHousehold";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
@@ -31,11 +30,6 @@ export default function AddExpenseForm({
   const { selectedHousehold } = useHousehold();
 
   const ExpenseApi = useMemo(expenseApi, []);
-  // const HouseholdMemberApi = useMemo(householdMemberApi, []);
-
-  // const [householdMemberOptions, setHouseholdMemberOptions] = useState<
-  //   { key: string; value: string }[]
-  // >([{ key: "", value: "" }]);
 
   const [formData, setFormData] = useState({
     householdId: selectedHousehold?.key,
@@ -71,45 +65,19 @@ export default function AddExpenseForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const resp = await ExpenseApi.create(formData).then(() => getExpenses());
+    const resp = await ExpenseApi.create(formData).then(() => {
+      getExpenses();
+    });
 
+    // TODO: Show success or error to user
     console.log("Add Expense resp: ", resp);
   };
 
-  // const getHouseholdMembers = async (householdId: string) => {
-  //   const householdMemberRecords =
-  //     await HouseholdMemberApi.getAllHouseholdMembers(householdId);
+  const handleSelectPayer = (payerId: string) => {
+    setFormData((prev) => ({ ...prev, paidById: payerId }));
+  };
 
-  //   console.log("Household Members resp in Expenses: ", householdMemberRecords);
-
-  //   if (householdMemberRecords && householdMemberRecords.length > 0)
-  //     setHouseholdMembers([...householdMemberRecords]);
-  // };
-
-  // const mapHouseholdMembers = () => {
-  //   console.log(
-  //     "Household Members resp in AddExpenseSheet: ",
-  //     householdMembers
-  //   );
-
-  //   const mappedHouseholdMembers = householdMembers.map((member) => ({
-  //     value: member.user.name,
-  //     key: member.userId,
-  //   }));
-
-  //   console.log(
-  //     "mappedHouseholdMembers in AddExpenseSheet: ",
-  //     mappedHouseholdMembers
-  //   );
-  //   setHouseholdMemberOptions(mappedHouseholdMembers);
-  // };
-
-  useEffect(() => {
-    console.log(
-      "Household Member Options in AddExpenseForm: ",
-      householdMemberOptions
-    );
-  }, [householdMemberOptions]);
+  useEffect(() => {}, [householdMemberOptions]);
 
   return (
     <>
@@ -145,14 +113,11 @@ export default function AddExpenseForm({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="paidById">Paid By (memberId)</Label>
-            <Input
-              id="paidById"
-              name="paidById"
-              placeholder="Enter member ID"
-              value={formData.paidById}
-              onChange={handleChange}
-              required
+            <Label htmlFor="paidById">Paid By</Label>
+            <PayerDropdown
+              onSelectPayer={handleSelectPayer}
+              householdMemberOptions={householdMemberOptions}
+              selectedPayer={formData.paidById}
             />
           </div>
 

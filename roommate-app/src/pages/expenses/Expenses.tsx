@@ -59,12 +59,15 @@ function Expenses() {
 
     console.log("Member Response: ", householdMemberRecords);
 
-    if (householdMemberRecords && householdMemberRecords.length > 0)
+    if (householdMemberRecords && householdMemberRecords.length > 0) {
+      mapHouseholdMembers(householdMemberRecords);
+
       setHouseholdMembers([...householdMemberRecords]);
+    }
   };
 
-  const mapHouseholdMembers = () => {
-    const mappedHouseholdMembers = householdMembers.map((member) => ({
+  const mapHouseholdMembers = (householdMembers: any) => {
+    const mappedHouseholdMembers = householdMembers.map((member: any) => ({
       value: member.user.name,
       key: member.userId,
     }));
@@ -76,10 +79,7 @@ function Expenses() {
 
   useEffect(() => {
     getExpenses();
-
-    getHouseholdMembers(selectedHousehold?.key!).then(() =>
-      mapHouseholdMembers()
-    );
+    getHouseholdMembers(selectedHousehold?.key!);
   }, [selectedHousehold?.key]);
 
   useEffect(() => {
