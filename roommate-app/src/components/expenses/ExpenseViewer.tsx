@@ -1,4 +1,3 @@
-import { useEffect, useMemo } from "react";
 import { Trash2Icon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -11,27 +10,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { dateFormatterUtc, formatCurrency } from "@/utils/utils";
-
-type Expense = {
-  expenseId: string;
-  householdId: string;
-  description: string;
-  amount: number;
-  paidById: string;
-  paidBy: { name: string };
-  createdAt: string;
-};
+import useExpense from "@/hooks/useExpense";
 
 type ExpenseViewerProps = {
-  expenses: Expense[];
   handleDeleteExpense: (expenseId: string) => Promise<void>;
 };
 
-function ExpenseViewer({ expenses, handleDeleteExpense }: ExpenseViewerProps) {
-  useEffect(() => {
-    console.log("expense viewer use effect: ", expenses?.length);
-    console.log("expense viewer use effect: ", expenses);
-  }, [expenses]);
+function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
+  const { expenses } = useExpense();
 
   const ExpenseTable = () => {
     return (
@@ -81,11 +67,10 @@ function ExpenseViewer({ expenses, handleDeleteExpense }: ExpenseViewerProps) {
       </ScrollArea>
     );
   };
-  console.log("expense viewer : ", expenses?.length);
 
   return (
     <div className="mx-3 mt-6">
-      {expenses?.length > 0 ? (
+      {expenses && expenses?.length > 0 ? (
         <ExpenseTable />
       ) : (
         <p className="m-5"> No expenses found</p>

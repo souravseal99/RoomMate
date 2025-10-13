@@ -1,12 +1,17 @@
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Button } from "@/components//ui/button";
-import { ChevronsUpDown, HousePlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HousePlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Input } from "@/components//ui/input";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import householdApi from "@/api/householdApi";
 import useHousehold from "@/hooks/useHousehold";
 
@@ -15,16 +20,7 @@ function CreateHouseholdSheet() {
   const [householdName, setHouseholdName] = useState("");
 
   const HouseholdApi = useMemo(householdApi, []);
-
   const { fetchAllHouseholds } = useHousehold();
-
-  const handleCreateHousehold = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHouseholdName(e.target.value);
-  };
 
   const handleSubmit = async () => {
     if (!householdName.trim()) return;
@@ -33,60 +29,49 @@ function CreateHouseholdSheet() {
       setIsOpen(false);
       setHouseholdName("");
       fetchAllHouseholds();
-      // Optionally, show success message or refresh households list
     } catch (error) {
-      // Optionally, handle error (e.g., show error message)
       console.error(error);
     }
   };
 
   return (
-    <>
-      <Collapsible
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        className="flex w-[20rem] flex-col gap-2 mb-4"
-      >
-        <div className="flex items-center justify-center gap-4 px-4">
-          <CollapsibleTrigger asChild>
-            <Button
-              className={`m-4 ${isOpen ? "bg-green-600 text-white" : ""}`}
-              variant="outline"
-              size="sm"
-              onClick={handleCreateHousehold}
-            >
-              <HousePlusIcon /> Create New Household (TBD)
-              <ChevronsUpDown />
-              <span className="sr-only">Toggle</span>
-            </Button>
-          </CollapsibleTrigger>
-        </div>
-
-        <CollapsibleContent className="flex flex-col justify-center gap-2 transition-all duration-600 ease-in-out px-4">
-          <Input
-            onChange={handleInputChange}
-            className="rounded-md border-0 border-b-emerald-950-1 text-center px-3"
-            placeholder="Enter Household Name"
-          />
-          <div className="grid grid-cols-2 pt-2 pl-2 pr-2">
-            <Button
-              onClick={handleSubmit}
-              className="bg-green-600 text-white "
-              size="sm"
-            >
-              Create Household
-            </Button>
-            <Button
-              className="ml-2 bg-red-600 text-white "
-              size="sm"
-              onClick={handleCreateHousehold}
-            >
-              Cancel
-            </Button>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
+          <HousePlusIcon className="w-4 h-4" />
+          <span className="hidden sm:inline">Create Household</span>
+          <span className="sm:hidden">Create</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create New Household</DialogTitle>
+          <DialogDescription>
+            Enter a name for your new shared living space
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Household Name</Label>
+            <Input
+              id="name"
+              value={householdName}
+              onChange={(e) => setHouseholdName(e.target.value)}
+              placeholder="e.g., Downtown Apartment"
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+            />
           </div>
-        </CollapsibleContent>
-      </Collapsible>
-    </>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)} className="cursor-pointer">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={!householdName.trim()} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white">
+            Create Household
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

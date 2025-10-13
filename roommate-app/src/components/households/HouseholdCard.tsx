@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
-import { Clipboard, ClipboardCheck, Edit3, Trash2Icon } from "lucide-react";
+import { Clipboard, ClipboardCheck, Trash2Icon, Home, Pencil, AlertTriangle } from "lucide-react";
 import type { HouseholdResponse } from "@/types/hosueholdTypes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import householdApi from "@/api/householdApi";
 import useHousehold from "@/hooks/useHousehold";
 
@@ -12,17 +16,17 @@ type Props = {
 
 function HouseholdCard({ household }: Props) {
   const [copied, setCopied] = useState(false);
-
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [newName, setNewName] = useState(household.name);
   const { fetchAllHouseholds } = useHousehold();
-
   const HouseholdApi = useMemo(householdApi, []);
+  const { toast } = useToast();
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(household.inviteCode);
       setCopied(true);
-
-      // Reset after 2s
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy: ", err);
@@ -30,46 +34,155 @@ function HouseholdCard({ household }: Props) {
   };
 
   const handleDelete = async () => {
-    await HouseholdApi.deleteCascated(household.householdId);
-    await fetchAllHouseholds();
-    //TODO: implement a confirmation dialog before deleting, cuz we are hard deleting the household along with expenses, chores, inventoryItems etc.
-    // Optionally, show counts of deleted items: dummy response in householdApi.ts
+    setIsDeleteOpen(false);
+    try {
+      await HouseholdApi.deleteCascated(household.householdId);
+      toast({
+        title: "Household deleted",
+        description: "The household and all related data have been successfully deleted.",
+      });
+      setTimeout(() => {
+        fetchAllHouseholds();
+      }, 100);
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete household. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const InviteCodeButton = () => (
-    <Button
-      onClick={handleCopy}
-      className={`w-full ${copied ? "border-green-600 text-green-700" : ""}`}
-      variant="outline"
-      size="sm"
-    >
-      {copied ? <ClipboardCheck className="text-green-700" /> : <Clipboard />}
-      Invite Code
-    </Button>
-  );
+  const handleEdit = async () => {
+    console.log('Edit clicked', newName);
+    console.log('Household ID:', household.householdId);
+    if (!newName.trim()) {
+      alert('Please enter a household name');
+      return;
+    }
+    try {
+      const result = await HouseholdApi.update(household.householdId, { name: newName });
+      console.log('Update result:', result);
+      await fetchAllHouseholds();
+      setIsEditOpen(false);
+    } catch (error: any) {
+      console.error('Full error:', error);
+      console.error('Error response:', error?.response);
+      console.error('Error data:', error?.response?.data);
+      alert(error?.response?.data?.message || error?.message || 'Failed to update household name');
+    }
+  };
 
   return (
-    <Card className="w-full pt-2 md:w-[18rem]">
-      <CardHeader>
-        <CardTitle className="px-2 pb-1 shadow-2xs items-center inline-flex justify-between">
-          <span className="font-medium text-lg truncate">{household.name}</span>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="text-red-600 hover:bg-red-100"
-            onClick={handleDelete}
-          >
-            <Trash2Icon />
-          </Button>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-2 md:grid-cols-1 gap-3">
-        <Button className="w-full" variant="outline" size="sm">
-          <Edit3 />
-          Edit(TBD)
+    <Card className="group bg-white/90 backdrop-blur-sm border border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 hover:scale-105 overflow-hidden w-full">
+      <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+      <CardContent className="p-6 overflow-hidden">
+        <div className="flex items-start justify-between mb-4 gap-2">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
+              <Home className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{household.name}</h3>
+              <p className="text-[10px] text-gray-500">Active household</p>
+            </div>
+          </div>
+          <div className="flex gap-1 flex-shrink-0">
+            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer transition-colors"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Household</DialogTitle>
+                  <DialogDescription>
+                    Change the name of your household
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">Household Name</Label>
+                    <Input
+                      id="name"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Enter household name"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)} className="cursor-pointer">
+                    Cancel
+                  </Button>
+                  <Button type="button" onClick={handleEdit} className="cursor-pointer">Save Changes</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-red-600">
+                    <AlertTriangle className="w-5 h-5" />
+                    Delete Household
+                  </DialogTitle>
+                  <DialogDescription className="pt-2">
+                    Are you sure you want to delete <strong>{household.name}</strong>?
+                    <br /><br />
+                    This action cannot be undone. All related data will be permanently deleted:
+                    <ul className="list-disc list-inside mt-2 space-y-1">
+                      <li>All expenses</li>
+                      <li>All chores</li>
+                      <li>All inventory items</li>
+                      <li>All household members</li>
+                    </ul>
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button type="button" variant="outline" onClick={() => setIsDeleteOpen(false)} className="cursor-pointer">
+                    Cancel
+                  </Button>
+                  <Button type="button" variant="destructive" onClick={handleDelete} className="cursor-pointer">
+                    Delete Household
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </div>
+        
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 mb-3 shadow-inner">
+          <div className="text-[10px] text-gray-600 mb-1 font-medium">Invite Code</div>
+          <div className="font-mono text-base font-bold text-gray-900">{household.inviteCode}</div>
+        </div>
+        
+        <Button
+          onClick={handleCopy}
+          variant="outline"
+          size="sm"
+          className={`w-full cursor-pointer transition-all duration-300 text-xs ${copied ? "text-green-600 border-green-300 bg-green-50" : "hover:bg-blue-50 hover:border-blue-300"}`}
+        >
+          {copied ? (
+            <><ClipboardCheck className="w-3 h-3 mr-1" />Copied!</>
+          ) : (
+            <><Clipboard className="w-3 h-3 mr-1" />Copy Code</>
+          )}
         </Button>
-        <InviteCodeButton />
       </CardContent>
     </Card>
   );

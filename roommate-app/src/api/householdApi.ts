@@ -22,10 +22,19 @@ const householdApi = () => {
     return { data, status };
   };
 
+  const update = async (householdId: string, updateData: { name: string }) => {
+    const { data, status } = await api.post(`/household/update`, {
+      householdId,
+      ...updateData
+    });
+    return { data, status };
+  };
+
   return {
     fetchAll,
     create,
     deleteCascated,
+    update,
   };
 };
 

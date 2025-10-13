@@ -15,4 +15,18 @@ export class HouseholdMemberController {
       data: data,
     });
   }
+
+  static async getAllHouseholdMembers(request: Request, response: Response) {
+    const { householdId } = request.params;
+
+    const { status, message, data } =
+      await HouseholdMemberService.getHouseholdMembersByHouseholdId(
+        householdId
+      );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
 }

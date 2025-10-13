@@ -6,12 +6,27 @@ import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
 import expenseApi from "@/api/expenseApi";
+import useExpense from "@/hooks/useExpense";
+import householdMemberApi from "@/api/householdMemberApi";
+
+type MemberOptions = { key: string; value: string }[];
 
 function Expenses() {
-  const { households, fetchAllHouseholds, selectedHousehold } = useHousehold();
-  const [expenses, setExpenses] = useState<any[]>([]);
+  const {
+    households,
+    fetchAllHouseholds,
+    selectedHousehold,
+    householdMembers,
+    setHouseholdMembers,
+  } = useHousehold();
 
+  const { expenses, setExpenses } = useExpense();
+
+  const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
+
+  const [householdMemberOptions, setHouseholdMemberOptions] =
+    useState<MemberOptions>([{ key: "", value: "" }]);
 
   const getExpenses = async () => {
     const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
@@ -26,21 +41,48 @@ function Expenses() {
     try {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
+        const expenseList = expenses?.filter(
+          (expense) => expense.expenseId !== expenseId
+        );
+
+        setExpenses(expenseList);
         getExpenses();
-        console.log("Deleted Expense :: ", deletedExpense);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
+  const getHouseholdMembers = async (householdId: string) => {
+    const householdMemberRecords =
+      await HouseholdMemberApi.getAllHouseholdMembers(householdId);
+
+    if (householdMemberRecords && householdMemberRecords.length > 0) {
+      mapHouseholdMembers(householdMemberRecords);
+
+      setHouseholdMembers([...householdMemberRecords]);
+    }
+  };
+
+  const mapHouseholdMembers = (householdMembers: any) => {
+    const mappedHouseholdMembers = householdMembers.map((member: any) => ({
+      value: member.user.name,
+      key: member.userId,
+    }));
+
+    setHouseholdMemberOptions(mappedHouseholdMembers);
+  };
+
   useEffect(() => {
     getExpenses();
+    getHouseholdMembers(selectedHousehold?.key!);
   }, [selectedHousehold?.key]);
 
   useEffect(() => {
     fetchAllHouseholds();
   }, []);
+
+  useEffect(() => {}, [householdMembers]);
 
   const householdNames: HouseholdOptions[] = useMemo(
     () =>
@@ -58,6 +100,7 @@ function Expenses() {
       </div>
       <HouseholdSelector householdOptions={householdNames} />
       <AddExpenseSheet
+        householdMemberOptions={householdMemberOptions}
         selectedHousehold={selectedHousehold}
         getExpenses={getExpenses}
       />
@@ -66,10 +109,7 @@ function Expenses() {
       {!selectedHousehold?.value ? (
         <SelectHouseholdAlert />
       ) : (
-        <ExpenseViewer
-          expenses={expenses}
-          handleDeleteExpense={handleDeleteExpense}
-        />
+        <ExpenseViewer handleDeleteExpense={handleDeleteExpense} />
       )}
     </section>
   );
