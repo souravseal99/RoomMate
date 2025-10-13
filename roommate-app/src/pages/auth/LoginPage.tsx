@@ -21,7 +21,7 @@ export default function LoginPage() {
         isAuthenticated
       );
       if (token) {
-        login(token, res.data?.email ?? null);
+        login(token, res.data?.email ?? null, res.data?.name ?? null);
       }
     } catch (e: any) {
       console.error("Login failed: ", e);

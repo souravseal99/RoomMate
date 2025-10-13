@@ -49,6 +49,12 @@ export class AuthController {
   static async refresh(request: Request, response: Response) {
     const refreshToken = request.cookies.refreshToken;
 
+    if (!refreshToken) {
+      return response.status(StatusCodes.UNAUTHORIZED).json({
+        message: "No refresh token provided",
+      });
+    }
+
     console.log("Received refresh token:", "..." + refreshToken.slice(-9, -1));
 
     const { status, data, message } = await AuthService.refresh(refreshToken);

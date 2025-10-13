@@ -28,4 +28,18 @@ export class HouseholdMemberRepo {
       },
     });
   }
+
+  static async getByHouseholdId(householdId: string) {
+    return await prisma.householdMember.findMany({
+      where: { householdId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+  }
 }

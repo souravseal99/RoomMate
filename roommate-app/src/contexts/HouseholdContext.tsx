@@ -11,6 +11,8 @@ type HouseholdContextType = {
   fetchAllHouseholds: () => void;
   selectedHousehold: HouseholdOptions | null;
   setSelectedHousehold: (selectedOption: HouseholdOptions | null) => void;
+  householdMembers: any[]; //TODO - add type to this
+  setHouseholdMembers: (members: any[]) => void;
 };
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(
@@ -21,6 +23,7 @@ export default function HouseholdProvider({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
+  const [householdMembers, setHouseholdMembers] = useState<any[]>([]); //TODO - add type to this
 
   const [selectedHousehold, setSelectedHousehold] =
     useState<HouseholdOptions | null>(null);
@@ -45,6 +48,8 @@ export default function HouseholdProvider({
       fetchAllHouseholds,
       selectedHousehold,
       setSelectedHousehold,
+      householdMembers,
+      setHouseholdMembers,
     }),
     [households, selectedHousehold]
   );
