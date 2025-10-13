@@ -23,7 +23,11 @@ class App {
     this.middlewares();
 
     // CORS configuration
-    const allowedOrigins = ["http://localhost:5173", "http://127.0.0.1:5173"];
+    const allowedOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://special-computing-machine-v66qg9w9xqv2w4xj-5173.app.github.dev"
+  ];
 
     this.app.use(
       cors({

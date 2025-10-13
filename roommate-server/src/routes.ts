@@ -5,6 +5,7 @@ import householdRouter from "@src/households/household.routes";
 import expenseRouter from "@src/expenses/expense.routes";
 import choreRouter from "@src/chore/chore.routes";
 import inventoryRouter from "@src/inventory/inventory.routes";
+import dashboardRouter from "@src/dashboard/dashboard.routes";
 
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);
@@ -28,5 +29,7 @@ routes.use("/expense", expenseRouter);
 routes.use("/chore", choreRouter);
 
 routes.use("/inventory", inventoryRouter);
+
+routes.use("/dashboard", dashboardRouter);
 
 export default routes;
