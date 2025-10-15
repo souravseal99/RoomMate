@@ -162,7 +162,7 @@ Step 5: follow the steps and create the DB
 ### Backend Setup
 
 ```bash
-cd backend
+cd roommate-server
 cp .env.example .env   # configure DATABASE_URL and JWT secrets
 
 npm install
@@ -173,7 +173,7 @@ npm run dev
 ### Frontend Setup
 
 ```bash
-cd frontend
+cd roommate-app
 cp .env.example .env   # configure VITE_API_URL
 
 npm install
