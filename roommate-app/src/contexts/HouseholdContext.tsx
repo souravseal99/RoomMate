@@ -13,6 +13,7 @@ type HouseholdContextType = {
   setSelectedHousehold: (selectedOption: HouseholdOptions | null) => void;
   householdMembers: any[]; //TODO - add type to this
   setHouseholdMembers: (members: any[]) => void;
+  joinHousehold: (inviteCode: string) => Promise<any>;
 };
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(
@@ -41,6 +42,10 @@ export default function HouseholdProvider({
       setSelectedHousehold(householdRecords[0]?.householdId);
   };
 
+  const joinHousehold = async (inviteCode: string) => {
+    return HouseholdApi.join(inviteCode);
+  };
+
   const providerValues = useMemo(
     () => ({
       households,
@@ -50,6 +55,7 @@ export default function HouseholdProvider({
       setSelectedHousehold,
       householdMembers,
       setHouseholdMembers,
+      joinHousehold,
     }),
     [households, selectedHousehold]
   );
