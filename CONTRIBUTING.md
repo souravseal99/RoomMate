@@ -56,8 +56,14 @@ See [README.md](README.md) for the full structure. In short:
 
    - Check if the issue already exists.
    - If not, open a new issue describing the bug or feature.
+  
+2. **Pull the latest develop Branch**
 
-2. **Work on a Branch**
+   ```bash
+   git pull origin develop
+   ```
+
+2. **Work on a Branch created from the latest develop branch**
 
    ```bash
    git checkout -b feature/your-feature
