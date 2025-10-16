@@ -14,7 +14,7 @@ export class DashboardRepo {
                 assignedToId: userId,
                 completed: false,
                 nextDue: {
-                    lt: new Date()
+                    gt: new Date()
                 }
             },
         });
