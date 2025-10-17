@@ -77,10 +77,17 @@ export default function AddExpenseForm({
         getExpenses();
         return response;
       });
-      toast.success("Expense added successfully!", {
-        position: "top-center",
-      });
-      console.log("Add Expense resp: ", resp);
+      if (resp && resp.status == 200) {
+        toast.success("Expense added successfully!", {
+          position: "top-center",
+        });
+      } else {
+        // Handle unexpected or failed response
+        toast.error("Failed to add expense. Please try again.", {
+          position: "top-center",
+        });
+        console.error("Unexpected response:", resp);
+      }
     } catch (error: unknown) {
       toast.error("Failed to add expense. Please try again.", {
         position: "top-center",
