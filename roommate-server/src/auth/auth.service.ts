@@ -8,10 +8,11 @@ import {
 } from "@common/utils/jwtHandler";
 import { User } from "@generated/prisma";
 import { ApiResponse } from "@common/utils/ApiResponse";
-import { BCRYPT_SALT_ROUNDS } from "@common/config";
+import { BCRYPT_SALT_ROUNDS, JWT_REFRESH_EXPIRES_IN } from "@common/config";
 import { RegisterUserResponse } from "@src/auth/types/RegisterUserResponse";
 import { UserLoginResponse } from "@src/auth/types/UserLoginResponse";
 import { UserRepo } from "@src/users/user.repo";
+import { SessionRepo } from "./session.repo";
 
 export class AuthService {
   private static prisma = prisma;
@@ -19,7 +20,8 @@ export class AuthService {
   static async registerUser(
     name: string,
     email: string,
-    password: string
+    password: string,
+    sessionId: string
   ): Promise<RegisterUserResponse | ApiResponse> {
     try {
       const existingUser: User | null = await UserRepo.getUserByEmail(email);
@@ -45,14 +47,14 @@ export class AuthService {
         userId: createdUser.userId,
       });
 
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      await SessionRepo.createSession(sessionId, createdUser.userId, refreshToken, expiresAt);
+
       return ApiResponse.success(
         {
-          responseData: {
-            name: createdUser.name,
-            email: createdUser.email,
-            accessToken: accessToken,
-          },
-          refreshToken: refreshToken,
+          name: createdUser.name,
+          email: createdUser.email,
+          accessToken: accessToken,
         },
         "User successfully created"
       );
@@ -63,7 +65,8 @@ export class AuthService {
 
   static async login(
     email: string,
-    password: string
+    password: string,
+    sessionId: string
   ): Promise<UserLoginResponse | ApiResponse> {
     try {
       const user: User | null = await UserRepo.getUserByEmail(email);
@@ -80,14 +83,20 @@ export class AuthService {
         userId: user.userId,
       });
 
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      
+      // Delete existing session if any, then create new one
+      try {
+        await SessionRepo.deleteSession(sessionId);
+      } catch (e) {}
+      
+      await SessionRepo.createSession(sessionId, user.userId, refreshToken, expiresAt);
+
       return ApiResponse.success(
         {
-          responseData: {
-            accessToken: accessToken,
-            name: user.name,
-            email: user.email,
-          },
-          refreshToken: refreshToken,
+          accessToken: accessToken,
+          name: user.name,
+          email: user.email,
         },
         `Welcome to Roommate ${user.name}`
       );
@@ -96,7 +105,7 @@ export class AuthService {
     }
   }
 
-  static async refresh(refreshToken: any) {
+  static async refresh(refreshToken: any, expectedUserId: string) {
     try {
       const decodedRefreshToken = await validateRefreshToken(refreshToken);
 
@@ -106,6 +115,14 @@ export class AuthService {
 
       if (!userId || userId === "")
         ApiResponse.error("Unable to get the user id from the token");
+
+      // Validate session belongs to the user
+      if (userId !== expectedUserId) {
+        return ApiResponse.error(
+          "Session mismatch - please log in again",
+          StatusCodes.UNAUTHORIZED
+        );
+      }
 
       const user = await UserRepo.getUserById(userId);
       if (!user) return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);

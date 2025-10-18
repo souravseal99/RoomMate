@@ -30,11 +30,17 @@ const householdApi = () => {
     return { data, status };
   };
 
+  const join = async (inviteCode: string) => {
+    const { data, status } = await api.post(`/household/join/${inviteCode}`);
+    return { data, status };
+  };
+
   return {
     fetchAll,
     create,
     deleteCascated,
     update,
+    join,
   };
 };
 

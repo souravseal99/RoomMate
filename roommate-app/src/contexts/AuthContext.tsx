@@ -35,6 +35,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       try {
         setReady(false);
 
+        // Only try refresh if session exists
+        if (!TokenStore.hasSession()) {
+          setReady(true);
+          return;
+        }
+
         const res = await api.get("/auth/refresh");
         const accessToken = res?.data?.accessToken;
         const userEmail = res?.data?.email;
@@ -58,7 +64,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         setName(null);
         TokenStore.setToken(null);
       }
-      setReady(true); // Only set ready after refresh attempt
+      setReady(true);
     };
 
     tryRefresh();
@@ -75,6 +81,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
   //TODO - Implement logout API call
   const logout = async () => {
+    TokenStore.clearSession();
     setAccessToken(null);
     setEmail(null);
     setName(null);

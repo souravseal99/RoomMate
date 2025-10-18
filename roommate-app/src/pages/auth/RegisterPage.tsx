@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthForm } from "../../components/auth/AuthForm";
 import { registerUser } from "../../api/authApi";
 import useAuth from "@/hooks/useAuth";
+import TokenStore from "@/lib/TokenStore";
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -10,6 +11,8 @@ export default function RegisterPage() {
 
   const onSubmit = async (values: any) => {
     try {
+      // Ensure session ID exists before register
+      TokenStore.getSessionId();
       const res = await registerUser(values);
       const token = res.data?.accessToken;
       if (token) {
