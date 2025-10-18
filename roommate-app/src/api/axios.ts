@@ -8,11 +8,14 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Attach access token
+// Attach access token and session ID
 api.interceptors.request.use((config) => {
   const accessToken = TokenStore.getToken();
-
+  
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+  if (TokenStore.hasSession()) {
+    config.headers['X-Session-Id'] = TokenStore.getSessionId();
+  }
 
   return config;
 });
@@ -36,6 +39,7 @@ api.interceptors.response.use(
         TokenStore.setToken(res.data.accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        originalRequest.headers['X-Session-Id'] = TokenStore.getSessionId();
 
         return api(originalRequest);
       } catch (e) {

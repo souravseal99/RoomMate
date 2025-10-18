@@ -4,6 +4,7 @@ import { AuthForm } from "../../components/auth/AuthForm";
 import { loginUser } from "../../api/authApi";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
+import TokenStore from "@/lib/TokenStore";
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -11,6 +12,8 @@ export default function LoginPage() {
 
   const onSubmit = async (values: any) => {
     try {
+      // Ensure session ID exists before login
+      TokenStore.getSessionId();
       const res = await loginUser(values);
 
       const token = res.data?.accessToken;
