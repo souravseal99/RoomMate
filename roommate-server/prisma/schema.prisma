@@ -27,6 +27,19 @@ model User {
   expenses   Expense[]         @relation("UserExpensesPaid")
   chores     Chore[]           @relation("UserChoresAssigned")
   splits     ExpenseSplit[]
+  sessions   Session[]
+}
+
+/// User sessions for multi-tab authentication
+model Session {
+  sessionId    String   @id @map("session_id")
+  userId       String   @map("user_id")
+  refreshToken String   @map("refresh_token")
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime @map("expires_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }
 
 /// Household (shared living group)
