@@ -62,6 +62,7 @@ export class ExpenseController {
     return response.status(status).json({
       message: message,
       data: data,
+      status,
     });
   }
 }

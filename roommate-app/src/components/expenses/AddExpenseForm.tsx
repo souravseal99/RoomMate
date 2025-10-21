@@ -77,7 +77,7 @@ export default function AddExpenseForm({
         getExpenses();
         return response;
       });
-      if (resp && resp.status == 200) {
+      if (resp && resp.status == 201) {
         toast.success("Expense added successfully!", {
           position: "top-center",
         });
