@@ -6,6 +6,7 @@ export default interface ExpenseDto {
   paidById: string;
   amount: number;
   description?: string;
+  category?: string;
   paidBy?: UserDto;
   splits?: ExpenseSplitDto[];
 }

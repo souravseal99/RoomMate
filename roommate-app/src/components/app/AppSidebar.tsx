@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavUserDummy } from "./SidebarFooterDummy";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 // Menu items.
 const items = [
@@ -76,6 +77,9 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <div className="flex items-center justify-between p-2">
+          <ThemeToggle />
+        </div>
         <NavUserDummy
           user={{
             name: name || "User",

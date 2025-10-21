@@ -75,12 +75,23 @@ enum Role {
   ADMIN
 }
 
+enum ExpenseCategory {
+  GROCERIES
+  UTILITIES
+  RENT
+  ENTERTAINMENT
+  TRANSPORTATION
+  HEALTHCARE
+  OTHER
+}
+
 /// Expenses tracked in a household
 model Expense {
-  expenseId   String   @id @default(uuid()) @map("expense_id")
+  expenseId   String          @id @default(uuid()) @map("expense_id")
   description String
   amount      Float
-  createdAt   DateTime @default(now())
+  category    ExpenseCategory @default(OTHER)
+  createdAt   DateTime        @default(now())
 
   householdId String @map("household_id")
   paidById    String @map("paid_by_id")

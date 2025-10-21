@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid';
 
 export default class TokenStore {
   private static accessToken: string | null = null;
-  private static readonly SESSION_KEY = 'roommate_session_id';
+  private static readonly SESSION_KEY = import.meta.env.VITE_SESSION_KEY || 'rm_session';
 
   static getToken() {
     return this.accessToken;
