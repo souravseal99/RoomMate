@@ -38,8 +38,14 @@ export class ExpenseRepo {
   }
 
   static async delete(expenseId: string) {
-    return await prisma.expense.delete({
-      where: { expenseId: expenseId },
+    return await prisma.$transaction(async (tx) => {
+      await tx.expenseSplit.deleteMany({
+        where: { expenseId: expenseId },
+      });
+
+      return await tx.expense.delete({
+        where: { expenseId: expenseId },
+      });
     });
   }
 

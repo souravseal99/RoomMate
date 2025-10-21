@@ -29,24 +29,23 @@ function Expenses() {
     useState<MemberOptions>([{ key: "", value: "" }]);
 
   const getExpenses = async () => {
+    if (!selectedHousehold?.key) {
+      setExpenses([]);
+      return;
+    }
     const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
       selectedHousehold?.key
     );
-
-    if (expensesByHousehold && expensesByHousehold.length > 0)
-      setExpenses([...expensesByHousehold]);
+    setExpenses(expensesByHousehold || []);
   };
 
   const handleDeleteExpense = async (expenseId: string) => {
     try {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
-        const expenseList = expenses?.filter(
-          (expense) => expense.expenseId !== expenseId
+        setExpenses((prevExpenses) =>
+          prevExpenses.filter((expense) => expense.expenseId !== expenseId)
         );
-
-        setExpenses(expenseList);
-        getExpenses();
       }
     } catch (error) {
       console.error(error);
