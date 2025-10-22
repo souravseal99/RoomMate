@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -25,6 +25,8 @@ export default function AddExpenseSheet({
   householdMemberOptions,
   getExpenses,
 }: Props) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {}, [selectedHousehold]);
 
   return (
@@ -45,14 +47,20 @@ export default function AddExpenseSheet({
           <AddExpenseForm
             householdMemberOptions={householdMemberOptions}
             getExpenses={getExpenses}
+            setIsSubmitting={setIsSubmitting}
           />
         ) : (
           <SelectHouseholdAlert />
         )}
 
         <SheetFooter>
-          <Button form="add-expense-form" type="submit">
-            Save changes
+          <Button
+            form="add-expense-form"
+            type="submit"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+          >
+            {isSubmitting ? "Saving…" : "Save changes"}
           </Button>
           <SheetClose asChild>
             <Button variant="outline">Close</Button>
