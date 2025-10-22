@@ -85,7 +85,7 @@ function HouseholdCard({ household }: Props) {
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{household.name}</h3>
-              <p className="text-[10px] text-gray-500">Active household</p>
+              <p className="text-[10px] text-gray-500">{household.members?.length || 0} member{(household.members?.length || 0) !== 1 ? 's' : ''}</p>
             </div>
           </div>
           <div className="flex gap-1 flex-shrink-0">
@@ -144,6 +144,8 @@ function HouseholdCard({ household }: Props) {
                   <DialogDescription className="pt-2">
                     Are you sure you want to delete <strong>{household.name}</strong>?
                     <br /><br />
+                    <strong className="text-red-600">⚠️ This will affect all {household.members?.length || 0} member(s) of this household.</strong>
+                    <br /><br />
                     This action cannot be undone. All related data will be permanently deleted:
                     <ul className="list-disc list-inside mt-2 space-y-1">
                       <li>All expenses</li>
@@ -165,6 +167,13 @@ function HouseholdCard({ household }: Props) {
             </Dialog>
           </div>
         </div>
+        
+        {household.members && household.members.length > 0 && (
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 mb-3 shadow-inner">
+            <div className="text-[10px] text-gray-600 mb-1 font-medium">Created by</div>
+            <div className="text-sm font-semibold text-gray-900 truncate">{household.members[0]?.user?.name || 'Unknown'}</div>
+          </div>
+        )}
         
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 mb-3 shadow-inner">
           <div className="text-[10px] text-gray-600 mb-1 font-medium">Invite Code</div>

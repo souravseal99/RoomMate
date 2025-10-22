@@ -3,8 +3,8 @@ import type { CreateExpenseRequestType } from "@/types/expenseTypes";
 
 const expenseApi = () => {
   const create = async (requestBody: CreateExpenseRequestType) => {
-    const { data } = await api.post("/expense/add", requestBody);
-    return data;
+    const { data, status } = await api.post("/expense/add", requestBody);
+    return { data, status };
   };
 
   const fetchByHouseholdId = async (householdId: string | undefined) => {

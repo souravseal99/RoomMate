@@ -27,6 +27,8 @@ routes.use("/household", householdRouter);
 
 routes.use("/household-member", hosueholdMemberRouter);
 
+routes.use("/household-member", hosueholdMemberRouter);
+
 routes.use("/expense", expenseRouter);
 
 routes.use("/chore", choreRouter);
