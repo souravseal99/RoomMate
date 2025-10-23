@@ -4,9 +4,10 @@ import CreateHouseholdSheet from "@/components/households/CreateHouseholdForm";
 import JoinHouseholdForm from "@/components/households/JoinHouseholdForm";
 import useHousehold from "@/hooks/useHousehold";
 import { Home } from "lucide-react";
+import HouseholdCardSkeleton from "@/components/households/HouseholdCardSkeleton";
 
 function Households() {
-  const { households, fetchAllHouseholds } = useHousehold();
+  const { households, fetchAllHouseholds, isLoading } = useHousehold();
 
   useEffect(() => {
     fetchAllHouseholds();
@@ -45,7 +46,13 @@ function Households() {
       </div>
       <div className="flex-1 overflow-auto p-4 sm:p-6 bg-white">
         <div className="w-full">
-          {households.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <HouseholdCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : households.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
               {sortedHouseholds.map((household, index) => (
                 <div key={household.householdId} className="animate-in fade-in slide-in-from-bottom-5 duration-700" style={{animationDelay: `${index * 150}ms`}}>
