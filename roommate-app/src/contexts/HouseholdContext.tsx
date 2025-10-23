@@ -35,7 +35,6 @@ export default function HouseholdProvider({
   const HouseholdApi = useMemo(householdApi, []);
 
   const fetchAllHouseholds = async () => {
-    setIsLoading(true);
     try {
       const householdRecords = await HouseholdApi.fetchAll();
 
@@ -46,7 +45,9 @@ export default function HouseholdProvider({
     } catch (error) {
       console.error("Error fetching households:", error);
     } finally {
-      setIsLoading(false);
+      if (isLoading) {
+        setIsLoading(false);
+      }
     }
   };
 
