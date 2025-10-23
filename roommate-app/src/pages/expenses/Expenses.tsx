@@ -20,7 +20,7 @@ function Expenses() {
     setHouseholdMembers,
   } = useHousehold();
 
-  const { expenses, setExpenses } = useExpense();
+  const { expenses, setExpenses, setIsLoading } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
@@ -33,10 +33,18 @@ function Expenses() {
       setExpenses([]);
       return;
     }
-    const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
-      selectedHousehold?.key
-    );
-    setExpenses(expensesByHousehold || []);
+    setIsLoading(true);
+    try {
+      const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
+        selectedHousehold?.key
+      );
+      setExpenses(expensesByHousehold || []);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      setExpenses([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDeleteExpense = async (expenseId: string) => {
