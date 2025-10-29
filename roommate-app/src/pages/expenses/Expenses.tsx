@@ -20,7 +20,7 @@ function Expenses() {
     setHouseholdMembers,
   } = useHousehold();
 
-  const { expenses, setExpenses, setIsLoading } = useExpense();
+  const { setExpenses, setIsLoading } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
@@ -52,7 +52,7 @@ function Expenses() {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
         setExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.expenseId !== expenseId)
+          prevExpenses?.filter((expense) => expense.expenseId !== expenseId)
         );
       }
     } catch (error) {
