@@ -13,6 +13,7 @@ type HouseholdContextType = {
   setSelectedHousehold: (selectedOption: HouseholdOptions | null) => void;
   householdMembers: any[]; //TODO - add type to this
   setHouseholdMembers: (members: any[]) => void;
+  isLoading?: boolean;
 };
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(
@@ -24,6 +25,7 @@ export default function HouseholdProvider({
 }: Readonly<{ children: React.ReactNode }>) {
   const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
   const [householdMembers, setHouseholdMembers] = useState<any[]>([]); //TODO - add type to this
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const [selectedHousehold, setSelectedHousehold] =
     useState<HouseholdOptions | null>(null);
@@ -33,12 +35,20 @@ export default function HouseholdProvider({
   const HouseholdApi = useMemo(householdApi, []);
 
   const fetchAllHouseholds = async () => {
-    const householdRecords = await HouseholdApi.fetchAll();
+    try {
+      const householdRecords = await HouseholdApi.fetchAll();
 
-    if (householdRecords) setHouseholds(householdRecords);
+      if (householdRecords) setHouseholds(householdRecords);
 
-    if (householdRecords[0]?.householdId && selectedHousehold === null)
-      setSelectedHousehold(householdRecords[0]?.householdId);
+      if (householdRecords[0]?.householdId && selectedHousehold === null)
+        setSelectedHousehold(householdRecords[0]?.householdId);
+    } catch (error) {
+      console.error("Error fetching households:", error);
+    } finally {
+      if (isLoading) {
+        setIsLoading(false);
+      }
+    }
   };
 
   const providerValues = useMemo(
@@ -50,8 +60,9 @@ export default function HouseholdProvider({
       setSelectedHousehold,
       householdMembers,
       setHouseholdMembers,
+      isLoading
     }),
-    [households, selectedHousehold]
+    [households, selectedHousehold, isLoading, householdMembers]
   );
 
   return (

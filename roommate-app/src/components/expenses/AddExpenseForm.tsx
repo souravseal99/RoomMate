@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
@@ -71,13 +72,28 @@ export default function AddExpenseForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    const resp = await ExpenseApi.create(formData).then((response) => {
-      getExpenses();
-      return response;
-    });
-
-    // TODO: Show success or error to user
-    console.log("Add Expense resp: ", resp);
+    try {
+      const resp = await ExpenseApi.create(formData).then((response) => {
+        getExpenses();
+        return response;
+      });
+      if (resp && resp.status == 201) {
+        toast.success("Expense added successfully!", {
+          position: "top-center",
+        });
+      } else {
+        // Handle unexpected or failed response
+        toast.error("Failed to add expense. Please try again.", {
+          position: "top-center",
+        });
+        console.error("Unexpected response:", resp);
+      }
+    } catch (error: unknown) {
+      toast.error("Failed to add expense. Please try again.", {
+        position: "top-center",
+      });
+      console.error("Error adding expense:", error);
+    }
   };
 
   const handleSelectPayer = (payerId: string) => {

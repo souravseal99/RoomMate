@@ -27,6 +27,19 @@ export class HouseholdRepository {
   static async getHouseholdsByUser(userId: string) {
     return await prisma.household.findMany({
       where: { members: { some: { userId } } },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
