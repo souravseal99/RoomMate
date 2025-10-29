@@ -21,4 +21,5 @@ export interface HouseholdResponse {
 export interface HouseholdOptions {
   key: string;
   value: string;
+  members: HouseholdMember[];
 }

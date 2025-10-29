@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdOptions } from "@/types/householdTypes";
 import { useEffect } from "react";
 import { Home, Users } from "lucide-react";
 import { cn } from "@/utils/utils";
@@ -58,6 +58,7 @@ export default function HouseholdSelector(props: Props) {
       setSelectedHousehold({
         key: selectedHousehold.key,
         value: selectedHousehold.value,
+        members: selectedHousehold.members,
       });
     }
   };
@@ -86,23 +87,23 @@ export default function HouseholdSelector(props: Props) {
             <div className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-md">
               <Users className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
             </div>
-            <SelectValue 
-              placeholder="Choose a household..." 
+            <SelectValue
+              placeholder="Choose a household..."
               className="text-sm font-medium"
             />
           </div>
         </SelectTrigger>
-        
+
         <SelectContent className={SELECT_CONTENT_STYLES}>
           <SelectGroup>
             <SelectLabel className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Available Households
             </SelectLabel>
-            
+
             {householdOptions && householdOptions.length > 0 ? (
               householdOptions.map((household, index) => (
-                <SelectItem 
-                  key={household.key} 
+                <SelectItem
+                  key={household.key}
                   value={household.value}
                   className={cn(
                     ...SELECT_ITEM_STYLES,
@@ -119,7 +120,7 @@ export default function HouseholdSelector(props: Props) {
                         {household.value}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Household ID: {household.key.slice(0, 8)}...
+                        Active Member(s): {household.members.length}
                       </div>
                     </div>
                   </div>

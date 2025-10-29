@@ -2,7 +2,7 @@ import { createContext, useEffect, useMemo, useState } from "react";
 import type {
   HouseholdOptions,
   HouseholdResponse,
-} from "@/types/hosueholdTypes";
+} from "@/types/householdTypes";
 import householdApi from "@/api/householdApi";
 
 type HouseholdContextType = {
@@ -30,7 +30,7 @@ export default function HouseholdProvider({
   const [selectedHousehold, setSelectedHousehold] =
     useState<HouseholdOptions | null>(null);
 
-  useEffect(() => {}, [selectedHousehold]);
+  useEffect(() => { }, [selectedHousehold]);
 
   const HouseholdApi = useMemo(householdApi, []);
 
