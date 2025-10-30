@@ -49,6 +49,19 @@ export class HouseholdRepository {
     });
   }
 
+  static async findNamesLikeByUser(userId: string, baseName: string) {
+    return await prisma.household.findMany({
+      where: {
+        members: { some: { userId: userId, role: Role.ADMIN } },
+        OR: [
+          { name: baseName },
+          { name: { startsWith: `${baseName} (` } },
+        ],
+      },
+      select: { name: true },
+    });
+  }
+
   static async delete(householdId: string) {
     return await prisma.$transaction([
       prisma.householdMember.deleteMany({ where: { householdId } }),
