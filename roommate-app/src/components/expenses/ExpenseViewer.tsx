@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/table";
 import { dateFormatterUtc, formatCurrency } from "@/utils/utils";
 import useExpense from "@/hooks/useExpense";
+import ExpenseTableSkeleton from "./ExpenseTableSkeleton";
 
 type ExpenseViewerProps = {
   handleDeleteExpense: (expenseId: string) => Promise<void>;
 };
 
 function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
-  const { expenses } = useExpense();
+  const { expenses, isLoading } = useExpense();
 
   const ExpenseTable = () => {
     return (
@@ -70,7 +71,9 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
 
   return (
     <div className="mx-3 mt-6">
-      {expenses && expenses?.length > 0 ? (
+      {isLoading ? (
+        <ExpenseTableSkeleton />
+      ) : expenses && expenses?.length > 0 ? (
         <ExpenseTable />
       ) : (
         <p className="m-5"> No expenses found</p>
