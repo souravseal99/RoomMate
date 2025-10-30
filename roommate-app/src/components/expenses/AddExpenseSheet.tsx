@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import AddExpenseForm from "./AddExpenseForm";
 import SelectHouseholdAlert from "./SelectHouseholdAlert";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdOptions } from "@/types/householdTypes";
 
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
@@ -25,7 +25,7 @@ export default function AddExpenseSheet({
   householdMemberOptions,
   getExpenses,
 }: Props) {
-  useEffect(() => {}, [selectedHousehold]);
+  useEffect(() => { }, [selectedHousehold]);
 
   return (
     <Sheet>

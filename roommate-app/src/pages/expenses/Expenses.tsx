@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import HouseholdSelector from "@/components/expenses/HouseholdSelector";
 import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdOptions } from "@/types/householdTypes";
 import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
@@ -52,7 +52,7 @@ function Expenses() {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
         setExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.expenseId !== expenseId)
+          prevExpenses?.filter((expense) => expense.expenseId !== expenseId)
         );
       }
     } catch (error) {
@@ -89,13 +89,14 @@ function Expenses() {
     fetchAllHouseholds();
   }, []);
 
-  useEffect(() => {}, [householdMembers]);
+  useEffect(() => { }, [householdMembers]);
 
   const householdNames: HouseholdOptions[] = useMemo(
     () =>
       households.map((household) => ({
         key: household.householdId,
         value: household.name,
+        members: household.members ?? [],
       })),
     [households]
   );
