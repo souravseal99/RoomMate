@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import HouseholdSelector from "@/components/expenses/HouseholdSelector";
 import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
+import type { HouseholdOptions } from "@/types/householdTypes";
 import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
@@ -20,7 +20,7 @@ function Expenses() {
     setHouseholdMembers,
   } = useHousehold();
 
-  const { expenses, setExpenses } = useExpense();
+  const { expenses, setExpenses, setIsLoading } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
@@ -29,24 +29,31 @@ function Expenses() {
     useState<MemberOptions>([{ key: "", value: "" }]);
 
   const getExpenses = async () => {
-    const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
-      selectedHousehold?.key
-    );
-
-    if (expensesByHousehold && expensesByHousehold.length > 0)
-      setExpenses([...expensesByHousehold]);
+    if (!selectedHousehold?.key) {
+      setExpenses([]);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
+        selectedHousehold?.key
+      );
+      setExpenses(expensesByHousehold || []);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      setExpenses([]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDeleteExpense = async (expenseId: string) => {
     try {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
-        const expenseList = expenses?.filter(
-          (expense) => expense.expenseId !== expenseId
+        setExpenses((prevExpenses) =>
+          prevExpenses?.filter((expense) => expense.expenseId !== expenseId)
         );
-
-        setExpenses(expenseList);
-        getExpenses();
       }
     } catch (error) {
       console.error(error);
@@ -82,13 +89,14 @@ function Expenses() {
     fetchAllHouseholds();
   }, []);
 
-  useEffect(() => {}, [householdMembers]);
+  useEffect(() => { }, [householdMembers]);
 
   const householdNames: HouseholdOptions[] = useMemo(
     () =>
       households.map((household) => ({
         key: household.householdId,
         value: household.name,
+        members: household.members ?? [],
       })),
     [households]
   );

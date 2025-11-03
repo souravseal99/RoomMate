@@ -1,14 +1,23 @@
 import { useEffect } from "react";
 import HouseholdCard from "@/components/households/HouseholdCard";
 import CreateHouseholdSheet from "@/components/households/CreateHouseholdForm";
+import JoinHouseholdForm from "@/components/households/JoinHouseholdForm";
 import useHousehold from "@/hooks/useHousehold";
 import { Home } from "lucide-react";
+import HouseholdCardSkeleton from "@/components/households/HouseholdCardSkeleton";
 
 function Households() {
-  const { households, fetchAllHouseholds } = useHousehold();
+  const { households, fetchAllHouseholds, isLoading } = useHousehold();
 
   useEffect(() => {
     fetchAllHouseholds();
+    
+    // Auto-refresh every 10 seconds to show updates from other users
+    const interval = setInterval(() => {
+      fetchAllHouseholds();
+    }, 10000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const sortedHouseholds = [...households].sort((a, b) => 
@@ -19,7 +28,7 @@ function Households() {
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       
       <div className="flex-shrink-0 p-4 sm:p-6 border-b bg-white/80 backdrop-blur-sm">
-        <div className="w-full px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="w-full px-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
           <div className="flex-1">
             <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
               <Home className="w-5 h-5 sm:w-7 sm:h-7 text-blue-600" />
@@ -27,12 +36,23 @@ function Households() {
             </h1>
             <p className="text-xs sm:text-sm text-gray-600 mt-1">Manage your shared living spaces</p>
           </div>
-          {households.length > 0 && <CreateHouseholdSheet />}
+          {households.length > 0 && (
+            <div className="flex gap-2 w-full lg:w-auto">
+              <JoinHouseholdForm />
+              <CreateHouseholdSheet />
+            </div>
+          )}
         </div>
       </div>
       <div className="flex-1 overflow-auto p-4 sm:p-6 bg-white">
         <div className="w-full">
-          {households.length > 0 ? (
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <HouseholdCardSkeleton key={index} />
+              ))}
+            </div>
+          ) : households.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
               {sortedHouseholds.map((household, index) => (
                 <div key={household.householdId} className="animate-in fade-in slide-in-from-bottom-5 duration-700" style={{animationDelay: `${index * 150}ms`}}>
@@ -47,8 +67,11 @@ function Households() {
                   <Home className="w-12 h-12 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">No households yet</h3>
-                <p className="text-gray-600 mb-6">Create your first household to get started</p>
-                <CreateHouseholdSheet />
+                <p className="text-gray-600 mb-6">Create your first household or join an existing one</p>
+                <div className="flex gap-2 justify-center">
+                  <JoinHouseholdForm />
+                  <CreateHouseholdSheet />
+                </div>
               </div>
             </div>
           )}
