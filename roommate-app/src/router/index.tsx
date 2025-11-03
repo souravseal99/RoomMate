@@ -10,6 +10,8 @@ import Expenses from "@/pages/expenses/Expenses";
 import ErrorPage from "@/pages/ErrorPage";
 import HouseholdProvider from "@/contexts/HouseholdContext";
 import { ExpenseProvider } from "@/contexts/ExpenseContext";
+import Inventory from "@/pages/inventory/Inventory";
+import { InventoryProvider } from "@/contexts/InventoryContext";
 
 function AppRouter() {
   return (
@@ -41,6 +43,14 @@ function AppRouter() {
             <ExpenseProvider>
               <Expenses />
             </ExpenseProvider>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <InventoryProvider>
+              <Inventory />
+            </InventoryProvider>
           }
         />
       </Route>

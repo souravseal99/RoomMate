@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -9,41 +10,56 @@ import {
 } from "@/components/ui/select";
 import useHousehold from "@/hooks/useHousehold";
 import type { HouseholdOptions } from "@/types/householdTypes";
-import { useEffect } from "react";
 import { Home, Users } from "lucide-react";
 import { cn } from "@/utils/utils";
 
 // Style constants
 const TRIGGER_CONTAINER_STYLES = [
-  "w-full h-12 px-4 py-3 bg-white dark:bg-gray-800",
+  "w-full h-12 px-4 py-4.5 bg-white dark:bg-gray-800",
   "border-2 border-gray-200 dark:border-gray-700",
   "hover:border-blue-300 dark:hover:border-blue-600",
   "focus:border-blue-500 dark:focus:border-blue-400",
   "focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20",
   "rounded-xl shadow-sm transition-all duration-200",
   "text-gray-900 dark:text-gray-100",
-  "data-[placeholder]:text-gray-500 dark:data-[placeholder]:text-gray-400"
+  "data-[placeholder]:text-gray-500 dark:data-[placeholder]:text-gray-400",
 ];
 
-const SELECT_CONTENT_STYLES = "w-full min-w-[var(--radix-select-trigger-width)] rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg";
+const SELECT_CONTENT_STYLES =
+  "w-full min-w-[var(--radix-select-trigger-width)] rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg";
 
 const SELECT_ITEM_STYLES = [
   "px-3 py-3 mx-1 rounded-lg cursor-pointer transition-all duration-150",
   "hover:bg-blue-50 dark:hover:bg-blue-900/20",
   "focus:bg-blue-50 dark:focus:bg-blue-900/20",
   "data-[state=checked]:bg-blue-100 dark:data-[state=checked]:bg-blue-900/30",
-  "data-[state=checked]:text-blue-900 dark:data-[state=checked]:text-blue-100"
+  "data-[state=checked]:text-blue-900 dark:data-[state=checked]:text-blue-100",
 ];
 
-const SELECTED_HOUSEHOLD_CARD_STYLES = "mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800";
+const SELECTED_HOUSEHOLD_CARD_STYLES =
+  "mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800";
 
-type Props = {
-  householdOptions: HouseholdOptions[];
-};
+export default function HouseholdSelector() {
+  const {
+    households,
+    selectedHousehold,
+    setSelectedHousehold,
+    fetchAllHouseholds,
+  } = useHousehold();
 
-export default function HouseholdSelector(props: Props) {
-  const { householdOptions } = props;
-  const { selectedHousehold, setSelectedHousehold } = useHousehold();
+  useEffect(() => {
+    fetchAllHouseholds();
+  }, []);
+
+  const householdOptions: HouseholdOptions[] = useMemo(
+    () =>
+      households.map((household) => ({
+        key: household.householdId,
+        value: household.name,
+        memberCount: household.members?.length || 0,
+      })),
+    [households]
+  );
 
   useEffect(() => {
     if (householdOptions.length > 0 && !selectedHousehold) {
@@ -58,7 +74,7 @@ export default function HouseholdSelector(props: Props) {
       setSelectedHousehold({
         key: selectedHousehold.key,
         value: selectedHousehold.value,
-        members: selectedHousehold.members,
+        memberCount: selectedHousehold.memberCount,
       });
     }
   };
@@ -81,12 +97,12 @@ export default function HouseholdSelector(props: Props) {
       </div>
 
       {/* Enhanced Select Component */}
-      <Select onValueChange={handleValueChange} value={selectedHousehold?.value}>
+      <Select
+        onValueChange={handleValueChange}
+        value={selectedHousehold?.value}
+      >
         <SelectTrigger className={cn(...TRIGGER_CONTAINER_STYLES)}>
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-md">
-              <Users className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
-            </div>
             <SelectValue
               placeholder="Choose a household..."
               className="text-sm font-medium"
@@ -115,13 +131,10 @@ export default function HouseholdSelector(props: Props) {
                     <div className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-md">
                       <Home className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <div className="flex flex-row">
+                      <span className="justify-self-start text-sm font-medium text-gray-900 dark:text-gray-100">
                         {household.value}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Active Member(s): {household.members.length}
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </SelectItem>
@@ -154,10 +167,10 @@ export default function HouseholdSelector(props: Props) {
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Active: {selectedHousehold.value}
+                Active Member(s): {selectedHousehold.memberCount}
               </div>
               <div className="text-xs text-blue-600 dark:text-blue-400">
-                Managing expenses for this household
+                Managing activity for household {selectedHousehold.value}
               </div>
             </div>
           </div>
