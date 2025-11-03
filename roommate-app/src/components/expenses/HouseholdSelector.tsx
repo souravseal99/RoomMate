@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -8,14 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
-import { useEffect, useMemo } from "react";
+import type { HouseholdOptions } from "@/types/householdTypes";
 import { Home, Users } from "lucide-react";
 import { cn } from "@/utils/utils";
 
 // Style constants
 const TRIGGER_CONTAINER_STYLES = [
-  "w-full h-12 px-4 py-3 bg-white dark:bg-gray-800",
+  "w-full h-12 px-4 py-4.5 bg-white dark:bg-gray-800",
   "border-2 border-gray-200 dark:border-gray-700",
   "hover:border-blue-300 dark:hover:border-blue-600",
   "focus:border-blue-500 dark:focus:border-blue-400",
@@ -56,6 +56,7 @@ export default function HouseholdSelector() {
       households.map((household) => ({
         key: household.householdId,
         value: household.name,
+        memberCount: household.members?.length || 0,
       })),
     [households]
   );
@@ -73,6 +74,7 @@ export default function HouseholdSelector() {
       setSelectedHousehold({
         key: selectedHousehold.key,
         value: selectedHousehold.value,
+        memberCount: selectedHousehold.memberCount,
       });
     }
   };
@@ -101,9 +103,6 @@ export default function HouseholdSelector() {
       >
         <SelectTrigger className={cn(...TRIGGER_CONTAINER_STYLES)}>
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-md">
-              <Users className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
-            </div>
             <SelectValue
               placeholder="Choose a household..."
               className="text-sm font-medium"
@@ -132,13 +131,10 @@ export default function HouseholdSelector() {
                     <div className="flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 rounded-md">
                       <Home className="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" />
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <div className="flex flex-row">
+                      <span className="justify-self-start text-sm font-medium text-gray-900 dark:text-gray-100">
                         {household.value}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        Household ID: {household.key.slice(0, 8)}...
-                      </div>
+                      </span>
                     </div>
                   </div>
                 </SelectItem>
@@ -171,10 +167,10 @@ export default function HouseholdSelector() {
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                Active: {selectedHousehold.value}
+                Active Member(s): {selectedHousehold.memberCount}
               </div>
               <div className="text-xs text-blue-600 dark:text-blue-400">
-                Managing expenses for this household
+                Managing activity for household {selectedHousehold.value}
               </div>
             </div>
           </div>

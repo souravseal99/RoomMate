@@ -15,8 +15,31 @@ export class HouseholdService {
     if (!user)
       return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
 
+    // Fetch existing names that match the requested base name or numbered variants
+    const existing = await HouseholdRepository.findNamesLikeByUser(
+      userId,
+      name
+    );
+
+    const baseName = name?.trim() || "";
+    let finalName = baseName;
+
+    const existingNamesSet = new Set<string>(existing.map((r) => r.name));
+
+    if (existingNamesSet.has(finalName)) {
+      let suffix = 1;
+      while (true) {
+        const candidate = `${baseName} (${suffix})`;
+        if (!existingNamesSet.has(candidate)) {
+          finalName = candidate;
+          break;
+        }
+        suffix++;
+      }
+    }
+
     const createdHouseholdRecord: Household = await HouseholdRepository.create(
-      name,
+      finalName,
       userId,
       Role.ADMIN
     );
