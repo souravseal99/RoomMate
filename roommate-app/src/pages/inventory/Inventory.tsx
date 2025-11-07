@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 import type { InventoryItem } from "@/types/inventoryTypes";
+import { getStatusBadge } from "@/utils/inventoryUtils";
 
 function getItemEmoji(name: string): string {
   const emojiMap: Record<string, string> = {
@@ -18,18 +19,6 @@ function getItemEmoji(name: string): string {
   return emojiMap[name.toLowerCase()] || "📦";
 }
 
-function getStatusBadge(quantity: number, lowThreshold: number) {
-  if (quantity === 0) {
-    return <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Out</span>;
-  }
-  if (quantity <= lowThreshold) {
-    return <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Low</span>;
-  }
-  if (quantity <= lowThreshold * 1.5) {
-    return <span className="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full">Buy</span>;
-  }
-  return <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">OK</span>;
-}
 
 type ShoppingListItem = {
   item: InventoryItem;

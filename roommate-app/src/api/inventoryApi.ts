@@ -1,4 +1,4 @@
-import axiosInstance from "./axios";
+import axiosInstance from "@/api/axios";
 import type { InventoryItem } from "@/types/inventoryTypes";
 
 export const updateInventoryItem = async (
