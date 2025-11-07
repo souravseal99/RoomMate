@@ -6,6 +6,7 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import DummyDashboard from "@/pages/dashboard/DummyDashboard";
 import Households from "@/pages/households/Households";
+import Chores from "@/pages/chores/Chores";
 import Expenses from "@/pages/expenses/Expenses";
 import ErrorPage from "@/pages/ErrorPage";
 import HouseholdProvider from "@/contexts/HouseholdContext";
@@ -34,7 +35,7 @@ function AppRouter() {
         }
       >
         <Route path="/dashboard" element={<DummyDashboard />} />
-        <Route path="/chores" element={<div>Chores</div>} />
+        <Route path="/chores" element={<Chores />} />
 
         <Route path="/households" element={<Households />} />
         <Route
