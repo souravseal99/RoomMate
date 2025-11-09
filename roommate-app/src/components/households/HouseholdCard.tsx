@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Clipboard, ClipboardCheck, Trash2Icon, Home, Pencil, AlertTriangle } from "lucide-react";
-import type { HouseholdResponse } from "@/types/hosueholdTypes";
+import type { HouseholdResponse } from "@/types/householdTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -167,19 +167,19 @@ function HouseholdCard({ household }: Props) {
             </Dialog>
           </div>
         </div>
-        
+
         {household.members && household.members.length > 0 && (
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 mb-3 shadow-inner">
             <div className="text-[10px] text-gray-600 mb-1 font-medium">Created by</div>
             <div className="text-sm font-semibold text-gray-900 truncate">{household.members[0]?.user?.name || 'Unknown'}</div>
           </div>
         )}
-        
+
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 mb-3 shadow-inner">
           <div className="text-[10px] text-gray-600 mb-1 font-medium">Invite Code</div>
           <div className="font-mono text-base font-bold text-gray-900">{household.inviteCode}</div>
         </div>
-        
+
         <Button
           onClick={handleCopy}
           variant="outline"

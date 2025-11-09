@@ -45,7 +45,7 @@ const items = [
   },
   {
     title: "Inventory",
-    url: "#",
+    url: "/inventory",
     icon: ShoppingBag,
   },
 ];
@@ -53,7 +53,7 @@ const items = [
 export function AppSidebar() {
   const location = useLocation();
   const { email, name } = useAuth();
-  
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -63,7 +63,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>

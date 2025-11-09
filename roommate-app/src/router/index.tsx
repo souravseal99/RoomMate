@@ -6,10 +6,13 @@ import RegisterPage from "@/pages/auth/RegisterPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import DummyDashboard from "@/pages/dashboard/DummyDashboard";
 import Households from "@/pages/households/Households";
+import Chores from "@/pages/chores/Chores";
 import Expenses from "@/pages/expenses/Expenses";
 import ErrorPage from "@/pages/ErrorPage";
 import HouseholdProvider from "@/contexts/HouseholdContext";
 import { ExpenseProvider } from "@/contexts/ExpenseContext";
+import Inventory from "@/pages/inventory/Inventory";
+import { InventoryProvider } from "@/contexts/InventoryContext";
 
 function AppRouter() {
   return (
@@ -32,7 +35,7 @@ function AppRouter() {
         }
       >
         <Route path="/dashboard" element={<DummyDashboard />} />
-        <Route path="/chores" element={<div>Chores</div>} />
+        <Route path="/chores" element={<Chores />} />
 
         <Route path="/households" element={<Households />} />
         <Route
@@ -41,6 +44,14 @@ function AppRouter() {
             <ExpenseProvider>
               <Expenses />
             </ExpenseProvider>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <InventoryProvider>
+              <Inventory />
+            </InventoryProvider>
           }
         />
       </Route>
