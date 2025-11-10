@@ -1,10 +1,4 @@
-import {
-  LayoutDashboard,
-  HouseWifi,
-  BrushCleaning,
-  HandCoins,
-  ShoppingBag,
-} from "lucide-react";
+import * as Icons from "lucide-react";
 import { useLocation } from "react-router-dom";
 import useAuth from "@/hooks/useAuth";
 
@@ -21,33 +15,15 @@ import {
 } from "@/components/ui/sidebar";
 import { NavUserDummy } from "./SidebarFooterDummy";
 
-// Menu items.
+// helper: resolve icon from lucide-react safely with fallback
+const resolveIcon = (name: string) => (Icons as any)[name] ?? Icons.Square;
+
 const items = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Households",
-    url: "/households",
-    icon: HouseWifi,
-  },
-  {
-    title: "Chores",
-    url: "/chores",
-    icon: BrushCleaning,
-  },
-  {
-    title: "Expenses",
-    url: "/expenses",
-    icon: HandCoins,
-  },
-  {
-    title: "Inventory",
-    url: "/inventory",
-    icon: ShoppingBag,
-  },
+  { title: "Dashboard", url: "/dashboard", iconName: "LayoutDashboard" },
+  { title: "Households", url: "/households", iconName: "Home" },
+  { title: "Chores", url: "/chores", iconName: "Broom" },
+  { title: "Expenses", url: "/expenses", iconName: "Coins" },
+  { title: "Inventory", url: "/inventory", iconName: "ShoppingBag" },
 ];
 
 export function AppSidebar() {
@@ -61,19 +37,22 @@ export function AppSidebar() {
           <SidebarGroupLabel>Roommate App</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={location.pathname === item.url}
-                  >
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const Icon = resolveIcon(item.iconName);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={location.pathname === item.url}
+                    >
+                      <a href={item.url} className="flex items-center gap-2">
+                        <Icon className="w-4 h-4" />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

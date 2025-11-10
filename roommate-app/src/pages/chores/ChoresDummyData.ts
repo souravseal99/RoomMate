@@ -7,6 +7,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-123",
     assignedToId: "user-456",
+    priority: "HIGH" as const,
+    assignedToName: "John Doe",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440002",
@@ -16,6 +18,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-123",
     assignedToId: "user-789",
+    priority: "MEDIUM" as const,
+    assignedToName: "Jane Smith",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440003",
@@ -25,6 +29,8 @@ const ChoresDummyData = [
     completed: true,
     householdId: "household-123",
     assignedToId: "user-456",
+    priority: "HIGH" as const,
+    assignedToName: "John Doe",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440004",
@@ -34,6 +40,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-123",
     assignedToId: null,
+    priority: "LOW" as const,
+    assignedToName: "",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440005",
@@ -43,6 +51,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-124",
     assignedToId: "user-101",
+    priority: "MEDIUM" as const,
+    assignedToName: "Alice Johnson",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440006",
@@ -52,6 +62,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-124",
     assignedToId: "user-102",
+    priority: "HIGH" as const,
+    assignedToName: "Bob Brown",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440007",
@@ -61,6 +73,8 @@ const ChoresDummyData = [
     completed: true,
     householdId: "household-123",
     assignedToId: "user-789",
+    priority: "MEDIUM" as const,
+    assignedToName: "Jane Smith",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440008",
@@ -70,6 +84,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-124",
     assignedToId: "user-101",
+    priority: "LOW" as const,
+    assignedToName: "Alice Johnson",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440009",
@@ -79,6 +95,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-123",
     assignedToId: "user-456",
+    priority: "HIGH" as const,
+    assignedToName: "John Doe",
   },
   {
     choreId: "550e8400-e29b-41d4-a716-446655440010",
@@ -88,6 +106,8 @@ const ChoresDummyData = [
     completed: false,
     householdId: "household-124",
     assignedToId: null,
+    priority: "MEDIUM" as const,
+    assignedToName: "",
   },
 ];
 
