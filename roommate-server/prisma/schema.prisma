@@ -50,10 +50,11 @@ model Household {
   createdAt   DateTime @default(now())
 
   // Relations
-  members   HouseholdMember[]
-  expenses  Expense[]
-  chores    Chore[]
-  inventory InventoryItem[]
+  members      HouseholdMember[]
+  expenses     Expense[]
+  chores       Chore[]
+  inventory    InventoryItem[]
+  shoppingCart ShoppingCart[]
 }
 
 /// Many-to-many relation between users & households
@@ -128,6 +129,19 @@ model InventoryItem {
   quantity        Int
   lowThreshold    Int
   lastUpdated     DateTime @default(now())
+
+  householdId String @map("household_id")
+
+  // Relations
+  household Household @relation(fields: [householdId], references: [householdId])
+}
+
+/// Shopping cart items for households
+model ShoppingCart {
+  shoppingCartId String   @id @default(uuid()) @map("shopping_cart_id")
+  itemName       String   @map("item_name")
+  quantity       Int
+  createdAt      DateTime @default(now())
 
   householdId String @map("household_id")
 

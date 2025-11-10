@@ -19,7 +19,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { InventoryItem } from "@/types/inventoryTypes";
-import { dummyInventoryDetails } from "@/pages/inventory/inventoryDummyData";
 import useInventory from "@/hooks/useInventory";
 
 export function InventorySelector() {
@@ -37,15 +36,19 @@ export function InventorySelector() {
     }));
   }
 
-  React.useEffect(() => {
-    setSelectedItem(
-      dummyInventoryDetails.filter(
-        (item) => item.name.toLowerCase().replace(/\s+/g, "_") === value
-      )[0] || null
-    );
-  }, [value]);
+  const { inventoryItems } = useInventory();
 
-  const items = getInventoryOptions(dummyInventoryDetails);
+  React.useEffect(() => {
+    if (inventoryItems) {
+      setSelectedItem(
+        inventoryItems.filter(
+          (item) => item.name.toLowerCase().replace(/\s+/g, "_") === value
+        )[0] || null
+      );
+    }
+  }, [value, inventoryItems]);
+
+  const items = inventoryItems ? getInventoryOptions(inventoryItems) : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

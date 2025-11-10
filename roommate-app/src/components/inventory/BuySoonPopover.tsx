@@ -4,19 +4,95 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import useInventory from "@/hooks/useInventory";
+import useHousehold from "@/hooks/useHousehold";
+import { getStatusBadge } from "@/utils/inventoryUtils";
+import { addLowStockToCart } from "@/api/shoppingCartApi";
+import { toast } from "sonner";
+import { useState } from "react";
+
+function getItemEmoji(name: string): string {
+  const emojiMap: Record<string, string> = {
+    bread: "🍞", milk: "🥛", eggs: "🥚", cheese: "🧀", butter: "🧈",
+    rice: "🍚", pasta: "🍝", chicken: "🍗", beef: "🥩", fish: "🐟",
+    apple: "🍎", banana: "🍌", orange: "🍊", tomato: "🍅", potato: "🥔",
+    onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", lettuce: "🥬"
+  };
+  return emojiMap[name.toLowerCase()] || "📦";
+}
 
 export function BuySoonPopover() {
+  const { inventoryItems } = useInventory();
+  const { selectedHousehold } = useHousehold();
+  const [isAdding, setIsAdding] = useState(false);
+  
+  const buySoonItems = inventoryItems?.filter(item => 
+    item.quantity <= item.lowThreshold
+  ) || [];
+
+  const handleAddAllToCart = async () => {
+    if (!selectedHousehold) {
+      toast.error("Please select a household first");
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addLowStockToCart(selectedHousehold.key);
+      toast.success("Low stock items added to cart");
+      // Trigger a custom event to refresh shopping cart
+      window.dispatchEvent(new CustomEvent('refreshShoppingCart'));
+    } catch (error) {
+      toast.error("Failed to add items to cart");
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Buy Soon</Button>
+        <Button variant="outline">
+          Buy Soon {buySoonItems.length > 0 && `(${buySoonItems.length})`}
+        </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <div className="grid gap-4">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet
-          obcaecati nobis ratione quibusdam explicabo non eligendi, velit
-          molestias corporis impedit, quis necessitatibus nemo tenetur sed
-          pariatur cupiditate minima harum aut?
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-medium text-sm">Items to Buy Soon</h4>
+            {buySoonItems.length > 0 && (
+              <Button 
+                size="sm" 
+                onClick={handleAddAllToCart}
+                disabled={isAdding}
+              >
+                {isAdding ? "Adding..." : "Add All to Cart"}
+              </Button>
+            )}
+          </div>
+          {buySoonItems.length === 0 ? (
+            <p className="text-gray-500 text-sm text-center py-4">
+              No items need restocking
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {buySoonItems.map((item) => (
+                <div 
+                  key={item.id} 
+                  className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">{getItemEmoji(item.name)}</span>
+                    <div>
+                      <span className="text-sm font-medium">{item.name}</span>
+                      <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
+                    </div>
+                  </div>
+                  {getStatusBadge(item.quantity, item.lowThreshold)}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </PopoverContent>
     </Popover>
