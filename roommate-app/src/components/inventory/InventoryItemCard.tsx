@@ -41,7 +41,7 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-64">
       <div className="flex items-center gap-2">
         <span className="text-lg">{getItemEmoji(item.name)}</span>
         <div>
