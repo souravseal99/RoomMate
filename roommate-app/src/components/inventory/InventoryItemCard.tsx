@@ -2,23 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { updateInventoryItem } from "@/api/inventoryApi";
-import { getStatusBadge } from "@/utils/inventoryUtils";
+import { getStatusBadge, getItemEmoji } from "@/utils/inventoryUtils";
 import { toast } from "sonner";
 import type { InventoryItem } from "@/types/inventoryTypes";
 
 interface InventoryItemCardProps {
   item: InventoryItem;
   onUpdate: () => void;
-}
-
-function getItemEmoji(name: string): string {
-  const emojiMap: Record<string, string> = {
-    bread: "🍞", milk: "🥛", eggs: "🥚", cheese: "🧀", butter: "🧈",
-    rice: "🍚", pasta: "🍝", chicken: "🍗", beef: "🥩", fish: "🐟",
-    apple: "🍎", banana: "🍌", orange: "🍊", tomato: "🍅", potato: "🥔",
-    onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", lettuce: "🥬"
-  };
-  return emojiMap[name.toLowerCase()] || "📦";
 }
 
 export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {

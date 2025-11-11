@@ -1,7 +1,7 @@
 import Api from "@/api/axios";
 import type { ShoppingCartItem } from "@/types/shoppingCartTypes";
 
-export const getShoppingCartItems = async (householdId: string) => {
+export const getCartItemsByHouseholdId = async (householdId: string) => {
   return await Api.get(`/shopping-cart/${householdId}`);
 };
 

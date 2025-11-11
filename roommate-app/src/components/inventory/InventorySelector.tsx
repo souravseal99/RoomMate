@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/utils/utils";
+import { cn, toSnakeCase } from "@/utils/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -31,7 +31,7 @@ export function InventorySelector() {
     inventory: InventoryItem[]
   ): { value: string; label: string }[] {
     return inventory.map((item) => ({
-      value: item.name.toLowerCase().replace(/\s+/g, "_"),
+      value: toSnakeCase(item.name),
       label: item.name,
     }));
   }
@@ -42,7 +42,7 @@ export function InventorySelector() {
     if (inventoryItems) {
       setSelectedItem(
         inventoryItems.filter(
-          (item) => item.name.toLowerCase().replace(/\s+/g, "_") === value
+          (item) => toSnakeCase(item.name) === value
         )[0] || null
       );
     }

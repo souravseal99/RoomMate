@@ -28,26 +28,17 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
 
     setIsLoading(true);
     try {
-      console.log('Adding item with data:', {
+      await createInventoryItem({
         name,
         quantity: parseInt(quantity),
         lowThreshold: parseInt(lowThreshold),
         householdId: selectedHousehold.key,
       });
       
-      const result = await createInventoryItem({
-        name,
-        quantity: parseInt(quantity),
-        lowThreshold: parseInt(lowThreshold),
-        householdId: selectedHousehold.key,
-      });
-      
-      console.log('Item creation result:', result);
       toast.success("Item added successfully");
-      console.log('Calling onSuccess callback');
       onSuccess();
     } catch (error) {
-      console.error('Failed to add item:', error);
+      console.error('APP:: AddItemForm:: Failed to add item:', error);
       toast.error("Failed to add item");
     } finally {
       setIsLoading(false);

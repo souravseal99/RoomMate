@@ -21,20 +21,16 @@ function Inventory() {
   const { selectedHousehold } = useHousehold();
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
 
-  console.log('Current inventoryItems in component:', inventoryItems);
-  console.log('Current selectedHousehold:', selectedHousehold);
+// TODO: add warning toast for fetchInventoryItems
 
   const fetchInventoryItems = async () => {
     if (!selectedHousehold?.key) {
-      console.log('No household key available');
       return;
     }
     
     try {
       const response = await getInventoryItems(selectedHousehold.key);
-      console.log('Raw API response:', response);
       const items = Array.isArray(response) ? response : (response.data?.data || response.data || []);
-      console.log('Items from API:', items);
       const mappedItems = items.map((item: any) => ({
         id: item.inventoryItemId,
         name: item.name,
@@ -42,11 +38,8 @@ function Inventory() {
         lowThreshold: item.lowThreshold,
         lastUpdated: item.lastUpdated
       }));
-      console.log('Mapped items:', mappedItems);
       setInventoryItems(mappedItems);
-      console.log('setInventoryItems called with:', mappedItems);
     } catch (error) {
-      console.error('Failed to fetch inventory items:', error);
     }
   };
 
@@ -57,7 +50,6 @@ function Inventory() {
   }, [selectedHousehold?.key]);
 
   const handleItemAdded = () => {
-    console.log('handleItemAdded called - closing modal and refetching');
     setIsAddItemOpen(false);
     fetchInventoryItems();
   };

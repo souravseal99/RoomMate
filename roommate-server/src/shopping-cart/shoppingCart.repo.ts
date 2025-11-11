@@ -13,7 +13,7 @@ export class ShoppingCartRepo {
     });
   }
 
-  static async getByHousehold(householdId: string) {
+  static async getCartItemsByHouseholdId(householdId: string) {
     return await prisma.shoppingCart.findMany({
       where: { householdId },
       orderBy: { createdAt: "desc" },

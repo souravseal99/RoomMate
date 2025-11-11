@@ -6,20 +6,11 @@ import {
 } from "@/components/ui/popover";
 import useInventory from "@/hooks/useInventory";
 import useHousehold from "@/hooks/useHousehold";
-import { getStatusBadge } from "@/utils/inventoryUtils";
+import { getStatusBadge, getItemEmoji } from "@/utils/inventoryUtils";
 import { addLowStockToCart } from "@/api/shoppingCartApi";
+import { dispatchRefreshShoppingCart } from "@/components/inventory/config";
 import { toast } from "sonner";
 import { useState } from "react";
-
-function getItemEmoji(name: string): string {
-  const emojiMap: Record<string, string> = {
-    bread: "🍞", milk: "🥛", eggs: "🥚", cheese: "🧀", butter: "🧈",
-    rice: "🍚", pasta: "🍝", chicken: "🍗", beef: "🥩", fish: "🐟",
-    apple: "🍎", banana: "🍌", orange: "🍊", tomato: "🍅", potato: "🥔",
-    onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", lettuce: "🥬"
-  };
-  return emojiMap[name.toLowerCase()] || "📦";
-}
 
 export function BuySoonPopover() {
   const { inventoryItems } = useInventory();
@@ -40,8 +31,7 @@ export function BuySoonPopover() {
     try {
       await addLowStockToCart(selectedHousehold.key);
       toast.success("Low stock items added to cart");
-      // Trigger a custom event to refresh shopping cart
-      window.dispatchEvent(new CustomEvent('refreshShoppingCart'));
+      dispatchRefreshShoppingCart();
     } catch (error) {
       toast.error("Failed to add items to cart");
     } finally {
@@ -52,8 +42,13 @@ export function BuySoonPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">
-          Buy Soon {buySoonItems.length > 0 && `(${buySoonItems.length})`}
+        <Button variant="outline" className="relative">
+          Buy Soon
+          {buySoonItems.length > 0 && (
+            <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+              {buySoonItems.length}
+            </span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">

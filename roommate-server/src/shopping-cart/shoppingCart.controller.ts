@@ -21,10 +21,10 @@ export class ShoppingCartController {
     });
   }
 
-  static async getByHousehold(request: Request, response: Response) {
+  static async getCartItemsByHouseholdId(request: Request, response: Response) {
     const { householdId } = request.params;
 
-    const { status, message, data } = await ShoppingCartService.getByHousehold(householdId);
+    const { status, message, data } = await ShoppingCartService.getCartItemsByHouseholdId(householdId);
 
     return response.status(status).json({
       message,

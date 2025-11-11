@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash2, Plus } from "lucide-react";
-import { getShoppingCartItems, addToShoppingCart, updateCartItem, removeFromCart } from "@/api/shoppingCartApi";
+import { getCartItemsByHouseholdId, addToShoppingCart, updateCartItem, removeFromCart } from "@/api/shoppingCartApi";
+import { INVENTORY_EVENTS } from "@/components/inventory/config";
 import useHousehold from "@/hooks/useHousehold";
 import { toast } from "sonner";
 import type { ShoppingCartItem } from "@/types/shoppingCartTypes";
@@ -16,27 +17,20 @@ export function ShoppingCartTable() {
 
   const fetchCartItems = useCallback(async () => {
     if (!selectedHousehold?.key) {
-      console.log('No household key for cart');
       return;
     }
     
     try {
-      console.log('Fetching cart items for household:', selectedHousehold.key);
-      const response = await getShoppingCartItems(selectedHousehold.key);
-      console.log('Cart API response:', response);
-      // Now the backend is fixed: actual data is in response.data
+      const response = await getCartItemsByHouseholdId(selectedHousehold.key);
       const items = Array.isArray(response.data) ? response.data : [];
-      console.log('Cart items extracted:', items);
       const mappedItems = items.map((item: any) => ({
         id: item.shoppingCartId,
         itemName: item.itemName,
         quantity: item.quantity,
         createdAt: item.createdAt
       }));
-      console.log('Mapped cart items:', mappedItems);
       setCartItems(mappedItems);
     } catch (error) {
-      console.error("Failed to fetch cart items:", error);
     }
   }, [selectedHousehold?.key]);
 
@@ -51,8 +45,8 @@ export function ShoppingCartTable() {
       fetchCartItems();
     };
     
-    window.addEventListener('refreshShoppingCart', handleRefresh);
-    return () => window.removeEventListener('refreshShoppingCart', handleRefresh);
+    window.addEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
+    return () => window.removeEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
   }, [fetchCartItems]);
 
   const handleAddItem = async (e: React.FormEvent) => {
@@ -75,22 +69,13 @@ export function ShoppingCartTable() {
 
     setIsLoading(true);
     try {
-      console.log('Adding to cart:', {
-        itemName: newItemName.trim(),
-        quantity: parseInt(newItemQuantity),
-        householdId: selectedHousehold.key
-      });
-      
-      const result = await addToShoppingCart(newItemName.trim(), parseInt(newItemQuantity), selectedHousehold.key);
-      console.log('Cart add result:', result);
+      await addToShoppingCart(newItemName.trim(), parseInt(newItemQuantity), selectedHousehold.key);
       
       setNewItemName("");
       setNewItemQuantity("");
-      console.log('Refetching cart items after add');
       fetchCartItems();
       toast.success("Item added to cart");
     } catch (error) {
-      console.error('Failed to add to cart:', error);
       toast.error("Failed to add item");
     } finally {
       setIsLoading(false);

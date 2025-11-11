@@ -7,7 +7,7 @@ const shoppingCartRouter = Router();
 shoppingCartRouter.get(
   "/:householdId",
   ensureAuthenticated,
-  ShoppingCartController.getByHousehold
+  ShoppingCartController.getCartItemsByHouseholdId
 );
 
 shoppingCartRouter.post(

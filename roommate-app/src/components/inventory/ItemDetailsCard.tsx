@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import type { InventoryItem } from "@/types/inventoryTypes";
 import { dateFormatterUtc } from "@/utils/utils";
-import { getStatusBadge } from "@/utils/inventoryUtils";
+import { getStatusBadge, getItemEmoji } from "@/utils/inventoryUtils";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 
 import { useState, useEffect } from "react";
@@ -12,35 +12,6 @@ type ItemDetailsCardProps = {
   householdId?: string;
   onAddToList?: (item: InventoryItem, quantity: number) => void;
 };
-
-
-function getItemEmoji(name: string): string {
-  const emojiMap: Record<string, string> = {
-    bread: "🍞",
-    milk: "🥛",
-    eggs: "🥚",
-    cheese: "🧀",
-    butter: "🧈",
-    rice: "🍚",
-    pasta: "🍝",
-    chicken: "🍗",
-    beef: "🥩",
-    fish: "🐟",
-    apple: "🍎",
-    banana: "🍌",
-    orange: "🍊",
-    tomato: "🍅",
-    potato: "🥔",
-    onion: "🧅",
-    garlic: "🧄",
-    carrot: "🥕",
-    broccoli: "🥦",
-    lettuce: "🥬"
-  };
-  
-  const key = name.toLowerCase();
-  return emojiMap[key] || "📦";
-}
 
 export function ItemDetailsCard({ itemDetails, householdId, onAddToList }: ItemDetailsCardProps) {
   const [shoppingQuantity, setShoppingQuantity] = useState(1);
