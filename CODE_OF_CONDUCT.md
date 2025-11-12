@@ -72,7 +72,7 @@ This Code of Conduct applies across all platforms related to the project, includ
 
 If you witness or experience any violation of this Code of Conduct, please contact the maintainers at:
 
-📧 **Twitter:** [Sourav Seal](@SealiyDev) 
+📧 **Email:** [Sourav Seal](sourav.seal1999@gmail.com) 
 
 🛠️ You may also use GitHub’s built-in **Report Abuse** feature if preferred.  
 
@@ -110,4 +110,3 @@ Enforcement guidelines are inspired by [Mozilla’s Code of Conduct Enforcement 
 For additional information, visit the [Contributor Covenant FAQ](https://www.contributor-covenant.org/faq).
 If you witness or experience any violation of this Code of Conduct, please contact the maintainers at:
 
-📧 **Email:** Email 
