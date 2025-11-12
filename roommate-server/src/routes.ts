@@ -5,6 +5,7 @@ import householdRouter from "@src/households/household.routes";
 import expenseRouter from "@src/expenses/expense.routes";
 import choreRouter from "@src/chore/chore.routes";
 import inventoryRouter from "@src/inventory/inventory.routes";
+import shoppingCartRouter from "@src/shopping-cart/shoppingCart.routes";
 import hosueholdMemberRouter from "@src/household-members/householdMember.routes";
 import dashboardRouter from "@src/dashboard/dashboard.routes";
 
@@ -34,6 +35,8 @@ routes.use("/expense", expenseRouter);
 routes.use("/chore", choreRouter);
 
 routes.use("/inventory", inventoryRouter);
+
+routes.use("/shopping-cart", shoppingCartRouter);
 
 routes.use("/dashboard", dashboardRouter);
 

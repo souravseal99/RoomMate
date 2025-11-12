@@ -1,53 +1,60 @@
 import useInventory from "@/hooks/useInventory";
+import useHousehold from "@/hooks/useHousehold";
 import HouseholdSelector from "@/components/expenses/HouseholdSelector";
 import { BuySoonPopover } from "@/components/inventory/BuySoonPopover";
-import { InventorySelector } from "@/components/inventory/InventorySelector";
-import { ItemDetailsCard } from "@/components/inventory/ItemDetailsCard";
+
+
+import { InventoryItemCard } from "@/components/inventory/InventoryItemCard";
+import { ShoppingCartTable } from "@/components/inventory/ShoppingCartTable";
+import { AddItemForm } from "@/components/inventory/AddItemForm";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getInventoryItems } from "@/api/inventoryApi";
 import type { InventoryItem } from "@/types/inventoryTypes";
-import { getStatusBadge } from "@/utils/inventoryUtils";
-
-function getItemEmoji(name: string): string {
-  const emojiMap: Record<string, string> = {
-    bread: "🍞", milk: "🥛", eggs: "🥚", cheese: "🧀", butter: "🧈",
-    rice: "🍚", pasta: "🍝", chicken: "🍗", beef: "🥩", fish: "🐟",
-    apple: "🍎", banana: "🍌", orange: "🍊", tomato: "🍅", potato: "🥔",
-    onion: "🧅", garlic: "🧄", carrot: "🥕", broccoli: "🥦", lettuce: "🥬"
-  };
-  return emojiMap[name.toLowerCase()] || "📦";
-}
 
 
-type ShoppingListItem = {
-  item: InventoryItem;
-  quantity: number;
-};
 
 function Inventory() {
-  const { selectedItem, inventoryItems } = useInventory();
-  const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>([]);
+  const { inventoryItems, setInventoryItems } = useInventory();
+  const { selectedHousehold } = useHousehold();
+  const [isAddItemOpen, setIsAddItemOpen] = useState(false);
 
-  const addToShoppingList = (item: InventoryItem, quantity: number) => {
-    const existingIndex = shoppingList.findIndex(listItem => listItem.item.id === item.id);
+// TODO: add warning toast for fetchInventoryItems
+
+  const fetchInventoryItems = async () => {
+    if (!selectedHousehold?.key) {
+      return;
+    }
     
-    if (existingIndex >= 0) {
-      const updatedList = [...shoppingList];
-      updatedList[existingIndex].quantity += quantity;
-      setShoppingList(updatedList);
-    } else {
-      setShoppingList([...shoppingList, { item, quantity }]);
+    try {
+      const response = await getInventoryItems(selectedHousehold.key);
+      const items = Array.isArray(response) ? response : (response.data?.data || response.data || []);
+      const mappedItems = items.map((item: any) => ({
+        id: item.inventoryItemId,
+        name: item.name,
+        quantity: item.quantity,
+        lowThreshold: item.lowThreshold,
+        lastUpdated: item.lastUpdated
+      }));
+      setInventoryItems(mappedItems);
+    } catch (error) {
     }
   };
 
-  const removeFromShoppingList = (itemId: string) => {
-    setShoppingList(shoppingList.filter(listItem => listItem.item.id !== itemId));
+  useEffect(() => {
+    if (selectedHousehold?.key) {
+      fetchInventoryItems();
+    }
+  }, [selectedHousehold?.key]);
+
+  const handleItemAdded = () => {
+    setIsAddItemOpen(false);
+    fetchInventoryItems();
   };
 
-  const clearShoppingList = () => {
-    setShoppingList([]);
-  };
+
 
   return (
     <div className="container mx-auto flex flex-col items-center lg:w-[80rem] mt-4">
@@ -56,8 +63,26 @@ function Inventory() {
       </div>
       <HouseholdSelector />
       <div className="flex gap-4 justify-evenly ">
-        <InventorySelector />
         <BuySoonPopover />
+        <Sheet open={isAddItemOpen} onOpenChange={setIsAddItemOpen}>
+          <SheetTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Item
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Add New Item</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6">
+              <AddItemForm 
+                onSuccess={handleItemAdded}
+                onCancel={() => setIsAddItemOpen(false)}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
       
       <div className="mt-6 w-full max-w-6xl space-y-6">
@@ -69,85 +94,21 @@ function Inventory() {
               No supplies found
             </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div className="flex flex-wrap justify-center gap-3 mx-auto">
               {inventoryItems.map((item) => (
-                <div 
+                <InventoryItemCard 
                   key={item.id} 
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{getItemEmoji(item.name)}</span>
-                    <div>
-                      <span className="text-sm font-medium">{item.name}</span>
-                      <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
-                    </div>
-                  </div>
-                  {getStatusBadge(item.quantity, item.lowThreshold)}
-                </div>
+                  item={item} 
+                  onUpdate={fetchInventoryItems}
+                />
               ))}
             </div>
           )}
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Item Details */}
-          <div>
-            {!selectedItem ? (
-              <div className="mt-2 text-center text-gray-600 dark:text-gray-300">
-                Your inventory details will be displayed here.
-              </div>
-            ) : (
-              <ItemDetailsCard 
-                itemDetails={selectedItem} 
-                onAddToList={addToShoppingList}
-              />
-            )}
-          </div>
-          
-          {/* Shopping List */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-900">Shopping List</h3>
-              {shoppingList.length > 0 && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={clearShoppingList}
-                >
-                  Clear All
-                </Button>
-              )}
-            </div>
-            
-            {shoppingList.length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">
-                No items in shopping list
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {shoppingList.map((listItem) => (
-                  <div 
-                    key={listItem.item.id} 
-                    className="flex items-center justify-between p-2 bg-gray-50 rounded"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm">
-                        {listItem.item.name} × {listItem.quantity}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFromShoppingList(listItem.item.id!)}
-                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="max-w-2xl mx-auto">
+          {/* Shopping Cart */}
+          <ShoppingCartTable />
         </div>
       </div>
     </div>

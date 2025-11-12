@@ -39,3 +39,11 @@ export function getDateDifferenceInDays(date1: string, date2?: string): number {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
 }
+
+/** Convert a string to snake_case format
+ * @param str - The string to convert
+ * @returns The string in snake_case format with trimmed whitespace
+ */
+export function toSnakeCase(str: string): string {
+  return str.trim().toLowerCase().replace(/\s+/g, "_");
+}

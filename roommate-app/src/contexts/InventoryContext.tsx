@@ -17,11 +17,8 @@ export const InventoryProvider = ({
 }: Readonly<{ children: ReactNode }>) => {
   const [inventoryItems, setInventoryItems] = useState<
     InventoryItem[] | undefined
-  >([]);
+  >(undefined);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | undefined>();
-
-  console.log("Inventory Items in Provider:", inventoryItems);
-  console.log("Selected Item in Provider:", selectedItem);
 
   const providerValues = useMemo(
     () => ({

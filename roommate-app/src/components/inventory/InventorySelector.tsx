@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-import { cn } from "@/utils/utils";
+import { cn, toSnakeCase } from "@/utils/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -19,7 +19,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import type { InventoryItem } from "@/types/inventoryTypes";
-import { dummyInventoryDetails } from "@/pages/inventory/inventoryDummyData";
 import useInventory from "@/hooks/useInventory";
 
 export function InventorySelector() {
@@ -32,20 +31,24 @@ export function InventorySelector() {
     inventory: InventoryItem[]
   ): { value: string; label: string }[] {
     return inventory.map((item) => ({
-      value: item.name.toLowerCase().replace(/\s+/g, "_"),
+      value: toSnakeCase(item.name),
       label: item.name,
     }));
   }
 
-  React.useEffect(() => {
-    setSelectedItem(
-      dummyInventoryDetails.filter(
-        (item) => item.name.toLowerCase().replace(/\s+/g, "_") === value
-      )[0] || null
-    );
-  }, [value]);
+  const { inventoryItems } = useInventory();
 
-  const items = getInventoryOptions(dummyInventoryDetails);
+  React.useEffect(() => {
+    if (inventoryItems) {
+      setSelectedItem(
+        inventoryItems.filter(
+          (item) => toSnakeCase(item.name) === value
+        )[0] || null
+      );
+    }
+  }, [value, inventoryItems]);
+
+  const items = inventoryItems ? getInventoryOptions(inventoryItems) : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

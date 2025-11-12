@@ -9,7 +9,12 @@ export const updateInventoryItem = async (
   return response.data;
 };
 
-export const createInventoryItem = async (itemData: Omit<InventoryItem, "id" | "lastUpdated">) => {
+export const createInventoryItem = async (itemData: Omit<InventoryItem, "id" | "lastUpdated"> & { householdId: string }) => {
   const response = await axiosInstance.post("/inventory/add", itemData);
+  return response.data;
+};
+
+export const getInventoryItems = async (householdId: string) => {
+  const response = await axiosInstance.get(`/inventory/${householdId}`);
   return response.data;
 };
