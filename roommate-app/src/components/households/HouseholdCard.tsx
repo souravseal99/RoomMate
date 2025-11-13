@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Clipboard, ClipboardCheck, Trash2Icon, Home, Pencil, AlertTriangle } from "lucide-react";
+import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle } from "lucide-react";
 import type { HouseholdResponse } from "@/types/householdTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -96,7 +96,7 @@ function HouseholdCard({ household }: Props) {
                   size="sm"
                   className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer transition-colors"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <Edit className="w-4 h-4" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -132,7 +132,7 @@ function HouseholdCard({ household }: Props) {
                   size="sm"
                   className="text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
                 >
-                  <Trash2Icon className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" />
                 </Button>
               </DialogTrigger>
               <DialogContent>
