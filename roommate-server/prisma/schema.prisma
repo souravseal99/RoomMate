@@ -50,11 +50,11 @@ model Household {
   createdAt   DateTime @default(now())
 
   // Relations
-  members      HouseholdMember[]
-  expenses     Expense[]
-  chores       Chore[]
-  inventory    InventoryItem[]
-  shoppingCart ShoppingCart[]
+  members       HouseholdMember[]
+  expenses      Expense[]
+  chores        Chore[]
+  inventory     InventoryItem[]
+  shoppingCarts ShoppingCart[]
 }
 
 /// Many-to-many relation between users & households
