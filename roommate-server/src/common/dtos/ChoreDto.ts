@@ -8,6 +8,8 @@ export default interface ChoreDto {
   frequency: string;
   nextDue?: Date;
   completed?: boolean;
+  priority?: string;
+  notes?: string;
   household?: HouseholdDto;
   assignedTo?: UserDto;
 }

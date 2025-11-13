@@ -81,13 +81,6 @@ roommate/
 ```
 
 ---
-### Thanks to our awesome contributors 👩‍💻👨‍💻 :
-
-<a href="https://github.com/souravseal99/RoomMate/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=souravseal99/RoomMate" />
-</a>
-
----
 
 ## ⚡ Getting Started
 
