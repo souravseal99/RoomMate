@@ -1,4 +1,4 @@
-import { ShieldAlertIcon, ClockAlertIcon, ArmchairIcon } from "lucide-react";
+import { Shield, Clock, Chair } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +24,11 @@ export function ChoreItemCard({ chore }: ChoreItemCardProps) {
       <Item variant="outline">
         <ItemMedia variant="icon">
           {differenceInDays <= 1 ? (
-            <ShieldAlertIcon className="text-red-500" />
+            <Shield className="text-red-500" />
           ) : differenceInDays <= 3 ? (
-            <ClockAlertIcon className="text-yellow-500" />
+            <Clock className="text-yellow-500" />
           ) : (
-            <ArmchairIcon className="text-green-500" />
+            <Chair className="text-green-500" />
           )}
         </ItemMedia>
         <ItemContent>

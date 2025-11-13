@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { HousePlusIcon } from "lucide-react";
+import { Home } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -48,7 +48,7 @@ function CreateHouseholdSheet() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
-          <HousePlusIcon className="w-4 h-4" />
+          <Home className="w-4 h-4" />
           <span className="hidden sm:inline">Create Household</span>
           <span className="sm:hidden">Create</span>
         </Button>

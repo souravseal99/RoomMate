@@ -113,6 +113,8 @@ model Chore {
   frequency   String
   nextDue     DateTime
   completed   Boolean  @default(false)
+  priority    String?  @default("MEDIUM")
+  notes       String?
 
   householdId  String  @map("household_id")
   assignedToId String? @map("assigned_to_id")
