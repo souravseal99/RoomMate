@@ -28,8 +28,9 @@ function HouseholdCard({ household }: Props) {
       await navigator.clipboard.writeText(household.inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      toast({ title: "Copied!", description: "Invite code copied to clipboard" });
     } catch (err) {
-      console.error("Failed to copy: ", err);
+      toast({ title: "Error", description: "Failed to copy invite code", variant: "destructive" });
     }
   };
 
@@ -37,40 +38,25 @@ function HouseholdCard({ household }: Props) {
     setIsDeleteOpen(false);
     try {
       await HouseholdApi.deleteCascated(household.householdId);
-      toast({
-        title: "Household deleted",
-        description: "The household and all related data have been successfully deleted.",
-      });
-      setTimeout(() => {
-        fetchAllHouseholds();
-      }, 100);
+      toast({ title: "Household deleted", description: "All related data has been permanently deleted." });
+      fetchAllHouseholds();
     } catch (error) {
-      console.error('Delete error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete household. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to delete household. Please try again.", variant: "destructive" });
     }
   };
 
   const handleEdit = async () => {
-    console.log('Edit clicked', newName);
-    console.log('Household ID:', household.householdId);
     if (!newName.trim()) {
-      alert('Please enter a household name');
+      toast({ title: "Error", description: "Please enter a household name", variant: "destructive" });
       return;
     }
     try {
-      const result = await HouseholdApi.update(household.householdId, { name: newName });
-      console.log('Update result:', result);
+      await HouseholdApi.update(household.householdId, { name: newName });
+      toast({ title: "Success", description: "Household name updated successfully" });
       await fetchAllHouseholds();
       setIsEditOpen(false);
     } catch (error: any) {
-      console.error('Full error:', error);
-      console.error('Error response:', error?.response);
-      console.error('Error data:', error?.response?.data);
-      alert(error?.response?.data?.message || error?.message || 'Failed to update household name');
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to update household name", variant: "destructive" });
     }
   };
 

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,7 @@ function CreateHouseholdSheet() {
   const [isOpen, setIsOpen] = useState(false);
   const [householdName, setHouseholdName] = useState("");
 
-  const HouseholdApi = useMemo(householdApi, []);
+  const HouseholdApi = householdApi();
   const { fetchAllHouseholds } = useHousehold();
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
