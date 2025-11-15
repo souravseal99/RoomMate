@@ -13,6 +13,7 @@ import { Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getInventoryItems } from "@/api/inventoryApi";
 import type { InventoryItem } from "@/types/inventoryTypes";
+import { toast } from "@/hooks/use-toast";
 
 
 
@@ -20,8 +21,6 @@ function Inventory() {
   const { inventoryItems, setInventoryItems } = useInventory();
   const { selectedHousehold } = useHousehold();
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
-
-// TODO: add warning toast for fetchInventoryItems
 
   const fetchInventoryItems = async () => {
     if (!selectedHousehold?.key) {
@@ -32,7 +31,7 @@ function Inventory() {
       const response = await getInventoryItems(selectedHousehold.key);
       const items = Array.isArray(response) ? response : (response.data?.data || response.data || []);
       const mappedItems = items.map((item: any) => ({
-        id: item.inventoryItemId,
+        inventoryItemId: item.inventoryItemId,
         name: item.name,
         quantity: item.quantity,
         lowThreshold: item.lowThreshold,
@@ -40,6 +39,11 @@ function Inventory() {
       }));
       setInventoryItems(mappedItems);
     } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load inventory",
+        description: "Could not fetch inventory items. Please try again."
+      });
     }
   };
 
@@ -97,7 +101,7 @@ function Inventory() {
             <div className="flex flex-wrap justify-center gap-3 mx-auto">
               {inventoryItems.map((item) => (
                 <InventoryItemCard 
-                  key={item.id} 
+                  key={item.inventoryItemId} 
                   item={item} 
                   onUpdate={fetchInventoryItems}
                 />

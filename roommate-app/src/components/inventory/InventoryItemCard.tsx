@@ -15,13 +15,11 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const updateQuantity = async (newQuantity: number) => {
-    if (newQuantity < 0 || !item.id) return;
+    if (newQuantity < 0 || !item.inventoryItemId) return;
     
     setIsUpdating(true);
     try {
-      // Use inventoryItemId if id is not available
-      const itemId = item.id || (item as any).inventoryItemId;
-      await updateInventoryItem(itemId, { quantity: newQuantity });
+      await updateInventoryItem(item.inventoryItemId, { quantity: newQuantity });
       onUpdate();
     } catch (error) {
       toast.error("Failed to update quantity");

@@ -73,7 +73,7 @@ export function BuySoonPopover() {
             <div className="space-y-2">
               {buySoonItems.map((item) => (
                 <div 
-                  key={item.id} 
+                  key={item.inventoryItemId} 
                   className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-2">

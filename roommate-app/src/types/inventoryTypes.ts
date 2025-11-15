@@ -1,5 +1,5 @@
 export interface InventoryItem {
-  id?: string;
+  inventoryItemId?: string;
   name: string;
   quantity: number;
   lowThreshold: number;
