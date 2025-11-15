@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,7 +21,7 @@ function JoinHouseholdForm() {
   const [inviteCode, setInviteCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const HouseholdApi = useMemo(householdApi, []);
+  const HouseholdApi = householdApi();
   const { fetchAllHouseholds } = useHousehold();
   const { toast } = useToast();
 
