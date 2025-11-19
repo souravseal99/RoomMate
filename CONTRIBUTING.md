@@ -29,46 +29,68 @@ git remote add upstream https://github.com/souravseal99/RoomMate.git
 check if your origin and upstream is properly set -
 
 ```bash
-git remote --v
+git remote -v
 ```
 
-you will see something like this (**NOTE:** As I only have set the origin here, I can only see the origin link but if I had my upstream setup that would be also reflected here) -
+You should see both `origin` (your fork) and `upstream` (main repository) listed.
 
-![alt text](image.png)
+### 2. Install Dependencies
 
-### 2. Setup Backend
-
-#### Setup DB:
-
-There are 3 options to setup the DB
-
-- [create a postgres server](https://www.prisma.io/docs/orm/more/help-and-troubleshooting/dataguide/setting-up-a-local-postgresql-database)
-- [create a docker instance of postgres](https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/)
-- [neon db - a cloud based db offered by vercel](https://neon.com/)
-
-Connect the DB to the backend by modifying the DB related fields in the .env file -
-
-```
-DATABASE_URL = Your database url
-```
-
-Make the Backend up and running -
+This is a Turborepo monorepo, so install all dependencies from the root:
 
 ```bash
-cd roommate-server
-cp .env.example .env
 npm install
-npx run db:migrate
-npm run dev
 ```
 
-### 3. Setup Frontend
+### 3. Setup Environment Variables
 
 ```bash
-cd roommate-app
-cp .env.example .env
-npm install
+# Server environment
+cp apps/server/.env.example apps/server/.env
+
+# Web environment (if .env.example exists)
+cp apps/web/.env.example apps/web/.env
+```
+
+Configure `apps/server/.env` with:
+
+- `DATABASE_URL` (default works with Docker setup below)
+- JWT secrets and other required variables
+
+### 4. Setup Database
+
+The easiest way is using Docker (recommended):
+
+```bash
+npm run db:start
+```
+
+Then run migrations:
+
+```bash
+npm run db:migrate
+```
+
+<details>
+<summary>Alternative Database Setup Options</summary>
+
+- **Local PostgreSQL**: [Install PostgreSQL](https://www.postgresql.org/download/) and create a database
+- **Docker Manual**: Use `docker run` with PostgreSQL image
+- **Cloud Database**: [Neon](https://neon.tech/) or other PostgreSQL hosting
+
+See [README.md](./README.md) for detailed instructions.
+
+</details>
+
+### 5. Start Development
+
+```bash
+# Start both frontend and backend
 npm run dev
+
+# Or start individually:
+npm run dev:server    # Backend only (http://localhost:5000)
+npm run dev:client    # Frontend only (http://localhost:5173)
 ```
 
 #### **NOTE:** Roommate follows mobile first development approach, to simply put, the UI should look good on a mobile device.
@@ -77,17 +99,18 @@ npm run dev
 
 ## 📂 Project Structure
 
-See [README.md](./ReadMe.md) for the full structure. In short:
+This is a **Turborepo monorepo**. See [README.md](./README.md) for the full structure. In short:
 
-- `roommate-app/` → React + Vite + Tailwind + shadcn/ui
-- `roommate-server/` → Express + Prisma + PostgreSQL
+- `apps/web/` → React + Vite + TypeScript + Tailwind + shadcn/ui
+- `apps/server/` → Express + Prisma + PostgreSQL + TypeScript
+- `turbo.json` → Turborepo task pipeline configuration
+- Root `package.json` → Workspaces and shared scripts
 
 ---
 
 ## 🛠️ Contribution Workflow
 
 1. **Create an Issue**
-
    - Check if the issue already exists.
    - If not, open a new issue describing the bug or feature.
    - drop a note asking to contribute on the issue (before you start working)
@@ -105,10 +128,11 @@ See [README.md](./ReadMe.md) for the full structure. In short:
    ```
 
 4. **Write Clean Code**
-
    - Use TypeScript types/interfaces.
    - Follow existing folder conventions (`api`, `services`, `pages`, etc.).
    - Keep components small and reusable. Modularity is a must have.
+   - Run `npm run lint` and `npm run format:check` before committing.
+   - Test your changes with `npm run test` (when applicable).
 
 5. **Commit Messages**
    Follow a consistent style:
@@ -140,10 +164,11 @@ See [README.md](./ReadMe.md) for the full structure. In short:
 
 ## 🎯 Areas You Can Contribute
 
-- **Frontend**: UI components, routing, state management, API integration.
-- **Backend**: Routes, services, validation, Prisma models.
+- **Frontend** (`apps/web/`): UI components, routing, state management, API integration.
+- **Backend** (`apps/server/`): Routes, services, validation, Prisma models.
+- **Monorepo**: Turborepo configuration, shared tooling, build optimization.
 - **Docs**: Improve setup instructions, add examples, clarify workflows.
-- **Tests**: Unit tests & integration tests (coming soon).
+- **Tests**: Unit tests & integration tests.
 
 ---
 
