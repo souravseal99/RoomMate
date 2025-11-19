@@ -1,16 +1,30 @@
 {
-  "devDependencies": {
-    "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3"
-  },
-  "dependencies": {
-    "lucide-react": "^0.553.0",
-    "react-scripts": "^5.0.1",
-    "sonner": "^2.0.7"
-  },
+  "name": "roommate",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "lint": "eslint .",
-    "format:check": "prettier --check .",
-    "test": "jest"
-  }
+    "dev": "turbo dev",
+    "dev:server": "turbo -F roommate-server dev",
+    "dev:client": "turbo -F roommate-web dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "format": "turbo format",
+    "format:check": "turbo format:check",
+    "test": "turbo test",
+    "db:start": "docker compose -f docker-compose.db.yml up -d",
+    "db:stop": "docker compose -f docker-compose.db.yml down",
+    "db:migrate": "turbo db:migrate",
+    "db:studio": "turbo db:studio",
+    "db:generate": "turbo prisma:generate",
+    "clean": "turbo clean && rm -rf node_modules",
+    "clean:all": "turbo clean && rm -rf node_modules apps/*/node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.1"
+  },
+  "packageManager": "npm@9.8.1"
 }
