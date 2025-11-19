@@ -72,6 +72,8 @@ CREATE TABLE "Chore" (
     "frequency" TEXT NOT NULL,
     "nextDue" TIMESTAMP(3) NOT NULL,
     "completed" BOOLEAN NOT NULL DEFAULT false,
+    "priority" TEXT DEFAULT 'MEDIUM',
+    "notes" TEXT,
     "household_id" TEXT NOT NULL,
     "assigned_to_id" TEXT,
 

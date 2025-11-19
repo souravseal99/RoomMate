@@ -64,8 +64,8 @@ function DummyDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-6 bg-white">
-        <div className="max-w-6xl mx-auto">
+      <div className="flex-1 p-6 bg-white flex items-align max-w justify-center">
+        <div className="w-full max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon;

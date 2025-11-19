@@ -31,6 +31,7 @@ export function ShoppingCartTable() {
       }));
       setCartItems(mappedItems);
     } catch (error) {
+      toast.error("Failed to load shopping cart");
     }
   }, [selectedHousehold?.key]);
 
