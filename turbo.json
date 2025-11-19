@@ -1,0 +1,70 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "ui": "tui",
+    "tasks": {
+        "build": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                "dist/**",
+                ".next/**",
+                "!.next/cache/**"
+            ]
+        },
+        "lint": {
+            "dependsOn": [
+                "^lint"
+            ]
+        },
+        "lint:fix": {
+            "dependsOn": [
+                "^lint:fix"
+            ]
+        },
+        "format": {
+            "dependsOn": [
+                "^format"
+            ]
+        },
+        "format:check": {
+            "dependsOn": [
+                "^format:check"
+            ]
+        },
+        "test": {
+            "dependsOn": [
+                "^build"
+            ],
+            "outputs": [
+                "coverage/**"
+            ]
+        },
+        "test:watch": {
+            "cache": false,
+            "persistent": true
+        },
+        "dev": {
+            "cache": false,
+            "persistent": true
+        },
+        "start": {
+            "cache": false,
+            "persistent": true
+        },
+        "db:migrate": {
+            "cache": false
+        },
+        "db:studio": {
+            "cache": false,
+            "persistent": true
+        },
+        "prisma:generate": {
+            "cache": false
+        },
+        "clean": {
+            "cache": false,
+            "outputs": []
+        }
+    }
+}
