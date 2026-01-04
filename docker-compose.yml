@@ -7,11 +7,16 @@ services:
       - ./roommate-app:/app
       - /app/node_modules
     depends_on:
-      - server
+      server:
+        condition: service_healthy
+    networks:
+      - roommate-network
+    restart: unless-stopped
 
   server:
-    user: root
-    build: ./roommate-server
+    build: 
+      context: ./roommate-server
+      target: runner
     ports:
       - "5000:5000"
     volumes:
@@ -24,20 +29,53 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=100
     depends_on:
-      - db
-    command: npm run dev
+      db:
+        condition: service_healthy
+    networks:
+      - roommate-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:5000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      start_period: 40s
+      retries: 3
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp
 
   db:
-    image: postgres:15
-    restart: always
+    image: postgres:15-alpine
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: roommate
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - roommate-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    shm_size: 128mb
+
+networks:
+  roommate-network:
+    driver: bridge
 
 volumes:
   pgdata:
+    driver: local
