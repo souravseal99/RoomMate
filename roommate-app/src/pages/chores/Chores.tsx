@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { choreApi } from "@/api/choreApi";
 import { toast } from "sonner";
 import useHousehold from "@/hooks/useHousehold";
@@ -43,12 +43,12 @@ function Chores() {
   }
 
   const filteredAndSortedChores = useMemo(() => {
-    let filtered = chores.filter(chore => 
+    let filtered = chores.filter((chore: any) => 
       !selectedHousehold?.key || chore.householdId === selectedHousehold.key
     );
 
     if (statusFilter !== "all") {
-      filtered = filtered.filter(chore => {
+      filtered = filtered.filter((chore: any) => {
         const status = getChoreStatus(chore);
         return status.toLowerCase() === statusFilter;
       });
@@ -76,23 +76,23 @@ function Chores() {
   }, [selectedHousehold?.key]);
 
   const fetchChores = async () => {
-    if (!selectedHousehold?.key) return;
-    setLoading(true);
-    try {
-      const data = await choreApi.getChoresByHousehold(selectedHousehold.key);
-      setChores((data || []).map(chore => ({
-        ...chore,
-        assignedToName: chore.assignedTo?.name || '',
-        priority: chore.priority || 'MEDIUM',
-        notes: chore.notes || '',
-      })));
-    } catch (error) {
-      console.error('Fetch chores error:', error);
-      toast.error('Failed to fetch chores');
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!selectedHousehold?.key) return;
+  setLoading(true);
+  try {
+    const data = await choreApi.getChoresByHousehold(selectedHousehold.key);
+    setChores((data || []).map((chore: any) => ({
+      ...chore,
+      assignedToName: chore.assignedTo?.name || '',
+      priority: chore.priority || 'MEDIUM',
+      notes: chore.notes || '',
+    })));
+  } catch (error) {
+    console.error('Fetch chores error:', error);
+    toast.error('Failed to fetch chores');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCreateChore = async (newChore: Partial<ChoreItem>) => {
     if (!selectedHousehold?.key) {
@@ -160,151 +160,153 @@ function Chores() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Chores Manager</h1>
-          <p className="text-sm text-muted-foreground mt-1">Organize and track your household chores</p>
-        </div>
-        <ChoreDialog mode="create" onSave={handleCreateChore} />
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <HouseholdSelector />
-        
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Filter by Status</label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full cursor-pointer bg-card border-2">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">📋 All Chores</SelectItem>
-                <SelectItem value="pending" className="cursor-pointer">⏳ Pending</SelectItem>
-                <SelectItem value="completed" className="cursor-pointer">✅ Completed</SelectItem>
-                <SelectItem value="overdue" className="cursor-pointer">🔴 Overdue</SelectItem>
-              </SelectContent>
-            </Select>
+    <div className="min-h-screen w-full flex items-center justify-center bg-background">
+      <div className="w-full h-full p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Chores Manager</h1>
+            <p className="text-sm text-muted-foreground mt-1">Organize and track your household chores</p>
           </div>
-
-          <div className="flex-1">
-            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Sort by</label>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full cursor-pointer bg-card border-2">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dueDate" className="cursor-pointer">📅 Due Date</SelectItem>
-                <SelectItem value="priority" className="cursor-pointer">⚡ Priority</SelectItem>
-                <SelectItem value="assignee" className="cursor-pointer">👤 Assignee</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <ChoreDialog mode="create" onSave={handleCreateChore} />
         </div>
-      </div>
 
-      {loading ? (
-        <div className="text-center py-12">Loading chores...</div>
-      ) : !selectedHousehold?.key ? (
-        <div className="text-center py-12 text-muted-foreground">Please select a household to view chores</div>
-      ) : filteredAndSortedChores.length === 0 ? (
-        <ChoresEmptyState />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredAndSortedChores.map((chore) => (
-            <div key={chore.choreId} className="relative">
-              <div onClick={() => setSelectedChore(chore)} className="cursor-pointer">
-                <ChoreCard
-                  title={chore.description}
-                  description={`Frequency: ${chore.frequency}`}
-                  dueDate={new Date(chore.nextDue)}
-                  priority={chore.priority}
-                  status={getChoreStatus(chore)}
-                  assignee={{
-                    name: chore.assignedToName || 'Unassigned',
-                    avatar: undefined
-                  }}
-                />
-              </div>
-              <div className="absolute bottom-3 right-3 flex gap-1.5">
-                <ChoreDialog 
-                  mode="edit" 
-                  chore={chore} 
-                  onSave={handleUpdateChore} 
-                />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 bg-white/90 hover:bg-red-50 cursor-pointer shadow-sm">
-                      <Trash2 className="h-3.5 w-3.5 text-red-600" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Chore</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete this chore? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="border-slate-600 text-black-100 hover:bg-white/3 cursor-pointer">Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDeleteChore(chore.choreId)} className="bg-red-600 hover:bg-red-700 text-primary-foreground cursor-pointer">
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
+        <div className="flex flex-col gap-4">
+          <HouseholdSelector />
+          
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Filter by Status</label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full cursor-pointer bg-card border-2">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="cursor-pointer">📋 All Chores</SelectItem>
+                  <SelectItem value="pending" className="cursor-pointer">⏳ Pending</SelectItem>
+                  <SelectItem value="completed" className="cursor-pointer">✅ Completed</SelectItem>
+                  <SelectItem value="overdue" className="cursor-pointer">🔴 Overdue</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          ))}
+
+            <div className="flex-1">
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Sort by</label>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full cursor-pointer bg-card border-2">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dueDate" className="cursor-pointer">📅 Due Date</SelectItem>
+                  <SelectItem value="priority" className="cursor-pointer">⚡ Priority</SelectItem>
+                  <SelectItem value="assignee" className="cursor-pointer">👤 Assignee</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
-      )}
 
-      {selectedChore && (
-        <Dialog open={!!selectedChore} onOpenChange={() => setSelectedChore(null)}>
-          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold break-words">{selectedChore.description}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Priority</p>
-                  <p className="font-semibold text-sm">{selectedChore.priority || 'MEDIUM'}</p>
+        {loading ? (
+          <div className="text-center py-12">Loading chores...</div>
+        ) : !selectedHousehold?.key ? (
+          <div className="text-center py-12 text-muted-foreground">Please select a household to view chores</div>
+        ) : filteredAndSortedChores.length === 0 ? (
+          <ChoresEmptyState />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredAndSortedChores.map((chore) => (
+              <div key={chore.choreId} className="relative">
+                <div onClick={() => setSelectedChore(chore)} className="cursor-pointer">
+                  <ChoreCard
+                    title={chore.description}
+                    description={`Frequency: ${chore.frequency}`}
+                    dueDate={new Date(chore.nextDue)}
+                    priority={chore.priority}
+                    status={getChoreStatus(chore)}
+                    assignee={{
+                      name: chore.assignedToName || 'Unassigned',
+                      avatar: undefined
+                    }}
+                  />
                 </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Frequency</p>
-                  <p className="font-semibold text-sm capitalize">{selectedChore.frequency}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Due Date</p>
-                  <p className="font-semibold text-sm">{new Date(selectedChore.nextDue).toLocaleDateString()}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Status</p>
-                  <p className="font-semibold text-sm">{getChoreStatus(selectedChore)}</p>
+                <div className="absolute bottom-3 right-3 flex gap-1.5">
+                  <ChoreDialog 
+                    mode="edit" 
+                    chore={chore} 
+                    onSave={handleUpdateChore} 
+                  />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 bg-white/90 hover:bg-red-50 cursor-pointer shadow-sm">
+                        <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Chore</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this chore? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="border-slate-600 text-black-100 hover:bg-white/3 cursor-pointer">Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDeleteChore(chore.choreId)} className="bg-red-600 hover:bg-red-700 text-primary-foreground cursor-pointer">
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
-              
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Assigned To</p>
-                <p className="font-semibold text-sm">{selectedChore.assignedToName || 'Unassigned'}</p>
-              </div>
+            ))}
+          </div>
+        )}
 
-              {selectedChore.notes && (
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground font-semibold">Notes</p>
-                  <div className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap break-words">
-                    {selectedChore.notes}
+        {selectedChore && (
+          <Dialog open={!!selectedChore} onOpenChange={() => setSelectedChore(null)}>
+            <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold break-words">{selectedChore.description}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Priority</p>
+                    <p className="font-semibold text-sm">{selectedChore.priority || 'MEDIUM'}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Frequency</p>
+                    <p className="font-semibold text-sm capitalize">{selectedChore.frequency}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Due Date</p>
+                    <p className="font-semibold text-sm">{new Date(selectedChore.nextDue).toLocaleDateString()}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Status</p>
+                    <p className="font-semibold text-sm">{getChoreStatus(selectedChore)}</p>
                   </div>
                 </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+                
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Assigned To</p>
+                  <p className="font-semibold text-sm">{selectedChore.assignedToName || 'Unassigned'}</p>
+                </div>
+
+                {selectedChore.notes && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground font-semibold">Notes</p>
+                    <div className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap break-words">
+                      {selectedChore.notes}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
     </div>
   )
 }
 
-export default Chores
+export default Chores ;
