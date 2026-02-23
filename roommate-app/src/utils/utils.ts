@@ -23,3 +23,27 @@ export function formatCurrency(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount);
 }
+
+/** Get the difference between two dates in days from ISO string format
+ * @param date1 - The first date in ISO string format
+ * @param date2 - The second date in ISO string format (optional, defaults to current date)
+ * @returns The difference between the two dates in days
+ */
+export function getDateDifferenceInDays(date1: string, date2?: string): number {
+  if (!date2) {
+    date2 = new Date().toISOString();
+  }
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  const diffTime = Math.abs(d2.getTime() - d1.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+
+/** Convert a string to snake_case format
+ * @param str - The string to convert
+ * @returns The string in snake_case format with trimmed whitespace
+ */
+export function toSnakeCase(str: string): string {
+  return str.trim().toLowerCase().replace(/\s+/g, "_");
+}

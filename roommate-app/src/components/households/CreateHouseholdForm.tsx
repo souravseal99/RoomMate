@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { HousePlusIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Home } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,18 +20,27 @@ function CreateHouseholdSheet() {
   const [isOpen, setIsOpen] = useState(false);
   const [householdName, setHouseholdName] = useState("");
 
-  const HouseholdApi = useMemo(householdApi, []);
+  const HouseholdApi = householdApi();
   const { fetchAllHouseholds } = useHousehold();
+  const { toast } = useToast();
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleSubmit = async () => {
-    if (!householdName.trim()) return;
+    if (!householdName.trim() || isCreating) return;
+
+    setIsCreating(true);
     try {
       await HouseholdApi.create({ name: householdName });
+      // success
+      toast({ title: "Household created", description: "Your household was created successfully." });
       setIsOpen(false);
       setHouseholdName("");
       fetchAllHouseholds();
     } catch (error) {
-      console.error(error);
+      console.error("Error creating household:", error);
+      toast({ title: "Error", description: "Failed to create household. Please try again." });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -38,7 +48,7 @@ function CreateHouseholdSheet() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
-          <HousePlusIcon className="w-4 h-4" />
+          <Home className="w-4 h-4" />
           <span className="hidden sm:inline">Create Household</span>
           <span className="sm:hidden">Create</span>
         </Button>
@@ -58,7 +68,7 @@ function CreateHouseholdSheet() {
               value={householdName}
               onChange={(e) => setHouseholdName(e.target.value)}
               placeholder="e.g., Downtown Apartment"
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              onKeyDown={(e) => e.key === "Enter" && !isCreating && handleSubmit()}
             />
           </div>
         </div>
@@ -66,8 +76,12 @@ function CreateHouseholdSheet() {
           <Button variant="outline" onClick={() => setIsOpen(false)} className="cursor-pointer">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={!householdName.trim()} className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white">
-            Create Household
+          <Button
+            onClick={handleSubmit}
+            disabled={!householdName.trim() || isCreating}
+            className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {isCreating ? "Creating..." : "Create Household"}
           </Button>
         </DialogFooter>
       </DialogContent>

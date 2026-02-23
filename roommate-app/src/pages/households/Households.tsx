@@ -27,33 +27,34 @@ function Households() {
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden">
       
-      <div className="flex-shrink-0 p-4 sm:p-6 border-b bg-white/80 backdrop-blur-sm">
-        <div className="w-full px-4 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+      <div className="flex-shrink-0 p-6 border-b bg-white/80 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
           <div className="flex-1">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-              <Home className="w-5 h-5 sm:w-7 sm:h-7 text-blue-600" />
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
+              <Home className="w-7 h-7 text-blue-600" />
               <span>Households</span>
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1">Manage your shared living spaces</p>
+            <p className="text-sm text-gray-600 mt-1">Manage your shared living spaces</p>
           </div>
           {households.length > 0 && (
-            <div className="flex gap-2 w-full lg:w-auto">
+            <div className="flex gap-2">
               <JoinHouseholdForm />
               <CreateHouseholdSheet />
             </div>
           )}
         </div>
       </div>
-      <div className="flex-1 overflow-auto p-4 sm:p-6 bg-white">
-        <div className="w-full">
+      
+      <div className="flex-1 overflow-auto p-6 bg-white">
+        <div className="max-w-6xl mx-auto h-full">
           {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 3 }).map((_, index) => (
                 <HouseholdCardSkeleton key={index} />
               ))}
             </div>
           ) : households.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedHouseholds.map((household, index) => (
                 <div key={household.householdId} className="animate-in fade-in slide-in-from-bottom-5 duration-700" style={{animationDelay: `${index * 150}ms`}}>
                   <HouseholdCard household={household} />

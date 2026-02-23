@@ -24,4 +24,18 @@ export class ChoreRepo {
       include: { assignedTo: { select: { userId: true, name: true } } },
     });
   }
+
+  static async getByHousehold(householdId: string) {
+    return await prisma.chore.findMany({
+      where: { householdId },
+      include: { assignedTo: { select: { userId: true, name: true } } },
+      orderBy: { nextDue: 'asc' },
+    });
+  }
+
+  static async delete(choreId: string) {
+    return await prisma.chore.delete({
+      where: { choreId },
+    });
+  }
 }
