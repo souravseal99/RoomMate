@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3"
+  },
+  "dependencies": {
+    "lucide-react": "^0.553.0",
+    "react-scripts": "^5.0.1",
+    "sonner": "^2.0.7"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "test": "jest"
+  }
+}

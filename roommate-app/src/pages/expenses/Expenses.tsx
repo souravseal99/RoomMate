@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import HouseholdSelector from "@/components/expenses/HouseholdSelector";
 import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/hosueholdTypes";
 import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
@@ -12,15 +11,10 @@ import householdMemberApi from "@/api/householdMemberApi";
 type MemberOptions = { key: string; value: string }[];
 
 function Expenses() {
-  const {
-    households,
-    fetchAllHouseholds,
-    selectedHousehold,
-    householdMembers,
-    setHouseholdMembers,
-  } = useHousehold();
+  const { selectedHousehold, householdMembers, setHouseholdMembers } =
+    useHousehold();
 
-  const { expenses, setExpenses, setIsLoading } = useExpense();
+  const { setExpenses, setIsLoading } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
@@ -52,7 +46,7 @@ function Expenses() {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
       if (deletedExpense) {
         setExpenses((prevExpenses) =>
-          prevExpenses.filter((expense) => expense.expenseId !== expenseId)
+          prevExpenses?.filter((expense) => expense.expenseId !== expenseId)
         );
       }
     } catch (error) {
@@ -85,27 +79,14 @@ function Expenses() {
     getHouseholdMembers(selectedHousehold?.key!);
   }, [selectedHousehold?.key]);
 
-  useEffect(() => {
-    fetchAllHouseholds();
-  }, []);
-
   useEffect(() => {}, [householdMembers]);
-
-  const householdNames: HouseholdOptions[] = useMemo(
-    () =>
-      households.map((household) => ({
-        key: household.householdId,
-        value: household.name,
-      })),
-    [households]
-  );
 
   return (
     <section className="container mx-auto mt-1 flex flex-col items-center lg:w-[80rem]">
       <div className="text-center text-3xl font-stretch-70% mb-6 drop-shadow-lg tracking-wide">
         💸 Expenses
       </div>
-      <HouseholdSelector householdOptions={householdNames} />
+      <HouseholdSelector />
       <AddExpenseSheet
         householdMemberOptions={householdMemberOptions}
         selectedHousehold={selectedHousehold}

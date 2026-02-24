@@ -28,11 +28,13 @@ import { toast } from "sonner";
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
   getExpenses: () => void;
+  setIsSubmitting?: (v: boolean) => void;
 };
 
 export default function AddExpenseForm({
   householdMemberOptions,
   getExpenses,
+  setIsSubmitting,
 }: Props) {
   const { selectedHousehold } = useHousehold();
 
@@ -45,6 +47,9 @@ export default function AddExpenseForm({
     paidById: "",
     sharedWith: [] as string[],
   });
+
+  // Local guard to avoid duplicate submits when setIsSubmitting isn't passed
+  const [localSubmitting, setLocalSubmitting] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -71,6 +76,10 @@ export default function AddExpenseForm({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    // Prevent duplicate submits
+    if (localSubmitting) return;
+    setLocalSubmitting(true);
+    setIsSubmitting?.(true);
 
     try {
       const resp = await ExpenseApi.create(formData).then((response) => {
@@ -93,6 +102,9 @@ export default function AddExpenseForm({
         position: "top-center",
       });
       console.error("Error adding expense:", error);
+    } finally {
+      setLocalSubmitting(false);
+      setIsSubmitting?.(false);
     }
   };
 
