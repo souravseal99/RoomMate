@@ -1,5 +1,5 @@
 import api from "@/api/axios";
-import type { CreateExpenseRequestType } from "@/types/expenseTypes";
+import type { CreateExpenseRequestType, SettlementRequest, SettlementResponse } from "@/types/expenseTypes";
 
 export interface BalanceEntry {
   userId: string;
@@ -45,11 +45,24 @@ const expenseApi = () => {
     return data.data;
   };
 
+  const createSettlement = async (requestBody: SettlementRequest) => {
+    const { data, status } = await api.post("/expense/settlement", requestBody);
+    return { data, status };
+  };
+
+  const fetchSettlements = async (householdId: string | undefined): Promise<SettlementResponse[] | undefined> => {
+    if (!householdId) return;
+    const { data } = await api.get(`/expense/settlement/for/${householdId}`);
+    return data.data;
+  };
+
   return {
     fetchByHouseholdId,
     create,
     deleteByExpenseId,
     fetchBalances,
+    createSettlement,
+    fetchSettlements,
   };
 };
 
