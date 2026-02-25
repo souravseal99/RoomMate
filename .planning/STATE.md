@@ -12,11 +12,19 @@ See: `.planning/PROJECT.md` (updated 2026-02-25)
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| 1: Authentication & Households | ○ Pending | 0% |
-| 2: Expense Tracking | ○ Pending | 0% |
+| 1: Authentication & Households | ● In Progress | 0% |
+| 2: Expense Tracking | ● In Progress | 0% |
 | 3: Chore Management | ○ Pending | 0% |
 | 4: Inventory Management | ○ Pending | 0% |
 | 5: Dashboard & Notifications | ○ Pending | 0% |
+
+## Current Plan
+
+- **Phase:** 02-expense-tracking
+- **Plan:** 02 (Settlement Feature)
+- **Status:** Complete
+- **Tasks Completed:** 6/6
+- **Last Session:** Completed 02-02-PLAN.md
 
 ## Configuration
 
@@ -31,17 +39,20 @@ See: `.planning/PROJECT.md` (updated 2026-02-25)
 
 ### Completed Phases
 
-(None yet)
+- 01: Authentication & Households - partially complete (initial setup)
 
 ### Active Phase
 
-(None — project just initialized)
+**Phase 2: Expense Tracking**
+
+- 02-01: Balance Calculation ✓
+- 02-02: Settlement Feature ✓ (just completed)
 
 ### Next Up
 
-**Phase 1: Authentication & Households**
+**Phase 3: Chore Management**
 
-Focus: Core user system with authentication and household management
+Focus: Chore scheduling and tracking
 
 ---
 
@@ -51,6 +62,17 @@ Focus: Core user system with authentication and household management
 - **Tech Stack:** React + Express + PostgreSQL + Prisma
 - **Requirements:** 29 v1, 8 v2
 - **Phases:** 5
+
+---
+
+## Decisions Made
+
+- Users can only settle their own debts (validated on server)
+- Settlement is a balance-level payment, not expense-level
+
+## Blockers
+
+(None)
 
 ---
 
