@@ -71,7 +71,7 @@
 
 **Plans:**
 
-- [ ] 02-01-PLAN.md — Balance Summary UI + Settlement Algorithm
+- [x] 02-01-PLAN.md — Balance Summary UI + Settlement Algorithm
 - [ ] 02-02-PLAN.md — Settlement Feature (Mark as Paid)
 
 ---

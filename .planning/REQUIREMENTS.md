@@ -27,7 +27,7 @@ AUTH-03**:- [ ] ** User can log out from any page
 - [ ] **EXPN-01**: User can add an expense with amount and description
 - [ ] **EXPN-02**: User can split expense among household members
 - [ ] **EXPN-03**: User can view expense history
-- [ ] **EXPN-04**: User can view balance summary (who owes whom)
+- [x] **EXPN-04**: User can view balance summary (who owes whom)
 - [ ] **EXPN-05**: User can mark expense as settled
 
 ### Chores
@@ -98,7 +98,7 @@ Deferred to future release. Tracked but not in current roadmap.
 | EXPN-01 | Phase 2 | Pending |
 | EXPN-02 | Phase 2 | Pending |
 | EXPN-03 | Phase 2 | Pending |
-| EXPN-04 | Phase 2 | Pending |
+| EXPN-04 | Phase 2 | Complete |
 | EXPN-05 | Phase 2 | Pending |
 | CHOR-01 | Phase 3 | Pending |
 | CHOR-02 | Phase 3 | Pending |
