@@ -22,7 +22,7 @@ See: `.planning/PROJECT.md` (updated 2026-02-25)
 
 - **Phase:** 02-expense-tracking
 - **Plan:** 02 (Settlement Feature)
-- **Status:** Complete
+- **Status:** Milestone complete
 - **Tasks Completed:** 6/6
 - **Last Session:** Completed 02-02-PLAN.md
 

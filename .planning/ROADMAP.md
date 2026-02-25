@@ -9,7 +9,7 @@
 | Phase | Name | Goal | Requirements | Success Criteria |
 |-------|------|------|--------------|------------------|
 | 1 | Authentication & Households | Core user system | 8 | 5 |
-| 2 | Expense Tracking | Financial management | 5 | 4 |
+| 2 | Expense Tracking | Complete    | 2026-02-25 | 4 |
 | 3 | Chore Management | Task coordination | 4 | 3 |
 | 4 | Inventory Management | Shared物品 tracking | 5 | 4 |
 | 5 | Dashboard & Notifications | Overview and alerts | 4 | 4 |
@@ -71,7 +71,7 @@
 
 **Plans:**
 
-- [x] 02-01-PLAN.md — Balance Summary UI + Settlement Algorithm
+2/2 plans complete
 - [ ] 02-02-PLAN.md — Settlement Feature (Mark as Paid)
 
 ---
