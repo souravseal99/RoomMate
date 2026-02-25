@@ -4,6 +4,7 @@ import useHousehold from "@/hooks/useHousehold";
 import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
 import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
 import ExpenseViewer from "@/components/expenses/ExpenseViewer";
+import BalanceSummary from "@/components/expenses/BalanceSummary";
 import expenseApi from "@/api/expenseApi";
 import useExpense from "@/hooks/useExpense";
 import householdMemberApi from "@/api/householdMemberApi";
@@ -14,13 +15,15 @@ function Expenses() {
   const { selectedHousehold, householdMembers, setHouseholdMembers } =
     useHousehold();
 
-  const { setExpenses, setIsLoading } = useExpense();
+  const { setExpenses, setIsLoading, expenses } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
 
   const [householdMemberOptions, setHouseholdMemberOptions] =
     useState<MemberOptions>([{ key: "", value: "" }]);
+  
+  const [balanceRefreshKey, setBalanceRefreshKey] = useState(0);
 
   const getExpenses = async () => {
     if (!selectedHousehold?.key) {
@@ -41,6 +44,11 @@ function Expenses() {
     }
   };
 
+  const handleExpensesChange = () => {
+    getExpenses();
+    setBalanceRefreshKey((k) => k + 1);
+  };
+
   const handleDeleteExpense = async (expenseId: string) => {
     try {
       const deletedExpense = await ExpenseApi.deleteByExpenseId(expenseId);
@@ -48,6 +56,7 @@ function Expenses() {
         setExpenses((prevExpenses) =>
           prevExpenses?.filter((expense) => expense.expenseId !== expenseId)
         );
+        setBalanceRefreshKey((k) => k + 1);
       }
     } catch (error) {
       console.error(error);
@@ -90,14 +99,17 @@ function Expenses() {
       <AddExpenseSheet
         householdMemberOptions={householdMemberOptions}
         selectedHousehold={selectedHousehold}
-        getExpenses={getExpenses}
+        getExpenses={handleExpensesChange}
       />
       {/* //NOTE - Have to use conteext here to resolve the expenses retention
       problem */}
       {!selectedHousehold?.value ? (
         <SelectHouseholdAlert />
       ) : (
-        <ExpenseViewer handleDeleteExpense={handleDeleteExpense} />
+        <>
+          <BalanceSummary householdId={selectedHousehold?.key} refreshKey={balanceRefreshKey} />
+          <ExpenseViewer handleDeleteExpense={handleDeleteExpense} />
+        </>
       )}
     </section>
   );
