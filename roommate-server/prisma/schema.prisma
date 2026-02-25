@@ -23,11 +23,13 @@ model User {
   createdAt DateTime @default(now())
 
   // Relations
-  households HouseholdMember[]
-  expenses   Expense[]         @relation("UserExpensesPaid")
-  chores     Chore[]           @relation("UserChoresAssigned")
-  splits     ExpenseSplit[]
-  sessions   Session[]
+  households      HouseholdMember[]
+  expenses        Expense[]           @relation("UserExpensesPaid")
+  chores          Chore[]             @relation("UserChoresAssigned")
+  splits          ExpenseSplit[]
+  sessions        Session[]
+  settlementsFrom Settlement[]        @relation("SettlementsFrom")
+  settlementsTo   Settlement[]        @relation("SettlementsTo")
 }
 
 /// User sessions for multi-tab authentication
@@ -55,6 +57,7 @@ model Household {
   chores        Chore[]
   inventory     InventoryItem[]
   shoppingCarts ShoppingCart[]
+  settlements   Settlement[]
 }
 
 /// Many-to-many relation between users & households
@@ -148,5 +151,21 @@ model ShoppingCart {
   householdId String @map("household_id")
 
   // Relations
+  household Household @relation(fields: [householdId], references: [householdId])
+}
+
+/// Settlement records - tracks debt payments between users
+model Settlement {
+  settlementId String   @id @default(uuid()) @map("settlement_id")
+  amount       Float
+  createdAt    DateTime @default(now())
+
+  fromUserId  String @map("from_user_id")
+  toUserId    String @map("to_user_id")
+  householdId String @map("household_id")
+
+  // Relations
+  fromUser  User      @relation("SettlementsFrom", fields: [fromUserId], references: [userId])
+  toUser    User      @relation("SettlementsTo", fields: [toUserId], references: [userId])
   household Household @relation(fields: [householdId], references: [householdId])
 }
