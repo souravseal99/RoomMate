@@ -6,7 +6,7 @@ import { ApiResponse } from "@src/common/utils/ApiResponse";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
-import calculateBalance from "@src/expenses/calculateBalance";
+import calculateBalance, { calculateSettlements, BalanceEntry } from "@src/expenses/calculateBalance";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith: string[]) {
@@ -86,7 +86,37 @@ export class ExpenseService {
       );
 
     const balances = calculateBalance(expenses as unknown as ExpenseDto[]);
+    
+    // Get all household members to include those with $0 balance
+    const householdMembers = await HouseholdMemberRepo.getByHouseholdId(householdId);
+    
+    // If no household members found, return the calculated balances
+    if (!householdMembers || householdMembers.length === 0) {
+      return ApiResponse.success({
+        balances: balances,
+        settlements: [],
+      });
+    }
+    
+    // Create a map of existing balances
+    const balanceMap = new Map(balances.map(b => [b.userId, b]));
+    
+    // Build complete balance list including $0 members
+    const allBalances: BalanceEntry[] = householdMembers.map(member => {
+      const existing = balanceMap.get(member.userId);
+      return {
+        userId: member.userId,
+        name: member.user.name,
+        balance: existing?.balance ?? 0,
+      };
+    });
+    
+    // Calculate settlements from the complete balances
+    const settlements = calculateSettlements(allBalances);
 
-    return ApiResponse.success(balances);
+    return ApiResponse.success({
+      balances: allBalances,
+      settlements: settlements,
+    });
   }
 }
