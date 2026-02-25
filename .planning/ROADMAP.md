@@ -69,6 +69,11 @@
 3. **Balance calculation works** — System calculates who owes whom accurately
 4. **Settlement is possible** — Users can mark debts as settled
 
+**Plans:**
+
+- [ ] 02-01-PLAN.md — Balance Summary UI + Settlement Algorithm
+- [ ] 02-02-PLAN.md — Settlement Feature (Mark as Paid)
+
 ---
 
 ## Phase 3: Chore Management
