@@ -25,4 +25,17 @@ expenseRouter.get(
   ExpenseController.getBalances
 );
 
+// Settlement endpoints
+expenseRouter.post(
+  "/settlement",
+  ensureAuthenticated,
+  ExpenseController.createSettlement
+);
+
+expenseRouter.get(
+  "/settlement/for/:householdId",
+  ensureAuthenticated,
+  ExpenseController.getSettlements
+);
+
 export default expenseRouter;
