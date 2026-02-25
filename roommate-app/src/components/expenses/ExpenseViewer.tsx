@@ -39,6 +39,8 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
               <TableHead className="font-serif font-black text-right">
                 Amount
               </TableHead>
+              <TableHead className="font-serif font-black">Status</TableHead>
+              <TableHead className="text-right"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -54,6 +56,11 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     {formatCurrency(expense.amount)}
+                  </TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                      Pending
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <Trash2Icon
