@@ -12,6 +12,10 @@ import {
 import { dateFormatterUtc, formatCurrency } from "@/utils/utils";
 import useExpense from "@/hooks/useExpense";
 import ExpenseTableSkeleton from "./ExpenseTableSkeleton";
+import { useEffect, useState, useMemo } from "react";
+import expenseApi from "@/api/expenseApi";
+import type { SettlementResponse } from "@/types/expenseTypes";
+import useHousehold from "@/hooks/useHousehold";
 
 type ExpenseViewerProps = {
   handleDeleteExpense: (expenseId: string) => Promise<void>;
@@ -19,6 +23,47 @@ type ExpenseViewerProps = {
 
 function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
   const { expenses, isLoading } = useExpense();
+  const { selectedHousehold } = useHousehold();
+  const [settlements, setSettlements] = useState<SettlementResponse[]>([]);
+
+  const ExpenseApi = useMemo(expenseApi, []);
+
+  // Fetch settlements when household changes
+  useEffect(() => {
+    const fetchSettlements = async () => {
+      if (!selectedHousehold?.key) {
+        setSettlements([]);
+        return;
+      }
+      try {
+        const data = await ExpenseApi.fetchSettlements(selectedHousehold.key);
+        if (data) {
+          setSettlements(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch settlements:", error);
+      }
+    };
+
+    fetchSettlements();
+  }, [selectedHousehold?.key, ExpenseApi]);
+
+  // Check if an expense is settled
+  // An expense is settled when all splits to the payer have been settled
+  const isExpenseSettled = (expense: { expenseId: string; paidById: string; amount: number }) => {
+    if (settlements.length === 0) return false;
+
+    // Calculate total amount owed to the payer from settlements
+    const totalSettledToPayer = settlements
+      .filter(s => s.toUserId === expense.paidById)
+      .reduce((sum, s) => sum + s.amount, 0);
+
+    // If the total settled amount >= expense amount, it's settled
+    // Note: This is a simplification. In reality, we should track settlements per expense
+    // But since settlements are for balances, we check if the payer has received 
+    // at least the expense amount in settlements
+    return totalSettledToPayer >= expense.amount;
+  };
 
   const ExpenseTable = () => {
     return (
@@ -58,9 +103,15 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
                     {formatCurrency(expense.amount)}
                   </TableCell>
                   <TableCell>
-                    <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                      Pending
-                    </span>
+                    {isExpenseSettled(expense) ? (
+                      <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                        Settled
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                        Pending
+                      </span>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <Trash2Icon

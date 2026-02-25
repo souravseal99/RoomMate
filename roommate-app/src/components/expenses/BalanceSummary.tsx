@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import expenseApi, { BalanceEntry, Settlement } from "@/api/expenseApi";
+import expenseApi, { type BalanceEntry, type Settlement } from "@/api/expenseApi";
 import { formatCurrency } from "@/utils/utils";
 import { getCurrentUserId } from "@/utils/jwt";
 import { Button } from "@/components/ui/button";
