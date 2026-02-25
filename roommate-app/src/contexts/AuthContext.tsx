@@ -1,5 +1,6 @@
 import api from "@/api/axios";
 import TokenStore from "@/lib/TokenStore";
+import { logoutUser } from "@/api/authApi";
 import {
   createContext,
   type ReactNode,
@@ -79,32 +80,21 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     TokenStore.setToken(token);
   };
 
-  //TODO - Implement logout API call
+  // Logout - calls API and clears local state
   const logout = async () => {
-    TokenStore.clearSession();
-    setAccessToken(null);
-    setEmail(null);
-    setName(null);
-    setIsAuthenticated(false);
-    TokenStore.setToken(null);
-
-    // try {
-    //   setReady(false);
-    //   const res = await Axios.get("/auth/logout");
-    //   if (res.status === 200) {
-    //     console.log("Logout successful");
-    //     setReady(true);
-    //   } else {
-    //     console.error("Logout failed with status: ", res);
-    //   }
-    // } catch (error) {
-    //   console.error("Logout failed: ", error);
-    // } finally {
-    //   setAccessToken(null);
-    //   setEmail(null);
-    //   setIsAuthenticated(false);
-    //   TokenStore.setToken(null);
-    // }
+    try {
+      await logoutUser();
+    } catch (error) {
+      // Continue with logout even if API call fails
+      console.error("Logout API call failed:", error);
+    } finally {
+      TokenStore.clearSession();
+      setAccessToken(null);
+      setEmail(null);
+      setName(null);
+      setIsAuthenticated(false);
+      TokenStore.setToken(null);
+    }
   };
 
   const providerValues = useMemo(
