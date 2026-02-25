@@ -4,6 +4,9 @@ import Header from './components/Header';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import CreateHousehold from './pages/CreateHousehold';
+import JoinHousehold from './pages/JoinHousehold';
+import HouseholdMembers from './pages/HouseholdMembers';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -44,6 +47,38 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/household/create" 
+          element={
+            <ProtectedRoute>
+              <CreateHousehold />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/household/join" 
+          element={
+            <ProtectedRoute>
+              <JoinHousehold />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/household/join/:inviteCode" 
+          element={
+            <ProtectedRoute>
+              <JoinHousehold />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/household/:householdId/members" 
+          element={
+            <ProtectedRoute>
+              <HouseholdMembers />
             </ProtectedRoute>
           } 
         />
