@@ -41,6 +41,12 @@
 4. **User can join household** — User can join existing household using invite code
 5. **User can manage membership** — Users can view members and leave household
 
+**Plans:**
+
+- [ ] 01-01-PLAN.md — Backend: Leave household functionality
+- [ ] 01-02-PLAN.md — Frontend: Auth UI (login, signup, logout)
+- [ ] 01-03-PLAN.md — Frontend: Household management UI
+
 ---
 
 ## Phase 2: Expense Tracking
