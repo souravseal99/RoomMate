@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,5 +24,12 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.agents
 
 /generated/prisma
+
+
+# Vitest cache and coverage
+.vitest
+coverage
+

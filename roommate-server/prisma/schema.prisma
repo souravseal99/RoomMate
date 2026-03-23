@@ -23,11 +23,13 @@ model User {
   createdAt DateTime @default(now())
 
   // Relations
-  households HouseholdMember[]
-  expenses   Expense[]         @relation("UserExpensesPaid")
-  chores     Chore[]           @relation("UserChoresAssigned")
-  splits     ExpenseSplit[]
-  sessions   Session[]
+  households      HouseholdMember[]
+  expenses        Expense[]           @relation("UserExpensesPaid")
+  chores          Chore[]             @relation("UserChoresAssigned")
+  splits          ExpenseSplit[]
+  sessions        Session[]
+  settlementsFrom Settlement[]        @relation("SettlementsFrom")
+  settlementsTo   Settlement[]        @relation("SettlementsTo")
 }
 
 /// User sessions for multi-tab authentication
@@ -50,10 +52,12 @@ model Household {
   createdAt   DateTime @default(now())
 
   // Relations
-  members   HouseholdMember[]
-  expenses  Expense[]
-  chores    Chore[]
-  inventory InventoryItem[]
+  members       HouseholdMember[]
+  expenses      Expense[]
+  chores        Chore[]
+  inventory     InventoryItem[]
+  shoppingCarts ShoppingCart[]
+  settlements   Settlement[]
 }
 
 /// Many-to-many relation between users & households
@@ -112,6 +116,8 @@ model Chore {
   frequency   String
   nextDue     DateTime
   completed   Boolean  @default(false)
+  priority    String?  @default("MEDIUM")
+  notes       String?
 
   householdId  String  @map("household_id")
   assignedToId String? @map("assigned_to_id")
@@ -132,5 +138,34 @@ model InventoryItem {
   householdId String @map("household_id")
 
   // Relations
+  household Household @relation(fields: [householdId], references: [householdId])
+}
+
+/// Shopping cart items for households
+model ShoppingCart {
+  shoppingCartId String   @id @default(uuid()) @map("shopping_cart_id")
+  itemName       String   @map("item_name")
+  quantity       Int
+  createdAt      DateTime @default(now())
+
+  householdId String @map("household_id")
+
+  // Relations
+  household Household @relation(fields: [householdId], references: [householdId])
+}
+
+/// Settlement records - tracks debt payments between users
+model Settlement {
+  settlementId String   @id @default(uuid()) @map("settlement_id")
+  amount       Float
+  createdAt    DateTime @default(now())
+
+  fromUserId  String @map("from_user_id")
+  toUserId    String @map("to_user_id")
+  householdId String @map("household_id")
+
+  // Relations
+  fromUser  User      @relation("SettlementsFrom", fields: [fromUserId], references: [userId])
+  toUser    User      @relation("SettlementsTo", fields: [toUserId], references: [userId])
   household Household @relation(fields: [householdId], references: [householdId])
 }

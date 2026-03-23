@@ -42,4 +42,23 @@ export class HouseholdMemberRepo {
       },
     });
   }
+
+  static async leave(userId: string, householdId: string) {
+    try {
+      return await prisma.householdMember.delete({
+        where: {
+          userId_householdId: {
+            userId,
+            householdId,
+          },
+        },
+      });
+    } catch (error: any) {
+      // P2025: Record to delete does not exist
+      if (error.code === "P2025") {
+        return null;
+      }
+      throw error;
+    }
+  }
 }

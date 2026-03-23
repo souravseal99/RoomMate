@@ -6,13 +6,16 @@ import { parseDate } from "@src/common/utils/utils";
 
 export class ChoreController {
   static async add(request: Request, response: Response) {
-    const { householdId, description, frequency, assignedToId } = request.body;
+    const { householdId, description, frequency, assignedToId, priority, notes, nextDue } = request.body;
 
     const addChoreRequest: ChoreDto = {
       householdId,
       description,
       frequency,
       assignedToId,
+      priority,
+      notes,
+      nextDue: nextDue ? parseDate(nextDue) : undefined,
     };
 
     const { status, message, data } = await ChoreService.add(addChoreRequest);
@@ -25,13 +28,17 @@ export class ChoreController {
 
   static async completeChore(request: Request, response: Response) {
     const { choreId } = request.params;
-    const { assignedToId, nextDue, completed } = request.body;
+    const { assignedToId, nextDue, completed, priority, notes, description, frequency } = request.body;
 
     const updateChoreRequest: UpdateChoreType = {
       assignedToId,
       nextDue,
       completed,
       choreId,
+      priority,
+      notes,
+      description,
+      frequency,
     };
 
     if (updateChoreRequest.nextDue)
@@ -40,6 +47,28 @@ export class ChoreController {
     const { status, message, data } = await ChoreService.completeChore(
       updateChoreRequest
     );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async getByHousehold(request: Request, response: Response) {
+    const { householdId } = request.params;
+
+    const { status, message, data } = await ChoreService.getByHousehold(householdId);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async delete(request: Request, response: Response) {
+    const { choreId } = request.params;
+
+    const { status, message, data } = await ChoreService.delete(choreId);
 
     return response.status(status).json({
       message: message,

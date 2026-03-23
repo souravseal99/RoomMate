@@ -5,8 +5,9 @@ import ExpenseSplitDto from "@src/common/dtos/ExpenseSplitDto";
 import { ApiResponse } from "@src/common/utils/ApiResponse";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
+import { SettlementRepo } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
-import calculateBalance from "@src/expenses/calculateBalance";
+import calculateBalance, { calculateSettlements, BalanceEntry } from "@src/expenses/calculateBalance";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith: string[]) {
@@ -86,7 +87,65 @@ export class ExpenseService {
       );
 
     const balances = calculateBalance(expenses as unknown as ExpenseDto[]);
+    
+    // Get all household members to include those with $0 balance
+    const householdMembers = await HouseholdMemberRepo.getByHouseholdId(householdId);
+    
+    // If no household members found, return the calculated balances
+    if (!householdMembers || householdMembers.length === 0) {
+      return ApiResponse.success({
+        balances: balances,
+        settlements: [],
+      });
+    }
+    
+    // Create a map of existing balances
+    const balanceMap = new Map(balances.map(b => [b.userId, b]));
+    
+    // Build complete balance list including $0 members
+    let allBalances: BalanceEntry[] = householdMembers.map(member => {
+      const existing = balanceMap.get(member.userId);
+      return {
+        userId: member.userId,
+        name: member.user.name,
+        balance: existing?.balance ?? 0,
+      };
+    });
+    
+    // Get settlements and subtract them from balances
+    const settlements = await SettlementRepo.getByHouseholdId(householdId);
+    
+    if (settlements && settlements.length > 0) {
+      // Create a mutable copy of balances
+      const balanceAdjustmentMap = new Map<string, number>();
+      
+      // Calculate settlement adjustments
+      settlements.forEach(settlement => {
+        // fromUser paid, so their balance increases (less negative/more positive)
+        const currentFrom = balanceAdjustmentMap.get(settlement.fromUserId) ?? 0;
+        balanceAdjustmentMap.set(settlement.fromUserId, currentFrom + settlement.amount);
+        
+        // toUser received, so their balance decreases (more negative/less positive)
+        const currentTo = balanceAdjustmentMap.get(settlement.toUserId) ?? 0;
+        balanceAdjustmentMap.set(settlement.toUserId, currentTo - settlement.amount);
+      });
+      
+      // Apply adjustments to balances
+      allBalances = allBalances.map(entry => {
+        const adjustment = balanceAdjustmentMap.get(entry.userId) ?? 0;
+        return {
+          ...entry,
+          balance: Math.round((entry.balance + adjustment) * 100) / 100,
+        };
+      });
+    }
+    
+    // Recalculate settlements from the adjusted balances
+    const adjustedSettlements = calculateSettlements(allBalances);
 
-    return ApiResponse.success(balances);
+    return ApiResponse.success({
+      balances: allBalances,
+      settlements: adjustedSettlements,
+    });
   }
 }

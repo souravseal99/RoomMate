@@ -27,12 +27,38 @@ export class HouseholdRepository {
   static async getHouseholdsByUser(userId: string) {
     return await prisma.household.findMany({
       where: { members: { some: { userId } } },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
   static async getHouseholdById(householdId: string) {
     return await prisma.household.findFirst({
       where: { householdId },
+    });
+  }
+
+  static async findNamesLikeByUser(userId: string, baseName: string) {
+    return await prisma.household.findMany({
+      where: {
+        members: { some: { userId: userId, role: Role.ADMIN } },
+        OR: [
+          { name: baseName },
+          { name: { startsWith: `${baseName} (` } },
+        ],
+      },
+      select: { name: true },
     });
   }
 
