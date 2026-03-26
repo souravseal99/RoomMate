@@ -25,6 +25,7 @@ dist-ssr
 *.sw?
 .env
 .agents
+.github
 
 /generated/prisma
 
@@ -32,4 +33,5 @@ dist-ssr
 # Vitest cache and coverage
 .vitest
 coverage
+.package-lock.json
 
