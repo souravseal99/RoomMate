@@ -5,12 +5,12 @@
   },
   "dependencies": {
     "lucide-react": "^0.553.0",
-    "react-scripts": "^5.0.1",
     "sonner": "^2.0.7"
   },
   "scripts": {
-    "lint": "eslint .",
-    "format:check": "prettier --check .",
-    "test": "jest"
+    "lint": "npm run lint --prefix roommate-app",
+    "format:check": "npm run format:check --prefix roommate-app",
+    "test": "npm test --prefix roommate-server",
+    "type-check": "cd roommate-app && npm run build && cd ../roommate-server && npx tsc --noEmit"
   }
 }
