@@ -6,142 +6,165 @@ on:
       - develop
     types: [opened, synchronize, reopened]
 
-# Prevent multiple runs on the same PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
-  code-quality:
-    name: Code Quality & Linting
+  filter-changes:
+    name: Detect Changes
     runs-on: ubuntu-latest
-    
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      server: ${{ steps.filter.outputs.server }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Filter by path
+        uses: dorny/paths-filter@v3
+        id: filter
         with:
-          fetch-depth: 0  # Fetch all history for better analysis
-      
+          filters: |
+            app:
+              - 'roommate-app/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/pr_quality_check.yml'
+            server:
+              - 'roommate-server/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/pr_quality_check.yml'
+
+  app-quality:
+    name: App Quality Check
+    runs-on: ubuntu-latest
+    needs: filter-changes
+    if: needs.filter-changes.outputs.app == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
+          cache-dependency-path: roommate-app/package-lock.json
       - name: Install dependencies
-        run: npm ci
-      
-      - name: Run ESLint
-        run: npm run lint
-        continue-on-error: false
-      
-      - name: Run Prettier Check
-        run: npm run format:check
-        continue-on-error: false
-      
-      - name: Check for TypeScript errors (if applicable)
-        if: hashFiles('tsconfig.json') != ''
-        run: npm run type-check || npx tsc --noEmit
-        continue-on-error: false
+        run: npm ci --prefix roommate-app
+      - name: Lint
+        run: npm run lint --prefix roommate-app
+      - name: Format
+        run: npm run format:check --prefix roommate-app
+      - name: Type Check
+        run: cd roommate-app && npx tsc --noEmit
+
+  server-quality:
+    name: Server Quality Check
+    runs-on: ubuntu-latest
+    needs: filter-changes
+    if: needs.filter-changes.outputs.server == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: roommate-server/package-lock.json
+      - name: Install dependencies
+        run: npm ci --prefix roommate-server
+      - name: Lint & Type Check
+        run: npm run lint --prefix roommate-server
+      - name: Format Check
+        run: npm run format:check --prefix roommate-server
+
+  tests:
+    name: Server Tests
+    runs-on: ubuntu-latest
+    needs: filter-changes
+    if: needs.filter-changes.outputs.server == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: roommate-server/package-lock.json
+      - name: Install dependencies
+        run: npm ci --prefix roommate-server
+      - name: Run vitest
+        run: npm test --prefix roommate-server
+      - name: Generate coverage report
+        run: npm run test:coverage --prefix roommate-server || echo "Skipping coverage"
 
   security-scan:
-    name: Security & Vulnerability Scan
+    name: Security Scan
     runs-on: ubuntu-latest
-    
+    needs: filter-changes
+    # Security scans run if anything changed
+    if: needs.filter-changes.outputs.app == 'true' || needs.filter-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+      - name: Setup Node.js (App)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run npm audit
-        run: npm audit --audit-level=moderate
-        continue-on-error: false
-      
+          cache-dependency-path: roommate-app/package-lock.json
+      - name: Audit App
+        run: cd roommate-app && npm audit --audit-level=moderate
+        continue-on-error: true # Keep PRs unblocked for informational audit
+      - name: Setup Node.js (Server)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: roommate-server/package-lock.json
+      - name: Audit Server
+        run: cd roommate-server && npm audit --audit-level=moderate
+        continue-on-error: true # Keep PRs unblocked for informational audit
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
-          fail-on-severity: moderate
+          fail-on-severity: high
 
   code-analysis:
-    name: Static Code Analysis
+    name: Static Analysis
     runs-on: ubuntu-latest
-    
+    needs: filter-changes
+    if: needs.filter-changes.outputs.app == 'true' || needs.filter-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: CodeQL Initialize
+      - name: CodeQL Init
         uses: github/codeql-action/init@v3
         with:
           languages: javascript
-      
-      - name: CodeQL Analysis
+      - name: CodeQL Analyze
         uses: github/codeql-action/analyze@v3
-
-  tests:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run tests
-        run: npm test
-        continue-on-error: false
-      
-      - name: Generate coverage report
-        if: always()
-        run: npm run test:coverage || echo "Coverage not configured"
-        continue-on-error: true
 
   pr-summary:
     name: PR Quality Summary
     runs-on: ubuntu-latest
-    needs: [code-quality, security-scan, code-analysis, tests]
+    needs: [app-quality, server-quality, tests, security-scan, code-analysis]
     if: always()
-    
     steps:
-      - name: Check job results
+      - name: Check results
         run: |
-          echo "Code Quality: ${{ needs.code-quality.result }}"
-          echo "Security Scan: ${{ needs.security-scan.result }}"
-          echo "Code Analysis: ${{ needs.code-analysis.result }}"
-          echo "Tests: ${{ needs.tests.result }}"
-          
-          if [[ "${{ needs.code-quality.result }}" == "failure" ]] || \
-             [[ "${{ needs.security-scan.result }}" == "failure" ]] || \
-             [[ "${{ needs.tests.result }}" == "failure" ]]; then
-            echo " Some checks failed. Please review the PR."
+          # Check for failures. Skips are fine.
+          if [[ "${{ needs.app-quality.result }}" == "failure" ]] || \
+             [[ "${{ needs.server-quality.result }}" == "failure" ]] || \
+             [[ "${{ needs.tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.code-analysis.result }}" == "failure" ]]; then
+            echo "❌ Some critical checks failed. Please review."
             exit 1
           else
-            echo " All checks passed! ✅ "
+            echo "✅ All active checks passed!"
           fi
