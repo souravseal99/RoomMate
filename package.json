@@ -1,14 +1,21 @@
 {
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.5",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^10.5.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "typescript-eslint": "^8.62.0"
   },
   "dependencies": {
     "lucide-react": "^0.553.0",
     "sonner": "^2.0.7"
   },
   "scripts": {
-    "lint": "npm run lint --prefix roommate-app",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format:check": "npm run format:check --prefix roommate-app",
     "test": "npm test --prefix roommate-server",
     "type-check": "cd roommate-app && npm run build && cd ../roommate-server && npx tsc --noEmit"
