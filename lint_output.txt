@@ -1,0 +1,548 @@
+
+> lint
+> eslint . --max-warnings 0
+
+(node:21988) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///home/sealiy-dev/RoomMate/eslint.config.js?mtime=1782418269130 is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /home/sealiy-dev/RoomMate/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+/home/sealiy-dev/RoomMate/roommate-app/src/api/axios.ts
+  28:5   warning  Unexpected console statement. Only these console methods are allowed: warn, error, info  no-console
+  58:42  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  62:41  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  66:43  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/api/householdMemberApi.ts
+  6:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/api/shoppingCartApi.ts
+  2:15  warning  'ShoppingCartItem' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/app/AppSidebar.tsx
+  19:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/chores/ChoreDialog.tsx
+  45:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/chores/ChoreDialog.tsx:45:7
+  43 |   useEffect(() => {
+  44 |     if (mode === "edit" && chore) {
+> 45 |       setFormData({ ...chore })
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |     } else if (mode === "create") {
+  47 |       setFormData({
+  48 |         description: "",  react-hooks/set-state-in-effect
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/chores/ChoresLayout.tsx
+  103:14  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/chores/ChoresLayout.tsx:103:14
+  101 |             status === 'PENDING' && "bg-blue-100 dark:bg-blue-900"
+  102 |           )}>
+> 103 |             <ChoreIcon className={cn(
+      |              ^^^^^^^^^ This component is created during render
+  104 |               "h-5 w-5",
+  105 |               status === 'COMPLETED' && "text-green-600 dark:text-green-400",
+  106 |               status === 'OVERDUE' && "text-red-600 dark:text-red-400",
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/chores/ChoresLayout.tsx:86:21
+  84 |   assignee 
+  85 | }: ChoreCardProps) {
+> 86 |   const ChoreIcon = getChoreIcon(title);
+     |                     ^^^^^^^^^^^^^^^^^^^ The component is created during render here
+  87 |   
+  88 |   return (
+  89 |     <Card className={cn(  react-hooks/static-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/AddExpenseForm.tsx
+  41:30  error  Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/AddExpenseForm.tsx:41:30
+  39 |   const { selectedHousehold } = useHousehold();
+  40 |
+> 41 |   const ExpenseApi = useMemo(expenseApi, []);
+     |                              ^^^^^^^^^^ Expected the first argument to be an inline function expression
+  42 |
+  43 |   const [formData, setFormData] = useState({
+  44 |     householdId: selectedHousehold?.key,  react-hooks/use-memo
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/BalanceSummary.tsx
+  21:30  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/BalanceSummary.tsx:21:30
+  19 |   const [isSettling, setIsSettling] = useState<string | null>(null);
+  20 |
+> 21 |   const ExpenseApi = useMemo(expenseApi, []);
+     |                              ^^^^^^^^^^ Expected the first argument to be an inline function expression
+  22 |   const currentUserId = useMemo(() => getCurrentUserId(), []);
+  23 |
+  24 |   const fetchBalances = async () => {                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/use-memo
+  47:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/BalanceSummary.tsx:47:5
+  45 |
+  46 |   useEffect(() => {
+> 47 |     fetchBalances();
+     |     ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  48 |   }, [householdId, refreshKey, ExpenseApi]);
+  49 |
+  50 |   const handleSettle = async (settlement: Settlement) => {  react-hooks/set-state-in-effect
+  48:6   warning  React Hook useEffect has a missing dependency: 'fetchBalances'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/ExpenseViewer.tsx
+   29:30  error  Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/ExpenseViewer.tsx:29:30
+  27 |   const [settlements, setSettlements] = useState<SettlementResponse[]>([]);
+  28 |
+> 29 |   const ExpenseApi = useMemo(expenseApi, []);
+     |                              ^^^^^^^^^^ Expected the first argument to be an inline function expression
+  30 |
+  31 |   // Fetch settlements when household changes
+  32 |   useEffect(() => {                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/use-memo
+  135:10  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/ExpenseViewer.tsx:135:10
+  133 |         <ExpenseTableSkeleton />
+  134 |       ) : expenses && expenses?.length > 0 ? (
+> 135 |         <ExpenseTable />
+      |          ^^^^^^^^^^^^ This component is created during render
+  136 |       ) : (
+  137 |         <p className="m-5"> No expenses found</p>
+  138 |       )}
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/ExpenseViewer.tsx:68:24
+   66 |   };
+   67 |
+>  68 |   const ExpenseTable = () => {
+      |                        ^^^^^^^
+>  69 |     return (
+      | ^^^^^^^^^^^^
+>  70 |       <ScrollArea
+      …
+      | ^^^^^^^^^^^^
+> 127 |     );
+      | ^^^^^^^^^^^^
+> 128 |   };
+      | ^^^^ The component is created during render here
+  129 |
+  130 |   return (
+  131 |     <div className="mx-3 mt-6">  react-hooks/static-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/expenses/HouseholdSelector.tsx
+  52:6  warning  React Hook useEffect has a missing dependency: 'fetchAllHouseholds'. Either include it or remove the dependency array                              react-hooks/exhaustive-deps
+  68:6  warning  React Hook useEffect has missing dependencies: 'selectedHousehold' and 'setSelectedHousehold'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/households/HouseholdCard.tsx
+  25:32  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/households/HouseholdCard.tsx:25:32
+  23 |   const [newName, setNewName] = useState(household.name);
+  24 |   const { fetchAllHouseholds } = useHousehold();
+> 25 |   const HouseholdApi = useMemo(householdApi, []);
+     |                                ^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  26 |   const HouseholdMemberApi = useMemo(householdMemberApi, []);
+  27 |   const { toast } = useToast();
+  28 |  react-hooks/use-memo
+  26:38  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/households/HouseholdCard.tsx:26:38
+  24 |   const { fetchAllHouseholds } = useHousehold();
+  25 |   const HouseholdApi = useMemo(householdApi, []);
+> 26 |   const HouseholdMemberApi = useMemo(householdMemberApi, []);
+     |                                      ^^^^^^^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  27 |   const { toast } = useToast();
+  28 |
+  29 |   const handleCopy = async () => {             react-hooks/use-memo
+  35:14  warning  'err' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  46:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  61:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+  72:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/households/JoinHouseholdForm.tsx
+  40:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/BuySoonPopover.tsx
+  35:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/InventoryItemCard.tsx
+  24:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/InventorySelector.tsx
+  49:6  warning  React Hook React.useEffect has a missing dependency: 'setSelectedItem'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/ItemDetailsCard.tsx
+   7:20  warning  'useEffect' is defined but never used                                          @typescript-eslint/no-unused-vars
+  16:48  warning  'householdId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  18:10  warning  'isUpdating' is assigned a value but never used                                @typescript-eslint/no-unused-vars
+  18:22  warning  'setIsUpdating' is assigned a value but never used                             @typescript-eslint/no-unused-vars
+  19:11  warning  'inventoryItems' is assigned a value but never used                            @typescript-eslint/no-unused-vars
+  19:27  warning  'setInventoryItems' is assigned a value but never used                         @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/ShoppingCartTable.tsx
+   18:38  error    Compilation Skipped: Existing memoization could not be preserved
+
+React Compiler has skipped optimizing this component because the existing manual memoization could not be preserved. The inferred dependencies did not match the manually specified dependencies, which could cause the value to change more or less frequently than expected. The inferred dependency was `selectedHousehold`, but the source dependencies were [selectedHousehold?.key]. Inferred less specific property than source.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/ShoppingCartTable.tsx:18:38
+  16 |   const { selectedHousehold } = useHousehold();
+  17 |
+> 18 |   const fetchCartItems = useCallback(async () => {
+     |                                      ^^^^^^^^^^^^^
+> 19 |     if (!selectedHousehold?.key) {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |       return;
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |   }, [selectedHousehold?.key]);
+     | ^^^^ Could not preserve existing manual memoization
+  37 |
+  38 |   useEffect(() => {
+  39 |     if (selectedHousehold?.key) {  react-hooks/preserve-manual-memoization
+   26:44  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   33:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   40:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/inventory/ShoppingCartTable.tsx:40:7
+  38 |   useEffect(() => {
+  39 |     if (selectedHousehold?.key) {
+> 40 |       fetchCartItems();
+     |       ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |     }
+  42 |   }, [selectedHousehold?.key]);
+  43 |                                                                                                                              react-hooks/set-state-in-effect
+   42:6   warning  React Hook useEffect has a missing dependency: 'fetchCartItems'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+   79:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   92:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  102:14  warning  'error' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/routing/ProtectedRoute.tsx
+  12:5  warning  Unexpected console statement. Only these console methods are allowed: warn, error, info  no-console
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/badge.tsx
+  46:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/button.tsx
+  37:15  warning  Unexpected any. Specify a different type                                                                                        @typescript-eslint/no-explicit-any
+  49:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/calendar-base.tsx
+  56:25  warning  'props' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  57:26  warning  'props' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/calendar.tsx
+  38:33  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/form.tsx
+  160:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/sidebar.tsx
+  611:26  error    Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/sidebar.tsx:611:26
+  609 |   // Random width between 50 to 90%.
+  610 |   const width = React.useMemo(() => {
+> 611 |     return `${Math.floor(Math.random() * 40) + 50}%`;
+      |                          ^^^^^^^^^^^^^ Cannot call impure function
+  612 |   }, []);
+  613 |
+  614 |   return (  react-hooks/purity
+  725:3   warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/components/ui/toast.tsx
+  7:10  warning  'TOAST_AUTO_DISMISS_DURATION' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/contexts/AuthContext.tsx
+  23:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                                                                                                            react-refresh/only-export-components
+  62:16  warning  'e' is defined but never used                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  75:9   warning  The 'login' function makes the dependencies of useMemo Hook (at line 112) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'login' in its own useCallback() Hook    react-hooks/exhaustive-deps
+  84:9   warning  The 'logout' function makes the dependencies of useMemo Hook (at line 112) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'logout' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/contexts/ExpenseContext.tsx
+  11:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/contexts/HouseholdContext.tsx
+  14:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  15:34  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  19:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                                                                                                                                                                                                                                                                                                                                                                                                                                 react-refresh/only-export-components
+  27:60  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  35:32  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/contexts/HouseholdContext.tsx:35:32
+  33 |   useEffect(() => { }, [selectedHousehold]);
+  34 |
+> 35 |   const HouseholdApi = useMemo(householdApi, []);
+     |                                ^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  36 |
+  37 |   const fetchAllHouseholds = async () => {
+  38 |     try {  react-hooks/use-memo
+  65:5   warning  React Hook useMemo has a missing dependency: 'fetchAllHouseholds'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/contexts/InventoryContext.tsx
+  11:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+
+/home/sealiy-dev/RoomMate/roommate-app/src/hooks/use-mobile.ts
+  14:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/hooks/use-mobile.ts:14:5
+  12 |     }
+  13 |     mql.addEventListener("change", onChange)
+> 14 |     setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  15 |     return () => mql.removeEventListener("change", onChange)
+  16 |   }, [])
+  17 |  react-hooks/set-state-in-effect
+
+/home/sealiy-dev/RoomMate/roommate-app/src/hooks/use-toast.ts
+  16:7  warning  'actionTypes' is assigned a value but only used as a type  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/ChoresPage.tsx
+  10:18  warning  'setChores' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  11:21  warning  'setIsLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/auth/LoginPage.tsx
+  13:35  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+  20:7   warning  Unexpected console statement. Only these console methods are allowed: warn, error, info  no-console
+  29:17  warning  Unexpected any. Specify a different type                                                 @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/auth/RegisterPage.tsx
+  12:35  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/chores/Chores.tsx
+   26:18  warning  'Edit' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   72:7   error    Error: Cannot access variable before it is declared
+
+`fetchChores` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/chores/Chores.tsx:72:7
+  70 |   useEffect(() => {
+  71 |     if (selectedHousehold?.key) {
+> 72 |       fetchChores();
+     |       ^^^^^^^^^^^ `fetchChores` accessed before it is declared
+  73 |     } else {
+  74 |       setChores([]);
+  75 |     }
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/chores/Chores.tsx:78:3
+  76 |   }, [selectedHousehold?.key]);
+  77 |
+> 78 |   const fetchChores = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 79 |     if (!selectedHousehold?.key) return;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 80 |     setLoading(true);
+     …
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 94 |     }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 95 |   };
+     | ^^^^^ `fetchChores` is declared here
+  96 |
+  97 |   const handleCreateChore = async (newChore: Partial<ChoreItem>) => {
+  98 |     if (!selectedHousehold?.key) {  react-hooks/immutability
+   74:7   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/chores/Chores.tsx:74:7
+  72 |       fetchChores();
+  73 |     } else {
+> 74 |       setChores([]);
+     |       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  75 |     }
+  76 |   }, [selectedHousehold?.key]);
+  77 |                                                                                                                                               react-hooks/set-state-in-effect
+   76:6   warning  React Hook useEffect has a missing dependency: 'fetchChores'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  103:24  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  119:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  128:25  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+  141:7   warning  Unexpected console statement. Only these console methods are allowed: warn, error, info                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-console
+  145:21  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/dashboard/DummyDashboard.tsx
+  38:32  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/dashboard/DummyDashboard.tsx:38:32
+  36 |   const navigate = useNavigate();
+  37 |   const [stats, setStats] = useState<StatsProps>();
+> 38 |   const dashboardAPI = useMemo(dashboardApi, []);
+     |                                ^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  39 |
+  40 |   useEffect(() => {
+  41 |     async function loadDashboard() {  react-hooks/use-memo
+  46:6   warning  React Hook useEffect has a missing dependency: 'dashboardAPI'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/expenses/Expenses.tsx
+  18:38  warning  'expenses' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  20:38  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/expenses/Expenses.tsx:20:38
+  18 |   const { setExpenses, setIsLoading, expenses } = useExpense();
+  19 |
+> 20 |   const HouseholdMemberApi = useMemo(householdMemberApi, []);
+     |                                      ^^^^^^^^^^^^^^^^^^ Expected the first argument to be an inline function expression
+  21 |   const ExpenseApi = useMemo(expenseApi, []);
+  22 |
+  23 |   const [householdMemberOptions, setHouseholdMemberOptions] =  react-hooks/use-memo
+  21:30  error    Error: Expected the first argument to be an inline function expression
+
+Expected the first argument to be an inline function expression.
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/expenses/Expenses.tsx:21:30
+  19 |
+  20 |   const HouseholdMemberApi = useMemo(householdMemberApi, []);
+> 21 |   const ExpenseApi = useMemo(expenseApi, []);
+     |                              ^^^^^^^^^^ Expected the first argument to be an inline function expression
+  22 |
+  23 |   const [householdMemberOptions, setHouseholdMemberOptions] =
+  24 |     useState<MemberOptions>([{ key: "", value: "" }]);                           react-hooks/use-memo
+  77:50  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  78:66  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-explicit-any
+  88:25  error    Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-non-null-asserted-optional-chain
+  89:6   warning  React Hook useEffect has missing dependencies: 'getExpenses' and 'getHouseholdMembers'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/households/Households.tsx
+  21:6  warning  React Hook useEffect has a missing dependency: 'fetchAllHouseholds'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-app/src/pages/inventory/Inventory.tsx
+  15:15  warning  'InventoryItem' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+  33:44  warning  Unexpected any. Specify a different type                                                                                @typescript-eslint/no-explicit-any
+  41:14  warning  'error' is defined but never used                                                                                       @typescript-eslint/no-unused-vars
+  54:6   warning  React Hook useEffect has a missing dependency: 'fetchInventoryItems'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/auth/auth.service.test.ts
+   42:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  230:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  231:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/comman/utils/jwtHandler.test.ts
+  27:75  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:85  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/expenses/expense.repo.test.ts
+  148:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/expenses/expense.service.test.ts
+   39:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   79:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:81  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  120:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:73  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  163:77  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  197:89  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  220:85  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:96  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  278:67  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:74  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  280:97  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/household-members/householdMember.repo.test.ts
+  138:83  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/households/household.repo.test.ts
+  260:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/households/household.service.test.ts
+   18:8   warning  'UserDto' is defined but never used       @typescript-eslint/no-unused-vars
+   44:80  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:80  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:80  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  165:94  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  213:85  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/__tests__/users/user.repo.test.ts
+  102:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/auth/auth.controller.ts
+  86:16  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-server/src/auth/auth.service.ts
+   91:16  warning  '_e' is defined but never used      @typescript-eslint/no-unused-vars
+  105:14  warning  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-server/src/chore/chore.service.ts
+  6:10  warning  'getNextDueDate' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-server/src/common/utils/ApiResponse.ts
+  4:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/household-members/householdMember.repo.ts
+   5:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/sealiy-dev/RoomMate/roommate-server/src/shopping-cart/shoppingCart.service.ts
+  12:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  21:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  30:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  39:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  48:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-server/src/users/user.repo.ts
+   9:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  19:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  37:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/sealiy-dev/RoomMate/roommate-server/src/users/user.service.ts
+  6:8  warning  'UserDto' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 144 problems (20 errors, 124 warnings)
+
