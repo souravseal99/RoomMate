@@ -57,6 +57,9 @@ jobs:
           cache-dependency-path: 'roommate-app/package-lock.json'
       - name: Install dependencies
         run: npm ci
+      - name: Install root dependencies for ESLint
+        run: npm install
+        working-directory: .
       - name: Lint
         run: npm run lint
       - name: Format
