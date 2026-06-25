@@ -52,7 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: 'roommate-app/package-lock.json'
       - name: Install dependencies
@@ -78,7 +78,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: 'roommate-server/package-lock.json'
       - name: Install dependencies
@@ -102,7 +102,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: 'roommate-server/package-lock.json'
       - name: Install dependencies
@@ -123,7 +123,7 @@ jobs:
       - name: Setup Node.js (App)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: roommate-app/package-lock.json
       - name: Audit App
@@ -133,7 +133,7 @@ jobs:
       - name: Setup Node.js (Server)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: roommate-server/package-lock.json
       - name: Audit Server
