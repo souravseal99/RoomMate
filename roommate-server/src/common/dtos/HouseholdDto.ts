@@ -6,8 +6,8 @@ import {
 } from "@generated/prisma";
 
 export interface HouseholdDto {
-  name: String;
-  inviteCode?: String;
+  name: string;
+  inviteCode?: string;
   //TODO - add the actual types of the followings
   members?: HouseholdMember[];
   expenses?: Expense[];

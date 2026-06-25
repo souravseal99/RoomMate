@@ -23,7 +23,7 @@ async function start(): Promise<void> {
     const server = await App.start();
 
     server.listen(env("APP_PORT"), () => {
-      // eslint-disable-next-line no-console
+       
       console.log(
         `info: Roommate App: Server started on port:${env("APP_PORT")}`
       );
