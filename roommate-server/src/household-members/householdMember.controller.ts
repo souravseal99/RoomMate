@@ -29,4 +29,19 @@ export class HouseholdMemberController {
       data: data,
     });
   }
+
+  static async leave(request: Request, response: Response) {
+    const { householdId } = request.params;
+    const { userId } = getUserFromRequestBody(request);
+
+    const { status, message, data } = await HouseholdMemberService.leave(
+      userId,
+      householdId
+    );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
 }

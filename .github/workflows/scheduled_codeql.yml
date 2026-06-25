@@ -1,0 +1,22 @@
+name: Scheduled CodeQL Analysis
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Every Monday at 2am
+  workflow_dispatch:
+
+jobs:
+  code-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: CodeQL Init
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+      - name: CodeQL Analyze
+        uses: github/codeql-action/analyze@v3

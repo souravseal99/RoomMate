@@ -5,15 +5,16 @@ import { DashboardRepo } from "@src/dashboard/dashboard.repo";
 export class DashboardService {
     static async getStats(userId: string) {
         try {
-            const [householdCount, pendingChoresCount, expenses] =
+            const [householdCount, pendingChoresCount, expenses, activities] =
                 await Promise.all([
                     DashboardRepo.getHouseholdCount(userId),
                     DashboardRepo.getPendingChoresCount(userId),
                     DashboardRepo.getExpenses(userId),
+                    DashboardRepo.getRecentActivities(userId),
                 ]);
 
             return ApiResponse.success(
-                { householdCount, pendingChoresCount, expenses },
+                { householdCount, pendingChoresCount, expenses, ...activities },
                 "Fetched dashboard stats successfully",
                 StatusCodes.OK
             );

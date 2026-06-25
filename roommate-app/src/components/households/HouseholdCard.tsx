@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle } from "lucide-react";
+import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle, LogOut } from "lucide-react";
 import type { HouseholdResponse } from "@/types/householdTypes";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import householdApi from "@/api/householdApi";
+import householdMemberApi from "@/api/householdMemberApi";
 import useHousehold from "@/hooks/useHousehold";
 
 type Props = {
@@ -18,9 +19,11 @@ function HouseholdCard({ household }: Props) {
   const [copied, setCopied] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
   const [newName, setNewName] = useState(household.name);
   const { fetchAllHouseholds } = useHousehold();
   const HouseholdApi = useMemo(householdApi, []);
+  const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const { toast } = useToast();
 
   const handleCopy = async () => {
@@ -28,8 +31,9 @@ function HouseholdCard({ household }: Props) {
       await navigator.clipboard.writeText(household.inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      toast({ title: "Copied!", description: "Invite code copied to clipboard" });
     } catch (err) {
-      console.error("Failed to copy: ", err);
+      toast({ title: "Error", description: "Failed to copy invite code", variant: "destructive" });
     }
   };
 
@@ -37,40 +41,36 @@ function HouseholdCard({ household }: Props) {
     setIsDeleteOpen(false);
     try {
       await HouseholdApi.deleteCascated(household.householdId);
-      toast({
-        title: "Household deleted",
-        description: "The household and all related data have been successfully deleted.",
-      });
-      setTimeout(() => {
-        fetchAllHouseholds();
-      }, 100);
+      toast({ title: "Household deleted", description: "All related data has been permanently deleted." });
+      fetchAllHouseholds();
     } catch (error) {
-      console.error('Delete error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete household. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to delete household. Please try again.", variant: "destructive" });
     }
   };
 
   const handleEdit = async () => {
-    console.log('Edit clicked', newName);
-    console.log('Household ID:', household.householdId);
     if (!newName.trim()) {
-      alert('Please enter a household name');
+      toast({ title: "Error", description: "Please enter a household name", variant: "destructive" });
       return;
     }
     try {
-      const result = await HouseholdApi.update(household.householdId, { name: newName });
-      console.log('Update result:', result);
+      await HouseholdApi.update(household.householdId, { name: newName });
+      toast({ title: "Success", description: "Household name updated successfully" });
       await fetchAllHouseholds();
       setIsEditOpen(false);
     } catch (error: any) {
-      console.error('Full error:', error);
-      console.error('Error response:', error?.response);
-      console.error('Error data:', error?.response?.data);
-      alert(error?.response?.data?.message || error?.message || 'Failed to update household name');
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to update household name", variant: "destructive" });
+    }
+  };
+
+  const handleLeave = async () => {
+    setIsLeaveOpen(false);
+    try {
+      await HouseholdMemberApi.leaveHousehold(household.householdId);
+      toast({ title: "Success", description: "You have left the household" });
+      fetchAllHouseholds();
+    } catch (error: any) {
+      toast({ title: "Error", description: error?.response?.data?.message || "Failed to leave household", variant: "destructive" });
     }
   };
 
@@ -192,6 +192,40 @@ function HouseholdCard({ household }: Props) {
             <><Clipboard className="w-3 h-3 mr-1" />Copy Code</>
           )}
         </Button>
+
+        {/* Leave Household Button */}
+        <Dialog open={isLeaveOpen} onOpenChange={setIsLeaveOpen}>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full cursor-pointer transition-all duration-300 text-xs text-orange-600 border-orange-300 hover:bg-orange-50 hover:border-orange-300 mt-2"
+            >
+              <LogOut className="w-3 h-3 mr-1" />Leave Household
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-orange-600">
+                <AlertTriangle className="w-5 h-5" />
+                Leave Household
+              </DialogTitle>
+              <DialogDescription className="pt-2">
+                Are you sure you want to leave <strong>{household.name}</strong>?
+                <br /><br />
+                You will need to be invited again to rejoin.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsLeaveOpen(false)} className="cursor-pointer">
+                Cancel
+              </Button>
+              <Button type="button" variant="destructive" onClick={handleLeave} className="cursor-pointer">
+                Leave Household
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );

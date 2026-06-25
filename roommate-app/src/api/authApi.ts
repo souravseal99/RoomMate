@@ -6,3 +6,6 @@ export const registerUser = async (payload: RegisterPayload) =>
 
 export const loginUser = async (payload: LoginPayload) =>
   await api.post("/auth/login", payload);
+
+export const logoutUser = async () =>
+  await api.get("/auth/logout");

@@ -4,14 +4,16 @@ on:
   pull_request:
     branches:
       - develop
+      - main
     types: [opened, synchronize, reopened]
+    workflow_dispatch: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  filter-changes:
+  detect-changes:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
@@ -39,8 +41,11 @@ jobs:
   app-quality:
     name: App Quality Check
     runs-on: ubuntu-latest
-    needs: filter-changes
-    if: needs.filter-changes.outputs.app == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app == 'true'
+    defaults:
+      run:
+        working-directory: roommate-app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -49,21 +54,24 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: roommate-app/package-lock.json
+          cache-dependency-path: 'roommate-app/package-lock.json'
       - name: Install dependencies
-        run: npm ci --prefix roommate-app
+        run: npm ci
       - name: Lint
-        run: npm run lint --prefix roommate-app
+        run: npm run lint
       - name: Format
-        run: npm run format:check --prefix roommate-app
+        run: npm run format:check
       - name: Type Check
-        run: cd roommate-app && npx tsc --noEmit
+        run: npx tsc --noEmit
 
   server-quality:
     name: Server Quality Check
     runs-on: ubuntu-latest
-    needs: filter-changes
-    if: needs.filter-changes.outputs.server == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.server == 'true'
+    defaults:
+      run:
+        working-directory: roommate-server
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -72,19 +80,22 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: roommate-server/package-lock.json
+          cache-dependency-path: 'roommate-server/package-lock.json'
       - name: Install dependencies
-        run: npm ci --prefix roommate-server
+        run: npm ci
       - name: Lint & Type Check
-        run: npm run lint --prefix roommate-server
+        run: npm run lint
       - name: Format Check
-        run: npm run format:check --prefix roommate-server
+        run: npm run format:check
 
-  tests:
+  server-tests:
     name: Server Tests
     runs-on: ubuntu-latest
-    needs: filter-changes
-    if: needs.filter-changes.outputs.server == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.server == 'true'
+    defaults:
+      run:
+        working-directory: roommate-server
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -93,20 +104,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: roommate-server/package-lock.json
+          cache-dependency-path: 'roommate-server/package-lock.json'
       - name: Install dependencies
-        run: npm ci --prefix roommate-server
+        run: npm ci
       - name: Run vitest
-        run: npm test --prefix roommate-server
+        run: npm test
       - name: Generate coverage report
-        run: npm run test:coverage --prefix roommate-server || echo "Skipping coverage"
+        run: npm run test:coverage || echo "Skipping coverage"
 
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
-    needs: filter-changes
-    # Security scans run if anything changed
-    if: needs.filter-changes.outputs.app == 'true' || needs.filter-changes.outputs.server == 'true'
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -117,8 +127,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: roommate-app/package-lock.json
       - name: Audit App
-        run: cd roommate-app && npm audit --audit-level=moderate
-        continue-on-error: true # Keep PRs unblocked for informational audit
+        working-directory: roommate-app
+        run: npm audit --audit-level=high
+        continue-on-error: true
       - name: Setup Node.js (Server)
         uses: actions/setup-node@v4
         with:
@@ -126,43 +137,26 @@ jobs:
           cache: 'npm'
           cache-dependency-path: roommate-server/package-lock.json
       - name: Audit Server
-        run: cd roommate-server && npm audit --audit-level=moderate
-        continue-on-error: true # Keep PRs unblocked for informational audit
+        working-directory: roommate-server
+        run: npm audit --audit-level=high
+        continue-on-error: true
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
 
-  code-analysis:
-    name: Static Analysis
-    runs-on: ubuntu-latest
-    needs: filter-changes
-    if: needs.filter-changes.outputs.app == 'true' || needs.filter-changes.outputs.server == 'true'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: CodeQL Init
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-      - name: CodeQL Analyze
-        uses: github/codeql-action/analyze@v3
-
   pr-summary:
     name: PR Quality Summary
     runs-on: ubuntu-latest
-    needs: [app-quality, server-quality, tests, security-scan, code-analysis]
+    needs: [app-quality, server-quality, server-tests, security-scan]
     if: always()
     steps:
       - name: Check results
         run: |
-          # Check for failures. Skips are fine.
           if [[ "${{ needs.app-quality.result }}" == "failure" ]] || \
              [[ "${{ needs.server-quality.result }}" == "failure" ]] || \
-             [[ "${{ needs.tests.result }}" == "failure" ]] || \
-             [[ "${{ needs.code-analysis.result }}" == "failure" ]]; then
+             [[ "${{ needs.server-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.security-scan.result }}" == "failure" ]]; then
             echo "❌ Some critical checks failed. Please review."
             exit 1
           else

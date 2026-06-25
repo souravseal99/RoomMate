@@ -19,8 +19,14 @@ const householdMemberApi = () => {
     }
   };
 
+  const leaveHousehold = async (householdId: string) => {
+    const { data, status } = await api.post(`/household-member/leave/${householdId}`);
+    return { data, status };
+  };
+
   return {
     getAllHouseholdMembers,
+    leaveHousehold,
   };
 };
 

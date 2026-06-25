@@ -3,7 +3,7 @@ import { ExpenseService } from '@src/expenses/expense.service';
 import { ExpenseRepo } from '@src/expenses/expense.repo';
 import { HouseholdMemberRepo } from '@src/household-members/householdMember.repo';
 import { ExpenseSplitService } from '@src/expense-split/expenseSplit.service';
-import calculateBalance from '@src/expenses/calculateBalance';
+import calculateBalance, { calculateSettlements } from '@src/expenses/calculateBalance';
 import ExpenseDto from '@src/common/dtos/ExpenseDto';
 import { Expense } from '@generated/prisma';
 import { StatusCodes } from 'http-status-codes';
@@ -261,12 +261,23 @@ describe('ExpenseService', () => {
       ];
 
       const mockBalances = [
-        { userId: 'user-1', balance: 50.00 },
-        { userId: 'user-2', balance: -50.00 },
+        { userId: 'user-1', name: 'Alice', balance: 50.00 },
+        { userId: 'user-2', name: 'Bob', balance: -50.00 },
+      ];
+      
+      const mockSettlements = [
+        { fromUserId: 'user-2', fromName: 'Bob', toUserId: 'user-1', toName: 'Alice', amount: 50.00 },
+      ];
+      
+      const mockHouseholdMembers = [
+        { userId: 'user-1', user: { name: 'Alice' } },
+        { userId: 'user-2', user: { name: 'Bob' } },
       ];
 
       vi.mocked(ExpenseRepo.getExpensesWithSplits).mockResolvedValue(mockExpensesWithSplits as any);
       vi.mocked(calculateBalance).mockReturnValue(mockBalances as any);
+      vi.mocked(calculateSettlements).mockReturnValue(mockSettlements as any);
+      vi.mocked(HouseholdMemberRepo.getByHouseholdId).mockResolvedValue(mockHouseholdMembers as any);
 
       const result = await ExpenseService.getBalances('household-123');
 
@@ -274,7 +285,10 @@ describe('ExpenseService', () => {
       expect(calculateBalance).toHaveBeenCalledWith(mockExpensesWithSplits);
       expect(result).toMatchObject({
         status: StatusCodes.OK,
-        data: mockBalances,
+        data: {
+          balances: mockBalances,
+          settlements: mockSettlements,
+        },
       });
     });
   });

@@ -16,4 +16,10 @@ hosueholdMemberRouter.get(
   HouseholdMemberController.getAllHouseholdMembers
 );
 
+hosueholdMemberRouter.post(
+  "/leave/:householdId",
+  ensureAuthenticated,
+  HouseholdMemberController.leave
+);
+
 export default hosueholdMemberRouter;
