@@ -69,7 +69,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     };
 
     tryRefresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const login = (token: string, email?: string, name?: string) => {

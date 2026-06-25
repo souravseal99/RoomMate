@@ -8,7 +8,7 @@ import {
 } from "@common/utils/jwtHandler";
 import { User } from "@generated/prisma";
 import { ApiResponse } from "@common/utils/ApiResponse";
-import { BCRYPT_SALT_ROUNDS, JWT_REFRESH_EXPIRES_IN } from "@common/config";
+import { BCRYPT_SALT_ROUNDS } from "@common/config";
 import { RegisterUserResponse } from "@src/auth/types/RegisterUserResponse";
 import { UserLoginResponse } from "@src/auth/types/UserLoginResponse";
 import { UserRepo } from "@src/users/user.repo";
@@ -59,7 +59,7 @@ export class AuthService {
         "User successfully created"
       );
     } catch (error) {
-      throw Error("User not created: auth.service.ts");
+      throw Error("User not created: auth.service.ts", { cause: error });
     }
   }
 
@@ -88,7 +88,9 @@ export class AuthService {
       // Delete existing session if any, then create new one
       try {
         await SessionRepo.deleteSession(sessionId);
-      } catch (e) {}
+      } catch (_e) {
+        // Ignore missing session
+      }
       
       await SessionRepo.createSession(sessionId, user.userId, refreshToken, expiresAt);
 
@@ -100,12 +102,12 @@ export class AuthService {
         },
         `Welcome to Roommate ${user.name}`
       );
-    } catch (error) {
+    } catch (_error) {
       return ApiResponse.error("Unable to login");
     }
   }
 
-  static async refresh(refreshToken: any, expectedUserId: string) {
+  static async refresh(refreshToken: string, expectedUserId: string) {
     try {
       const decodedRefreshToken = await validateRefreshToken(refreshToken);
 
