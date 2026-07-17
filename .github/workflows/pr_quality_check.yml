@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install root dependencies for ESLint
-        run: npm install
+        run: npm install --legacy-peer-deps
         working-directory: .
       - name: Lint
         run: npm run lint
