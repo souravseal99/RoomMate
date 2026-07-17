@@ -2,11 +2,10 @@
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^8.57.1",
-    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^6.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
     "typescript-eslint": "^8.62.0"
@@ -17,8 +16,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "lint": "eslint .",
+    "lint:server": "eslint roommate-server",
+    "lint:app": "eslint roommate-app",
     "lint:fix": "eslint . --fix",
     "format:check": "npm run format:check --prefix roommate-app",
     "test": "npm test --prefix roommate-server",
