@@ -57,10 +57,8 @@ jobs:
           cache-dependency-path: 'roommate-app/package-lock.json'
       - name: Install dependencies
         run: npm ci
-      - name: Install root dependencies for ESLint
-        run: npm install --legacy-peer-deps
         working-directory: .
-      - name: Lint
+      - name: run EsLint
         run: npm run lint
       - name: Format
         run: npm run format:check
@@ -86,7 +84,7 @@ jobs:
           cache-dependency-path: 'roommate-server/package-lock.json'
       - name: Install dependencies
         run: npm ci
-      - name: Lint
+      - name: run EsLint
         run: npm run lint
       - name: Type Check
         run: npm run type-check
