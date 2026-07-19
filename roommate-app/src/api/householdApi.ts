@@ -1,22 +1,19 @@
-import api from "@/api/axios";
+import api from '@/api/axios';
 
 const householdApi = () => {
   const fetchAll = async () => {
-    const { data } = await api.get("/household/all");
+    const { data } = await api.get('/household/all');
 
     return data.household;
   };
 
   const create = async (createHouseholdData: { name: string }) => {
-    const { data, status } = await api.post(
-      "/household/create",
-      createHouseholdData
-    );
+    const { data, status } = await api.post('/household/create', createHouseholdData);
     return { data, status };
   };
 
   const deleteCascated = async (householdId: string) => {
-    const { data, status } = await api.post("/household/delete", {
+    const { data, status } = await api.post('/household/delete', {
       householdId: householdId,
     });
     return { data, status };
@@ -25,7 +22,7 @@ const householdApi = () => {
   const update = async (householdId: string, updateData: { name: string }) => {
     const { data, status } = await api.post(`/household/update`, {
       householdId,
-      ...updateData
+      ...updateData,
     });
     return { data, status };
   };

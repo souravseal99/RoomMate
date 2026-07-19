@@ -10,32 +10,32 @@ expenseRouter.post("/add", ensureAuthenticated, ExpenseController.create);
 expenseRouter.get(
   "/for/:householdId",
   ensureAuthenticated,
-  ExpenseController.getExpensesByHousehold
+  ExpenseController.getExpensesByHousehold,
 );
 
 expenseRouter.delete(
   "/:expenseId",
   ensureAuthenticated,
-  ExpenseController.delete
+  ExpenseController.delete,
 );
 
 expenseRouter.get(
   "/for/:householdId/balances",
   ensureAuthenticated,
-  ExpenseController.getBalances
+  ExpenseController.getBalances,
 );
 
 // Settlement endpoints
 expenseRouter.post(
   "/settlement",
   ensureAuthenticated,
-  ExpenseController.createSettlement
+  ExpenseController.createSettlement,
 );
 
 expenseRouter.get(
   "/settlement/for/:householdId",
   ensureAuthenticated,
-  ExpenseController.getSettlements
+  ExpenseController.getSettlements,
 );
 
 export default expenseRouter;

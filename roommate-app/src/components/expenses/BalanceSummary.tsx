@@ -1,11 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import expenseApi, { type BalanceEntry, type Settlement } from "@/api/expenseApi";
-import { formatCurrency } from "@/utils/utils";
-import { getCurrentUserId } from "@/utils/jwt";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { useEffect, useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import expenseApi, { type BalanceEntry, type Settlement } from '@/api/expenseApi';
+import { formatCurrency } from '@/utils/utils';
+import { getCurrentUserId } from '@/utils/jwt';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface BalanceSummaryProps {
   householdId: string | undefined;
@@ -37,7 +37,7 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
         setSettlements(data.settlements);
       }
     } catch (error) {
-      console.error("Failed to fetch balances:", error);
+      console.error('Failed to fetch balances:', error);
     } finally {
       setIsLoading(false);
     }
@@ -52,8 +52,8 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
 
     // Only allow settling own debts
     if (settlement.fromUserId !== currentUserId) {
-      toast.error("You can only settle your own debts", {
-        position: "top-center",
+      toast.error('You can only settle your own debts', {
+        position: 'top-center',
       });
       return;
     }
@@ -68,20 +68,20 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
       });
 
       if (response && response.status === 201) {
-        toast.success("Settlement recorded successfully!", {
-          position: "top-center",
+        toast.success('Settlement recorded successfully!', {
+          position: 'top-center',
         });
         // Refresh balances after settlement
         fetchBalances();
       } else {
-        toast.error("Failed to record settlement", {
-          position: "top-center",
+        toast.error('Failed to record settlement', {
+          position: 'top-center',
         });
       }
     } catch (error) {
-      console.error("Error settling:", error);
-      toast.error("Failed to record settlement", {
-        position: "top-center",
+      console.error('Error settling:', error);
+      toast.error('Failed to record settlement', {
+        position: 'top-center',
       });
     } finally {
       setIsSettling(null);
@@ -116,9 +116,8 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
               {settlements.map((settlement, index) => (
                 <li key={index} className="flex items-center justify-between text-sm">
                   <div>
-                    <span className="font-medium">{settlement.fromName}</span>{" "}
-                    owes{" "}
-                    <span className="font-medium">{settlement.toName}</span>{" "}
+                    <span className="font-medium">{settlement.fromName}</span> owes{' '}
+                    <span className="font-medium">{settlement.toName}</span>{' '}
                     <span className="font-semibold text-green-600">
                       {formatCurrency(settlement.amount)}
                     </span>
@@ -132,8 +131,8 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
                       disabled={isSettling === settlement.fromUserId + settlement.toUserId}
                     >
                       {isSettling === settlement.fromUserId + settlement.toUserId
-                        ? "Settling..."
-                        : "Settle"}
+                        ? 'Settling...'
+                        : 'Settle'}
                     </Button>
                   )}
                 </li>
@@ -146,9 +145,7 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
 
         {/* All members balances */}
         <div>
-          <h3 className="text-sm font-medium text-gray-500 mb-2">
-            All members
-          </h3>
+          <h3 className="text-sm font-medium text-gray-500 mb-2">All members</h3>
           <ul className="space-y-1">
             {balances.map((balance) => (
               <li key={balance.userId} className="flex justify-between text-sm">
@@ -156,10 +153,10 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
                 <span
                   className={`font-medium ${
                     balance.balance > 0
-                      ? "text-green-600"
+                      ? 'text-green-600'
                       : balance.balance < 0
-                      ? "text-red-600"
-                      : "text-gray-500"
+                        ? 'text-red-600'
+                        : 'text-gray-500'
                   }`}
                 >
                   {balance.balance > 0

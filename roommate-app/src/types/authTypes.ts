@@ -21,6 +21,6 @@ export interface LoginData {
 }
 
 export interface AuthFormInputData {
-  mode: "login" | "register";
+  mode: 'login' | 'register';
   onSubmit: (values: RegisterPayload | LoginPayload) => void;
 }

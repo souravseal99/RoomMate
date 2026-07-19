@@ -7,7 +7,7 @@ function validationErrorHandler(
   // errors: ValidationError[],
   req: Request,
   resp: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   const errors = validationResult(req);
 
@@ -16,8 +16,8 @@ function validationErrorHandler(
       new ApiError(
         httpStatus.BAD_REQUEST,
         "Validation Error",
-        formatErrors(errors.array())
-      )
+        formatErrors(errors.array()),
+      ),
     );
 
   next();

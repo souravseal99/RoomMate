@@ -1,5 +1,5 @@
-import { ClipboardList } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ClipboardList } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function ChoresEmptyState() {
   return (
@@ -9,10 +9,9 @@ export function ChoresEmptyState() {
       <p className="text-sm text-muted-foreground mb-4 text-center">
         There are no chores assigned to this household yet.
       </p>
-      <Button
-        className="bg-blue-600 hover:bg-blue-700 text-primary-foreground">
-            Create a new chore
+      <Button className="bg-blue-600 hover:bg-blue-700 text-primary-foreground">
+        Create a new chore
       </Button>
     </div>
-  )
+  );
 }

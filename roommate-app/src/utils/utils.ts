@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,14 +11,14 @@ export function env(key: string) {
 
 export function dateFormatterUtc(date: string) {
   const dateObj = new Date(date);
-  const formattedDate = dateObj.toLocaleDateString("en-IN");
+  const formattedDate = dateObj.toLocaleDateString('en-IN');
   return formattedDate;
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
@@ -45,5 +45,5 @@ export function getDateDifferenceInDays(date1: string, date2?: string): number {
  * @returns The string in snake_case format with trimmed whitespace
  */
 export function toSnakeCase(str: string): string {
-  return str.trim().toLowerCase().replace(/\s+/g, "_");
+  return str.trim().toLowerCase().replace(/\s+/g, '_');
 }

@@ -7,31 +7,31 @@ const shoppingCartRouter = Router();
 shoppingCartRouter.get(
   "/:householdId",
   ensureAuthenticated,
-  ShoppingCartController.getCartItemsByHouseholdId
+  ShoppingCartController.getCartItemsByHouseholdId,
 );
 
 shoppingCartRouter.post(
   "/add",
   ensureAuthenticated,
-  ShoppingCartController.create
+  ShoppingCartController.create,
 );
 
 shoppingCartRouter.post(
   "/add-low-stock/:householdId",
   ensureAuthenticated,
-  ShoppingCartController.addLowStockItems
+  ShoppingCartController.addLowStockItems,
 );
 
 shoppingCartRouter.patch(
   "/:cartItemId",
   ensureAuthenticated,
-  ShoppingCartController.update
+  ShoppingCartController.update,
 );
 
 shoppingCartRouter.delete(
   "/:cartItemId",
   ensureAuthenticated,
-  ShoppingCartController.delete
+  ShoppingCartController.delete,
 );
 
 export default shoppingCartRouter;

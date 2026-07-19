@@ -29,7 +29,7 @@ export class ChoreRepo {
     return await prisma.chore.findMany({
       where: { householdId },
       include: { assignedTo: { select: { userId: true, name: true } } },
-      orderBy: { nextDue: 'asc' },
+      orderBy: { nextDue: "asc" },
     });
   }
 

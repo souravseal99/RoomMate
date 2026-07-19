@@ -1,9 +1,6 @@
-import { createContext, useEffect, useMemo, useState } from "react";
-import type {
-  HouseholdOptions,
-  HouseholdResponse,
-} from "@/types/householdTypes";
-import householdApi from "@/api/householdApi";
+import { createContext, useEffect, useMemo, useState } from 'react';
+import type { HouseholdOptions, HouseholdResponse } from '@/types/householdTypes';
+import householdApi from '@/api/householdApi';
 
 type HouseholdContextType = {
   households: HouseholdResponse[];
@@ -16,21 +13,16 @@ type HouseholdContextType = {
   isLoading?: boolean;
 };
 
-export const HouseholdContext = createContext<HouseholdContextType | undefined>(
-  undefined
-);
+export const HouseholdContext = createContext<HouseholdContextType | undefined>(undefined);
 
-export default function HouseholdProvider({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function HouseholdProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [households, setHouseholds] = useState<HouseholdResponse[]>([]);
   const [householdMembers, setHouseholdMembers] = useState<any[]>([]); //TODO - add type to this
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const [selectedHousehold, setSelectedHousehold] =
-    useState<HouseholdOptions | null>(null);
+  const [selectedHousehold, setSelectedHousehold] = useState<HouseholdOptions | null>(null);
 
-  useEffect(() => { }, [selectedHousehold]);
+  useEffect(() => {}, [selectedHousehold]);
 
   const HouseholdApi = useMemo(householdApi, []);
 
@@ -43,7 +35,7 @@ export default function HouseholdProvider({
       if (householdRecords[0]?.householdId && selectedHousehold === null)
         setSelectedHousehold(householdRecords[0]?.householdId);
     } catch (error) {
-      console.error("Error fetching households:", error);
+      console.error('Error fetching households:', error);
     } finally {
       if (isLoading) {
         setIsLoading(false);
@@ -60,7 +52,7 @@ export default function HouseholdProvider({
       setSelectedHousehold,
       householdMembers,
       setHouseholdMembers,
-      isLoading
+      isLoading,
     }),
     [households, selectedHousehold, isLoading, householdMembers]
   );

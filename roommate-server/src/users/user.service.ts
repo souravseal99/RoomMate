@@ -16,7 +16,7 @@ export class UserService {
 
     return ApiResponse.success(
       sanitizeUser(userRecord),
-      `Hello ${userRecord.name}`
+      `Hello ${userRecord.name}`,
     );
   }
 

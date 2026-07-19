@@ -1,17 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Trash2, Plus } from "lucide-react";
-import { getCartItemsByHouseholdId, addToShoppingCart, updateCartItem, removeFromCart } from "@/api/shoppingCartApi";
-import { INVENTORY_EVENTS } from "@/components/inventory/config";
-import useHousehold from "@/hooks/useHousehold";
-import { toast } from "sonner";
-import type { ShoppingCartItem } from "@/types/shoppingCartTypes";
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Trash2, Plus } from 'lucide-react';
+import {
+  getCartItemsByHouseholdId,
+  addToShoppingCart,
+  updateCartItem,
+  removeFromCart,
+} from '@/api/shoppingCartApi';
+import { INVENTORY_EVENTS } from '@/components/inventory/config';
+import useHousehold from '@/hooks/useHousehold';
+import { toast } from 'sonner';
+import type { ShoppingCartItem } from '@/types/shoppingCartTypes';
 
 export function ShoppingCartTable() {
   const [cartItems, setCartItems] = useState<ShoppingCartItem[]>([]);
-  const [newItemName, setNewItemName] = useState("");
-  const [newItemQuantity, setNewItemQuantity] = useState("");
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemQuantity, setNewItemQuantity] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { selectedHousehold } = useHousehold();
 
@@ -19,7 +24,7 @@ export function ShoppingCartTable() {
     if (!selectedHousehold?.key) {
       return;
     }
-    
+
     try {
       const response = await getCartItemsByHouseholdId(selectedHousehold.key);
       const items = Array.isArray(response.data) ? response.data : [];
@@ -27,11 +32,11 @@ export function ShoppingCartTable() {
         id: item.shoppingCartId,
         itemName: item.itemName,
         quantity: item.quantity,
-        createdAt: item.createdAt
+        createdAt: item.createdAt,
       }));
       setCartItems(mappedItems);
     } catch (error) {
-      toast.error("Failed to load shopping cart");
+      toast.error('Failed to load shopping cart');
     }
   }, [selectedHousehold?.key]);
 
@@ -45,39 +50,39 @@ export function ShoppingCartTable() {
     const handleRefresh = () => {
       fetchCartItems();
     };
-    
+
     window.addEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
     return () => window.removeEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
   }, [fetchCartItems]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedHousehold) {
-      toast.error("Please select a household first");
+      toast.error('Please select a household first');
       return;
     }
-    
+
     if (!newItemName.trim()) {
-      toast.error("Please enter an item name");
+      toast.error('Please enter an item name');
       return;
     }
-    
+
     if (!newItemQuantity || parseInt(newItemQuantity) <= 0) {
-      toast.error("Please enter a valid quantity");
+      toast.error('Please enter a valid quantity');
       return;
     }
 
     setIsLoading(true);
     try {
       await addToShoppingCart(newItemName.trim(), parseInt(newItemQuantity), selectedHousehold.key);
-      
-      setNewItemName("");
-      setNewItemQuantity("");
+
+      setNewItemName('');
+      setNewItemQuantity('');
       fetchCartItems();
-      toast.success("Item added to cart");
+      toast.success('Item added to cart');
     } catch (error) {
-      toast.error("Failed to add item");
+      toast.error('Failed to add item');
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +90,12 @@ export function ShoppingCartTable() {
 
   const handleUpdateQuantity = async (cartItemId: string, quantity: number) => {
     if (quantity <= 0) return;
-    
+
     try {
       await updateCartItem(cartItemId, quantity);
       fetchCartItems();
     } catch (error) {
-      toast.error("Failed to update quantity");
+      toast.error('Failed to update quantity');
     }
   };
 
@@ -98,16 +103,16 @@ export function ShoppingCartTable() {
     try {
       await removeFromCart(cartItemId);
       fetchCartItems();
-      toast.success("Item removed from cart");
+      toast.success('Item removed from cart');
     } catch (error) {
-      toast.error("Failed to remove item");
+      toast.error('Failed to remove item');
     }
   };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
       <h3 className="font-semibold text-gray-900 mb-4">Shopping Cart</h3>
-      
+
       {/* Add Item Form */}
       <form onSubmit={handleAddItem} className="flex gap-2 mb-4">
         <Input
@@ -126,20 +131,18 @@ export function ShoppingCartTable() {
           className="w-20"
           required
         />
-        <Button 
-          type="submit" 
-          disabled={isLoading || !selectedHousehold || !newItemName.trim() || !newItemQuantity} 
+        <Button
+          type="submit"
+          disabled={isLoading || !selectedHousehold || !newItemName.trim() || !newItemQuantity}
           size="sm"
         >
-          {isLoading ? "..." : <Plus className="h-4 w-4" />}
+          {isLoading ? '...' : <Plus className="h-4 w-4" />}
         </Button>
       </form>
 
       {/* Cart Items */}
       {cartItems.length === 0 ? (
-        <p className="text-gray-500 text-sm text-center py-4">
-          No items in shopping cart
-        </p>
+        <p className="text-gray-500 text-sm text-center py-4">No items in shopping cart</p>
       ) : (
         <div className="space-y-2">
           {cartItems.map((item) => (
@@ -147,7 +150,7 @@ export function ShoppingCartTable() {
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{item.itemName}</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Input
                   type="number"

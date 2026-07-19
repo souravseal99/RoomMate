@@ -51,13 +51,17 @@ export default function calculateBalance(expenses: ExpenseDto[]) {
 
 export function calculateSettlements(balances: BalanceEntry[]): Settlement[] {
   const settlements: Settlement[] = [];
-  
+
   // Create copies to work with
   const debtors = balances
     .filter((b) => b.balance < -0.01) // Negative balance = owes money
-    .map((b) => ({ userId: b.userId, name: b.name, amount: Math.abs(b.balance) }))
+    .map((b) => ({
+      userId: b.userId,
+      name: b.name,
+      amount: Math.abs(b.balance),
+    }))
     .sort((a, b) => b.amount - a.amount);
-    
+
   const creditors = balances
     .filter((b) => b.balance > 0.01) // Positive balance = owed money
     .map((b) => ({ userId: b.userId, name: b.name, amount: b.balance }))
@@ -70,9 +74,9 @@ export function calculateSettlements(balances: BalanceEntry[]): Settlement[] {
   while (i < debtors.length && j < creditors.length) {
     const debtor = debtors[i];
     const creditor = creditors[j];
-    
+
     const amount = Math.min(debtor.amount, creditor.amount);
-    
+
     if (amount > 0.01) {
       settlements.push({
         fromUserId: debtor.userId,
@@ -82,10 +86,10 @@ export function calculateSettlements(balances: BalanceEntry[]): Settlement[] {
         amount: Math.round(amount * 100) / 100, // Round to 2 decimal places
       });
     }
-    
+
     debtor.amount -= amount;
     creditor.amount -= amount;
-    
+
     if (debtor.amount < 0.01) i++;
     if (creditor.amount < 0.01) j++;
   }

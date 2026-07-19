@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 export default async function ensureAuthenticated(
   request: Request,
   response: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
   const authHeader = request.headers.authorization;
   const isBearerToken = authHeader?.startsWith("Bearer ");
@@ -30,7 +30,7 @@ export default async function ensureAuthenticated(
     const { status, message, data } = ApiResponse.error(
       "Invalid or Expired token",
       StatusCodes.UNAUTHORIZED,
-      error
+      error,
     );
 
     console.error("error: Roommate App: Ensure auth failed : ", message, data);

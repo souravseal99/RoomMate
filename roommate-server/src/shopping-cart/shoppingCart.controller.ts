@@ -13,7 +13,9 @@ export class ShoppingCartController {
       householdId,
     };
 
-    const { status, message, data } = await ShoppingCartService.create(createCartItemRequest);
+    const { status, message, data } = await ShoppingCartService.create(
+      createCartItemRequest,
+    );
 
     return response.status(status).json({
       message,
@@ -22,9 +24,10 @@ export class ShoppingCartController {
   }
 
   static async getCartItemsByHouseholdId(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await ShoppingCartService.getCartItemsByHouseholdId(householdId);
+    const { status, message, data } =
+      await ShoppingCartService.getCartItemsByHouseholdId(householdId);
 
     return response.status(status).json({
       message,
@@ -33,12 +36,15 @@ export class ShoppingCartController {
   }
 
   static async update(request: Request, response: Response) {
-    const { cartItemId } = request.params;
+    const { cartItemId } = request.params as { cartItemId: string };
     const { quantity } = request.body;
 
     const updateCartItemRequest: UpdateCartItemRequest = { quantity };
 
-    const { status, message, data } = await ShoppingCartService.update(cartItemId, updateCartItemRequest);
+    const { status, message, data } = await ShoppingCartService.update(
+      cartItemId,
+      updateCartItemRequest,
+    );
 
     return response.status(status).json({
       message,
@@ -47,9 +53,10 @@ export class ShoppingCartController {
   }
 
   static async delete(request: Request, response: Response) {
-    const { cartItemId } = request.params;
+    const { cartItemId } = request.params as { cartItemId: string };
 
-    const { status, message, data } = await ShoppingCartService.delete(cartItemId);
+    const { status, message, data } =
+      await ShoppingCartService.delete(cartItemId);
 
     return response.status(status).json({
       message,
@@ -58,9 +65,10 @@ export class ShoppingCartController {
   }
 
   static async addLowStockItems(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await ShoppingCartService.addLowStockItems(householdId);
+    const { status, message, data } =
+      await ShoppingCartService.addLowStockItems(householdId);
 
     return response.status(status).json({
       message,

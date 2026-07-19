@@ -7,25 +7,25 @@ const householdRouter = Router();
 householdRouter.post(
   "/create",
   ensureAuthenticated,
-  HouseholdController.create
+  HouseholdController.create,
 );
 
 householdRouter.post(
   "/join/:inviteCode",
   ensureAuthenticated,
-  HouseholdController.join
+  HouseholdController.join,
 );
 
 householdRouter.get(
   "/all",
   ensureAuthenticated,
-  HouseholdController.getHouseholdsByUser
+  HouseholdController.getHouseholdsByUser,
 );
 
 householdRouter.post(
   "/delete",
   ensureAuthenticated,
-  HouseholdController.delete
+  HouseholdController.delete,
 );
 
 export default householdRouter;

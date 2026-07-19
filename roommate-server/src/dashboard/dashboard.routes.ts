@@ -4,10 +4,6 @@ import ensureAuthenticated from "@src/auth/middlewares/ensureAuthenticated";
 
 const householdRouter = Router();
 
-householdRouter.get(
-    "/",
-    ensureAuthenticated,
-    DashboardController.stats
-);
+householdRouter.get("/", ensureAuthenticated, DashboardController.stats);
 
 export default householdRouter;

@@ -1,9 +1,9 @@
 // src/features/auth/RegisterPage.tsx
-import { useNavigate } from "react-router-dom";
-import { AuthForm } from "../../components/auth/AuthForm";
-import { registerUser } from "../../api/authApi";
-import useAuth from "@/hooks/useAuth";
-import TokenStore from "@/lib/TokenStore";
+import { useNavigate } from 'react-router-dom';
+import { AuthForm } from '../../components/auth/AuthForm';
+import { registerUser } from '../../api/authApi';
+import useAuth from '@/hooks/useAuth';
+import TokenStore from '@/lib/TokenStore';
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -17,10 +17,10 @@ export default function RegisterPage() {
       const token = res.data?.accessToken;
       if (token) {
         login(token, res.data?.email ?? null, res.data?.name ?? null);
-        nav("/dashboard");
+        nav('/dashboard');
       }
     } catch (e: any) {
-      alert(e.response?.data?.message ?? "Registration failed");
+      alert(e.response?.data?.message ?? 'Registration failed');
     }
   };
 

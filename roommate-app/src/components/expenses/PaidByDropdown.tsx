@@ -6,8 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 type PayerDropdownProps = {
   householdMemberOptions: { key: string; value: string }[];
@@ -26,10 +26,9 @@ export function PayerDropdown({
         <Button variant="outline">
           {selectedPayer
             ? `Payer: ${
-                householdMemberOptions.find((m) => m.key === selectedPayer)
-                  ?.value ?? selectedPayer
+                householdMemberOptions.find((m) => m.key === selectedPayer)?.value ?? selectedPayer
               }`
-            : "Select Payer"}
+            : 'Select Payer'}
         </Button>
       </DropdownMenuTrigger>
 

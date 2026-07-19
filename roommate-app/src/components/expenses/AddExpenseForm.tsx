@@ -1,18 +1,12 @@
-"use client";
+'use client';
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type FormEvent,
-  type ChangeEvent,
-} from "react";
-import { X } from "lucide-react";
-import expenseApi from "@/api/expenseApi";
-import useHousehold from "@/hooks/useHousehold";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { PayerDropdown } from "@/components/expenses/PaidByDropdown";
+import { useEffect, useMemo, useState, type FormEvent, type ChangeEvent } from 'react';
+import { X } from 'lucide-react';
+import expenseApi from '@/api/expenseApi';
+import useHousehold from '@/hooks/useHousehold';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { PayerDropdown } from '@/components/expenses/PaidByDropdown';
 import {
   Command,
   CommandEmpty,
@@ -20,10 +14,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+} from '@/components/ui/command';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
@@ -42,9 +36,9 @@ export default function AddExpenseForm({
 
   const [formData, setFormData] = useState({
     householdId: selectedHousehold?.key,
-    description: "",
+    description: '',
     amount: 0,
-    paidById: "",
+    paidById: '',
     sharedWith: [] as string[],
   });
 
@@ -87,21 +81,21 @@ export default function AddExpenseForm({
         return response;
       });
       if (resp && resp.status == 201) {
-        toast.success("Expense added successfully!", {
-          position: "top-center",
+        toast.success('Expense added successfully!', {
+          position: 'top-center',
         });
       } else {
         // Handle unexpected or failed response
-        toast.error("Failed to add expense. Please try again.", {
-          position: "top-center",
+        toast.error('Failed to add expense. Please try again.', {
+          position: 'top-center',
         });
-        console.error("Unexpected response:", resp);
+        console.error('Unexpected response:', resp);
       }
     } catch (error: unknown) {
-      toast.error("Failed to add expense. Please try again.", {
-        position: "top-center",
+      toast.error('Failed to add expense. Please try again.', {
+        position: 'top-center',
       });
-      console.error("Error adding expense:", error);
+      console.error('Error adding expense:', error);
     } finally {
       setLocalSubmitting(false);
       setIsSubmitting?.(false);
@@ -117,11 +111,7 @@ export default function AddExpenseForm({
   return (
     <>
       {selectedHousehold?.key ? (
-        <form
-          id="add-expense-form"
-          onSubmit={handleSubmit}
-          className="grid gap-6 px-4 py-4"
-        >
+        <form id="add-expense-form" onSubmit={handleSubmit} className="grid gap-6 px-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>
             <Input
@@ -163,16 +153,12 @@ export default function AddExpenseForm({
               {formData.sharedWith.map((id) => {
                 const member = householdMemberOptions.find((m) => m.key === id);
                 return (
-                  <Badge
-                    key={id}
-                    variant="secondary"
-                    className="flex items-center gap-1 w-fit"
-                  >
+                  <Badge key={id} variant="secondary" className="flex items-center gap-1 w-fit">
                     <span>{member?.value ?? id}</span>
 
                     <Button
                       className="ml-1 w-fit hover:text-amber-50 hover:bg-primary"
-                      variant={"ghost"}
+                      variant={'ghost'}
                       onClick={() => handleRemoveShared(id)}
                     >
                       <X className="h-3 w-3 cursor-pointer" />

@@ -1,13 +1,7 @@
-import api from "@/api/axios";
-import TokenStore from "@/lib/TokenStore";
-import { logoutUser } from "@/api/authApi";
-import {
-  createContext,
-  type ReactNode,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import api from '@/api/axios';
+import TokenStore from '@/lib/TokenStore';
+import { logoutUser } from '@/api/authApi';
+import { createContext, type ReactNode, useEffect, useMemo, useState } from 'react';
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -20,9 +14,7 @@ type AuthContextType = {
   ready: boolean;
 };
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined
-);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -42,7 +34,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
           return;
         }
 
-        const res = await api.get("/auth/refresh");
+        const res = await api.get('/auth/refresh');
         const accessToken = res?.data?.accessToken;
         const userEmail = res?.data?.email;
         const userName = res?.data?.name;
@@ -69,7 +61,6 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     };
 
     tryRefresh();
-     
   }, []);
 
   const login = (token: string, email?: string, name?: string) => {
@@ -86,7 +77,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
       await logoutUser();
     } catch (error) {
       // Continue with logout even if API call fails
-      console.error("Logout API call failed:", error);
+      console.error('Logout API call failed:', error);
     } finally {
       TokenStore.clearSession();
       setAccessToken(null);
@@ -108,13 +99,9 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         login,
         logout,
         ready,
-      } as AuthContextType),
+      }) as AuthContextType,
     [isAuthenticated, accessToken, email, name, ready, login, logout, setAccessToken]
   ); // to escape from the re-renders
 
-  return (
-    <AuthContext.Provider value={providerValues}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={providerValues}>{children}</AuthContext.Provider>;
 }

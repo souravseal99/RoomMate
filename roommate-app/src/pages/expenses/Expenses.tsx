@@ -1,28 +1,28 @@
-import { useEffect, useMemo, useState } from "react";
-import HouseholdSelector from "@/components/expenses/HouseholdSelector";
-import useHousehold from "@/hooks/useHousehold";
-import AddExpenseSheet from "@/components/expenses/AddExpenseSheet";
-import SelectHouseholdAlert from "@/components/expenses/SelectHouseholdAlert";
-import ExpenseViewer from "@/components/expenses/ExpenseViewer";
-import BalanceSummary from "@/components/expenses/BalanceSummary";
-import expenseApi from "@/api/expenseApi";
-import useExpense from "@/hooks/useExpense";
-import householdMemberApi from "@/api/householdMemberApi";
+import { useEffect, useMemo, useState } from 'react';
+import HouseholdSelector from '@/components/expenses/HouseholdSelector';
+import useHousehold from '@/hooks/useHousehold';
+import AddExpenseSheet from '@/components/expenses/AddExpenseSheet';
+import SelectHouseholdAlert from '@/components/expenses/SelectHouseholdAlert';
+import ExpenseViewer from '@/components/expenses/ExpenseViewer';
+import BalanceSummary from '@/components/expenses/BalanceSummary';
+import expenseApi from '@/api/expenseApi';
+import useExpense from '@/hooks/useExpense';
+import householdMemberApi from '@/api/householdMemberApi';
 
 type MemberOptions = { key: string; value: string }[];
 
 function Expenses() {
-  const { selectedHousehold, householdMembers, setHouseholdMembers } =
-    useHousehold();
+  const { selectedHousehold, householdMembers, setHouseholdMembers } = useHousehold();
 
   const { setExpenses, setIsLoading, expenses } = useExpense();
 
   const HouseholdMemberApi = useMemo(householdMemberApi, []);
   const ExpenseApi = useMemo(expenseApi, []);
 
-  const [householdMemberOptions, setHouseholdMemberOptions] =
-    useState<MemberOptions>([{ key: "", value: "" }]);
-  
+  const [householdMemberOptions, setHouseholdMemberOptions] = useState<MemberOptions>([
+    { key: '', value: '' },
+  ]);
+
   const [balanceRefreshKey, setBalanceRefreshKey] = useState(0);
 
   const getExpenses = async () => {
@@ -32,12 +32,10 @@ function Expenses() {
     }
     setIsLoading(true);
     try {
-      const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(
-        selectedHousehold?.key
-      );
+      const expensesByHousehold = await ExpenseApi.fetchByHouseholdId(selectedHousehold?.key);
       setExpenses(expensesByHousehold || []);
     } catch (error) {
-      console.error("Error fetching expenses:", error);
+      console.error('Error fetching expenses:', error);
       setExpenses([]);
     } finally {
       setIsLoading(false);
@@ -64,8 +62,7 @@ function Expenses() {
   };
 
   const getHouseholdMembers = async (householdId: string) => {
-    const householdMemberRecords =
-      await HouseholdMemberApi.getAllHouseholdMembers(householdId);
+    const householdMemberRecords = await HouseholdMemberApi.getAllHouseholdMembers(householdId);
 
     if (householdMemberRecords && householdMemberRecords.length > 0) {
       mapHouseholdMembers(householdMemberRecords);

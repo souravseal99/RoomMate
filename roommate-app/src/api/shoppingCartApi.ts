@@ -1,12 +1,16 @@
-import Api from "@/api/axios";
-import type { ShoppingCartItem } from "@/types/shoppingCartTypes";
+import Api from '@/api/axios';
+import type { ShoppingCartItem } from '@/types/shoppingCartTypes';
 
 export const getCartItemsByHouseholdId = async (householdId: string) => {
   return await Api.get(`/shopping-cart/${householdId}`);
 };
 
-export const addToShoppingCart = async (itemName: string, quantity: number, householdId: string) => {
-  return await Api.post("/shopping-cart/add", {
+export const addToShoppingCart = async (
+  itemName: string,
+  quantity: number,
+  householdId: string
+) => {
+  return await Api.post('/shopping-cart/add', {
     itemName,
     quantity,
     householdId,

@@ -6,11 +6,11 @@ import { SessionRepo } from "./session.repo";
 export class AuthController {
   static async register(request: Request, response: Response) {
     const { name, email, password } = request.body;
-    const sessionId = request.headers['x-session-id'] as string;
+    const sessionId = request.headers["x-session-id"] as string;
 
     if (!sessionId) {
       return response.status(StatusCodes.BAD_REQUEST).json({
-        message: "Session ID required"
+        message: "Session ID required",
       });
     }
 
@@ -18,7 +18,7 @@ export class AuthController {
       name,
       email,
       password,
-      sessionId
+      sessionId,
     );
 
     return response.status(status).json({
@@ -29,15 +29,19 @@ export class AuthController {
 
   static async login(request: Request, response: Response) {
     const { email, password } = request.body;
-    const sessionId = request.headers['x-session-id'] as string;
+    const sessionId = request.headers["x-session-id"] as string;
 
     if (!sessionId) {
       return response.status(StatusCodes.BAD_REQUEST).json({
-        message: "Session ID required"
+        message: "Session ID required",
       });
     }
 
-    const { status, data, message } = await AuthService.login(email, password, sessionId);
+    const { status, data, message } = await AuthService.login(
+      email,
+      password,
+      sessionId,
+    );
 
     return response.status(status).json({
       message: message,
@@ -46,8 +50,8 @@ export class AuthController {
   }
 
   static async refresh(request: Request, response: Response) {
-    const sessionId = request.headers['x-session-id'] as string;
-    
+    const sessionId = request.headers["x-session-id"] as string;
+
     if (!sessionId) {
       return response.status(StatusCodes.UNAUTHORIZED).json({
         message: "No session ID provided",
@@ -69,7 +73,10 @@ export class AuthController {
       });
     }
 
-    const { status, data, message } = await AuthService.refresh(session.refreshToken, session.userId);
+    const { status, data, message } = await AuthService.refresh(
+      session.refreshToken,
+      session.userId,
+    );
 
     return response.status(status).json({
       message: message,
@@ -78,8 +85,8 @@ export class AuthController {
   }
 
   static async logout(request: Request, response: Response) {
-    const sessionId = request.headers['x-session-id'] as string;
-    
+    const sessionId = request.headers["x-session-id"] as string;
+
     if (sessionId) {
       try {
         await SessionRepo.deleteSession(sessionId);
@@ -87,7 +94,7 @@ export class AuthController {
         // Session might not exist
       }
     }
-    
+
     return response.status(StatusCodes.OK).json({
       message: "Logged out successfully",
     });

@@ -1,5 +1,9 @@
-import api from "@/api/axios";
-import type { CreateExpenseRequestType, SettlementRequest, SettlementResponse } from "@/types/expenseTypes";
+import api from '@/api/axios';
+import type {
+  CreateExpenseRequestType,
+  SettlementRequest,
+  SettlementResponse,
+} from '@/types/expenseTypes';
 
 export interface BalanceEntry {
   userId: string;
@@ -22,7 +26,7 @@ export interface BalancesResponse {
 
 const expenseApi = () => {
   const create = async (requestBody: CreateExpenseRequestType) => {
-    const { data, status } = await api.post("/expense/add", requestBody);
+    const { data, status } = await api.post('/expense/add', requestBody);
     return { data, status };
   };
 
@@ -39,18 +43,22 @@ const expenseApi = () => {
     return deletedExpenseResp;
   };
 
-  const fetchBalances = async (householdId: string | undefined): Promise<BalancesResponse | undefined> => {
+  const fetchBalances = async (
+    householdId: string | undefined
+  ): Promise<BalancesResponse | undefined> => {
     if (!householdId) return;
     const { data } = await api.get(`/expense/for/${householdId}/balances`);
     return data.data;
   };
 
   const createSettlement = async (requestBody: SettlementRequest) => {
-    const { data, status } = await api.post("/expense/settlement", requestBody);
+    const { data, status } = await api.post('/expense/settlement', requestBody);
     return { data, status };
   };
 
-  const fetchSettlements = async (householdId: string | undefined): Promise<SettlementResponse[] | undefined> => {
+  const fetchSettlements = async (
+    householdId: string | undefined
+  ): Promise<SettlementResponse[] | undefined> => {
     if (!householdId) return;
     const { data } = await api.get(`/expense/settlement/for/${householdId}`);
     return data.data;

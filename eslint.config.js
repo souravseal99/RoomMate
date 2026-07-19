@@ -37,6 +37,7 @@ export default tseslint.config(
       "**/*.min.js",
       "**/.turbo/**",
       "**/*.config.js", // don't lint build tool configs (vite.config.js etc)
+      "**/generated/**", // ignore prisma generated files
     ],
   },
 

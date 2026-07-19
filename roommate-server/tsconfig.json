@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "lib": [
-      "es6"
+      "ES2022"
     ],
-    "target": "es6",
+    "target": "ES2022",
+    "skipLibCheck": true,
     "module": "esnext",
     "baseUrl": "./src",
     "rootDir": "../",

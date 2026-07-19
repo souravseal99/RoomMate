@@ -15,14 +15,14 @@ export class ApiResponse<T = any> {
   static success<T>(
     data: T,
     message = "Success",
-    status: number = StatusCodes.OK
+    status: number = StatusCodes.OK,
   ) {
     return new ApiResponse(status, data, message);
   }
   static error<T>(
     message = INTERNAL_SERVER_ERROR,
     status: number = StatusCodes.INTERNAL_SERVER_ERROR,
-    data?: T
+    data?: T,
   ) {
     return new ApiResponse(status, data, message);
   }

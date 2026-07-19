@@ -7,7 +7,7 @@ const inventoryRouter = Router();
 inventoryRouter.get(
   "/:householdId",
   ensureAuthenticated,
-  InventoryController.getItems
+  InventoryController.getItems,
 );
 
 inventoryRouter.post("/add", ensureAuthenticated, InventoryController.create);
@@ -15,13 +15,13 @@ inventoryRouter.post("/add", ensureAuthenticated, InventoryController.create);
 inventoryRouter.patch(
   "/:itemId",
   ensureAuthenticated,
-  InventoryController.update
+  InventoryController.update,
 );
 
 inventoryRouter.delete(
   "/:itemId",
   ensureAuthenticated,
-  InventoryController.delete
+  InventoryController.delete,
 );
 
 export default inventoryRouter;

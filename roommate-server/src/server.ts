@@ -12,7 +12,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 async function start(): Promise<void> {
@@ -23,9 +23,8 @@ async function start(): Promise<void> {
     const server = await App.start();
 
     server.listen(env("APP_PORT"), () => {
-       
       console.log(
-        `info: Roommate App: Server started on port:${env("APP_PORT")}`
+        `info: Roommate App: Server started on port:${env("APP_PORT")}`,
       );
     });
   } else {

@@ -7,13 +7,16 @@ import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
 import { SettlementRepo } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
-import calculateBalance, { calculateSettlements, BalanceEntry } from "@src/expenses/calculateBalance";
+import calculateBalance, {
+  calculateSettlements,
+  BalanceEntry,
+} from "@src/expenses/calculateBalance";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith: string[]) {
     const isHouseholdMember = await HouseholdMemberRepo.isExistingUser(
       expense.paidById,
-      expense.householdId
+      expense.householdId,
     );
 
     if (!isHouseholdMember)
@@ -26,7 +29,7 @@ export class ExpenseService {
         return ApiResponse.success(
           createdExpense,
           "Expense added",
-          StatusCodes.CREATED
+          StatusCodes.CREATED,
         );
       } else {
         const createdExpense: Expense = await ExpenseRepo.create(expense);
@@ -44,7 +47,7 @@ export class ExpenseService {
         return ApiResponse.success(
           { createdExpense: createdExpense, createdSplits: createdSplits },
           "Added Expense with Expense split",
-          StatusCodes.CREATED
+          StatusCodes.CREATED,
         );
       }
     } catch (error) {
@@ -54,9 +57,8 @@ export class ExpenseService {
   }
 
   static async getExpensesByHousehold(householdId: string) {
-    const expenses: Expense[] = await ExpenseRepo.getExpensesByHouseholdId(
-      householdId
-    );
+    const expenses: Expense[] =
+      await ExpenseRepo.getExpensesByHouseholdId(householdId);
 
     return ApiResponse.success(expenses);
   }
@@ -74,7 +76,7 @@ export class ExpenseService {
     return ApiResponse.success(
       deleteExpenseResponse,
       "Expense Deleted",
-      StatusCodes.ACCEPTED
+      StatusCodes.ACCEPTED,
     );
   }
 
@@ -83,14 +85,15 @@ export class ExpenseService {
 
     if (!expenses)
       return ApiResponse.error(
-        `Unable to fetch expenses for the household: ${householdId}`
+        `Unable to fetch expenses for the household: ${householdId}`,
       );
 
     const balances = calculateBalance(expenses as unknown as ExpenseDto[]);
-    
+
     // Get all household members to include those with $0 balance
-    const householdMembers = await HouseholdMemberRepo.getByHouseholdId(householdId);
-    
+    const householdMembers =
+      await HouseholdMemberRepo.getByHouseholdId(householdId);
+
     // If no household members found, return the calculated balances
     if (!householdMembers || householdMembers.length === 0) {
       return ApiResponse.success({
@@ -98,12 +101,12 @@ export class ExpenseService {
         settlements: [],
       });
     }
-    
+
     // Create a map of existing balances
-    const balanceMap = new Map(balances.map(b => [b.userId, b]));
-    
+    const balanceMap = new Map(balances.map((b) => [b.userId, b]));
+
     // Build complete balance list including $0 members
-    let allBalances: BalanceEntry[] = householdMembers.map(member => {
+    let allBalances: BalanceEntry[] = householdMembers.map((member) => {
       const existing = balanceMap.get(member.userId);
       return {
         userId: member.userId,
@@ -111,27 +114,34 @@ export class ExpenseService {
         balance: existing?.balance ?? 0,
       };
     });
-    
+
     // Get settlements and subtract them from balances
     const settlements = await SettlementRepo.getByHouseholdId(householdId);
-    
+
     if (settlements && settlements.length > 0) {
       // Create a mutable copy of balances
       const balanceAdjustmentMap = new Map<string, number>();
-      
+
       // Calculate settlement adjustments
-      settlements.forEach(settlement => {
+      settlements.forEach((settlement) => {
         // fromUser paid, so their balance increases (less negative/more positive)
-        const currentFrom = balanceAdjustmentMap.get(settlement.fromUserId) ?? 0;
-        balanceAdjustmentMap.set(settlement.fromUserId, currentFrom + settlement.amount);
-        
+        const currentFrom =
+          balanceAdjustmentMap.get(settlement.fromUserId) ?? 0;
+        balanceAdjustmentMap.set(
+          settlement.fromUserId,
+          currentFrom + settlement.amount,
+        );
+
         // toUser received, so their balance decreases (more negative/less positive)
         const currentTo = balanceAdjustmentMap.get(settlement.toUserId) ?? 0;
-        balanceAdjustmentMap.set(settlement.toUserId, currentTo - settlement.amount);
+        balanceAdjustmentMap.set(
+          settlement.toUserId,
+          currentTo - settlement.amount,
+        );
       });
-      
+
       // Apply adjustments to balances
-      allBalances = allBalances.map(entry => {
+      allBalances = allBalances.map((entry) => {
         const adjustment = balanceAdjustmentMap.get(entry.userId) ?? 0;
         return {
           ...entry,
@@ -139,7 +149,7 @@ export class ExpenseService {
         };
       });
     }
-    
+
     // Recalculate settlements from the adjusted balances
     const adjustedSettlements = calculateSettlements(allBalances);
 

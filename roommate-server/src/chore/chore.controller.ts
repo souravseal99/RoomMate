@@ -6,7 +6,15 @@ import { parseDate } from "@src/common/utils/utils";
 
 export class ChoreController {
   static async add(request: Request, response: Response) {
-    const { householdId, description, frequency, assignedToId, priority, notes, nextDue } = request.body;
+    const {
+      householdId,
+      description,
+      frequency,
+      assignedToId,
+      priority,
+      notes,
+      nextDue,
+    } = request.body;
 
     const addChoreRequest: ChoreDto = {
       householdId,
@@ -27,8 +35,16 @@ export class ChoreController {
   }
 
   static async completeChore(request: Request, response: Response) {
-    const { choreId } = request.params;
-    const { assignedToId, nextDue, completed, priority, notes, description, frequency } = request.body;
+    const { choreId } = request.params as { choreId: string };
+    const {
+      assignedToId,
+      nextDue,
+      completed,
+      priority,
+      notes,
+      description,
+      frequency,
+    } = request.body;
 
     const updateChoreRequest: UpdateChoreType = {
       assignedToId,
@@ -44,9 +60,8 @@ export class ChoreController {
     if (updateChoreRequest.nextDue)
       updateChoreRequest.nextDue = parseDate(nextDue);
 
-    const { status, message, data } = await ChoreService.completeChore(
-      updateChoreRequest
-    );
+    const { status, message, data } =
+      await ChoreService.completeChore(updateChoreRequest);
 
     return response.status(status).json({
       message: message,
@@ -55,9 +70,10 @@ export class ChoreController {
   }
 
   static async getByHousehold(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await ChoreService.getByHousehold(householdId);
+    const { status, message, data } =
+      await ChoreService.getByHousehold(householdId);
 
     return response.status(status).json({
       message: message,
@@ -66,7 +82,7 @@ export class ChoreController {
   }
 
   static async delete(request: Request, response: Response) {
-    const { choreId } = request.params;
+    const { choreId } = request.params as { choreId: string };
 
     const { status, message, data } = await ChoreService.delete(choreId);
 

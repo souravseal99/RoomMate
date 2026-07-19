@@ -18,7 +18,7 @@ export class HouseholdService {
     // Fetch existing names that match the requested base name or numbered variants
     const existing = await HouseholdRepository.findNamesLikeByUser(
       userId,
-      name
+      name,
     );
 
     const baseName = name?.trim() || "";
@@ -41,19 +41,19 @@ export class HouseholdService {
     const createdHouseholdRecord: Household = await HouseholdRepository.create(
       finalName,
       userId,
-      Role.ADMIN
+      Role.ADMIN,
     );
 
     if (!createdHouseholdRecord)
       return ApiResponse.error(
         "Unable to create Household",
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
 
     return ApiResponse.success(
       { household: createdHouseholdRecord },
       "Household created",
-      StatusCodes.CREATED
+      StatusCodes.CREATED,
     );
   }
 
@@ -63,19 +63,18 @@ export class HouseholdService {
     if (!user)
       return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
 
-    const householdRecords = await HouseholdRepository.getHouseholdsByUser(
-      userId
-    );
+    const householdRecords =
+      await HouseholdRepository.getHouseholdsByUser(userId);
 
     if (!householdRecords)
       return ApiResponse.error(
         `Unable to fetch Households for the user: ${userId}`,
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
 
     return ApiResponse.success(
       { household: householdRecords },
-      `Households for the user: ${user.name}`
+      `Households for the user: ${user.name}`,
     );
   }
 
@@ -86,19 +85,18 @@ export class HouseholdService {
     if (!household)
       return ApiResponse.error("Household not found", StatusCodes.NOT_FOUND);
 
-    const deleteHouseholdResponse = await HouseholdRepository.delete(
-      householdId
-    );
+    const deleteHouseholdResponse =
+      await HouseholdRepository.delete(householdId);
 
     if (!deleteHouseholdResponse)
       return ApiResponse.error(
         `Unable to delete the Household: ${householdId}`,
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
 
     return ApiResponse.success(
       { household: deleteHouseholdResponse },
-      "Household deleted successfully"
+      "Household deleted successfully",
     );
   }
 
@@ -116,7 +114,7 @@ export class HouseholdService {
 
     const isExistingUser = await HouseholdMemberRepo.isExistingUser(
       userId,
-      household.householdId
+      household.householdId,
     );
 
     if (isExistingUser)
@@ -127,24 +125,24 @@ export class HouseholdService {
           userId: userId,
           householdId: household.householdId,
           householdName: household.name,
-        }
+        },
       );
 
     const joinedHousehold = await HouseholdMemberRepo.join(
       userId,
-      household.householdId
+      household.householdId,
     );
 
     if (!joinedHousehold)
       return ApiResponse.error(
         "Unable to join the Household",
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
 
     return ApiResponse.success(
       { household: { ...joinedHousehold, householdName: household.name } },
       "Joined the Household",
-      StatusCodes.CREATED
+      StatusCodes.CREATED,
     );
   }
 }

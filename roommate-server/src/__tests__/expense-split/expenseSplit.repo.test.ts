@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ExpenseSplitRepo } from '@src/expense-split/expenseSplit.repo';
-import prisma from '@src/common/utils/prisma';
-import ExpenseSplitDto from '@src/common/dtos/ExpenseSplitDto';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { ExpenseSplitRepo } from "@src/expense-split/expenseSplit.repo";
+import prisma from "@src/common/utils/prisma";
+import ExpenseSplitDto from "@src/common/dtos/ExpenseSplitDto";
 
-vi.mock('@src/common/utils/prisma', () => ({
+vi.mock("@src/common/utils/prisma", () => ({
   default: {
     expenseSplit: {
       createMany: vi.fn(),
@@ -11,27 +11,27 @@ vi.mock('@src/common/utils/prisma', () => ({
   },
 }));
 
-describe('ExpenseSplitRepo', () => {
+describe("ExpenseSplitRepo", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('bulkCreate', () => {
-    it('should bulk create multiple expense splits', async () => {
+  describe("bulkCreate", () => {
+    it("should bulk create multiple expense splits", async () => {
       const splits: ExpenseSplitDto[] = [
         {
-          expenseId: 'expense-123',
-          userId: 'user-1',
+          expenseId: "expense-123",
+          userId: "user-1",
           shareAmount: 33.33,
         },
         {
-          expenseId: 'expense-123',
-          userId: 'user-2',
+          expenseId: "expense-123",
+          userId: "user-2",
           shareAmount: 33.33,
         },
         {
-          expenseId: 'expense-123',
-          userId: 'user-3',
+          expenseId: "expense-123",
+          userId: "user-3",
           shareAmount: 33.34,
         },
       ];
@@ -49,12 +49,12 @@ describe('ExpenseSplitRepo', () => {
       expect(result.count).toBe(3);
     });
 
-    it('should handle single split', async () => {
+    it("should handle single split", async () => {
       const splits: ExpenseSplitDto[] = [
         {
-          expenseId: 'expense-456',
-          userId: 'user-1',
-          shareAmount: 100.00,
+          expenseId: "expense-456",
+          userId: "user-1",
+          shareAmount: 100.0,
         },
       ];
 

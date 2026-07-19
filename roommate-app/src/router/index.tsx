@@ -1,18 +1,18 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-import UnauthenticatedLayout from "@/layouts/UnAuthenticatedLayout";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout";
-import ProtectedRoute from "@/components/routing/ProtectedRoute";
-import RegisterPage from "@/pages/auth/RegisterPage";
-import LoginPage from "@/pages/auth/LoginPage";
-import DummyDashboard from "@/pages/dashboard/DummyDashboard";
-import Households from "@/pages/households/Households";
-import Chores from "@/pages/chores/Chores";
-import Expenses from "@/pages/expenses/Expenses";
-import ErrorPage from "@/pages/ErrorPage";
-import HouseholdProvider from "@/contexts/HouseholdContext";
-import { ExpenseProvider } from "@/contexts/ExpenseContext";
-import Inventory from "@/pages/inventory/Inventory";
-import { InventoryProvider } from "@/contexts/InventoryContext";
+import { Navigate, Route, Routes } from 'react-router-dom';
+import UnauthenticatedLayout from '@/layouts/UnAuthenticatedLayout';
+import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
+import ProtectedRoute from '@/components/routing/ProtectedRoute';
+import RegisterPage from '@/pages/auth/RegisterPage';
+import LoginPage from '@/pages/auth/LoginPage';
+import DummyDashboard from '@/pages/dashboard/DummyDashboard';
+import Households from '@/pages/households/Households';
+import Chores from '@/pages/chores/Chores';
+import Expenses from '@/pages/expenses/Expenses';
+import ErrorPage from '@/pages/ErrorPage';
+import HouseholdProvider from '@/contexts/HouseholdContext';
+import { ExpenseProvider } from '@/contexts/ExpenseContext';
+import Inventory from '@/pages/inventory/Inventory';
+import { InventoryProvider } from '@/contexts/InventoryContext';
 
 function AppRouter() {
   return (

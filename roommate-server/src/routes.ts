@@ -17,7 +17,7 @@ const routes = Router();
 routes.get("/health", (_request, response) =>
   response.json({
     dateTime: new Date(),
-  })
+  }),
 );
 
 routes.use("/user", userRoutes);

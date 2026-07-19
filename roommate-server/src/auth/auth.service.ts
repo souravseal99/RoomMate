@@ -21,7 +21,7 @@ export class AuthService {
     name: string,
     email: string,
     password: string,
-    sessionId: string
+    sessionId: string,
   ): Promise<RegisterUserResponse | ApiResponse> {
     try {
       const existingUser: User | null = await UserRepo.getUserByEmail(email);
@@ -29,7 +29,7 @@ export class AuthService {
       if (existingUser)
         return ApiResponse.error(
           "Email already registered",
-          StatusCodes.CONFLICT
+          StatusCodes.CONFLICT,
         );
 
       const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
@@ -37,7 +37,7 @@ export class AuthService {
       const createdUser: User = await UserRepo.createUser(
         name,
         email,
-        hashedPassword
+        hashedPassword,
       );
 
       if (!createdUser)
@@ -48,7 +48,12 @@ export class AuthService {
       });
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-      await SessionRepo.createSession(sessionId, createdUser.userId, refreshToken, expiresAt);
+      await SessionRepo.createSession(
+        sessionId,
+        createdUser.userId,
+        refreshToken,
+        expiresAt,
+      );
 
       return ApiResponse.success(
         {
@@ -56,7 +61,7 @@ export class AuthService {
           email: createdUser.email,
           accessToken: accessToken,
         },
-        "User successfully created"
+        "User successfully created",
       );
     } catch (error) {
       throw Error("User not created: auth.service.ts", { cause: error });
@@ -66,7 +71,7 @@ export class AuthService {
   static async login(
     email: string,
     password: string,
-    sessionId: string
+    sessionId: string,
   ): Promise<UserLoginResponse | ApiResponse> {
     try {
       const user: User | null = await UserRepo.getUserByEmail(email);
@@ -84,15 +89,20 @@ export class AuthService {
       });
 
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-      
+
       // Delete existing session if any, then create new one
       try {
         await SessionRepo.deleteSession(sessionId);
       } catch (_e) {
         // Ignore missing session
       }
-      
-      await SessionRepo.createSession(sessionId, user.userId, refreshToken, expiresAt);
+
+      await SessionRepo.createSession(
+        sessionId,
+        user.userId,
+        refreshToken,
+        expiresAt,
+      );
 
       return ApiResponse.success(
         {
@@ -100,7 +110,7 @@ export class AuthService {
           name: user.name,
           email: user.email,
         },
-        `Welcome to Roommate ${user.name}`
+        `Welcome to Roommate ${user.name}`,
       );
     } catch (_error) {
       return ApiResponse.error("Unable to login");
@@ -122,12 +132,13 @@ export class AuthService {
       if (userId !== expectedUserId) {
         return ApiResponse.error(
           "Session mismatch - please log in again",
-          StatusCodes.UNAUTHORIZED
+          StatusCodes.UNAUTHORIZED,
         );
       }
 
       const user = await UserRepo.getUserById(userId);
-      if (!user) return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+      if (!user)
+        return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
 
       const accessToken = await getNewAccessToken({ userId: userId });
 
@@ -142,7 +153,7 @@ export class AuthService {
       return ApiResponse.error(
         `Unable to refresh the token: ${error}`,
         StatusCodes.UNAUTHORIZED,
-        { refreshToken: refreshToken }
+        { refreshToken: refreshToken },
       );
     }
   }

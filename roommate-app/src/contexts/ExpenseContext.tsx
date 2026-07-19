@@ -1,5 +1,5 @@
-import { createContext, useMemo, useState, type ReactNode } from "react";
-import { type ExpenseResponse } from "@/types/expenseTypes";
+import { createContext, useMemo, useState, type ReactNode } from 'react';
+import { type ExpenseResponse } from '@/types/expenseTypes';
 
 export type ExpenseContextType = {
   expenses: ExpenseResponse[] | undefined;
@@ -8,9 +8,7 @@ export type ExpenseContextType = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const ExpenseContext = createContext<ExpenseContextType | undefined>(
-  undefined
-);
+export const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
 
 export const ExpenseProvider = ({ children }: Readonly<{ children: ReactNode }>) => {
   const [expenses, setExpenses] = useState<ExpenseResponse[] | undefined>([]);
