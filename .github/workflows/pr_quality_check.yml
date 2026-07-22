@@ -97,6 +97,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: detect-changes
     if: needs.detect-changes.outputs.server == 'true'
+    # Need to add docker-compose.yml and run docker-compose up -d
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -110,6 +125,11 @@ jobs:
         run: npm ci
       - name: Generate Prisma Client
         run: npm run prisma:generate --workspace=roommate-server
+      - name: Push Prisma Schema to Test DB
+        run: npx prisma db push
+        working-directory: roommate-server
+        env:
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/test_db' }}
       - name: Run vitest
         run: npm test --workspace=roommate-server
         env:
@@ -153,6 +173,7 @@ jobs:
         run: npm audit --audit-level=high
         continue-on-error: true
       - name: Dependency Review
+        if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
