@@ -113,15 +113,25 @@ jobs:
       - name: Run vitest
         run: npm test --workspace=roommate-server
         env:
+          APP_PORT: ${{ secrets.APP_PORT }}
           BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
+          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE }}
       - name: Generate coverage report
         run: npm run test:coverage --workspace=roommate-server || echo "Skipping coverage"
         env:
+          APP_PORT: ${{ secrets.APP_PORT }}
           BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
+          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE }}
 
   security-scan:
     name: Security Scan
