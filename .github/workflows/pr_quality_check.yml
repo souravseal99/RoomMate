@@ -8,6 +8,9 @@ on:
       - main
     types: [opened, synchronize, reopened]
 
+permissions:
+    contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -21,7 +24,7 @@ jobs:
       server: ${{ steps.filter.outputs.server }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Filter by path
         uses: dorny/paths-filter@v3
         id: filter
@@ -47,7 +50,7 @@ jobs:
     if: needs.detect-changes.outputs.app == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -70,7 +73,7 @@ jobs:
     if: needs.detect-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -93,7 +96,7 @@ jobs:
     if: needs.detect-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -114,7 +117,7 @@ jobs:
     if: needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.server == 'true'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -127,7 +130,7 @@ jobs:
         run: npm audit --audit-level=high
         continue-on-error: true
       - name: Dependency Review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
 
