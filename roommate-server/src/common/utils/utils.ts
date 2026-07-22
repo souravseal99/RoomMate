@@ -17,7 +17,7 @@ export const parseDate = (input: string) => {
     Date.UTC(
       parsedDate.getFullYear(),
       parsedDate.getMonth(),
-      parsedDate.getDate()
-    )
+      parsedDate.getDate(),
+    ),
   );
 };

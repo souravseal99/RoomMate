@@ -1,15 +1,23 @@
-import { useMemo, useState } from "react";
-import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle, LogOut } from "lucide-react";
-import type { HouseholdResponse } from "@/types/householdTypes";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import householdApi from "@/api/householdApi";
-import householdMemberApi from "@/api/householdMemberApi";
-import useHousehold from "@/hooks/useHousehold";
+import { useMemo, useState } from 'react';
+import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle, LogOut } from 'lucide-react';
+import type { HouseholdResponse } from '@/types/householdTypes';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
+import householdApi from '@/api/householdApi';
+import householdMemberApi from '@/api/householdMemberApi';
+import useHousehold from '@/hooks/useHousehold';
 
 type Props = {
   household: HouseholdResponse;
@@ -31,9 +39,9 @@ function HouseholdCard({ household }: Props) {
       await navigator.clipboard.writeText(household.inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast({ title: "Copied!", description: "Invite code copied to clipboard" });
+      toast({ title: 'Copied!', description: 'Invite code copied to clipboard' });
     } catch (err) {
-      toast({ title: "Error", description: "Failed to copy invite code", variant: "destructive" });
+      toast({ title: 'Error', description: 'Failed to copy invite code', variant: 'destructive' });
     }
   };
 
@@ -41,25 +49,40 @@ function HouseholdCard({ household }: Props) {
     setIsDeleteOpen(false);
     try {
       await HouseholdApi.deleteCascated(household.householdId);
-      toast({ title: "Household deleted", description: "All related data has been permanently deleted." });
+      toast({
+        title: 'Household deleted',
+        description: 'All related data has been permanently deleted.',
+      });
       fetchAllHouseholds();
     } catch (error) {
-      toast({ title: "Error", description: "Failed to delete household. Please try again.", variant: "destructive" });
+      toast({
+        title: 'Error',
+        description: 'Failed to delete household. Please try again.',
+        variant: 'destructive',
+      });
     }
   };
 
   const handleEdit = async () => {
     if (!newName.trim()) {
-      toast({ title: "Error", description: "Please enter a household name", variant: "destructive" });
+      toast({
+        title: 'Error',
+        description: 'Please enter a household name',
+        variant: 'destructive',
+      });
       return;
     }
     try {
       await HouseholdApi.update(household.householdId, { name: newName });
-      toast({ title: "Success", description: "Household name updated successfully" });
+      toast({ title: 'Success', description: 'Household name updated successfully' });
       await fetchAllHouseholds();
       setIsEditOpen(false);
     } catch (error: any) {
-      toast({ title: "Error", description: error?.response?.data?.message || "Failed to update household name", variant: "destructive" });
+      toast({
+        title: 'Error',
+        description: error?.response?.data?.message || 'Failed to update household name',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -67,10 +90,14 @@ function HouseholdCard({ household }: Props) {
     setIsLeaveOpen(false);
     try {
       await HouseholdMemberApi.leaveHousehold(household.householdId);
-      toast({ title: "Success", description: "You have left the household" });
+      toast({ title: 'Success', description: 'You have left the household' });
       fetchAllHouseholds();
     } catch (error: any) {
-      toast({ title: "Error", description: error?.response?.data?.message || "Failed to leave household", variant: "destructive" });
+      toast({
+        title: 'Error',
+        description: error?.response?.data?.message || 'Failed to leave household',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -84,8 +111,13 @@ function HouseholdCard({ household }: Props) {
               <Home className="w-5 h-5 text-blue-600" />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">{household.name}</h3>
-              <p className="text-[10px] text-gray-500">{household.members?.length || 0} member{(household.members?.length || 0) !== 1 ? 's' : ''}</p>
+              <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                {household.name}
+              </h3>
+              <p className="text-[10px] text-gray-500">
+                {household.members?.length || 0} member
+                {(household.members?.length || 0) !== 1 ? 's' : ''}
+              </p>
             </div>
           </div>
           <div className="flex gap-1 flex-shrink-0">
@@ -102,9 +134,7 @@ function HouseholdCard({ household }: Props) {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Edit Household</DialogTitle>
-                  <DialogDescription>
-                    Change the name of your household
-                  </DialogDescription>
+                  <DialogDescription>Change the name of your household</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
@@ -118,10 +148,17 @@ function HouseholdCard({ household }: Props) {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsEditOpen(false)} className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsEditOpen(false)}
+                    className="cursor-pointer"
+                  >
                     Cancel
                   </Button>
-                  <Button type="button" onClick={handleEdit} className="cursor-pointer">Save Changes</Button>
+                  <Button type="button" onClick={handleEdit} className="cursor-pointer">
+                    Save Changes
+                  </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -143,9 +180,14 @@ function HouseholdCard({ household }: Props) {
                   </DialogTitle>
                   <DialogDescription className="pt-2">
                     Are you sure you want to delete <strong>{household.name}</strong>?
-                    <br /><br />
-                    <strong className="text-red-600">⚠️ This will affect all {household.members?.length || 0} member(s) of this household.</strong>
-                    <br /><br />
+                    <br />
+                    <br />
+                    <strong className="text-red-600">
+                      ⚠️ This will affect all {household.members?.length || 0} member(s) of this
+                      household.
+                    </strong>
+                    <br />
+                    <br />
                     This action cannot be undone. All related data will be permanently deleted:
                     <ul className="list-disc list-inside mt-2 space-y-1">
                       <li>All expenses</li>
@@ -156,10 +198,20 @@ function HouseholdCard({ household }: Props) {
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsDeleteOpen(false)} className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsDeleteOpen(false)}
+                    className="cursor-pointer"
+                  >
                     Cancel
                   </Button>
-                  <Button type="button" variant="destructive" onClick={handleDelete} className="cursor-pointer">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                    className="cursor-pointer"
+                  >
                     Delete Household
                   </Button>
                 </DialogFooter>
@@ -171,7 +223,9 @@ function HouseholdCard({ household }: Props) {
         {household.members && household.members.length > 0 && (
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 mb-3 shadow-inner">
             <div className="text-[10px] text-gray-600 mb-1 font-medium">Created by</div>
-            <div className="text-sm font-semibold text-gray-900 truncate">{household.members[0]?.user?.name || 'Unknown'}</div>
+            <div className="text-sm font-semibold text-gray-900 truncate">
+              {household.members[0]?.user?.name || 'Unknown'}
+            </div>
           </div>
         )}
 
@@ -184,12 +238,18 @@ function HouseholdCard({ household }: Props) {
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className={`w-full cursor-pointer transition-all duration-300 text-xs ${copied ? "text-green-600 border-green-300 bg-green-50" : "hover:bg-blue-50 hover:border-blue-300"}`}
+          className={`w-full cursor-pointer transition-all duration-300 text-xs ${copied ? 'text-green-600 border-green-300 bg-green-50' : 'hover:bg-blue-50 hover:border-blue-300'}`}
         >
           {copied ? (
-            <><ClipboardCheck className="w-3 h-3 mr-1" />Copied!</>
+            <>
+              <ClipboardCheck className="w-3 h-3 mr-1" />
+              Copied!
+            </>
           ) : (
-            <><Clipboard className="w-3 h-3 mr-1" />Copy Code</>
+            <>
+              <Clipboard className="w-3 h-3 mr-1" />
+              Copy Code
+            </>
           )}
         </Button>
 
@@ -201,7 +261,8 @@ function HouseholdCard({ household }: Props) {
               size="sm"
               className="w-full cursor-pointer transition-all duration-300 text-xs text-orange-600 border-orange-300 hover:bg-orange-50 hover:border-orange-300 mt-2"
             >
-              <LogOut className="w-3 h-3 mr-1" />Leave Household
+              <LogOut className="w-3 h-3 mr-1" />
+              Leave Household
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -212,15 +273,26 @@ function HouseholdCard({ household }: Props) {
               </DialogTitle>
               <DialogDescription className="pt-2">
                 Are you sure you want to leave <strong>{household.name}</strong>?
-                <br /><br />
+                <br />
+                <br />
                 You will need to be invited again to rejoin.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsLeaveOpen(false)} className="cursor-pointer">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsLeaveOpen(false)}
+                className="cursor-pointer"
+              >
                 Cancel
               </Button>
-              <Button type="button" variant="destructive" onClick={handleLeave} className="cursor-pointer">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleLeave}
+                className="cursor-pointer"
+              >
                 Leave Household
               </Button>
             </DialogFooter>

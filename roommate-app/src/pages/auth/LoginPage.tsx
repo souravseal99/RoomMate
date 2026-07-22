@@ -1,10 +1,10 @@
 // src/features/auth/LoginPage.tsx
-import { useNavigate } from "react-router-dom";
-import { AuthForm } from "../../components/auth/AuthForm";
-import { loginUser } from "../../api/authApi";
-import useAuth from "@/hooks/useAuth";
-import { useEffect } from "react";
-import TokenStore from "@/lib/TokenStore";
+import { useNavigate } from 'react-router-dom';
+import { AuthForm } from '../../components/auth/AuthForm';
+import { loginUser } from '../../api/authApi';
+import useAuth from '@/hooks/useAuth';
+import { useEffect } from 'react';
+import TokenStore from '@/lib/TokenStore';
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -17,24 +17,19 @@ export default function LoginPage() {
       const res = await loginUser(values);
 
       const token = res.data?.accessToken;
-      console.log(
-        "Login response:",
-        token,
-        "\nisAuthenticated: ",
-        isAuthenticated
-      );
+      console.log('Login response:', token, '\nisAuthenticated: ', isAuthenticated);
       if (token) {
         login(token, res.data?.email ?? null, res.data?.name ?? null);
       }
     } catch (e: any) {
-      console.error("Login failed: ", e);
-      alert(e.response?.data?.message ?? "Login failed");
+      console.error('Login failed: ', e);
+      alert(e.response?.data?.message ?? 'Login failed');
     }
   };
 
   useEffect(() => {
     if (isAuthenticated) {
-      nav("/dashboard");
+      nav('/dashboard');
     }
   }, [isAuthenticated, nav]);
 

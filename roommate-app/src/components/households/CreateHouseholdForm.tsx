@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Clipboard, ClipboardCheck, Home, PartyPopper } from "lucide-react";
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from '@/components/ui/button';
+import { Clipboard, ClipboardCheck, Home, PartyPopper } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
@@ -12,19 +12,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import householdApi from "@/api/householdApi";
-import useHousehold from "@/hooks/useHousehold";
+} from '@/components/ui/dialog';
+import householdApi from '@/api/householdApi';
+import useHousehold from '@/hooks/useHousehold';
 
 function CreateHouseholdSheet() {
   const [isOpen, setIsOpen] = useState(false);
-  const [householdName, setHouseholdName] = useState("");
+  const [householdName, setHouseholdName] = useState('');
 
   const HouseholdApi = householdApi();
   const { fetchAllHouseholds } = useHousehold();
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
-  const [createdHousehold, setCreatedHousehold] = useState<{ name: string; inviteCode: string } | null>(null);
+  const [createdHousehold, setCreatedHousehold] = useState<{
+    name: string;
+    inviteCode: string;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
 
   const handleSubmit = async () => {
@@ -37,14 +40,17 @@ function CreateHouseholdSheet() {
       if (data?.data?.household) {
         setCreatedHousehold(data.data.household);
       } else {
-        toast({ title: "Household created", description: "Your household was created successfully." });
+        toast({
+          title: 'Household created',
+          description: 'Your household was created successfully.',
+        });
         setIsOpen(false);
-        setHouseholdName("");
+        setHouseholdName('');
       }
       fetchAllHouseholds();
     } catch (error) {
-      console.error("Error creating household:", error);
-      toast({ title: "Error", description: "Failed to create household. Please try again." });
+      console.error('Error creating household:', error);
+      toast({ title: 'Error', description: 'Failed to create household. Please try again.' });
     } finally {
       setIsCreating(false);
     }
@@ -56,16 +62,16 @@ function CreateHouseholdSheet() {
       await navigator.clipboard.writeText(createdHousehold.inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast({ title: "Copied!", description: "Invite code copied to clipboard." });
+      toast({ title: 'Copied!', description: 'Invite code copied to clipboard.' });
     } catch (err) {
-      console.error("Failed to copy: ", err);
+      console.error('Failed to copy: ', err);
     }
   };
 
   const handleClose = () => {
     setIsOpen(false);
     setCreatedHousehold(null);
-    setHouseholdName("");
+    setHouseholdName('');
   };
 
   return (
@@ -82,9 +88,7 @@ function CreateHouseholdSheet() {
           <>
             <DialogHeader>
               <DialogTitle>Create New Household</DialogTitle>
-              <DialogDescription>
-                Enter a name for your new shared living space
-              </DialogDescription>
+              <DialogDescription>Enter a name for your new shared living space</DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
@@ -94,7 +98,7 @@ function CreateHouseholdSheet() {
                   value={householdName}
                   onChange={(e) => setHouseholdName(e.target.value)}
                   placeholder="e.g., Downtown Apartment"
-                  onKeyDown={(e) => e.key === "Enter" && !isCreating && handleSubmit()}
+                  onKeyDown={(e) => e.key === 'Enter' && !isCreating && handleSubmit()}
                 />
               </div>
             </div>
@@ -107,7 +111,7 @@ function CreateHouseholdSheet() {
                 disabled={!householdName.trim() || isCreating}
                 className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {isCreating ? "Creating..." : "Create Household"}
+                {isCreating ? 'Creating...' : 'Create Household'}
               </Button>
             </DialogFooter>
           </>
@@ -119,7 +123,8 @@ function CreateHouseholdSheet() {
               </div>
               <DialogTitle className="text-center text-2xl">Household Created!</DialogTitle>
               <DialogDescription className="text-center text-base">
-                Your household <strong>{createdHousehold.name}</strong> is ready. Share this code with your roommates to invite them.
+                Your household <strong>{createdHousehold.name}</strong> is ready. Share this code
+                with your roommates to invite them.
               </DialogDescription>
             </DialogHeader>
             <div className="flex flex-col items-center gap-4 py-6">

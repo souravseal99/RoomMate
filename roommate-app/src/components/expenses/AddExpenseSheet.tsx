@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetClose,
@@ -9,10 +9,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import AddExpenseForm from "./AddExpenseForm";
-import SelectHouseholdAlert from "./SelectHouseholdAlert";
-import type { HouseholdOptions } from "@/types/householdTypes";
+} from '@/components/ui/sheet';
+import AddExpenseForm from './AddExpenseForm';
+import SelectHouseholdAlert from './SelectHouseholdAlert';
+import type { HouseholdOptions } from '@/types/householdTypes';
 
 type Props = {
   householdMemberOptions: { key: string; value: string }[];
@@ -27,7 +27,7 @@ export default function AddExpenseSheet({
 }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => { }, [selectedHousehold]);
+  useEffect(() => {}, [selectedHousehold]);
 
   return (
     <Sheet>
@@ -38,8 +38,7 @@ export default function AddExpenseSheet({
         <SheetHeader>
           <SheetTitle>Add Expenses</SheetTitle>
           <SheetDescription>
-            Add your expense details here for the household{" "}
-            {selectedHousehold?.value}.
+            Add your expense details here for the household {selectedHousehold?.value}.
           </SheetDescription>
         </SheetHeader>
 
@@ -60,7 +59,7 @@ export default function AddExpenseSheet({
             disabled={isSubmitting}
             aria-busy={isSubmitting}
           >
-            {isSubmitting ? "Saving…" : "Save changes"}
+            {isSubmitting ? 'Saving…' : 'Save changes'}
           </Button>
           <SheetClose asChild>
             <Button variant="outline">Close</Button>

@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createInventoryItem } from "@/api/inventoryApi";
-import useHousehold from "@/hooks/useHousehold";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { createInventoryItem } from '@/api/inventoryApi';
+import useHousehold from '@/hooks/useHousehold';
+import { toast } from 'sonner';
 
 interface AddItemFormProps {
   onSuccess: () => void;
@@ -12,17 +12,17 @@ interface AddItemFormProps {
 }
 
 export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [lowThreshold, setLowThreshold] = useState("");
+  const [name, setName] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [lowThreshold, setLowThreshold] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { selectedHousehold } = useHousehold();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedHousehold) {
-      toast.error("Please select a household first");
+      toast.error('Please select a household first');
       return;
     }
 
@@ -34,12 +34,12 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
         lowThreshold: parseInt(lowThreshold),
         householdId: selectedHousehold.key,
       });
-      
-      toast.success("Item added successfully");
+
+      toast.success('Item added successfully');
       onSuccess();
     } catch (error) {
       console.error('APP:: AddItemForm:: Failed to add item:', error);
-      toast.error("Failed to add item");
+      toast.error('Failed to add item');
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +57,7 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
           required
         />
       </div>
-      
+
       <div>
         <Label htmlFor="quantity">Current Quantity</Label>
         <Input
@@ -70,7 +70,7 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
           required
         />
       </div>
-      
+
       <div>
         <Label htmlFor="lowThreshold">Low Stock Threshold</Label>
         <Input
@@ -83,10 +83,10 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
           required
         />
       </div>
-      
+
       <div className="flex gap-2 pt-4">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Adding..." : "Add Item"}
+          {isLoading ? 'Adding...' : 'Add Item'}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel

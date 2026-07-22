@@ -1,17 +1,32 @@
 {
   "compilerOptions": {
-    "lib": ["es6"],
-    "target": "es6",
+    "lib": [
+      "ES2022"
+    ],
+    "target": "ES2022",
+    "skipLibCheck": true,
     "module": "esnext",
     "baseUrl": "./src",
-    "rootDir": "./",
+    "rootDir": "../",
     "paths": {
-      "@src/*": ["./*"],
-      "@common/*": ["./common/*"],
-      "@types/*": ["./common/types/*"],
-      "@generated/*": ["../generated/*"],
-      "@config/*": ["./config/*"],
-      "@test/*": ["../test/*"]
+      "@src/*": [
+        "./*"
+      ],
+      "@common/*": [
+        "./common/*"
+      ],
+      "@types/*": [
+        "./common/types/*"
+      ],
+      "@generated/*": [
+        "../generated/*"
+      ],
+      "@config/*": [
+        "./config/*"
+      ],
+      "@test/*": [
+        "../test/*"
+      ]
     },
     "outDir": "./build",
     "moduleResolution": "node",
@@ -22,10 +37,21 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src", "./**/*.ts", "./tests/**/*"],
-  "exclude": ["cfn", "node_modules", "jest.config.js"],
+  "include": [
+    "src",
+    "tests"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "cfn",
+    "**/*.test.ts"
+  ],
   "ts-node": {
     // Do not forget to `npm i -D tsconfig-paths`
-    "require": ["tsconfig-paths/register"]
+    "require": [
+      "tsconfig-paths/register"
+    ]
   }
 }

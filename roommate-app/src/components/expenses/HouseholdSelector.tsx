@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from 'react';
 import {
   Select,
   SelectContent,
@@ -7,45 +7,41 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import useHousehold from "@/hooks/useHousehold";
-import type { HouseholdOptions } from "@/types/householdTypes";
-import { Home, Users } from "lucide-react";
-import { cn } from "@/utils/utils";
+} from '@/components/ui/select';
+import useHousehold from '@/hooks/useHousehold';
+import type { HouseholdOptions } from '@/types/householdTypes';
+import { Home, Users } from 'lucide-react';
+import { cn } from '@/utils/utils';
 
 // Style constants
 const TRIGGER_CONTAINER_STYLES = [
-  "w-full h-12 px-4 py-4.5 bg-white dark:bg-gray-800",
-  "border-2 border-gray-200 dark:border-gray-700",
-  "hover:border-blue-300 dark:hover:border-blue-600",
-  "focus:border-blue-500 dark:focus:border-blue-400",
-  "focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20",
-  "rounded-xl shadow-sm transition-all duration-200",
-  "text-gray-900 dark:text-gray-100",
-  "data-[placeholder]:text-gray-500 dark:data-[placeholder]:text-gray-400",
+  'w-full h-12 px-4 py-4.5 bg-white dark:bg-gray-800',
+  'border-2 border-gray-200 dark:border-gray-700',
+  'hover:border-blue-300 dark:hover:border-blue-600',
+  'focus:border-blue-500 dark:focus:border-blue-400',
+  'focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20',
+  'rounded-xl shadow-sm transition-all duration-200',
+  'text-gray-900 dark:text-gray-100',
+  'data-[placeholder]:text-gray-500 dark:data-[placeholder]:text-gray-400',
 ];
 
 const SELECT_CONTENT_STYLES =
-  "w-full min-w-[var(--radix-select-trigger-width)] rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg";
+  'w-full min-w-[var(--radix-select-trigger-width)] rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-lg';
 
 const SELECT_ITEM_STYLES = [
-  "px-3 py-3 mx-1 rounded-lg cursor-pointer transition-all duration-150",
-  "hover:bg-blue-50 dark:hover:bg-blue-900/20",
-  "focus:bg-blue-50 dark:focus:bg-blue-900/20",
-  "data-[state=checked]:bg-blue-100 dark:data-[state=checked]:bg-blue-900/30",
-  "data-[state=checked]:text-blue-900 dark:data-[state=checked]:text-blue-100",
+  'px-3 py-3 mx-1 rounded-lg cursor-pointer transition-all duration-150',
+  'hover:bg-blue-50 dark:hover:bg-blue-900/20',
+  'focus:bg-blue-50 dark:focus:bg-blue-900/20',
+  'data-[state=checked]:bg-blue-100 dark:data-[state=checked]:bg-blue-900/30',
+  'data-[state=checked]:text-blue-900 dark:data-[state=checked]:text-blue-100',
 ];
 
 const SELECTED_HOUSEHOLD_CARD_STYLES =
-  "mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800";
+  'mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800';
 
 export default function HouseholdSelector() {
-  const {
-    households,
-    selectedHousehold,
-    setSelectedHousehold,
-    fetchAllHouseholds,
-  } = useHousehold();
+  const { households, selectedHousehold, setSelectedHousehold, fetchAllHouseholds } =
+    useHousehold();
 
   useEffect(() => {
     fetchAllHouseholds();
@@ -87,9 +83,7 @@ export default function HouseholdSelector() {
           <Home className="w-4 h-4 text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            Select Household
-          </h3>
+          <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Select Household</h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Choose which household to manage expenses for
           </p>
@@ -97,16 +91,10 @@ export default function HouseholdSelector() {
       </div>
 
       {/* Enhanced Select Component */}
-      <Select
-        onValueChange={handleValueChange}
-        value={selectedHousehold?.value}
-      >
+      <Select onValueChange={handleValueChange} value={selectedHousehold?.value}>
         <SelectTrigger className={cn(...TRIGGER_CONTAINER_STYLES)}>
           <div className="flex items-center gap-3">
-            <SelectValue
-              placeholder="Choose a household..."
-              className="text-sm font-medium"
-            />
+            <SelectValue placeholder="Choose a household..." className="text-sm font-medium" />
           </div>
         </SelectTrigger>
 
@@ -123,8 +111,8 @@ export default function HouseholdSelector() {
                   value={household.value}
                   className={cn(
                     ...SELECT_ITEM_STYLES,
-                    index === 0 && "mt-1",
-                    index === householdOptions.length - 1 && "mb-1"
+                    index === 0 && 'mt-1',
+                    index === householdOptions.length - 1 && 'mb-1'
                   )}
                 >
                   <div className="flex items-center gap-3">

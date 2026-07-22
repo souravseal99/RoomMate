@@ -53,10 +53,7 @@ export class HouseholdRepository {
     return await prisma.household.findMany({
       where: {
         members: { some: { userId: userId, role: Role.ADMIN } },
-        OR: [
-          { name: baseName },
-          { name: { startsWith: `${baseName} (` } },
-        ],
+        OR: [{ name: baseName }, { name: { startsWith: `${baseName} (` } }],
       },
       select: { name: true },
     });

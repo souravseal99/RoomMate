@@ -32,7 +32,7 @@ class App {
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Session-Id"],
-      })
+      }),
     );
 
     // Then register other middlewares
@@ -48,7 +48,7 @@ class App {
     this.app.use(errorHandler);
 
     console.log(
-      "info: Roommate App: Starting...enabling routing and middleware then continuing..."
+      "info: Roommate App: Starting...enabling routing and middleware then continuing...",
     );
 
     return this.server;

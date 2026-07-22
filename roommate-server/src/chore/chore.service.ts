@@ -19,13 +19,13 @@ export class ChoreService {
     return ApiResponse.success(
       createdChore,
       "Chore Created",
-      StatusCodes.CREATED
+      StatusCodes.CREATED,
     );
   }
 
   static async completeChore(updateChoreRequest: UpdateChoreType) {
     const chore = await ChoreRepo.getChoreWithUser(
-      updateChoreRequest.choreId || ""
+      updateChoreRequest.choreId || "",
     );
 
     if (!chore)
@@ -41,18 +41,14 @@ export class ChoreService {
     return ApiResponse.success(
       updatedChore,
       "Chore Updated",
-      StatusCodes.ACCEPTED
+      StatusCodes.ACCEPTED,
     );
   }
 
   static async getByHousehold(householdId: string) {
     const chores = await ChoreRepo.getByHousehold(householdId);
 
-    return ApiResponse.success(
-      chores,
-      "Chores Retrieved",
-      StatusCodes.OK
-    );
+    return ApiResponse.success(chores, "Chores Retrieved", StatusCodes.OK);
   }
 
   static async delete(choreId: string) {
@@ -63,10 +59,6 @@ export class ChoreService {
 
     await ChoreRepo.delete(choreId);
 
-    return ApiResponse.success(
-      null,
-      "Chore Deleted",
-      StatusCodes.OK
-    );
+    return ApiResponse.success(null, "Chore Deleted", StatusCodes.OK);
   }
 }

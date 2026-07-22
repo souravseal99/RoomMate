@@ -20,14 +20,14 @@ export class HouseholdMemberService {
     if (!createdHouseholdMember)
       return ApiResponse.error(
         "Unable to create household member",
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
 
     return ApiResponse.success(
       {
         householdMember: createdHouseholdMember,
       },
-      "Successfully created household member"
+      "Successfully created household member",
     );
   }
 
@@ -38,20 +38,19 @@ export class HouseholdMemberService {
       return ApiResponse.error("Household not found", StatusCodes.NOT_FOUND);
     }
 
-    const householdMembers = await HouseholdMemberRepo.getByHouseholdId(
-      householdId
-    );
+    const householdMembers =
+      await HouseholdMemberRepo.getByHouseholdId(householdId);
 
     if (!householdMembers) {
       return ApiResponse.error(
         "No members found for this household",
-        StatusCodes.NOT_FOUND
+        StatusCodes.NOT_FOUND,
       );
     }
 
     return ApiResponse.success(
       householdMembers,
-      "Successfully fetched household members"
+      "Successfully fetched household members",
     );
   }
 
@@ -59,30 +58,31 @@ export class HouseholdMemberService {
     // Check if user is a member
     const membership = await HouseholdMemberRepo.isExistingUser(
       userId,
-      householdId
+      householdId,
     );
 
     if (!membership) {
       return ApiResponse.error(
         "Not a member of this household",
-        StatusCodes.NOT_FOUND
+        StatusCodes.NOT_FOUND,
       );
     }
 
     // If user is ADMIN, handle admin transfer or deletion
     if (membership.role === Role.ADMIN) {
-      const otherMembers = await HouseholdMemberRepo.getByHouseholdId(householdId);
-      
+      const otherMembers =
+        await HouseholdMemberRepo.getByHouseholdId(householdId);
+
       if (otherMembers.length === 1) {
         // Only this admin remains - delete the household
         await HouseholdRepository.delete(householdId);
         return ApiResponse.success(
           null,
-          "Left household successfully. Household deleted as you were the sole member."
+          "Left household successfully. Household deleted as you were the sole member.",
         );
       } else {
         // Transfer admin to the next member
-        const nextMember = otherMembers.find(m => m.userId !== userId);
+        const nextMember = otherMembers.find((m) => m.userId !== userId);
         if (nextMember) {
           await prisma.householdMember.update({
             where: {

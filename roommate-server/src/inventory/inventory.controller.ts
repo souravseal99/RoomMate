@@ -14,9 +14,8 @@ export class InventoryController {
       householdId,
     };
 
-    const { status, message, data } = await InventoryService.createItem(
-      createItemRequest
-    );
+    const { status, message, data } =
+      await InventoryService.createItem(createItemRequest);
 
     return response.status(status).json({
       message: message,
@@ -25,11 +24,10 @@ export class InventoryController {
   }
 
   static async getItems(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await InventoryService.getItems(
-      householdId
-    );
+    const { status, message, data } =
+      await InventoryService.getItems(householdId);
 
     return response.status(status).json({
       message: message,
@@ -38,7 +36,7 @@ export class InventoryController {
   }
 
   static async update(request: Request, response: Response) {
-    const { itemId } = request.params;
+    const { itemId } = request.params as { itemId: string };
     const { name, quantity, lowThreshold } = request.body;
 
     const updateItemRequest: UpdateItemRequest = {
@@ -49,7 +47,7 @@ export class InventoryController {
 
     const { status, message, data } = await InventoryService.update(
       itemId,
-      updateItemRequest
+      updateItemRequest,
     );
 
     return response.status(status).json({
@@ -59,7 +57,7 @@ export class InventoryController {
   }
 
   static async delete(request: Request, response: Response) {
-    const { itemId } = request.params;
+    const { itemId } = request.params as { itemId: string };
 
     const { status, message, data } = await InventoryService.delete(itemId);
 

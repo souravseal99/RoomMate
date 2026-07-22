@@ -1,5 +1,5 @@
-import { Trash2Icon } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Trash2Icon } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -8,14 +8,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { dateFormatterUtc, formatCurrency } from "@/utils/utils";
-import useExpense from "@/hooks/useExpense";
-import ExpenseTableSkeleton from "./ExpenseTableSkeleton";
-import { useEffect, useState, useMemo } from "react";
-import expenseApi from "@/api/expenseApi";
-import type { SettlementResponse } from "@/types/expenseTypes";
-import useHousehold from "@/hooks/useHousehold";
+} from '@/components/ui/table';
+import { dateFormatterUtc, formatCurrency } from '@/utils/utils';
+import useExpense from '@/hooks/useExpense';
+import ExpenseTableSkeleton from './ExpenseTableSkeleton';
+import { useEffect, useState, useMemo } from 'react';
+import expenseApi from '@/api/expenseApi';
+import type { SettlementResponse } from '@/types/expenseTypes';
+import useHousehold from '@/hooks/useHousehold';
 
 type ExpenseViewerProps = {
   handleDeleteExpense: (expenseId: string) => Promise<void>;
@@ -41,7 +41,7 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
           setSettlements(data);
         }
       } catch (error) {
-        console.error("Failed to fetch settlements:", error);
+        console.error('Failed to fetch settlements:', error);
       }
     };
 
@@ -55,12 +55,12 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
 
     // Calculate total amount owed to the payer from settlements
     const totalSettledToPayer = settlements
-      .filter(s => s.toUserId === expense.paidById)
+      .filter((s) => s.toUserId === expense.paidById)
       .reduce((sum, s) => sum + s.amount, 0);
 
     // If the total settled amount >= expense amount, it's settled
     // Note: This is a simplification. In reality, we should track settlements per expense
-    // But since settlements are for balances, we check if the payer has received 
+    // But since settlements are for balances, we check if the payer has received
     // at least the expense amount in settlements
     return totalSettledToPayer >= expense.amount;
   };
@@ -77,13 +77,9 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="font-serif font-black">Date</TableHead>
-              <TableHead className="font-serif font-black">
-                Description
-              </TableHead>
+              <TableHead className="font-serif font-black">Description</TableHead>
               <TableHead className="font-serif font-black">Paid By</TableHead>
-              <TableHead className="font-serif font-black text-right">
-                Amount
-              </TableHead>
+              <TableHead className="font-serif font-black text-right">Amount</TableHead>
               <TableHead className="font-serif font-black">Status</TableHead>
               <TableHead className="text-right"></TableHead>
             </TableRow>
@@ -96,12 +92,8 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
                     {dateFormatterUtc(expense.createdAt)}
                   </TableCell>
                   <TableCell>{expense.description}</TableCell>
-                  <TableCell className="truncate">
-                    {expense.paidBy?.name}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(expense.amount)}
-                  </TableCell>
+                  <TableCell className="truncate">{expense.paidBy?.name}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
                   <TableCell>
                     {isExpenseSettled(expense) ? (
                       <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">

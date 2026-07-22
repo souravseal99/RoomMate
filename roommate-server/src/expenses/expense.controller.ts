@@ -5,7 +5,7 @@ import ExpenseDto from "@src/common/dtos/ExpenseDto";
 
 export class ExpenseController {
   static async getExpensesByHousehold(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
     const { status, message, data } =
       await ExpenseService.getExpensesByHousehold(householdId);
@@ -17,7 +17,7 @@ export class ExpenseController {
   }
 
   static async delete(request: Request, response: Response) {
-    const { expenseId } = request.params;
+    const { expenseId } = request.params as { expenseId: string };
 
     const { status, message, data } = await ExpenseService.delete(expenseId);
 
@@ -28,11 +28,10 @@ export class ExpenseController {
   }
 
   static async getBalances(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await ExpenseService.getBalances(
-      householdId
-    );
+    const { status, message, data } =
+      await ExpenseService.getBalances(householdId);
 
     return response.status(status).json({
       message: message,
@@ -57,7 +56,7 @@ export class ExpenseController {
 
     const { status, message, data } = await ExpenseService.create(
       expense,
-      sharedWith
+      sharedWith,
     );
 
     return response.status(status).json({
@@ -81,9 +80,12 @@ export class ExpenseController {
       });
     }
 
-    const { status, message, data } = await SettlementService.createSettlement(
-      { fromUserId, toUserId, householdId, amount }
-    );
+    const { status, message, data } = await SettlementService.createSettlement({
+      fromUserId,
+      toUserId,
+      householdId,
+      amount,
+    });
 
     return response.status(status).json({
       message: message,
@@ -92,11 +94,10 @@ export class ExpenseController {
   }
 
   static async getSettlements(request: Request, response: Response) {
-    const { householdId } = request.params;
+    const { householdId } = request.params as { householdId: string };
 
-    const { status, message, data } = await SettlementService.getSettlementsByHousehold(
-      householdId
-    );
+    const { status, message, data } =
+      await SettlementService.getSettlementsByHousehold(householdId);
 
     return response.status(status).json({
       message: message,

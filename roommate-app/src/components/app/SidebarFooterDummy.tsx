@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   IconCreditCard,
@@ -6,9 +6,9 @@ import {
   IconLogout,
   IconNotification,
   IconUserCircle,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,14 +17,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import useAuth from "@/hooks/useAuth";
+} from '@/components/ui/sidebar';
+import useAuth from '@/hooks/useAuth';
 
 export function NavUserDummy({
   user,
@@ -58,16 +58,14 @@ export function NavUserDummy({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium text-black">{displayName}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                  {displayEmail}
-                </span>
+                <span className="text-muted-foreground truncate text-xs">{displayEmail}</span>
               </div>
               <IconDotsVertical className="ml-auto size-4 text-black" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -79,9 +77,7 @@ export function NavUserDummy({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {displayEmail}
-                  </span>
+                  <span className="text-muted-foreground truncate text-xs">{displayEmail}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -101,10 +97,7 @@ export function NavUserDummy({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-destructive cursor-pointer"
-              onClick={handleLogout}
-            >
+            <DropdownMenuItem className="text-destructive cursor-pointer" onClick={handleLogout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

@@ -11,7 +11,7 @@ export class InventoryService {
     return ApiResponse.success(
       createdItem,
       "Inventory Item created",
-      StatusCodes.CREATED
+      StatusCodes.CREATED,
     );
   }
 
@@ -35,7 +35,7 @@ export class InventoryService {
     return ApiResponse.success(
       updatedItem,
       "Item Updated",
-      StatusCodes.ACCEPTED
+      StatusCodes.ACCEPTED,
     );
   }
 
@@ -50,7 +50,7 @@ export class InventoryService {
     return ApiResponse.success(
       deletedItem,
       "Item deleted",
-      StatusCodes.ACCEPTED
+      StatusCodes.ACCEPTED,
     );
   }
 }

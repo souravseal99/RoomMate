@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import * as React from 'react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
-import { cn, toSnakeCase } from "@/utils/utils";
-import { Button } from "@/components/ui/button";
+import { cn, toSnakeCase } from '@/utils/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -12,24 +12,18 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import type { InventoryItem } from "@/types/inventoryTypes";
-import useInventory from "@/hooks/useInventory";
+} from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import type { InventoryItem } from '@/types/inventoryTypes';
+import useInventory from '@/hooks/useInventory';
 
 export function InventorySelector() {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState('');
 
   const { setSelectedItem } = useInventory();
 
-  function getInventoryOptions(
-    inventory: InventoryItem[]
-  ): { value: string; label: string }[] {
+  function getInventoryOptions(inventory: InventoryItem[]): { value: string; label: string }[] {
     return inventory.map((item) => ({
       value: toSnakeCase(item.name),
       label: item.name,
@@ -40,11 +34,7 @@ export function InventorySelector() {
 
   React.useEffect(() => {
     if (inventoryItems) {
-      setSelectedItem(
-        inventoryItems.filter(
-          (item) => toSnakeCase(item.name) === value
-        )[0] || null
-      );
+      setSelectedItem(inventoryItems.filter((item) => toSnakeCase(item.name) === value)[0] || null);
     }
   }, [value, inventoryItems]);
 
@@ -59,9 +49,7 @@ export function InventorySelector() {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? items.find((item) => item.value === value)?.label
-            : "Search your inventory..."}
+          {value ? items.find((item) => item.value === value)?.label : 'Search your inventory...'}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -76,16 +64,13 @@ export function InventorySelector() {
                   key={item.value}
                   value={item.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    setValue(currentValue === value ? '' : currentValue);
                     setOpen(false);
                   }}
                 >
                   {item.label}
                   <Check
-                    className={cn(
-                      "ml-auto",
-                      value === item.value ? "opacity-100" : "opacity-0"
-                    )}
+                    className={cn('ml-auto', value === item.value ? 'opacity-100' : 'opacity-0')}
                   />
                 </CommandItem>
               ))}

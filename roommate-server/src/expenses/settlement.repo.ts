@@ -55,7 +55,11 @@ export class SettlementRepo {
     });
   }
 
-  static async getTotalSettled(fromUserId: string, toUserId: string, householdId: string) {
+  static async getTotalSettled(
+    fromUserId: string,
+    toUserId: string,
+    householdId: string,
+  ) {
     const settlements = await prisma.settlement.findMany({
       where: {
         fromUserId,

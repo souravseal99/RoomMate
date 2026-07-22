@@ -1,6 +1,6 @@
-import axios from "axios";
-import { SERVER_BASE_URL } from "@/api/config";
-import TokenStore from "@/lib/TokenStore";
+import axios from 'axios';
+import { SERVER_BASE_URL } from '@/api/config';
+import TokenStore from '@/lib/TokenStore';
 
 const api = axios.create({
   baseURL: SERVER_BASE_URL,
@@ -11,7 +11,7 @@ const api = axios.create({
 // Attach access token and session ID
 api.interceptors.request.use((config) => {
   const accessToken = TokenStore.getToken();
-  
+
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   if (TokenStore.hasSession()) {
     config.headers['X-Session-Id'] = TokenStore.getSessionId();
@@ -25,17 +25,17 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    console.log("Trying to auto-refresh token... ", error.response?.status);
+    console.log('Trying to auto-refresh token... ', error.response?.status);
 
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/auth/refresh")
+      !originalRequest.url?.includes('/auth/refresh')
     ) {
       originalRequest._retry = true;
 
       try {
-        const res = await Api.get("/auth/refresh");
+        const res = await Api.get('/auth/refresh');
         TokenStore.setToken(res.data.accessToken);
 
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;

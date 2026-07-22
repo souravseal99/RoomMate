@@ -1,3 +1,3 @@
-export * from './ChoreDialog'
-export * from './ChoresGrid'
-export * from './ChoresLayout'
+export * from './ChoreDialog';
+export * from './ChoresGrid';
+export * from './ChoresLayout';

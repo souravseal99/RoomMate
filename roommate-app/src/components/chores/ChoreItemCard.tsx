@@ -1,6 +1,6 @@
-import { Shield, Clock, Chair } from "lucide-react";
+import { Shield, Clock, Chair } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Item,
   ItemActions,
@@ -8,9 +8,9 @@ import {
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from "@/components/ui/item";
-import type { ChoreItem } from "@/types/choreTypes";
-import { getDateDifferenceInDays } from "@/utils/utils";
+} from '@/components/ui/item';
+import type { ChoreItem } from '@/types/choreTypes';
+import { getDateDifferenceInDays } from '@/utils/utils';
 
 type ChoreItemCardProps = {
   chore: ChoreItem;
@@ -34,9 +34,8 @@ export function ChoreItemCard({ chore }: ChoreItemCardProps) {
         <ItemContent>
           <ItemTitle>{chore.description}</ItemTitle>
           <ItemDescription>
-            Next Due: {new Date(chore.nextDue).toLocaleDateString()} |
-            Frequency: {chore.frequency} | Status:{" "}
-            {chore.completed ? "Completed" : "Pending"}
+            Next Due: {new Date(chore.nextDue).toLocaleDateString()} | Frequency: {chore.frequency}{' '}
+            | Status: {chore.completed ? 'Completed' : 'Pending'}
           </ItemDescription>
         </ItemContent>
         <ItemActions>

@@ -23,7 +23,7 @@ export class InventoryRepo {
 
   static async update(
     inventoryItemId: string,
-    updateItemRequest: UpdateItemRequest
+    updateItemRequest: UpdateItemRequest,
   ) {
     return await prisma.inventoryItem.update({
       where: { inventoryItemId },

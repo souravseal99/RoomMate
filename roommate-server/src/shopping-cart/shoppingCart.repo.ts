@@ -20,7 +20,10 @@ export class ShoppingCartRepo {
     });
   }
 
-  static async update(cartItemId: string, updateCartItemRequest: UpdateCartItemRequest) {
+  static async update(
+    cartItemId: string,
+    updateCartItemRequest: UpdateCartItemRequest,
+  ) {
     return await prisma.shoppingCart.update({
       where: { shoppingCartId: cartItemId },
       data: { quantity: updateCartItemRequest.quantity },
@@ -35,12 +38,14 @@ export class ShoppingCartRepo {
 
   static async addLowStockItems(householdId: string) {
     const allItems = await prisma.inventoryItem.findMany({
-      where: { householdId }
+      where: { householdId },
     });
 
-    const lowStockItems = allItems.filter(item => item.quantity <= item.lowThreshold);
+    const lowStockItems = allItems.filter(
+      (item) => item.quantity <= item.lowThreshold,
+    );
 
-    const cartItems = lowStockItems.map(item => ({
+    const cartItems = lowStockItems.map((item) => ({
       itemName: item.name,
       quantity: Math.max(1, item.lowThreshold - item.quantity),
       householdId,

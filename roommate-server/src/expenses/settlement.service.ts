@@ -8,17 +8,17 @@ export class SettlementService {
     // Validate that both users are household members
     const fromIsMember = await HouseholdMemberRepo.isExistingUser(
       settlement.fromUserId,
-      settlement.householdId
+      settlement.householdId,
     );
     const toIsMember = await HouseholdMemberRepo.isExistingUser(
       settlement.toUserId,
-      settlement.householdId
+      settlement.householdId,
     );
 
     if (!fromIsMember || !toIsMember) {
       return ApiResponse.error(
         "Both users must be members of the household",
-        StatusCodes.BAD_REQUEST
+        StatusCodes.BAD_REQUEST,
       );
     }
 
@@ -28,13 +28,13 @@ export class SettlementService {
       return ApiResponse.success(
         createdSettlement,
         "Settlement recorded successfully",
-        StatusCodes.CREATED
+        StatusCodes.CREATED,
       );
     } catch (error) {
       console.error("Error creating settlement:", error);
       return ApiResponse.error(
         "Unable to create settlement",
-        StatusCodes.CONFLICT
+        StatusCodes.CONFLICT,
       );
     }
   }
@@ -47,7 +47,7 @@ export class SettlementService {
       console.error("Error fetching settlements:", error);
       return ApiResponse.error(
         "Unable to fetch settlements",
-        StatusCodes.INTERNAL_SERVER_ERROR
+        StatusCodes.INTERNAL_SERVER_ERROR,
       );
     }
   }

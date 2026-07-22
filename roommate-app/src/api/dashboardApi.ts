@@ -1,8 +1,8 @@
-import api from "@/api/axios";
+import api from '@/api/axios';
 
 const dashboardApi = () => {
   const fetchDashboardData = async () => {
-    const { data } = await api.get("/dashboard");
+    const { data } = await api.get('/dashboard');
     return data;
   };
 

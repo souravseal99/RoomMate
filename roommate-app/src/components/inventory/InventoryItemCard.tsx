@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
-import { updateInventoryItem } from "@/api/inventoryApi";
-import { getStatusBadge, getItemEmoji } from "@/utils/inventoryUtils";
-import { toast } from "sonner";
-import type { InventoryItem } from "@/types/inventoryTypes";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Minus, Plus } from 'lucide-react';
+import { updateInventoryItem } from '@/api/inventoryApi';
+import { getStatusBadge, getItemEmoji } from '@/utils/inventoryUtils';
+import { toast } from 'sonner';
+import type { InventoryItem } from '@/types/inventoryTypes';
 
 interface InventoryItemCardProps {
   item: InventoryItem;
@@ -16,13 +16,13 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
 
   const updateQuantity = async (newQuantity: number) => {
     if (newQuantity < 0 || !item.inventoryItemId) return;
-    
+
     setIsUpdating(true);
     try {
       await updateInventoryItem(item.inventoryItemId, { quantity: newQuantity });
       onUpdate();
     } catch (error) {
-      toast.error("Failed to update quantity");
+      toast.error('Failed to update quantity');
     } finally {
       setIsUpdating(false);
     }
@@ -37,7 +37,7 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
           <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
           <Button
@@ -49,11 +49,9 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
           >
             <Minus className="h-3 w-3" />
           </Button>
-          
-          <span className="text-sm font-medium min-w-[2rem] text-center">
-            {item.quantity}
-          </span>
-          
+
+          <span className="text-sm font-medium min-w-[2rem] text-center">{item.quantity}</span>
+
           <Button
             size="sm"
             variant="outline"
@@ -64,7 +62,7 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
             <Plus className="h-3 w-3" />
           </Button>
         </div>
-        
+
         {getStatusBadge(item.quantity, item.lowThreshold)}
       </div>
     </div>

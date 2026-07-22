@@ -1,5 +1,5 @@
-import { ChoreCard } from './ChoresLayout'
-import type { ChoreItem } from '@/types/choreTypes'
+import { ChoreCard } from './ChoresLayout';
+import type { ChoreItem } from '@/types/choreTypes';
 
 export function ChoresGrid({ chores }: { chores: ChoreItem[] }) {
   return (
@@ -11,10 +11,16 @@ export function ChoresGrid({ chores }: { chores: ChoreItem[] }) {
           description={`Frequency: ${chore.frequency}`}
           dueDate={new Date(chore.nextDue)}
           priority={chore.priority}
-          status={chore.completed ? 'COMPLETED' : new Date(chore.nextDue) < new Date() ? 'OVERDUE' : 'PENDING'}
+          status={
+            chore.completed
+              ? 'COMPLETED'
+              : new Date(chore.nextDue) < new Date()
+                ? 'OVERDUE'
+                : 'PENDING'
+          }
           assignee={{ name: chore.assignedToName || 'Unassigned', avatar: undefined }}
         />
       ))}
     </div>
-  )
+  );
 }

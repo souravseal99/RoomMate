@@ -1,39 +1,33 @@
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import useInventory from "@/hooks/useInventory";
-import useHousehold from "@/hooks/useHousehold";
-import { getStatusBadge, getItemEmoji } from "@/utils/inventoryUtils";
-import { addLowStockToCart } from "@/api/shoppingCartApi";
-import { dispatchRefreshShoppingCart } from "@/components/inventory/config";
-import { toast } from "sonner";
-import { useState } from "react";
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import useInventory from '@/hooks/useInventory';
+import useHousehold from '@/hooks/useHousehold';
+import { getStatusBadge, getItemEmoji } from '@/utils/inventoryUtils';
+import { addLowStockToCart } from '@/api/shoppingCartApi';
+import { dispatchRefreshShoppingCart } from '@/components/inventory/config';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 export function BuySoonPopover() {
   const { inventoryItems } = useInventory();
   const { selectedHousehold } = useHousehold();
   const [isAdding, setIsAdding] = useState(false);
-  
-  const buySoonItems = inventoryItems?.filter(item => 
-    item.quantity <= item.lowThreshold
-  ) || [];
+
+  const buySoonItems = inventoryItems?.filter((item) => item.quantity <= item.lowThreshold) || [];
 
   const handleAddAllToCart = async () => {
     if (!selectedHousehold) {
-      toast.error("Please select a household first");
+      toast.error('Please select a household first');
       return;
     }
 
     setIsAdding(true);
     try {
       await addLowStockToCart(selectedHousehold.key);
-      toast.success("Low stock items added to cart");
+      toast.success('Low stock items added to cart');
       dispatchRefreshShoppingCart();
     } catch (error) {
-      toast.error("Failed to add items to cart");
+      toast.error('Failed to add items to cart');
     } finally {
       setIsAdding(false);
     }
@@ -56,24 +50,18 @@ export function BuySoonPopover() {
           <div className="flex items-center justify-between">
             <h4 className="font-medium text-sm">Items to Buy Soon</h4>
             {buySoonItems.length > 0 && (
-              <Button 
-                size="sm" 
-                onClick={handleAddAllToCart}
-                disabled={isAdding}
-              >
-                {isAdding ? "Adding..." : "Add All to Cart"}
+              <Button size="sm" onClick={handleAddAllToCart} disabled={isAdding}>
+                {isAdding ? 'Adding...' : 'Add All to Cart'}
               </Button>
             )}
           </div>
           {buySoonItems.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-4">
-              No items need restocking
-            </p>
+            <p className="text-gray-500 text-sm text-center py-4">No items need restocking</p>
           ) : (
             <div className="space-y-2">
               {buySoonItems.map((item) => (
-                <div 
-                  key={item.inventoryItemId} 
+                <div
+                  key={item.inventoryItemId}
                   className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center gap-2">

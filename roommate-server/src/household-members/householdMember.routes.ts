@@ -7,19 +7,19 @@ const hosueholdMemberRouter = Router();
 hosueholdMemberRouter.post(
   "/create",
   ensureAuthenticated,
-  HouseholdMemberController.create
+  HouseholdMemberController.create,
 );
 
 hosueholdMemberRouter.get(
   "/all/:householdId",
   ensureAuthenticated,
-  HouseholdMemberController.getAllHouseholdMembers
+  HouseholdMemberController.getAllHouseholdMembers,
 );
 
 hosueholdMemberRouter.post(
   "/leave/:householdId",
   ensureAuthenticated,
-  HouseholdMemberController.leave
+  HouseholdMemberController.leave,
 );
 
 export default hosueholdMemberRouter;

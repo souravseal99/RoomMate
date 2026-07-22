@@ -7,7 +7,7 @@ function errorHandler(
   error: Error | ApiError,
   _req: Request,
   resp: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   if (error instanceof ApiError) {
     return resp.status(error.statusCode).json({

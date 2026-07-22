@@ -1,4 +1,4 @@
-import TokenStore from "@/lib/TokenStore";
+import TokenStore from '@/lib/TokenStore';
 
 export interface JWTPayload {
   userId: string;
@@ -14,16 +14,16 @@ export function getCurrentUserId(): string | null {
 
   try {
     // JWT payload is the second part (base64 encoded)
-    const parts = token.split(".");
+    const parts = token.split('.');
     if (parts.length !== 3) return null;
 
     const payload = parts[1];
     // Base64 decode with proper padding
-    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
     const parsed = JSON.parse(decoded) as JWTPayload;
     return parsed.userId || null;
   } catch (error) {
-    console.error("Failed to decode JWT:", error);
+    console.error('Failed to decode JWT:', error);
     return null;
   }
 }

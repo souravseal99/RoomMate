@@ -10,14 +10,14 @@ authRoutes.post(
   "/register",
   ...registerUserValidator,
   validationErrorHandler,
-  AuthController.register
+  AuthController.register,
 );
 
 authRoutes.post(
   "/login",
   ...loginUserValidator,
   validationErrorHandler,
-  AuthController.login
+  AuthController.login,
 );
 
 authRoutes.get("/refresh", AuthController.refresh);
