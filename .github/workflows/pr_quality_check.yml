@@ -112,8 +112,16 @@ jobs:
         run: npm run prisma:generate --workspace=roommate-server
       - name: Run vitest
         run: npm test --workspace=roommate-server
+        env:
+          BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
       - name: Generate coverage report
         run: npm run test:coverage --workspace=roommate-server || echo "Skipping coverage"
+        env:
+          BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
 
   security-scan:
     name: Security Scan
