@@ -113,25 +113,25 @@ jobs:
       - name: Run vitest
         run: npm test --workspace=roommate-server
         env:
-          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_PORT: ${{ secrets.APP_PORT || '3000' }}
           BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
-          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
-          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE }}
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/test_db' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-jwt-secret' }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET || 'test-refresh-secret' }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN || '15m' }}
+          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN || '7d' }}
+          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE || 'false' }}
       - name: Generate coverage report
         run: npm run test:coverage --workspace=roommate-server || echo "Skipping coverage"
         env:
-          APP_PORT: ${{ secrets.APP_PORT }}
+          APP_PORT: ${{ secrets.APP_PORT || '3000' }}
           BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS || '10' }}
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
-          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
-          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE }}
+          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/test_db' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'test-jwt-secret' }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET || 'test-refresh-secret' }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN || '15m' }}
+          JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN || '7d' }}
+          USE_SECURE_COOKIE: ${{ secrets.USE_SECURE_COOKIE || 'false' }}
 
   security-scan:
     name: Security Scan
