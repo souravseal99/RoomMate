@@ -1,20 +1,25 @@
-import { defineConfig } from "vite";
+/// <reference types="vitest" />
+import { defineConfig } from "vitest/config";
 import tsconfigPaths from "vite-tsconfig-paths";
+import path from "path";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [tsconfigPaths()],
-
-
+  resolve: {
+    alias: {
+      '@src': path.resolve(__dirname, './src'),
+      '@common': path.resolve(__dirname, './src/common'),
+      '@types': path.resolve(__dirname, './src/common/types'),
+      '@generated': path.resolve(__dirname, './generated'),
+      '@config': path.resolve(__dirname, './src/config'),
+      '@test': path.resolve(__dirname, './test')
+    }
+  },
   test: {
     globals: true,
     environment: 'node',
-    // Optional: specify test file patterns
     include: ['src/**/*.{test,spec}.{js,ts}'],
-    // Optional: exclude patterns
     exclude: ['node_modules', 'dist', 'generated'],
     setupFiles: ['./src/test-setup.ts'],
   },
-
-  
 });
