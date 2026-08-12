@@ -16,6 +16,7 @@ services:
     build: ./roommate-server
     ports:
       - "5000:5000"
+      - "5555:5555"
     volumes:
       - ./roommate-server:/app
       - /app/node_modules
@@ -34,7 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma generate && npx prisma db push && npm run dev:serve"
+    command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed && npm run dev:serve"
 
   db:
     image: postgres:15
@@ -48,7 +49,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d roommate"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d roommate" ]
       interval: 5s
       timeout: 5s
       retries: 5

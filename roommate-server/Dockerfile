@@ -13,6 +13,7 @@ COPY . .
 # Expose backend port
 EXPOSE 5000
 
-# Start your server app
-CMD ["npm", "run", "dev:serve"]
+# Start server app with database migrations & seed sequence
+CMD ["sh", "-c", "npx prisma generate && npx prisma db push && npm run db:seed && npm run dev:serve"]
+
 
