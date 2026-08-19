@@ -1,0 +1,43 @@
+[
+  {
+    "choreId": "chr_trash_01",
+    "description": "Take out Trash & Recycling",
+    "frequency": "Weekly",
+    "daysFromNow": 1,
+    "completed": false,
+    "priority": "HIGH",
+    "notes": "Recycling goes out on Tuesday night",
+    "householdId": "hh_beachside_01",
+    "assignedToId": "usr_taylor_02"
+  },
+  {
+    "choreId": "chr_kitchen_02",
+    "description": "Clean Kitchen Countertops & Sink",
+    "frequency": "Daily",
+    "daysFromNow": 0,
+    "completed": true,
+    "priority": "MEDIUM",
+    "householdId": "hh_beachside_01",
+    "assignedToId": "usr_alex_01"
+  },
+  {
+    "choreId": "chr_vacuum_03",
+    "description": "Vacuum Living Room Rug",
+    "frequency": "Weekly",
+    "daysFromNow": 7,
+    "completed": false,
+    "priority": "MEDIUM",
+    "householdId": "hh_beachside_01",
+    "assignedToId": "usr_jordan_03"
+  },
+  {
+    "choreId": "chr_bathroom_04",
+    "description": "Deep Clean Bathroom",
+    "frequency": "Bi-Weekly",
+    "daysFromNow": 7,
+    "completed": false,
+    "priority": "HIGH",
+    "householdId": "hh_downtown_02",
+    "assignedToId": "usr_morgan_04"
+  }
+]

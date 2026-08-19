@@ -1,0 +1,21 @@
+[
+  {
+    "householdId": "hh_beachside_01",
+    "name": "Beachside Villa",
+    "inviteCode": "BEACH2026",
+    "members": [
+      { "userId": "usr_alex_01", "role": "ADMIN" },
+      { "userId": "usr_taylor_02", "role": "MEMBER" },
+      { "userId": "usr_jordan_03", "role": "MEMBER" }
+    ]
+  },
+  {
+    "householdId": "hh_downtown_02",
+    "name": "Downtown Loft",
+    "inviteCode": "LOFT2026",
+    "members": [
+      { "userId": "usr_jordan_03", "role": "ADMIN" },
+      { "userId": "usr_morgan_04", "role": "MEMBER" }
+    ]
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "shoppingCartId": "cart_soap_01",
+    "itemName": "Hand Soap Refill (Lavender)",
+    "quantity": 2,
+    "householdId": "hh_beachside_01"
+  },
+  {
+    "shoppingCartId": "cart_oil_02",
+    "itemName": "Extra Virgin Olive Oil",
+    "quantity": 1,
+    "householdId": "hh_beachside_01"
+  },
+  {
+    "shoppingCartId": "cart_milk_03",
+    "itemName": "Oat Milk (Barista Edition)",
+    "quantity": 3,
+    "householdId": "hh_downtown_02"
+  }
+]

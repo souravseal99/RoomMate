@@ -1,0 +1,9 @@
+[
+  {
+    "settlementId": "stl_wifi_01",
+    "amount": 50.0,
+    "fromUserId": "usr_taylor_02",
+    "toUserId": "usr_alex_01",
+    "householdId": "hh_beachside_01"
+  }
+]

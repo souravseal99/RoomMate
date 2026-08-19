@@ -15,10 +15,14 @@
     "dev": "nodemon",
     "dev:serve": "nodemon --legacy-watch --watch /app/src --ext ts,js,json --exec \"vite-node src/server.ts\"",
     "db:migrate": "npx prisma migrate dev",
-    "db:studio": "npx prisma studio",
+    "db:studio": "docker compose exec server npx prisma studio",
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
+    "db:seed": "vite-node prisma/seed.ts",
     "docker:up": "docker-compose up --build"
+  },
+  "prisma": {
+    "seed": "vite-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

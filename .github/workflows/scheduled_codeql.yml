@@ -9,6 +9,12 @@ jobs:
   code-analysis:
     name: Static Analysis
     runs-on: ubuntu-latest
+    permissions:
+      # required for all workflows
+      security-events: write
+
+      # required to fetch internal or private CodeQL packs
+      packages: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

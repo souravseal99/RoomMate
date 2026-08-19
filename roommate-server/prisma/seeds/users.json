@@ -1,0 +1,26 @@
+[
+  {
+    "userId": "usr_alex_01",
+    "name": "Alex Johnson",
+    "email": "alex@roommate.dev",
+    "password": "Password123!"
+  },
+  {
+    "userId": "usr_taylor_02",
+    "name": "Taylor Smith",
+    "email": "taylor@roommate.dev",
+    "password": "Password123!"
+  },
+  {
+    "userId": "usr_jordan_03",
+    "name": "Jordan Lee",
+    "email": "jordan@roommate.dev",
+    "password": "Password123!"
+  },
+  {
+    "userId": "usr_morgan_04",
+    "name": "Morgan Davis",
+    "email": "morgan@roommate.dev",
+    "password": "Password123!"
+  }
+]
