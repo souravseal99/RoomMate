@@ -17,6 +17,12 @@
     "typescript-eslint": "^8.62.0"
   },
   "scripts": {
+    "dev": "docker compose down && docker compose up",
+    "dev:build": "docker compose down && docker compose up --build",
+    "dev:app": "npm run dev --workspace=roommate-app",
+    "dev:server": "npm run dev --workspace=roommate-server",
+    "db:seed": "npm run db:seed --workspace=roommate-server",
+    "db:studio": "npm run db:studio --workspace=roommate-server",
     "lint": "eslint .",
     "lint:app": "eslint roommate-app",
     "lint:server": "eslint roommate-server",

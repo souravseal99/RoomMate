@@ -1,0 +1,37 @@
+[
+  {
+    "expenseId": "exp_grocery_01",
+    "description": "Weekly Grocery Shopping (Whole Foods)",
+    "amount": 150.0,
+    "householdId": "hh_beachside_01",
+    "paidById": "usr_alex_01",
+    "splits": [
+      { "userId": "usr_alex_01", "shareAmount": 50.0 },
+      { "userId": "usr_taylor_02", "shareAmount": 50.0 },
+      { "userId": "usr_jordan_03", "shareAmount": 50.0 }
+    ]
+  },
+  {
+    "expenseId": "exp_wifi_02",
+    "description": "High-Speed Fiber Internet Bill",
+    "amount": 75.0,
+    "householdId": "hh_beachside_01",
+    "paidById": "usr_taylor_02",
+    "splits": [
+      { "userId": "usr_alex_01", "shareAmount": 25.0 },
+      { "userId": "usr_taylor_02", "shareAmount": 25.0 },
+      { "userId": "usr_jordan_03", "shareAmount": 25.0 }
+    ]
+  },
+  {
+    "expenseId": "exp_coffee_03",
+    "description": "Espresso Machine & Coffee Supplies",
+    "amount": 180.0,
+    "householdId": "hh_downtown_02",
+    "paidById": "usr_jordan_03",
+    "splits": [
+      { "userId": "usr_jordan_03", "shareAmount": 90.0 },
+      { "userId": "usr_morgan_04", "shareAmount": 90.0 }
+    ]
+  }
+]
