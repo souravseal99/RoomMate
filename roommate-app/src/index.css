@@ -1,11 +1,9 @@
 :root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--theme-font);
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light;
-  color: #222222;
-  background-color: #FAF3E1;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,9 +17,7 @@ body {
   place-items: top;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FAF3E1;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  color: #222222;
+  font-family: var(--theme-font);
 }
 
 @media (prefers-color-scheme: light) {

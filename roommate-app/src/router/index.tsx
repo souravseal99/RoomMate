@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import ProtectedRoute from '@/components/routing/ProtectedRoute';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import LoginPage from '@/pages/auth/LoginPage';
-import DummyDashboard from '@/pages/dashboard/DummyDashboard';
+import Dashboard from '@/pages/dashboard/Dashboard';
 import Households from '@/pages/households/Households';
 import Chores from '@/pages/chores/Chores';
 import Expenses from '@/pages/expenses/Expenses';
@@ -34,8 +34,9 @@ function AppRouter() {
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<DummyDashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chores" element={<Chores />} />
+
 
         <Route path="/households" element={<Households />} />
         <Route
