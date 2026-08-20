@@ -4,6 +4,7 @@ import { AuthForm } from '../../components/auth/AuthForm';
 import { registerUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
 import TokenStore from '@/lib/TokenStore';
+import { AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -24,5 +25,5 @@ export default function RegisterPage() {
     }
   };
 
-  return <AuthForm mode="register" onSubmit={onSubmit} />;
+  return <AuthForm mode={AUTH_MODE_REGISTER} onSubmit={onSubmit} />;
 }
