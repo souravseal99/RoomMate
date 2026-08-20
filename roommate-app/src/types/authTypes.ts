@@ -1,13 +1,7 @@
-export interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-}
+import type { LoginPayload, RegisterPayload, AuthMode } from '@/schemas/authSchemas';
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-}
+export type { RegisterPayload, LoginPayload, AuthMode };
+
 
 export interface RegisterData {
   name: string;
@@ -21,6 +15,6 @@ export interface LoginData {
 }
 
 export interface AuthFormInputData {
-  mode: 'login' | 'register';
+  mode: AuthMode;
   onSubmit: (values: RegisterPayload | LoginPayload) => void;
 }

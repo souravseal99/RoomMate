@@ -5,6 +5,7 @@ import { loginUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
 import { useEffect } from 'react';
 import TokenStore from '@/lib/TokenStore';
+import { AUTH_MODE_LOGIN } from '@/schemas/authSchemas';
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -33,5 +34,5 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, nav]);
 
-  return <AuthForm mode="login" onSubmit={onSubmit} />;
+  return <AuthForm mode={AUTH_MODE_LOGIN} onSubmit={onSubmit} />;
 }
