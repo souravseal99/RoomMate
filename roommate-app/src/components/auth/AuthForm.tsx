@@ -1,29 +1,19 @@
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AuthFormInputData } from '@/types/authTypes';
+import { loginSchema, registerSchema, AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Home, Mail, Lock, User, CheckCircle2, ShieldCheck } from 'lucide-react';
 
-const registerSchema = z.object({
-  name: z.string().min(2, 'Name required'),
-  email: z.email('Invalid email'),
-  password: z.string().min(8, 'Min 8 characters'),
-});
-
-const loginSchema = z.object({
-  email: z.email('Invalid email'),
-  password: z.string().min(8, 'Min 8 characters'),
-});
-
 export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
-  const schema = mode === 'register' ? registerSchema : loginSchema;
+  const isRegister = mode === AUTH_MODE_REGISTER;
+  const schema = isRegister ? registerSchema : loginSchema;
   const form = useForm({
     resolver: zodResolver(schema),
     defaultValues:
-      mode === 'register' ? { name: '', email: '', password: '' } : { email: '', password: '' },
+      isRegister ? { name: '', email: '', password: '' } : { email: '', password: '' },
   });
 
   const navigate = useNavigate();
@@ -66,15 +56,15 @@ export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
         <Card className="rounded-lg shadow-xs bg-card border border-border">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl font-bold text-center text-foreground">
-              {mode === 'register' ? 'Create an Account' : 'Welcome Back'}
+              {isRegister ? 'Create an Account' : 'Welcome Back'}
             </CardTitle>
             <CardDescription className="text-center text-xs text-muted-foreground">
-              Enter your details below to {mode === 'register' ? 'get started' : 'sign in'}
+              Enter your details below to {isRegister ? 'get started' : 'sign in'}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {mode === 'register' && (
+              {isRegister && (
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold text-foreground">Name</label>
                   <div className="relative">
@@ -127,11 +117,11 @@ export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
                 )}
               </div>
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg py-2 transition-colors cursor-pointer">
-                {mode === 'register' ? 'Create Account' : 'Sign In'}
+                {isRegister ? 'Create Account' : 'Sign In'}
               </Button>
             </form>
             <div className="mt-5 text-center text-xs text-muted-foreground">
-              {mode === 'register' ? (
+              {isRegister ? (
                 <>
                   Already have an account?{' '}
                   <button
