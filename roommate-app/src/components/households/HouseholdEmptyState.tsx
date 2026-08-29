@@ -1,4 +1,4 @@
-import { Home, Plus, Users } from 'lucide-react';
+import { Home, Plus, Users, Sparkles, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type Props = {
@@ -8,33 +8,80 @@ type Props = {
 
 export default function HouseholdEmptyState({ onCreateClick, onJoinClick }: Props) {
   return (
-    <div className="flex flex-col items-center justify-center p-8 md:p-12 text-center max-w-lg mx-auto my-auto bg-card border-2 border-border rounded-xl shadow-tactile animate-in fade-in zoom-in duration-500">
-      <div className="w-16 h-16 rounded-full bg-primary-container/20 border-2 border-border flex items-center justify-center mb-4 text-primary">
-        <Home className="w-8 h-8" />
+    <div className="w-full max-w-2xl mx-auto py-8 px-4 sm:px-6 space-y-8 animate-in fade-in zoom-in-95 duration-500">
+      {/* Header Banner */}
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 text-primary mb-2 shadow-xs">
+          <Home className="w-8 h-8 stroke-[2.2]" />
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+          Welcome to RoomMate
+        </h2>
+        <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
+          To get started with chores, expense tracking, and shared inventory, you need to be part of at least one living space.
+        </p>
       </div>
 
-      <h3 className="text-2xl font-bold text-foreground mb-2">No Households Yet</h3>
-      <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-        You are not part of any shared living space yet. Start fresh by setting up your own space,
-        or enter an invite code from your roommates.
-      </p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-        <Button
+      {/* Two-Column Bento Cards for Onboarding */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Create Space Card */}
+        <div
           onClick={onCreateClick}
-          className="w-full bg-primary-container hover:opacity-90 text-primary-foreground font-bold py-2.5 rounded active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+          className="bg-surface-container hover:bg-surface-container-high border-2 border-border hover:border-primary/50 rounded-2xl p-6 flex flex-col justify-between space-y-4 group cursor-pointer transition-all duration-200 shadow-md hover:-translate-y-1"
         >
-          <Plus className="w-4 h-4" />
-          Create Space
-        </Button>
-        <Button
+          <div className="space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground">Create a Space</h3>
+              <p className="text-xs text-muted-foreground mt-1 leading-normal">
+                Set up a brand new household for your apartment, dorm, or flat and invite your roommates.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              onCreateClick();
+            }}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs uppercase tracking-wider h-10 rounded-xl shadow-xs cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            Create Space
+          </Button>
+        </div>
+
+        {/* Join Space Card */}
+        <div
           onClick={onJoinClick}
-          variant="outline"
-          className="w-full bg-surface hover:bg-surface-container-high border-border text-foreground font-bold py-2.5 rounded active:scale-95 transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2"
+          className="bg-surface-container hover:bg-surface-container-high border-2 border-border hover:border-primary/50 rounded-2xl p-6 flex flex-col justify-between space-y-4 group cursor-pointer transition-all duration-200 shadow-md hover:-translate-y-1"
         >
-          <Users className="w-4 h-4" />
-          Join Existing
-        </Button>
+          <div className="space-y-3">
+            <div className="w-12 h-12 rounded-xl bg-surface-container-highest text-foreground flex items-center justify-center group-hover:scale-110 transition-transform">
+              <KeyRound className="w-6 h-6 text-foreground" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-foreground">Join with Code</h3>
+              <p className="text-xs text-muted-foreground mt-1 leading-normal">
+                Already have an 8-character invite code from your flatmates? Join their active space instantly.
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              onJoinClick();
+            }}
+            className="w-full bg-surface hover:bg-surface-container-high border-border text-foreground font-bold text-xs uppercase tracking-wider h-10 rounded-xl shadow-xs cursor-pointer active:scale-98 flex items-center justify-center gap-2"
+          >
+            <Users className="w-4 h-4" />
+            Join Existing
+          </Button>
+        </div>
       </div>
     </div>
   );

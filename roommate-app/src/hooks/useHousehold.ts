@@ -1,12 +1,7 @@
-import { useContext } from 'react';
-import { HouseholdContext } from '@/contexts/HouseholdContext';
+import { useActiveHousehold } from '@/hooks/queries/useHouseholdQueries';
 
-const useHousehold = () => {
-  const context = useContext(HouseholdContext);
-
-  if (!context) throw new Error('Household context must be present inside HouseholdProvider');
-
-  return context;
+export const useHousehold = () => {
+  return useActiveHousehold();
 };
 
 export default useHousehold;

@@ -1,24 +1,36 @@
-import { useState } from 'react';
-import { Home, Plus, Users } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Home, Plus, Users, UserPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import useHousehold from '@/hooks/useHousehold';
 import type { HouseholdResponse } from '@/types/householdTypes';
-import HouseholdCard from '@/components/households/HouseholdCard';
-import HouseholdCardSkeleton from '@/components/households/HouseholdCardSkeleton';
-import HouseholdEmptyState from '@/components/households/HouseholdEmptyState';
-import CreateJoinModal from '@/components/households/CreateJoinModal';
-import MemberRosterDrawer from '@/components/households/MemberRosterDrawer';
-import HouseholdSettingsModal from '@/components/households/HouseholdSettingsModal';
-import LeaveHouseholdModal from '@/components/households/LeaveHouseholdModal';
-import DeleteHouseholdModal from '@/components/households/DeleteHouseholdModal';
+import {
+  CurrentSpaceHeroCard,
+  OtherSpaceCard,
+  InviteRoommatesModal,
+  CurrentSpaceHeroSkeleton,
+  OtherSpacesGridSkeleton,
+  HouseholdEmptyState,
+  CreateJoinModal,
+  MemberRosterDrawer,
+  HouseholdSettingsModal,
+  LeaveHouseholdModal,
+  DeleteHouseholdModal,
+} from '@/components/households';
 
 export default function Households() {
-  const { households, isLoading } = useHousehold();
+  const {
+    households,
+    activeHousehold,
+    switchActiveHousehold,
+    householdMembers,
+    isLoading,
+  } = useHousehold();
 
   // Modal & Drawer controller states
   const [isCreateJoinOpen, setIsCreateJoinOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'create' | 'join'>('create');
 
+  const [inviteHousehold, setInviteHousehold] = useState<HouseholdResponse | null>(null);
   const [rosterHousehold, setRosterHousehold] = useState<HouseholdResponse | null>(null);
   const [editHousehold, setEditHousehold] = useState<HouseholdResponse | null>(null);
   const [leaveHousehold, setLeaveHousehold] = useState<HouseholdResponse | null>(null);
@@ -34,18 +46,24 @@ export default function Households() {
     setIsCreateJoinOpen(true);
   };
 
-  const sortedHouseholds = [...households].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  // Separate active household and other households
+  const currentHousehold = useMemo(() => {
+    return activeHousehold || households[0] || null;
+  }, [activeHousehold, households]);
+
+  const otherHouseholds = useMemo(() => {
+    if (!currentHousehold) return [];
+    return households.filter((h) => h.householdId !== currentHousehold.householdId);
+  }, [households, currentHousehold]);
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
+    <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in duration-300 pb-16">
       {/* Page Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border/60">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2.5">
-            <Home className="w-7 h-7 text-primary" />
-            Households
+          <h1 className="text-2xl md:text-3xl font-extrabold text-foreground flex items-center gap-2.5 tracking-tight">
+            <Home className="w-6 h-6 md:w-7 md:h-7 text-primary" />
+            Household Hub
           </h1>
           <p className="text-xs md:text-sm text-muted-foreground mt-1">
             Manage your shared living spaces, invite flatmates, and switch active workspaces.
@@ -53,12 +71,12 @@ export default function Households() {
         </div>
 
         {households.length > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               onClick={openJoinModal}
               variant="outline"
               size="sm"
-              className="bg-surface hover:bg-surface-container border-border text-foreground font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+              className="bg-surface-container-low hover:bg-surface-container border-border text-foreground font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
             >
               <Users className="w-4 h-4" />
               Join Space
@@ -66,7 +84,7 @@ export default function Households() {
             <Button
               onClick={openCreateModal}
               size="sm"
-              className="bg-primary-container hover:opacity-90 text-primary-foreground font-bold active:scale-95 transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold active:scale-95 transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               Create Space
@@ -75,37 +93,64 @@ export default function Households() {
         )}
       </header>
 
-      {/* Main Content Grid */}
+      {/* Main Content */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <HouseholdCardSkeleton key={index} />
-          ))}
+        <div className="space-y-8">
+          <CurrentSpaceHeroSkeleton />
+          <OtherSpacesGridSkeleton />
         </div>
-      ) : households.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {sortedHouseholds.map((household) => (
-            <HouseholdCard
-              key={household.householdId}
-              household={household}
-              onOpenRoster={(h) => setRosterHousehold(h)}
-              onOpenEdit={(h) => setEditHousehold(h)}
-              onOpenLeave={(h) => setLeaveHousehold(h)}
-              onOpenDelete={(h) => setDeleteHousehold(h)}
-            />
-          ))}
+      ) : currentHousehold ? (
+        <div className="space-y-8">
+          {/* Current Space Featured Hero Card */}
+          <CurrentSpaceHeroCard
+            household={currentHousehold}
+            members={householdMembers}
+            onOpenRoster={() => setRosterHousehold(currentHousehold)}
+            onOpenInvite={() => setInviteHousehold(currentHousehold)}
+            onOpenSettings={() => setEditHousehold(currentHousehold)}
+          />
 
-          {/* Interactive Dashed "Create Household" Bento Card from Stitch prototype */}
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="border-[1.5px] border-dashed border-border hover:border-primary bg-card/40 hover:bg-surface-container/60 p-card-padding flex flex-col items-center justify-center gap-3 cursor-pointer min-h-[190px] rounded-lg transition-all active:scale-[0.98] text-foreground group"
-          >
-            <div className="w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-              <Plus className="w-6 h-6 text-primary" />
+          {/* Your Other Spaces Section */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between ml-1">
+              <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                Your Other Spaces {otherHouseholds.length > 0 && `(${otherHouseholds.length})`}
+              </h2>
+              <button
+                type="button"
+                onClick={openCreateModal}
+                className="text-primary hover:text-primary/80 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                New Space
+              </button>
             </div>
-            <span className="font-bold text-sm text-foreground">Create Household</span>
-          </button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {otherHouseholds.map((household) => (
+                <OtherSpaceCard
+                  key={household.householdId}
+                  household={household}
+                  onSwitch={() => switchActiveHousehold(household.householdId)}
+                  onOpenRoster={() => setRosterHousehold(household)}
+                />
+              ))}
+
+              {/* Interactive Dashed Bento Card to Create or Join */}
+              <button
+                type="button"
+                onClick={openCreateModal}
+                className="border-[1.5px] border-dashed border-border hover:border-primary/60 bg-surface-container-low/40 hover:bg-surface-container/60 p-4 rounded-2xl flex items-center justify-center gap-3 cursor-pointer min-h-[80px] transition-all active:scale-98 text-foreground group"
+              >
+                <div className="w-8 h-8 rounded-full border border-border bg-surface flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+                  <Plus className="w-4 h-4 text-primary" />
+                </div>
+                <span className="font-bold text-xs text-foreground">
+                  Create or Join Another Space
+                </span>
+              </button>
+            </div>
+          </section>
         </div>
       ) : (
         <HouseholdEmptyState
@@ -114,11 +159,29 @@ export default function Households() {
         />
       )}
 
+      {/* Floating Action Button (FAB) for Easy Mobile Access */}
+      <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-40">
+        <button
+          aria-label="Create or Join Household"
+          onClick={openCreateModal}
+          className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg border border-primary-foreground/20 hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
+        >
+          <Plus className="w-6 h-6 stroke-[2.5]" />
+        </button>
+      </div>
+
       {/* Setup Home Bento Modal */}
       <CreateJoinModal
         open={isCreateJoinOpen}
         onOpenChange={setIsCreateJoinOpen}
         defaultTab={activeModalTab}
+      />
+
+      {/* Invite Roommates Modal */}
+      <InviteRoommatesModal
+        household={inviteHousehold}
+        open={!!inviteHousehold}
+        onOpenChange={(open) => !open && setInviteHousehold(null)}
       />
 
       {/* Slide-over Member Roster Drawer */}

@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Home, Users, User, Check, LogOut, Palette } from 'lucide-react';
+import { Home, Users, User, Check, LogOut, Palette, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -21,11 +21,14 @@ import { getInitials } from '@/utils/utils';
 export function AppBar() {
   const navigate = useNavigate();
   const { name, email, logout } = useAuth();
-  const { activeHousehold, selectedHousehold } = useHousehold();
+  const { activeHousehold, selectedHousehold, hasActiveHousehold } = useHousehold();
   const { themeName, setTheme, availableThemes } = useTheme();
 
-  const householdName = activeHousehold?.name || selectedHousehold?.value || '123 Maple Ave';
-  const memberCount = activeHousehold?.members?.length ?? selectedHousehold?.memberCount ?? 4;
+  const householdName = hasActiveHousehold
+    ? activeHousehold?.name || selectedHousehold?.value || 'My Household'
+    : 'Workspace Setup';
+
+  const memberCount = activeHousehold?.members?.length ?? selectedHousehold?.memberCount ?? 0;
 
   const displayName = name || 'Roommate User';
   const displayEmail = email || 'user@example.com';
@@ -36,30 +39,44 @@ export function AppBar() {
       {/* Left: Household Identity Badge & Info */}
       <div className="flex items-center gap-3 min-w-0">
         <div className="w-11 h-11 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 text-primary shadow-xs">
-          <Home className="w-5 h-5 fill-primary/20 stroke-primary stroke-[2.2]" />
+          {hasActiveHousehold ? (
+            <Home className="w-5 h-5 fill-primary/20 stroke-primary stroke-[2.2]" />
+          ) : (
+            <Sparkles className="w-5 h-5 text-primary" />
+          )}
         </div>
         <div className="min-w-0">
           <h1 className="text-xl font-extrabold tracking-tight text-foreground truncate leading-tight">
             {householdName}
           </h1>
           <div className="flex items-center gap-1.5 text-muted-foreground mt-0.5">
-            <Users className="w-3.5 h-3.5 text-muted-foreground" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              {memberCount} Roommates
-            </span>
+            {hasActiveHousehold ? (
+              <>
+                <Users className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {memberCount} Roommates
+                </span>
+              </>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                Action Required
+              </span>
+            )}
           </div>
         </div>
       </div>
 
       {/* Right: Switch Pill Button & User Avatar Dropdown */}
       <div className="flex items-center gap-2.5 shrink-0">
-        <Button
-          type="button"
-          onClick={() => navigate('/households')}
-          className="px-4 py-1.5 h-9 text-xs font-bold rounded-full bg-foreground text-background hover:bg-foreground/90 active:scale-95 shadow-sm transition-all cursor-pointer"
-        >
-          Switch
-        </Button>
+        {hasActiveHousehold && (
+          <Button
+            type="button"
+            onClick={() => navigate('/households')}
+            className="px-4 py-1.5 h-9 text-xs font-bold rounded-full bg-foreground text-background hover:bg-foreground/90 active:scale-95 shadow-sm transition-all cursor-pointer"
+          >
+            Switch
+          </Button>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

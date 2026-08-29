@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, CheckSquare, Receipt, Package, Users } from 'lucide-react';
+import { Home, CheckSquare, Receipt, Package, Users, Lock } from 'lucide-react';
 import { cn } from '@/utils/utils';
+import useHousehold from '@/hooks/useHousehold';
 
 interface NavTab {
   title: string;
@@ -19,6 +20,7 @@ const mobileNavTabs: NavTab[] = [
 export function MobileBottomNav() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { hasActiveHousehold } = useHousehold();
 
   return (
     <nav
@@ -27,8 +29,30 @@ export function MobileBottomNav() {
     >
       <div className="flex justify-around items-center max-w-md mx-auto w-full">
         {mobileNavTabs.map((item) => {
-          const isActive = currentPath === item.url || (item.url !== '/dashboard' && currentPath.startsWith(item.url));
+          const isHouseholds = item.url === '/households';
+          const isDisabled = !hasActiveHousehold && !isHouseholds;
+
+          const isActive =
+            currentPath === item.url ||
+            (item.url !== '/dashboard' && currentPath.startsWith(item.url));
           const Icon = item.icon;
+
+          if (isDisabled) {
+            return (
+              <div
+                key={item.url}
+                className="flex flex-col items-center justify-center min-w-[60px] opacity-40 cursor-not-allowed py-1 select-none"
+                title="Create or join a household first"
+              >
+                <div className="flex items-center justify-center rounded-full px-4 py-1 mb-1 text-muted-foreground">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] tracking-tight text-muted-foreground font-medium">
+                  {item.title}
+                </span>
+              </div>
+            );
+          }
 
           return (
             <Link

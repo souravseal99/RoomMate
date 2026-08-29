@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import UnauthenticatedLayout from '@/layouts/UnAuthenticatedLayout';
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
 import ProtectedRoute from '@/components/routing/ProtectedRoute';
+import HouseholdGuard from '@/components/routing/HouseholdGuard';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import Dashboard from '@/pages/dashboard/Dashboard';
@@ -9,7 +10,6 @@ import Households from '@/pages/households/Households';
 import Chores from '@/pages/chores/Chores';
 import Expenses from '@/pages/expenses/Expenses';
 import ErrorPage from '@/pages/ErrorPage';
-import HouseholdProvider from '@/contexts/HouseholdContext';
 import { ExpenseProvider } from '@/contexts/ExpenseContext';
 import Inventory from '@/pages/inventory/Inventory';
 import { InventoryProvider } from '@/contexts/InventoryContext';
@@ -28,33 +28,34 @@ function AppRouter() {
       <Route
         element={
           <ProtectedRoute>
-            <HouseholdProvider>
-              <AuthenticatedLayout />
-            </HouseholdProvider>
+            <AuthenticatedLayout />
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/chores" element={<Chores />} />
-
-
+        {/* Base accessible authenticated route (Onboarding & Workspace Management) */}
         <Route path="/households" element={<Households />} />
-        <Route
-          path="/expenses"
-          element={
-            <ExpenseProvider>
-              <Expenses />
-            </ExpenseProvider>
-          }
-        />
-        <Route
-          path="/inventory"
-          element={
-            <InventoryProvider>
-              <Inventory />
-            </InventoryProvider>
-          }
-        />
+
+        {/* Feature routes protected by HouseholdGuard (Enforces active household) */}
+        <Route element={<HouseholdGuard />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chores" element={<Chores />} />
+          <Route
+            path="/expenses"
+            element={
+              <ExpenseProvider>
+                <Expenses />
+              </ExpenseProvider>
+            }
+          />
+          <Route
+            path="/inventory"
+            element={
+              <InventoryProvider>
+                <Inventory />
+              </InventoryProvider>
+            }
+          />
+        </Route>
       </Route>
 
       {/* Fallback */}

@@ -18,6 +18,7 @@ export type HouseholdContextType = {
   selectedHousehold: HouseholdOptions | null;
   setSelectedHousehold: (selectedOption: HouseholdOptions | string | null) => void;
   activeHousehold: HouseholdResponse | null;
+  hasActiveHousehold: boolean;
   switchActiveHousehold: (householdId: string) => void;
   householdMembers: HouseholdMember[];
   setHouseholdMembers: (members: HouseholdMember[]) => void;
@@ -62,6 +63,8 @@ export default function HouseholdProvider({
     if (!selectedHouseholdId) return households[0] || null;
     return households.find((h) => h.householdId === selectedHouseholdId) || households[0] || null;
   }, [households, selectedHouseholdId]);
+
+  const hasActiveHousehold = households.length > 0 && !!activeHousehold;
 
   const selectedHousehold: HouseholdOptions | null = useMemo(() => {
     if (!activeHousehold) return null;
@@ -126,6 +129,7 @@ export default function HouseholdProvider({
       selectedHousehold,
       setSelectedHousehold,
       activeHousehold,
+      hasActiveHousehold,
       switchActiveHousehold,
       householdMembers,
       setHouseholdMembers: setLegacyMembers,
@@ -139,6 +143,7 @@ export default function HouseholdProvider({
       selectedHousehold,
       setSelectedHousehold,
       activeHousehold,
+      hasActiveHousehold,
       switchActiveHousehold,
       householdMembers,
       isLoading,
