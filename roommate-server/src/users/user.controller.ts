@@ -14,8 +14,13 @@ export class UserController {
     });
   }
 
-  static async getUsers(_request: Request, response: Response) {
-    const { status, data, message } = await UserService.getUsers();
+  static async updateProfile(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { name } = request.body;
+
+    const { status, data, message } = await UserService.updateProfile(userId, {
+      name,
+    });
 
     return response.status(status).json({
       message: message,
@@ -23,3 +28,4 @@ export class UserController {
     });
   }
 }
+

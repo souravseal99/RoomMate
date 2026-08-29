@@ -20,14 +20,18 @@ export class UserService {
     );
   }
 
-  static async getUsers() {
-    const userRecords: User[] | null = await UserRepo.getAllUsers();
+  static async updateProfile(userId: string, data: { name?: string }) {
+    const updated = await UserRepo.updateUser(userId, data);
 
-    if (!userRecords)
-      return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+    if (!updated) {
+      return ApiResponse.error("Failed to update profile", StatusCodes.INTERNAL_SERVER_ERROR);
+    }
 
-    const sanitisedUsers = userRecords.map((user) => sanitizeUser(user));
-
-    return ApiResponse.success(sanitisedUsers);
+    return ApiResponse.success(
+      sanitizeUser(updated),
+      "Profile updated successfully",
+      StatusCodes.OK
+    );
   }
 }
+

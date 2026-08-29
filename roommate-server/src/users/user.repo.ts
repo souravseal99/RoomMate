@@ -31,11 +31,15 @@ export class UserRepo {
     });
   }
 
-  static async getAllUsers() {
+  static async updateUser(userId: string, data: { name?: string; password?: string }) {
     try {
-      return await prisma.user.findMany();
+      return await prisma.user.update({
+        where: { userId },
+        data,
+      });
     } catch (error) {
       return null;
     }
   }
 }
+
