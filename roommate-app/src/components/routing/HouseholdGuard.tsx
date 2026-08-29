@@ -3,9 +3,10 @@ import useHousehold from '@/hooks/useHousehold';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function HouseholdGuard() {
-  const { hasActiveHousehold, isLoading } = useHousehold();
+  const { hasActiveHousehold, isLoading, isFetching } = useHousehold();
 
-  if (isLoading) {
+  // If query is actively loading or in-flight without a resolved active household
+  if (isLoading || (isFetching && !hasActiveHousehold)) {
     return (
       <div className="w-full max-w-5xl mx-auto p-6 space-y-6 animate-pulse">
         <div className="flex items-center justify-between pb-4 border-b border-border">

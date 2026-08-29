@@ -3,8 +3,8 @@ import type { HouseholdResponse } from '@/types/householdTypes';
 
 const householdApi = () => {
   const fetchAll = async (): Promise<HouseholdResponse[]> => {
-    const data = await api.get('/household/all');
-    return data.household;
+    const res = await api.get('/household/all');
+    return res?.data?.household || res?.household || [];
   };
 
   const create = async (createHouseholdData: { name: string }) => {

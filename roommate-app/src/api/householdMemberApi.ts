@@ -5,13 +5,11 @@ const householdMemberApi = () => {
   const getAllHouseholdMembers = async (householdId: string): Promise<HouseholdMember[]> => {
     try {
       if (!householdId) return [];
-      const data = await api.get(`/household-member/all/${householdId}`);
-
-      if (!data) {
-        throw new Error('Failed to fetch household members');
-      }
-
-      return data;
+      const res = await api.get(`/household-member/all/${householdId}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.data)) return res.data;
+      if (Array.isArray(res?.members)) return res.members;
+      return res?.data?.members || [];
     } catch (error) {
       console.error('Error fetching household members:', error);
       return [];
@@ -21,7 +19,7 @@ const householdMemberApi = () => {
   const getSuggestedMembers = async (): Promise<SuggestedMember[]> => {
     try {
       const res = await api.get('/household-member/suggested');
-      return res?.suggestedMembers || [];
+      return res?.data?.suggestedMembers || res?.suggestedMembers || [];
     } catch (error) {
       console.error('Error fetching suggested members:', error);
       return [];

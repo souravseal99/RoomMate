@@ -56,7 +56,7 @@ export function useSuggestedMembersQuery() {
 }
 
 export function useActiveHousehold() {
-  const { data: households = [], isLoading, isError, refetch } = useHouseholdsQuery();
+  const { data: households = [], isLoading, isFetching, isError, refetch } = useHouseholdsQuery();
 
   const [selectedId, setSelectedId] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
@@ -135,6 +135,7 @@ export function useActiveHousehold() {
     householdMembers,
     hasActiveHousehold,
     isLoading,
+    isFetching,
     isError,
     refetch,
     switchActiveHousehold,
@@ -160,6 +161,10 @@ export function useCreateHouseholdMutation() {
       const createdHousehold = data?.data?.household;
       if (createdHousehold?.householdId) {
         localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, createdHousehold.householdId);
+        queryClient.setQueryData(householdKeys.all, (old: HouseholdResponse[] = []) => {
+          const exists = old.some((h) => h.householdId === createdHousehold.householdId);
+          return exists ? old : [createdHousehold, ...old];
+        });
       }
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
@@ -189,6 +194,10 @@ export function useJoinHouseholdMutation() {
       const joinedHousehold = data?.data?.household;
       if (joinedHousehold?.householdId) {
         localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, joinedHousehold.householdId);
+        queryClient.setQueryData(householdKeys.all, (old: HouseholdResponse[] = []) => {
+          const exists = old.some((h) => h.householdId === joinedHousehold.householdId);
+          return exists ? old : [joinedHousehold, ...old];
+        });
       }
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
