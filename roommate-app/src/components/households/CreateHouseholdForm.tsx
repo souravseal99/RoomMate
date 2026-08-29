@@ -1,6 +1,7 @@
+import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Home, Loader2, Sparkles } from 'lucide-react';
+import { Home, Loader2, Sparkles, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,18 +17,23 @@ import {
   type CreateHouseholdInput,
   SUGGESTED_HOUSEHOLD_NAMES,
 } from '@/schemas/householdSchemas';
-import { useCreateHouseholdMutation } from '@/hooks/queries/useHouseholdQueries';
+import {
+  useCreateHouseholdMutation,
+  useSuggestedMembersQuery,
+} from '@/hooks/queries/useHouseholdQueries';
 import useHousehold from '@/hooks/useHousehold';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+import { getInitials } from '@/utils/utils';
 
 type Props = {
   onSuccess?: () => void;
 };
 
 export default function CreateHouseholdForm({ onSuccess }: Props) {
+  const navigate = useNavigate();
   const { switchActiveHousehold } = useHousehold();
-  const { toast } = useToast();
   const createMutation = useCreateHouseholdMutation();
+  const { data: suggestedMembers = [] } = useSuggestedMembersQuery();
 
   const form = useForm<CreateHouseholdInput>({
     resolver: zodResolver(createHouseholdSchema),
@@ -41,26 +47,20 @@ export default function CreateHouseholdForm({ onSuccess }: Props) {
       const response = await createMutation.mutateAsync({ name: values.name });
       const created = response?.data?.household;
 
-      toast({
-        title: 'Household Created!',
-        description: `"${values.name}" is ready for your roommates.`,
-      });
-
       if (created?.householdId) {
         switchActiveHousehold(created.householdId);
       }
 
+      toast.success(`Welcome to "${values.name}"! You are the space admin.`);
+
       form.reset();
       onSuccess?.();
+      navigate('/dashboard');
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message || 'Failed to create household. Please try again.';
       form.setError('name', { message: errorMessage });
-      toast({
-        title: 'Error',
-        description: errorMessage,
-        variant: 'destructive',
-      });
+      toast.error(errorMessage);
     }
   };
 
@@ -73,14 +73,14 @@ export default function CreateHouseholdForm({ onSuccess }: Props) {
   };
 
   return (
-    <div className="bg-surface-container border border-border p-card-padding flex flex-col h-full relative rounded-lg">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-surface-container border border-border p-5 flex flex-col h-full relative rounded-2xl">
+      <div className="flex items-center justify-between mb-2">
         <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
           <Home className="w-5 h-5 text-primary" />
           Create Space
         </h3>
       </div>
-      <p className="text-xs text-muted-foreground mb-4">
+      <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
         Start fresh. Set up a new shared living space and invite roommates.
       </p>
 
@@ -107,7 +107,7 @@ export default function CreateHouseholdForm({ onSuccess }: Props) {
 
           <div>
             <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 mb-2">
-              <Sparkles className="w-3 h-3 text-primary-container" /> Quick suggestions:
+              <Sparkles className="w-3.5 h-3.5 text-primary" /> Quick suggestions:
             </span>
             <div className="flex flex-wrap gap-1.5">
               {SUGGESTED_HOUSEHOLD_NAMES.map((name) => (
@@ -115,7 +115,7 @@ export default function CreateHouseholdForm({ onSuccess }: Props) {
                   key={name}
                   type="button"
                   onClick={() => handleChipClick(name)}
-                  className="bg-surface hover:bg-surface-container-high border border-border/70 px-2.5 py-1 text-xs font-medium rounded transition-all active:scale-95 cursor-pointer text-foreground"
+                  className="bg-surface hover:bg-surface-container-high border border-border/70 px-2.5 py-1 text-xs font-medium rounded-lg transition-all active:scale-95 cursor-pointer text-foreground"
                 >
                   {name}
                 </button>
@@ -123,11 +123,34 @@ export default function CreateHouseholdForm({ onSuccess }: Props) {
             </div>
           </div>
 
+          {/* Connected Roommates Preview */}
+          {suggestedMembers.length > 0 && (
+            <div className="pt-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 mb-2">
+                <Users className="w-3.5 h-3.5 text-primary" /> Your connected flatmates:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestedMembers.slice(0, 4).map((member) => (
+                  <div
+                    key={member.userId}
+                    className="bg-surface-container-low border border-border px-2.5 py-1 text-[11px] font-medium rounded-lg text-foreground flex items-center gap-1.5 shadow-xs"
+                    title={`From ${member.sharedHouseholds.join(', ')}`}
+                  >
+                    <span className="w-4 h-4 rounded-full bg-surface text-[9px] font-bold flex items-center justify-center">
+                      {getInitials(member.name)}
+                    </span>
+                    <span>{member.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="pt-4 mt-auto">
             <Button
               type="submit"
               disabled={createMutation.isPending}
-              className="w-full bg-primary-container hover:opacity-90 text-primary-foreground font-bold py-2.5 rounded active:scale-95 transition-all shadow-sm cursor-pointer"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all shadow-xs cursor-pointer"
             >
               {createMutation.isPending ? (
                 <>

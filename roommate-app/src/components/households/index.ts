@@ -1,6 +1,7 @@
 export { CurrentSpaceHeroCard } from './CurrentSpaceHeroCard';
 export { OtherSpaceCard } from './OtherSpaceCard';
 export { InviteRoommatesModal } from './InviteRoommatesModal';
+export { MemberRosterView } from './MemberRosterView';
 export {
   CurrentSpaceHeroSkeleton,
   OtherSpacesGridSkeleton,

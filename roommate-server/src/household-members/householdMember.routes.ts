@@ -11,6 +11,12 @@ hosueholdMemberRouter.post(
 );
 
 hosueholdMemberRouter.get(
+  "/suggested",
+  ensureAuthenticated,
+  HouseholdMemberController.getSuggestedMembers,
+);
+
+hosueholdMemberRouter.get(
   "/all/:householdId",
   ensureAuthenticated,
   HouseholdMemberController.getAllHouseholdMembers,

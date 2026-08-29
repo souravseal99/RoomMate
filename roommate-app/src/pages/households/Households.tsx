@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Home, Plus, Users, UserPlus } from 'lucide-react';
+import { Home, Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import useHousehold from '@/hooks/useHousehold';
 import type { HouseholdResponse } from '@/types/householdTypes';
@@ -192,6 +192,11 @@ export default function Households() {
         onOpenSettings={() => {
           if (rosterHousehold) {
             setEditHousehold(rosterHousehold);
+          }
+        }}
+        onOpenLeave={() => {
+          if (rosterHousehold) {
+            setLeaveHousehold(rosterHousehold);
           }
         }}
       />

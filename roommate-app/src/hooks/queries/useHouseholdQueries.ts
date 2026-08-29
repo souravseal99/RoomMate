@@ -8,6 +8,7 @@ import type {
   HouseholdMember,
   HouseholdResponse,
   HouseholdOptions,
+  SuggestedMember,
 } from '@/types/householdTypes';
 import { toast } from 'sonner';
 
@@ -16,6 +17,7 @@ const ACTIVE_HOUSEHOLD_STORAGE_KEY = 'roommate_active_household_id';
 export const householdKeys = {
   all: ['households'] as const,
   members: (householdId?: string) => ['household-members', householdId] as const,
+  suggested: ['household-members', 'suggested'] as const,
 };
 
 export function useHouseholdsQuery() {
@@ -39,6 +41,17 @@ export function useHouseholdMembersQuery(householdId?: string) {
     },
     enabled: !!householdId,
     staleTime: 1000 * 30, // 30s
+  });
+}
+
+export function useSuggestedMembersQuery() {
+  return useQuery<SuggestedMember[]>({
+    queryKey: householdKeys.suggested,
+    queryFn: async () => {
+      const members = await householdMemberApi().getSuggestedMembers();
+      return members || [];
+    },
+    staleTime: 1000 * 60, // 1 minute
   });
 }
 
@@ -145,9 +158,16 @@ export function useCreateHouseholdMutation() {
     },
     onSuccess: (data) => {
       const createdHousehold = data?.data?.household;
-      queryClient.invalidateQueries({ queryKey: householdKeys.all });
       if (createdHousehold?.householdId) {
         localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, createdHousehold.householdId);
+      }
+      queryClient.invalidateQueries({ queryKey: householdKeys.all });
+      queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
+      if (createdHousehold?.householdId) {
+        eventBus.publish({
+          type: APP_EVENTS.HOUSEHOLD_SWITCHED,
+          payload: { householdId: createdHousehold.householdId },
+        });
       }
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
@@ -167,9 +187,16 @@ export function useJoinHouseholdMutation() {
     },
     onSuccess: (data) => {
       const joinedHousehold = data?.data?.household;
-      queryClient.invalidateQueries({ queryKey: householdKeys.all });
       if (joinedHousehold?.householdId) {
         localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, joinedHousehold.householdId);
+      }
+      queryClient.invalidateQueries({ queryKey: householdKeys.all });
+      queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
+      if (joinedHousehold?.householdId) {
+        eventBus.publish({
+          type: APP_EVENTS.HOUSEHOLD_SWITCHED,
+          payload: { householdId: joinedHousehold.householdId },
+        });
       }
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
@@ -208,6 +235,7 @@ export function useLeaveHouseholdMutation() {
     onSuccess: (_, householdId) => {
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.members(householdId) });
+      queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId },
@@ -227,6 +255,7 @@ export function useDeleteHouseholdMutation() {
     onSuccess: (_, householdId) => {
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.members(householdId) });
+      queryClient.invalidateQueries({ queryKey: householdKeys.suggested });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId },

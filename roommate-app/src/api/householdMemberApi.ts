@@ -1,5 +1,5 @@
 import api from '@/api/axios';
-import type { HouseholdMember } from '@/types/householdTypes';
+import type { HouseholdMember, SuggestedMember } from '@/types/householdTypes';
 
 const householdMemberApi = () => {
   const getAllHouseholdMembers = async (householdId: string): Promise<HouseholdMember[]> => {
@@ -18,6 +18,16 @@ const householdMemberApi = () => {
     }
   };
 
+  const getSuggestedMembers = async (): Promise<SuggestedMember[]> => {
+    try {
+      const res = await api.get('/household-member/suggested');
+      return res?.suggestedMembers || [];
+    } catch (error) {
+      console.error('Error fetching suggested members:', error);
+      return [];
+    }
+  };
+
   const leaveHousehold = async (householdId: string) => {
     const data = await api.post(`/household-member/leave/${householdId}`, {});
     return { data, status: 200 };
@@ -25,6 +35,7 @@ const householdMemberApi = () => {
 
   return {
     getAllHouseholdMembers,
+    getSuggestedMembers,
     leaveHousehold,
   };
 };

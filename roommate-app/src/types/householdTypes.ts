@@ -16,6 +16,14 @@ export interface HouseholdMember {
   user: UserSummary;
 }
 
+export interface SuggestedMember {
+  userId: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  sharedHouseholds: string[];
+}
+
 export interface HouseholdResponse {
   householdId: string;
   inviteCode: string;
