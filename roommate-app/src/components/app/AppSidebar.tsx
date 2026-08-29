@@ -30,19 +30,19 @@ export function AppSidebar() {
     {
       title: 'Chores',
       url: '/chores',
-      iconName: 'Broom',
+      iconName: 'CheckSquare',
       disabled: !hasActiveHousehold,
     },
     {
       title: 'Expenses',
       url: '/expenses',
-      iconName: 'Coins',
+      iconName: 'Receipt',
       disabled: !hasActiveHousehold,
     },
     {
       title: 'Inventory',
       url: '/inventory',
-      iconName: 'ShoppingBag',
+      iconName: 'Package',
       disabled: !hasActiveHousehold,
     },
   ];
