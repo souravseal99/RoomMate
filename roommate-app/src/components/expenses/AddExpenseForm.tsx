@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useMemo, useState, type FormEvent, type ChangeEvent } from 'react';
+import { useMemo, useState, type FormEvent, type ChangeEvent } from 'react';
 import { X, DollarSign, FileText, UserCheck, Users } from 'lucide-react';
 import expenseApi from '@/api/expenseApi';
 import useHousehold from '@/hooks/useHousehold';
@@ -16,7 +14,6 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 type Props = {
@@ -78,7 +75,7 @@ export default function AddExpenseForm({
     try {
       const resp = await ExpenseApi.create({
         ...formData,
-        householdId: selectedHousehold?.key,
+        householdId: selectedHousehold?.key || '',
       });
 
       if (resp && (resp.status === 201 || resp.status === 200)) {
