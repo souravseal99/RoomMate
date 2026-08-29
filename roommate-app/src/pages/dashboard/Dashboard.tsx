@@ -37,8 +37,10 @@ export function Dashboard() {
 
   return (
     <div className="max-w-md mx-auto md:max-w-5xl py-2 space-y-6">
-      {/* 1. Header Ribbon */}
-      <DashboardHeader />
+      {/* 1. Header Ribbon (Desktop only; on mobile AppBar handles the top ribbon) */}
+      <div className="hidden md:block">
+        <DashboardHeader />
+      </div>
 
       {/* 2. Responsive Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
