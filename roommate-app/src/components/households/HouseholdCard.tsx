@@ -1,306 +1,206 @@
-import { useMemo, useState } from 'react';
-import { Clipboard, ClipboardCheck, Trash2, Home, Edit, AlertTriangle, LogOut } from 'lucide-react';
-import type { HouseholdResponse } from '@/types/householdTypes';
+import { useState } from 'react';
+import {
+  Check,
+  Copy,
+  Edit,
+  LogOut,
+  MoreVertical,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
-import householdApi from '@/api/householdApi';
-import householdMemberApi from '@/api/householdMemberApi';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
+import type { HouseholdResponse } from '@/types/householdTypes';
 
 type Props = {
   household: HouseholdResponse;
+  onOpenRoster: (household: HouseholdResponse) => void;
+  onOpenEdit: (household: HouseholdResponse) => void;
+  onOpenLeave: (household: HouseholdResponse) => void;
+  onOpenDelete: (household: HouseholdResponse) => void;
 };
 
-function HouseholdCard({ household }: Props) {
+export default function HouseholdCard({
+  household,
+  onOpenRoster,
+  onOpenEdit,
+  onOpenLeave,
+  onOpenDelete,
+}: Props) {
   const [copied, setCopied] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isLeaveOpen, setIsLeaveOpen] = useState(false);
-  const [newName, setNewName] = useState(household.name);
-  const { fetchAllHouseholds } = useHousehold();
-  const HouseholdApi = useMemo(householdApi, []);
-  const HouseholdMemberApi = useMemo(householdMemberApi, []);
+  const { selectedHousehold, switchActiveHousehold } = useHousehold();
+  const { email } = useAuth();
   const { toast } = useToast();
 
-  const handleCopy = async () => {
+  const isActive = selectedHousehold?.key === household.householdId;
+  const memberCount = household.members?.length || 0;
+
+  // Determine if current user is admin in this space
+  const currentMember = household.members?.find((m) => m.user?.email === email);
+  const isAdmin =
+    currentMember?.role === 'ADMIN' || (household.members?.[0]?.user?.email === email);
+
+  const handleCopyCode = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await navigator.clipboard.writeText(household.inviteCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      toast({ title: 'Copied!', description: 'Invite code copied to clipboard' });
-    } catch (err) {
-      toast({ title: 'Error', description: 'Failed to copy invite code', variant: 'destructive' });
-    }
-  };
-
-  const handleDelete = async () => {
-    setIsDeleteOpen(false);
-    try {
-      await HouseholdApi.deleteCascated(household.householdId);
       toast({
-        title: 'Household deleted',
-        description: 'All related data has been permanently deleted.',
+        title: 'Copied!',
+        description: `Invite code "${household.inviteCode}" copied to clipboard.`,
       });
-      fetchAllHouseholds();
-    } catch (error) {
+    } catch {
       toast({
         title: 'Error',
-        description: 'Failed to delete household. Please try again.',
+        description: 'Failed to copy invite code.',
         variant: 'destructive',
       });
     }
   };
 
-  const handleEdit = async () => {
-    if (!newName.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a household name',
-        variant: 'destructive',
-      });
-      return;
-    }
-    try {
-      await HouseholdApi.update(household.householdId, { name: newName });
-      toast({ title: 'Success', description: 'Household name updated successfully' });
-      await fetchAllHouseholds();
-      setIsEditOpen(false);
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error?.response?.data?.message || 'Failed to update household name',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleLeave = async () => {
-    setIsLeaveOpen(false);
-    try {
-      await HouseholdMemberApi.leaveHousehold(household.householdId);
-      toast({ title: 'Success', description: 'You have left the household' });
-      fetchAllHouseholds();
-    } catch (error: any) {
-      toast({
-        title: 'Error',
-        description: error?.response?.data?.message || 'Failed to leave household',
-        variant: 'destructive',
-      });
+  const handleCardClick = () => {
+    if (!isActive) {
+      switchActiveHousehold(household.householdId);
     }
   };
 
   return (
-    <Card className="group bg-white/90 backdrop-blur-sm border border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 hover:scale-105 overflow-hidden w-full">
-      <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-      <CardContent className="p-6 overflow-hidden">
-        <div className="flex items-start justify-between mb-4 gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-              <Home className="w-5 h-5 text-blue-600" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-bold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                {household.name}
-              </h3>
-              <p className="text-[10px] text-gray-500">
-                {household.members?.length || 0} member
-                {(household.members?.length || 0) !== 1 ? 's' : ''}
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-1 flex-shrink-0">
-            <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 cursor-pointer transition-colors"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit Household</DialogTitle>
-                  <DialogDescription>Change the name of your household</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Household Name</Label>
-                    <Input
-                      id="name"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      placeholder="Enter household name"
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsEditOpen(false)}
-                    className="cursor-pointer"
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="button" onClick={handleEdit} className="cursor-pointer">
-                    Save Changes
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-            <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2 text-red-600">
-                    <AlertTriangle className="w-5 h-5" />
-                    Delete Household
-                  </DialogTitle>
-                  <DialogDescription className="pt-2">
-                    Are you sure you want to delete <strong>{household.name}</strong>?
-                    <br />
-                    <br />
-                    <strong className="text-red-600">
-                      ⚠️ This will affect all {household.members?.length || 0} member(s) of this
-                      household.
-                    </strong>
-                    <br />
-                    <br />
-                    This action cannot be undone. All related data will be permanently deleted:
-                    <ul className="list-disc list-inside mt-2 space-y-1">
-                      <li>All expenses</li>
-                      <li>All chores</li>
-                      <li>All inventory items</li>
-                      <li>All household members</li>
-                    </ul>
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsDeleteOpen(false)}
-                    className="cursor-pointer"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={handleDelete}
-                    className="cursor-pointer"
-                  >
-                    Delete Household
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
+    <Card
+      onClick={handleCardClick}
+      className={`group relative bg-card border-[1.5px] p-card-padding rounded-lg transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[190px] ${
+        isActive
+          ? 'border-primary-container shadow-[0_0_15px_2px_rgba(255,109,31,0.3)] ring-2 ring-primary-container'
+          : 'border-border shadow-sm hover:border-primary/60 hover:-translate-y-1'
+      }`}
+    >
+      {/* Top Banner / Active Tag */}
+      {isActive && (
+        <div className="absolute top-0 right-0 bg-primary-container text-primary-foreground font-bold text-[10px] px-2.5 py-0.5 rounded-bl-md uppercase tracking-wider shadow-xs">
+          Active Space
         </div>
+      )}
 
-        {household.members && household.members.length > 0 && (
-          <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 mb-3 shadow-inner">
-            <div className="text-[10px] text-gray-600 mb-1 font-medium">Created by</div>
-            <div className="text-sm font-semibold text-gray-900 truncate">
-              {household.members[0]?.user?.name || 'Unknown'}
-            </div>
+      <CardContent className="p-0 flex flex-col justify-between flex-1">
+        {/* Header Section */}
+        <div>
+          <div className="flex items-start justify-between gap-2 pr-16 mb-2">
+            <h3 className="font-bold text-lg text-foreground truncate group-hover:text-primary transition-colors">
+              {household.name}
+            </h3>
           </div>
-        )}
 
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 mb-3 shadow-inner">
-          <div className="text-[10px] text-gray-600 mb-1 font-medium">Invite Code</div>
-          <div className="font-mono text-base font-bold text-gray-900">{household.inviteCode}</div>
-        </div>
-
-        <Button
-          onClick={handleCopy}
-          variant="outline"
-          size="sm"
-          className={`w-full cursor-pointer transition-all duration-300 text-xs ${copied ? 'text-green-600 border-green-300 bg-green-50' : 'hover:bg-blue-50 hover:border-blue-300'}`}
-        >
-          {copied ? (
-            <>
-              <ClipboardCheck className="w-3 h-3 mr-1" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <Clipboard className="w-3 h-3 mr-1" />
-              Copy Code
-            </>
-          )}
-        </Button>
-
-        {/* Leave Household Button */}
-        <Dialog open={isLeaveOpen} onOpenChange={setIsLeaveOpen}>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full cursor-pointer transition-all duration-300 text-xs text-orange-600 border-orange-300 hover:bg-orange-50 hover:border-orange-300 mt-2"
+          <div className="flex items-center gap-2 mb-3">
+            <span
+              className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded ${
+                isAdmin
+                  ? 'bg-primary-container text-primary-foreground border-border'
+                  : 'bg-surface text-muted-foreground border-border'
+              }`}
             >
-              <LogOut className="w-3 h-3 mr-1" />
-              Leave Household
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-orange-600">
-                <AlertTriangle className="w-5 h-5" />
-                Leave Household
-              </DialogTitle>
-              <DialogDescription className="pt-2">
-                Are you sure you want to leave <strong>{household.name}</strong>?
-                <br />
-                <br />
-                You will need to be invited again to rejoin.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
+              {isAdmin ? 'Admin' : 'Member'}
+            </span>
+
+            <span className="flex items-center gap-1 text-xs font-mono text-muted-foreground">
+              <Users className="w-3.5 h-3.5 text-muted-foreground" />
+              {memberCount} member{memberCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+        </div>
+
+        {/* Action / Context Menu Trigger */}
+        <div
+          className="absolute top-3.5 right-3.5 z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
               <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsLeaveOpen(false)}
-                className="cursor-pointer"
+                variant="ghost"
+                size="icon"
+                className="w-8 h-8 rounded-full hover:bg-surface-container text-muted-foreground hover:text-foreground cursor-pointer"
               >
-                Cancel
+                <MoreVertical className="w-4 h-4" />
+                <span className="sr-only">Actions</span>
               </Button>
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleLeave}
-                className="cursor-pointer"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-surface border-border shadow-tactile">
+              <DropdownMenuItem
+                onClick={() => onOpenEdit(household)}
+                className="cursor-pointer text-xs font-medium focus:bg-surface-container"
               >
+                <Edit className="w-3.5 h-3.5 mr-2" />
+                Edit Name
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onOpenLeave(household)}
+                className="cursor-pointer text-xs font-medium text-destructive focus:bg-destructive/10"
+              >
+                <LogOut className="w-3.5 h-3.5 mr-2" />
                 Leave Household
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </DropdownMenuItem>
+              {isAdmin && (
+                <>
+                  <DropdownMenuSeparator className="bg-border/30" />
+                  <DropdownMenuItem
+                    onClick={() => onOpenDelete(household)}
+                    className="cursor-pointer text-xs font-medium text-destructive focus:bg-destructive/10"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-2" />
+                    Delete Household
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        {/* Footer Actions */}
+        <div
+          className="pt-3 border-t border-border flex items-center justify-between gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={handleCopyCode}
+            className="text-xs font-bold text-primary hover:bg-surface-container px-2.5 h-8 rounded cursor-pointer active:scale-95 transition-all"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 mr-1 text-primary-container" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 mr-1" />
+                Invite
+              </>
+            )}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onOpenRoster(household)}
+            className="text-xs font-bold bg-surface hover:bg-surface-container-high border-border text-foreground px-3.5 h-8 rounded active:scale-95 transition-all cursor-pointer"
+          >
+            Roommates
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
 }
-
-export default HouseholdCard;

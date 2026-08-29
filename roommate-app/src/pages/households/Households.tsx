@@ -1,93 +1,164 @@
-import { useEffect } from 'react';
-import HouseholdCard from '@/components/households/HouseholdCard';
-import CreateHouseholdSheet from '@/components/households/CreateHouseholdForm';
-import JoinHouseholdForm from '@/components/households/JoinHouseholdForm';
+import { useState } from 'react';
+import { Home, Plus, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import useHousehold from '@/hooks/useHousehold';
-import { Home } from 'lucide-react';
+import type { HouseholdResponse } from '@/types/householdTypes';
+import HouseholdCard from '@/components/households/HouseholdCard';
 import HouseholdCardSkeleton from '@/components/households/HouseholdCardSkeleton';
+import HouseholdEmptyState from '@/components/households/HouseholdEmptyState';
+import CreateJoinModal from '@/components/households/CreateJoinModal';
+import MemberRosterDrawer from '@/components/households/MemberRosterDrawer';
+import HouseholdSettingsModal from '@/components/households/HouseholdSettingsModal';
+import LeaveHouseholdModal from '@/components/households/LeaveHouseholdModal';
+import DeleteHouseholdModal from '@/components/households/DeleteHouseholdModal';
 
-function Households() {
-  const { households, fetchAllHouseholds, isLoading } = useHousehold();
+export default function Households() {
+  const { households, isLoading } = useHousehold();
 
-  useEffect(() => {
-    fetchAllHouseholds();
+  // Modal & Drawer controller states
+  const [isCreateJoinOpen, setIsCreateJoinOpen] = useState(false);
+  const [activeModalTab, setActiveModalTab] = useState<'create' | 'join'>('create');
 
-    // Auto-refresh every 10 seconds to show updates from other users
-    const interval = setInterval(() => {
-      fetchAllHouseholds();
-    }, 10000);
+  const [rosterHousehold, setRosterHousehold] = useState<HouseholdResponse | null>(null);
+  const [editHousehold, setEditHousehold] = useState<HouseholdResponse | null>(null);
+  const [leaveHousehold, setLeaveHousehold] = useState<HouseholdResponse | null>(null);
+  const [deleteHousehold, setDeleteHousehold] = useState<HouseholdResponse | null>(null);
 
-    return () => clearInterval(interval);
-  }, []);
+  const openCreateModal = () => {
+    setActiveModalTab('create');
+    setIsCreateJoinOpen(true);
+  };
+
+  const openJoinModal = () => {
+    setActiveModalTab('join');
+    setIsCreateJoinOpen(true);
+  };
 
   const sortedHouseholds = [...households].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden">
-      <div className="flex-shrink-0 p-6 border-b bg-white/80 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-              <Home className="w-7 h-7 text-blue-600" />
-              <span>Households</span>
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">Manage your shared living spaces</p>
-          </div>
-          {households.length > 0 && (
-            <div className="flex gap-2">
-              <JoinHouseholdForm />
-              <CreateHouseholdSheet />
-            </div>
-          )}
+    <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* Page Header */}
+      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-border">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2.5">
+            <Home className="w-7 h-7 text-primary" />
+            Households
+          </h1>
+          <p className="text-xs md:text-sm text-muted-foreground mt-1">
+            Manage your shared living spaces, invite flatmates, and switch active workspaces.
+          </p>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-auto p-6 bg-white">
-        <div className="max-w-6xl mx-auto h-full">
-          {isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <HouseholdCardSkeleton key={index} />
-              ))}
-            </div>
-          ) : households.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedHouseholds.map((household, index) => (
-                <div
-                  key={household.householdId}
-                  className="animate-in fade-in slide-in-from-bottom-5 duration-700"
-                  style={{ animationDelay: `${index * 150}ms` }}
-                >
-                  <HouseholdCard household={household} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center animate-in fade-in zoom-in duration-700">
-                <div
-                  className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4 shadow-2xl"
-                  style={{ boxShadow: '0 20px 60px -15px rgba(59, 130, 246, 0.5)' }}
-                >
-                  <Home className="w-12 h-12 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">No households yet</h3>
-                <p className="text-gray-600 mb-6">
-                  Create your first household or join an existing one
-                </p>
-                <div className="flex gap-2 justify-center">
-                  <JoinHouseholdForm />
-                  <CreateHouseholdSheet />
-                </div>
-              </div>
-            </div>
-          )}
+        {households.length > 0 && (
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={openJoinModal}
+              variant="outline"
+              size="sm"
+              className="bg-surface hover:bg-surface-container border-border text-foreground font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+            >
+              <Users className="w-4 h-4" />
+              Join Space
+            </Button>
+            <Button
+              onClick={openCreateModal}
+              size="sm"
+              className="bg-primary-container hover:opacity-90 text-primary-foreground font-bold active:scale-95 transition-all shadow-sm cursor-pointer flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              Create Space
+            </Button>
+          </div>
+        )}
+      </header>
+
+      {/* Main Content Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <HouseholdCardSkeleton key={index} />
+          ))}
         </div>
-      </div>
+      ) : households.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {sortedHouseholds.map((household) => (
+            <HouseholdCard
+              key={household.householdId}
+              household={household}
+              onOpenRoster={(h) => setRosterHousehold(h)}
+              onOpenEdit={(h) => setEditHousehold(h)}
+              onOpenLeave={(h) => setLeaveHousehold(h)}
+              onOpenDelete={(h) => setDeleteHousehold(h)}
+            />
+          ))}
+
+          {/* Interactive Dashed "Create Household" Bento Card from Stitch prototype */}
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="border-[1.5px] border-dashed border-border hover:border-primary bg-card/40 hover:bg-surface-container/60 p-card-padding flex flex-col items-center justify-center gap-3 cursor-pointer min-h-[190px] rounded-lg transition-all active:scale-[0.98] text-foreground group"
+          >
+            <div className="w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
+              <Plus className="w-6 h-6 text-primary" />
+            </div>
+            <span className="font-bold text-sm text-foreground">Create Household</span>
+          </button>
+        </div>
+      ) : (
+        <HouseholdEmptyState
+          onCreateClick={openCreateModal}
+          onJoinClick={openJoinModal}
+        />
+      )}
+
+      {/* Setup Home Bento Modal */}
+      <CreateJoinModal
+        open={isCreateJoinOpen}
+        onOpenChange={setIsCreateJoinOpen}
+        defaultTab={activeModalTab}
+      />
+
+      {/* Slide-over Member Roster Drawer */}
+      <MemberRosterDrawer
+        household={rosterHousehold}
+        open={!!rosterHousehold}
+        onOpenChange={(open) => !open && setRosterHousehold(null)}
+        onOpenSettings={() => {
+          if (rosterHousehold) {
+            setEditHousehold(rosterHousehold);
+          }
+        }}
+      />
+
+      {/* Edit Household Name Modal */}
+      {editHousehold && (
+        <HouseholdSettingsModal
+          household={editHousehold}
+          open={!!editHousehold}
+          onOpenChange={(open) => !open && setEditHousehold(null)}
+        />
+      )}
+
+      {/* Leave Household Modal */}
+      {leaveHousehold && (
+        <LeaveHouseholdModal
+          household={leaveHousehold}
+          open={!!leaveHousehold}
+          onOpenChange={(open) => !open && setLeaveHousehold(null)}
+        />
+      )}
+
+      {/* Delete Household Modal */}
+      {deleteHousehold && (
+        <DeleteHouseholdModal
+          household={deleteHousehold}
+          open={!!deleteHousehold}
+          onOpenChange={(open) => !open && setDeleteHousehold(null)}
+        />
+      )}
     </div>
   );
 }
-
-export default Households;

@@ -1,165 +1,146 @@
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Home, Loader2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Clipboard, ClipboardCheck, Home, PartyPopper } from 'lucide-react';
-import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import householdApi from '@/api/householdApi';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  createHouseholdSchema,
+  type CreateHouseholdInput,
+  SUGGESTED_HOUSEHOLD_NAMES,
+} from '@/schemas/householdSchemas';
+import { useCreateHouseholdMutation } from '@/hooks/queries/useHouseholdQueries';
 import useHousehold from '@/hooks/useHousehold';
+import { useToast } from '@/hooks/use-toast';
 
-function CreateHouseholdSheet() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [householdName, setHouseholdName] = useState('');
+type Props = {
+  onSuccess?: () => void;
+};
 
-  const HouseholdApi = householdApi();
-  const { fetchAllHouseholds } = useHousehold();
+export default function CreateHouseholdForm({ onSuccess }: Props) {
+  const { switchActiveHousehold } = useHousehold();
   const { toast } = useToast();
-  const [isCreating, setIsCreating] = useState(false);
-  const [createdHousehold, setCreatedHousehold] = useState<{
-    name: string;
-    inviteCode: string;
-  } | null>(null);
-  const [copied, setCopied] = useState(false);
+  const createMutation = useCreateHouseholdMutation();
 
-  const handleSubmit = async () => {
-    if (!householdName.trim() || isCreating) return;
+  const form = useForm<CreateHouseholdInput>({
+    resolver: zodResolver(createHouseholdSchema),
+    defaultValues: {
+      name: '',
+    },
+  });
 
-    setIsCreating(true);
+  const onSubmit = async (values: CreateHouseholdInput) => {
     try {
-      const { data } = await HouseholdApi.create({ name: householdName });
+      const response = await createMutation.mutateAsync({ name: values.name });
+      const created = response?.data?.household;
 
-      if (data?.data?.household) {
-        setCreatedHousehold(data.data.household);
-      } else {
-        toast({
-          title: 'Household created',
-          description: 'Your household was created successfully.',
-        });
-        setIsOpen(false);
-        setHouseholdName('');
+      toast({
+        title: 'Household Created!',
+        description: `"${values.name}" is ready for your roommates.`,
+      });
+
+      if (created?.householdId) {
+        switchActiveHousehold(created.householdId);
       }
-      fetchAllHouseholds();
-    } catch (error) {
-      console.error('Error creating household:', error);
-      toast({ title: 'Error', description: 'Failed to create household. Please try again.' });
-    } finally {
-      setIsCreating(false);
+
+      form.reset();
+      onSuccess?.();
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || 'Failed to create household. Please try again.';
+      form.setError('name', { message: errorMessage });
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     }
   };
 
-  const handleCopy = async () => {
-    if (!createdHousehold) return;
-    try {
-      await navigator.clipboard.writeText(createdHousehold.inviteCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast({ title: 'Copied!', description: 'Invite code copied to clipboard.' });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    setCreatedHousehold(null);
-    setHouseholdName('');
+  const handleChipClick = (name: string) => {
+    form.setValue('name', name, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
-          <Home className="w-4 h-4" />
-          <span className="hidden sm:inline">Create Household</span>
-          <span className="sm:hidden">Create</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        {!createdHousehold ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Create New Household</DialogTitle>
-              <DialogDescription>Enter a name for your new shared living space</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Household Name</Label>
-                <Input
-                  id="name"
-                  value={householdName}
-                  onChange={(e) => setHouseholdName(e.target.value)}
-                  placeholder="e.g., Downtown Apartment"
-                  onKeyDown={(e) => e.key === 'Enter' && !isCreating && handleSubmit()}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsOpen(false)} className="cursor-pointer">
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!householdName.trim() || isCreating}
-                className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isCreating ? 'Creating...' : 'Create Household'}
-              </Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                <PartyPopper className="w-6 h-6 text-green-600" />
-              </div>
-              <DialogTitle className="text-center text-2xl">Household Created!</DialogTitle>
-              <DialogDescription className="text-center text-base">
-                Your household <strong>{createdHousehold.name}</strong> is ready. Share this code
-                with your roommates to invite them.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col items-center gap-4 py-6">
-              <div className="w-full p-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-between">
-                <span className="font-mono text-2xl font-bold tracking-wider text-gray-800">
-                  {createdHousehold.inviteCode}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="cursor-pointer hover:bg-gray-200 transition-colors"
+    <div className="bg-surface-container border border-border p-card-padding flex flex-col h-full relative rounded-lg">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+          <Home className="w-5 h-5 text-primary" />
+          Create Space
+        </h3>
+      </div>
+      <p className="text-xs text-muted-foreground mb-4">
+        Start fresh. Set up a new shared living space and invite roommates.
+      </p>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col flex-1">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs font-bold text-foreground">Household Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="e.g. The Penthouse"
+                    className="bg-surface border-border text-foreground focus:ring-primary font-medium"
+                    disabled={createMutation.isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs text-destructive font-medium" />
+              </FormItem>
+            )}
+          />
+
+          <div>
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 mb-2">
+              <Sparkles className="w-3 h-3 text-primary-container" /> Quick suggestions:
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {SUGGESTED_HOUSEHOLD_NAMES.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => handleChipClick(name)}
+                  className="bg-surface hover:bg-surface-container-high border border-border/70 px-2.5 py-1 text-xs font-medium rounded transition-all active:scale-95 cursor-pointer text-foreground"
                 >
-                  {copied ? (
-                    <ClipboardCheck className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <Clipboard className="w-5 h-5 text-gray-500" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-gray-400">Invite codes are case-sensitive</p>
+                  {name}
+                </button>
+              ))}
             </div>
-            <DialogFooter className="sm:justify-center">
-              <Button
-                onClick={handleClose}
-                className="w-full sm:w-auto cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-8"
-              >
-                Done
-              </Button>
-            </DialogFooter>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+          </div>
+
+          <div className="pt-4 mt-auto">
+            <Button
+              type="submit"
+              disabled={createMutation.isPending}
+              className="w-full bg-primary-container hover:opacity-90 text-primary-foreground font-bold py-2.5 rounded active:scale-95 transition-all shadow-sm cursor-pointer"
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                'Create Space'
+              )}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
-
-export default CreateHouseholdSheet;

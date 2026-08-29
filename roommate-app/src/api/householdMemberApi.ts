@@ -1,10 +1,11 @@
 import api from '@/api/axios';
+import type { HouseholdMember } from '@/types/householdTypes';
 
 const householdMemberApi = () => {
-  const getAllHouseholdMembers = async (householdId: string): Promise<any[]> => {
+  const getAllHouseholdMembers = async (householdId: string): Promise<HouseholdMember[]> => {
     try {
-      if (householdId === undefined) return [];
-      const { data } = await api.get(`/household-member/all/${householdId}`);
+      if (!householdId) return [];
+      const data = await api.get(`/household-member/all/${householdId}`);
 
       if (!data) {
         throw new Error('Failed to fetch household members');
@@ -18,8 +19,8 @@ const householdMemberApi = () => {
   };
 
   const leaveHousehold = async (householdId: string) => {
-    const { data, status } = await api.post(`/household-member/leave/${householdId}`);
-    return { data, status };
+    const data = await api.post(`/household-member/leave/${householdId}`, {});
+    return { data, status: 200 };
   };
 
   return {
