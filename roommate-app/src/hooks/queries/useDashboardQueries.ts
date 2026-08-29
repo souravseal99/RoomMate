@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dashboardApi from '@/api/dashboardApi';
 import { eventBus } from '@/lib/eventBus';
+import { APP_EVENTS } from '@/types/eventTypes';
 import type { DashboardStats } from '@/types/dashboardTypes';
 
 export const dashboardKeys = {
@@ -26,7 +27,7 @@ export function useQuickCompleteChoreMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardKeys.all });
       queryClient.invalidateQueries({ queryKey: ['chores'] });
-      eventBus.publish({ type: 'HOUSEHOLD_MUTATED' });
+      eventBus.publish({ type: APP_EVENTS.HOUSEHOLD_MUTATED });
     },
   });
 }

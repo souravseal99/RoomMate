@@ -7,6 +7,7 @@ import type {
 import { useHouseholdsQuery, useHouseholdMembersQuery } from '@/hooks/queries/useHouseholdQueries';
 import { useToast } from '@/hooks/use-toast';
 import { eventBus } from '@/lib/eventBus';
+import { APP_EVENTS } from '@/types/eventTypes';
 
 const ACTIVE_HOUSEHOLD_STORAGE_KEY = 'roommate_active_household_id';
 
@@ -99,7 +100,7 @@ export default function HouseholdProvider({
 
       setSelectedHouseholdId(householdId);
       localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, householdId);
-      eventBus.publish({ type: 'HOUSEHOLD_SWITCHED', payload: { householdId } });
+      eventBus.publish({ type: APP_EVENTS.HOUSEHOLD_SWITCHED, payload: { householdId } });
       toast({
         title: 'Household Switched',
         description: `Active space is now "${target.name}".`,

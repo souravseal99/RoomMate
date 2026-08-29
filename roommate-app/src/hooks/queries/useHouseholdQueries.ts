@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import householdApi from '@/api/householdApi';
 import householdMemberApi from '@/api/householdMemberApi';
 import { eventBus } from '@/lib/eventBus';
+import { APP_EVENTS } from '@/types/eventTypes';
 import type { HouseholdMember, HouseholdResponse } from '@/types/householdTypes';
 
 export const householdKeys = {
@@ -43,7 +44,7 @@ export function useCreateHouseholdMutation() {
       const createdHousehold = data?.data?.household;
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       eventBus.publish({
-        type: 'HOUSEHOLD_MUTATED',
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId: createdHousehold?.householdId },
       });
     },
@@ -62,7 +63,7 @@ export function useJoinHouseholdMutation() {
       const joinedHousehold = data?.data?.household;
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       eventBus.publish({
-        type: 'HOUSEHOLD_MUTATED',
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId: joinedHousehold?.householdId },
       });
     },
@@ -80,7 +81,7 @@ export function useUpdateHouseholdMutation() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       eventBus.publish({
-        type: 'HOUSEHOLD_MUTATED',
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId: variables.householdId },
       });
     },
@@ -99,7 +100,7 @@ export function useLeaveHouseholdMutation() {
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.members(householdId) });
       eventBus.publish({
-        type: 'HOUSEHOLD_MUTATED',
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId },
       });
     },
@@ -118,7 +119,7 @@ export function useDeleteHouseholdMutation() {
       queryClient.invalidateQueries({ queryKey: householdKeys.all });
       queryClient.invalidateQueries({ queryKey: householdKeys.members(householdId) });
       eventBus.publish({
-        type: 'HOUSEHOLD_MUTATED',
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId },
       });
     },
