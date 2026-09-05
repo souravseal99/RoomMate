@@ -21,7 +21,7 @@ type Props = {
 };
 
 export default function WeeklyShoppingList({ householdId }: Props) {
-  const { data: cartItems = [], isLoading } = useShoppingCartQuery(householdId);
+  const { data: cartItems = [] } = useShoppingCartQuery(householdId);
   const addMutation = useAddToCartMutation();
   const deleteMutation = useDeleteCartItemMutation();
   const checkoutMutation = useCheckoutCartMutation();

@@ -1,4 +1,4 @@
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useCreateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
 
 const QUICK_ITEMS = [

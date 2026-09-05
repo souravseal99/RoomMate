@@ -51,23 +51,23 @@ api.interceptors.response.use(
 );
 
 export default class Api {
-  static async get(route: string) {
+  static async get<T = any>(route: string): Promise<T> {
     return (await api.get(route)).data;
   }
 
-  static async post(route: string, data: any) {
+  static async post<T = any>(route: string, data?: any): Promise<T> {
     return (await api.post(route, data)).data;
   }
 
-  static async put(route: string, data: any) {
+  static async put<T = any>(route: string, data?: any): Promise<T> {
     return (await api.put(route, data)).data;
   }
 
-  static async patch(route: string, data: any) {
+  static async patch<T = any>(route: string, data?: any): Promise<T> {
     return (await api.patch(route, data)).data;
   }
 
-  static async delete(route: string) {
+  static async delete<T = any>(route: string): Promise<T> {
     return (await api.delete(route)).data;
   }
 }

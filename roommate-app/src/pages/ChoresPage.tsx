@@ -2,13 +2,12 @@ import { ChoresGrid } from '@/components/chores/ChoresGrid';
 import { ChoresFilters } from '@/components/chores/ChoresFilters';
 import { ChoresEmptyState } from '@/components/chores/ChoresEmptyState';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { useState } from 'react';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export function ChoresPage() {
-  const [chores, setChores] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [chores] = useState([]);
+  const [isLoading] = useState(true);
 
   return (
     <div className="container mx-auto py-6">
@@ -26,7 +25,7 @@ export function ChoresPage() {
 
       {isLoading ? (
         <div className="flex justify-center p-8">
-          <LoadingSpinner />
+          <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       ) : chores.length > 0 ? (
         <ChoresGrid chores={chores} />

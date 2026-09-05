@@ -4,7 +4,6 @@ import {
   Plus,
   Search,
   ShoppingCart,
-  SlidersHorizontal,
   PackageOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';

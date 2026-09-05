@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Share2, MessageCircle, Link, UserPlus } from 'lucide-react';
+import { Copy, Check, MessageCircle, Link, UserPlus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,

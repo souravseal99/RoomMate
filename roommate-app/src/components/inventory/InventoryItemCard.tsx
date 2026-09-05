@@ -1,32 +1,35 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus } from 'lucide-react';
-import { updateInventoryItem } from '@/api/inventoryApi';
+import { useUpdateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
+import useHousehold from '@/hooks/useHousehold';
 import { getStatusBadge, getItemEmoji } from '@/utils/inventoryUtils';
-import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventoryTypes';
 
 interface InventoryItemCardProps {
   item: InventoryItem;
-  onUpdate: () => void;
+  onUpdate?: () => void;
 }
 
 export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { selectedHousehold } = useHousehold();
+  const updateMutation = useUpdateInventoryMutation();
 
   const updateQuantity = async (newQuantity: number) => {
-    if (newQuantity < 0 || !item.inventoryItemId) return;
+    if (newQuantity < 0 || !item.inventoryItemId || !selectedHousehold) return;
 
-    setIsUpdating(true);
     try {
-      await updateInventoryItem(item.inventoryItemId, { quantity: newQuantity });
-      onUpdate();
-    } catch (error) {
-      toast.error('Failed to update quantity');
-    } finally {
-      setIsUpdating(false);
+      await updateMutation.mutateAsync({
+        itemId: item.inventoryItemId,
+        householdId: selectedHousehold.key,
+        data: { quantity: newQuantity },
+      });
+      if (onUpdate) onUpdate();
+    } catch {
+      // Error handled by mutation
     }
   };
+
+  const isUpdating = updateMutation.isPending && updateMutation.variables?.itemId === item.inventoryItemId;
 
   return (
     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-64">
@@ -45,7 +48,7 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
             variant="outline"
             onClick={() => updateQuantity(item.quantity - 1)}
             disabled={isUpdating || item.quantity <= 0}
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 cursor-pointer"
           >
             <Minus className="h-3 w-3" />
           </Button>
@@ -57,7 +60,7 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
             variant="outline"
             onClick={() => updateQuantity(item.quantity + 1)}
             disabled={isUpdating}
-            className="h-6 w-6 p-0"
+            className="h-6 w-6 p-0 cursor-pointer"
           >
             <Plus className="h-3 w-3" />
           </Button>

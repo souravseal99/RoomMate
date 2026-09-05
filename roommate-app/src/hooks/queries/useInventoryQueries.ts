@@ -56,7 +56,7 @@ export function useUpdateInventoryMutation() {
   return useMutation({
     mutationFn: async ({
       itemId,
-      householdId,
+      householdId: _householdId,
       data,
     }: {
       itemId: string;
@@ -110,7 +110,7 @@ export function useDeleteInventoryMutation() {
   return useMutation({
     mutationFn: async ({
       itemId,
-      householdId,
+      householdId: _householdId,
     }: {
       itemId: string;
       householdId: string;

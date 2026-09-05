@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Minus, Plus, MoreVertical, Trash2, Edit2, AlertCircle } from 'lucide-react';
+
+import { Minus, Plus, MoreVertical, Trash2, Edit2 } from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
 import {
   useUpdateInventoryMutation,

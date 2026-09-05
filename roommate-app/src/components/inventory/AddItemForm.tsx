@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createInventoryItem } from '@/api/inventoryApi';
+import { useCreateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
 import useHousehold from '@/hooks/useHousehold';
 import { toast } from 'sonner';
 
@@ -15,8 +15,8 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [lowThreshold, setLowThreshold] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { selectedHousehold } = useHousehold();
+  const createMutation = useCreateInventoryMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,24 +26,20 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
       return;
     }
 
-    setIsLoading(true);
     try {
-      await createInventoryItem({
+      await createMutation.mutateAsync({
         name,
         quantity: parseInt(quantity),
         lowThreshold: parseInt(lowThreshold),
         householdId: selectedHousehold.key,
       });
-
-      toast.success('Item added successfully');
       onSuccess();
     } catch (error) {
       console.error('APP:: AddItemForm:: Failed to add item:', error);
-      toast.error('Failed to add item');
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  const isLoading = createMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

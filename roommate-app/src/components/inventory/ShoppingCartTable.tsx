@@ -1,59 +1,28 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus } from 'lucide-react';
-import {
-  getCartItemsByHouseholdId,
-  addToShoppingCart,
-  updateCartItem,
-  removeFromCart,
-} from '@/api/shoppingCartApi';
-import { INVENTORY_EVENTS } from '@/components/inventory/config';
+import { Trash2, Plus, Loader2 } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import {
+  useShoppingCartQuery,
+  useAddToCartMutation,
+  useUpdateCartItemMutation,
+  useDeleteCartItemMutation,
+} from '@/hooks/queries/useShoppingCartQueries';
 import { toast } from 'sonner';
-import type { ShoppingCartItem } from '@/types/shoppingCartTypes';
 
 export function ShoppingCartTable() {
-  const [cartItems, setCartItems] = useState<ShoppingCartItem[]>([]);
   const [newItemName, setNewItemName] = useState('');
   const [newItemQuantity, setNewItemQuantity] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { selectedHousehold } = useHousehold();
 
-  const fetchCartItems = useCallback(async () => {
-    if (!selectedHousehold?.key) {
-      return;
-    }
-
-    try {
-      const response = await getCartItemsByHouseholdId(selectedHousehold.key);
-      const items = Array.isArray(response.data) ? response.data : [];
-      const mappedItems = items.map((item: any) => ({
-        id: item.shoppingCartId,
-        itemName: item.itemName,
-        quantity: item.quantity,
-        createdAt: item.createdAt,
-      }));
-      setCartItems(mappedItems);
-    } catch (error) {
-      toast.error('Failed to load shopping cart');
-    }
-  }, [selectedHousehold?.key]);
-
-  useEffect(() => {
-    if (selectedHousehold?.key) {
-      fetchCartItems();
-    }
-  }, [selectedHousehold?.key]);
-
-  useEffect(() => {
-    const handleRefresh = () => {
-      fetchCartItems();
-    };
-
-    window.addEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
-    return () => window.removeEventListener(INVENTORY_EVENTS.REFRESH_SHOPPING_CART, handleRefresh);
-  }, [fetchCartItems]);
+  const { data: cartItems = [], isLoading: isLoadingCart } = useShoppingCartQuery(
+    selectedHousehold?.key
+  );
+  
+  const addMutation = useAddToCartMutation();
+  const updateMutation = useUpdateCartItemMutation();
+  const deleteMutation = useDeleteCartItemMutation();
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,41 +42,38 @@ export function ShoppingCartTable() {
       return;
     }
 
-    setIsLoading(true);
     try {
-      await addToShoppingCart(newItemName.trim(), parseInt(newItemQuantity), selectedHousehold.key);
+      await addMutation.mutateAsync({
+        itemName: newItemName.trim(),
+        quantity: parseInt(newItemQuantity),
+        householdId: selectedHousehold.key,
+      });
 
       setNewItemName('');
       setNewItemQuantity('');
-      fetchCartItems();
-      toast.success('Item added to cart');
-    } catch (error) {
-      toast.error('Failed to add item');
-    } finally {
-      setIsLoading(false);
+    } catch {
+      // Error handled by mutation
     }
   };
 
-  const handleUpdateQuantity = async (cartItemId: string, quantity: number) => {
-    if (quantity <= 0) return;
-
-    try {
-      await updateCartItem(cartItemId, quantity);
-      fetchCartItems();
-    } catch (error) {
-      toast.error('Failed to update quantity');
-    }
+  const handleUpdateQuantity = (cartItemId: string, quantity: number) => {
+    if (quantity <= 0 || !selectedHousehold) return;
+    updateMutation.mutate({
+      cartItemId,
+      householdId: selectedHousehold.key,
+      data: { quantity },
+    });
   };
 
-  const handleRemoveItem = async (cartItemId: string) => {
-    try {
-      await removeFromCart(cartItemId);
-      fetchCartItems();
-      toast.success('Item removed from cart');
-    } catch (error) {
-      toast.error('Failed to remove item');
-    }
+  const handleRemoveItem = (cartItemId: string) => {
+    if (!selectedHousehold) return;
+    deleteMutation.mutate({
+      cartItemId,
+      householdId: selectedHousehold.key,
+    });
   };
+
+  const isPending = addMutation.isPending;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
@@ -133,20 +99,24 @@ export function ShoppingCartTable() {
         />
         <Button
           type="submit"
-          disabled={isLoading || !selectedHousehold || !newItemName.trim() || !newItemQuantity}
+          disabled={isPending || !selectedHousehold || !newItemName.trim() || !newItemQuantity}
           size="sm"
         >
-          {isLoading ? '...' : <Plus className="h-4 w-4" />}
+          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
         </Button>
       </form>
 
       {/* Cart Items */}
-      {cartItems.length === 0 ? (
+      {isLoadingCart ? (
+        <div className="flex justify-center p-4">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        </div>
+      ) : cartItems.length === 0 ? (
         <p className="text-gray-500 text-sm text-center py-4">No items in shopping cart</p>
       ) : (
         <div className="space-y-2">
           {cartItems.map((item) => (
-            <div key={item.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+            <div key={item.shoppingCartId} className="flex items-center justify-between p-2 bg-gray-50 rounded">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{item.itemName}</span>
               </div>
@@ -155,14 +125,16 @@ export function ShoppingCartTable() {
                 <Input
                   type="number"
                   value={item.quantity}
-                  onChange={(e) => handleUpdateQuantity(item.id, parseInt(e.target.value))}
+                  onChange={(e) => handleUpdateQuantity(item.shoppingCartId, parseInt(e.target.value))}
                   min="1"
                   className="w-16 h-8"
+                  disabled={updateMutation.isPending && updateMutation.variables?.cartItemId === item.shoppingCartId}
                 />
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => handleRemoveItem(item.shoppingCartId)}
+                  disabled={deleteMutation.isPending && deleteMutation.variables?.cartItemId === item.shoppingCartId}
                   className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
                 >
                   <Trash2 className="h-3 w-3" />

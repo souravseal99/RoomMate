@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/utils/utils';

@@ -3,11 +3,9 @@ import {
   Users,
   Copy,
   Check,
-  Share2,
   MessageCircle,
   Link as LinkIcon,
   MoreVertical,
-  ShieldAlert,
   LogOut,
   UserPlus,
   ArrowLeft,
@@ -40,7 +38,7 @@ export function MemberRosterView({
   onOpenSettings,
   onOpenLeave,
 }: MemberRosterViewProps) {
-  const { userId: currentUserId } = useAuth();
+  const { email: currentUserEmail } = useAuth();
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
@@ -194,7 +192,7 @@ export function MemberRosterView({
               const email = member.user?.email || '';
               const avatarUrl = member.user?.avatarUrl;
               const isAdmin = member.role === 'ADMIN';
-              const isSelf = member.userId === currentUserId || member.user?.userId === currentUserId;
+              const isSelf = member.user?.email === currentUserEmail && currentUserEmail != null;
 
               return (
                 <div

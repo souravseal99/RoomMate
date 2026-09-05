@@ -4,8 +4,7 @@ import { dateFormatterUtc } from '@/utils/utils';
 import { getStatusBadge, getItemEmoji } from '@/utils/inventoryUtils';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 
-import { useState, useEffect } from 'react';
-import useInventory from '@/hooks/useInventory';
+import { useState } from 'react';
 
 type ItemDetailsCardProps = {
   itemDetails: InventoryItem;
@@ -13,10 +12,8 @@ type ItemDetailsCardProps = {
   onAddToList?: (item: InventoryItem, quantity: number) => void;
 };
 
-export function ItemDetailsCard({ itemDetails, householdId, onAddToList }: ItemDetailsCardProps) {
+export function ItemDetailsCard({ itemDetails, onAddToList }: ItemDetailsCardProps) {
   const [shoppingQuantity, setShoppingQuantity] = useState(1);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const { inventoryItems, setInventoryItems } = useInventory();
 
   const updateShoppingQuantity = (newQuantity: number) => {
     if (newQuantity < 0) return;
@@ -37,7 +34,7 @@ export function ItemDetailsCard({ itemDetails, householdId, onAddToList }: ItemD
               <span className="text-xs text-gray-500">Qty: {itemDetails.quantity}</span>
               <span className="text-xs text-gray-400">•</span>
               <span className="text-xs text-gray-500">
-                {dateFormatterUtc(itemDetails.lastUpdated)}
+                {dateFormatterUtc(itemDetails.lastUpdated ?? new Date().toISOString())}
               </span>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+
 import {
   Sheet,
   SheetContent,
@@ -25,13 +25,9 @@ import {
 } from '@/hooks/queries/useInventoryQueries';
 import type { InventoryItem } from '@/types/inventoryTypes';
 
-const itemSchema = z.object({
-  name: z.string().min(1, 'Item name is required').max(50, 'Item name is too long'),
-  quantity: z.coerce.number().min(0, 'Quantity must be at least 0'),
-  lowThreshold: z.coerce.number().min(0, 'Min threshold must be at least 0'),
-});
+import { inventoryItemSchema, type InventoryItemFormValues } from '@/schemas/inventorySchemas';
 
-type FormValues = z.infer<typeof itemSchema>;
+type FormValues = InventoryItemFormValues;
 
 type Props = {
   open: boolean;
@@ -63,7 +59,7 @@ export default function AddInventoryItemDrawer({
   const isEditing = !!itemToEdit;
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(itemSchema),
+    resolver: zodResolver(inventoryItemSchema) as any,
     defaultValues: {
       name: '',
       quantity: 1,

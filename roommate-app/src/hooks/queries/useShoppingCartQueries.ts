@@ -79,7 +79,7 @@ export function useUpdateCartItemMutation() {
   return useMutation({
     mutationFn: async ({
       cartItemId,
-      householdId,
+      householdId: _householdId,
       data,
     }: {
       cartItemId: string;
@@ -109,7 +109,7 @@ export function useDeleteCartItemMutation() {
   return useMutation({
     mutationFn: async ({
       cartItemId,
-      householdId,
+      householdId: _householdId,
     }: {
       cartItemId: string;
       householdId: string;
@@ -137,7 +137,7 @@ export function useCheckoutCartMutation() {
 
   return useMutation({
     mutationFn: async ({
-      householdId,
+      householdId: _householdId,
       purchasedItemIds,
     }: {
       householdId: string;
