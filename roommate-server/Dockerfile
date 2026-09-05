@@ -14,6 +14,6 @@ COPY . .
 EXPOSE 5000
 
 # Start server app with database migrations & seed sequence
-CMD ["sh", "-c", "npx prisma generate && npx prisma db push && npm run db:seed && npm run dev:serve"]
+CMD ["sh", "-c", "npx prisma db push && npm run db:seed && npm run dev:serve"]
 
 
