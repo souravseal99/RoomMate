@@ -13,12 +13,13 @@ export default class TokenStore {
   }
 
   static getSessionId(): string {
-    let sessionId = sessionStorage.getItem(this.SESSION_KEY);
-    if (!sessionId) {
-      sessionId = nanoid();
-      sessionStorage.setItem(this.SESSION_KEY, sessionId);
+    const existingSessionId = sessionStorage.getItem(this.SESSION_KEY);
+    if (existingSessionId) {
+      return existingSessionId;
     }
-    return sessionId;
+    const newSessionId = nanoid();
+    sessionStorage.setItem(this.SESSION_KEY, newSessionId);
+    return newSessionId;
   }
 
   static hasSession(): boolean {
