@@ -5,10 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function env(key: string) {
-  return import.meta.env[key];
-}
-
 export function dateFormatterUtc(date: string) {
   const dateObj = new Date(date);
   const formattedDate = dateObj.toLocaleDateString('en-IN');
