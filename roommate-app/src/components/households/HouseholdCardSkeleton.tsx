@@ -1,39 +1,24 @@
-import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 
-function HouseholdCardSkeleton() {
+export default function HouseholdCardSkeleton() {
   return (
-    <Card className="bg-white/90 backdrop-blur-sm border border-blue-200 shadow-xl w-full">
-      <Skeleton className="h-2 w-full" />
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4 gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <Skeleton className="w-10 h-10 rounded-xl flex-shrink-0" />
-            <div className="min-w-0 flex-1 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/4" />
+    <Card className="bg-card border-[1.5px] border-border rounded-lg p-card-padding shadow-sm animate-pulse flex flex-col gap-4 min-h-[190px]">
+      <CardContent className="p-0 flex flex-col justify-between h-full gap-4">
+        <div className="flex justify-between items-start">
+          <div className="space-y-2 flex-1">
+            <div className="h-6 bg-surface-container rounded w-3/4" />
+            <div className="flex items-center gap-2">
+              <div className="h-4 bg-surface-container rounded w-16" />
+              <div className="h-4 bg-surface-container rounded w-12" />
             </div>
           </div>
-          <div className="flex gap-1 flex-shrink-0">
-            <Skeleton className="w-8 h-8 rounded-md" />
-            <Skeleton className="w-8 h-8 rounded-md" />
-          </div>
+          <div className="w-8 h-8 bg-surface-container rounded-full" />
         </div>
-
-        <div className="bg-gray-50 rounded-xl p-3 mb-3 shadow-inner space-y-1">
-          <Skeleton className="h-3 w-1/5" />
-          <Skeleton className="h-4 w-2/5" />
+        <div className="pt-4 border-t-[1.5px] border-border/20 flex items-center justify-between">
+          <div className="h-4 bg-surface-container rounded w-16" />
+          <div className="h-8 bg-surface-container rounded w-24" />
         </div>
-
-        <div className="bg-gray-50 rounded-xl p-3 mb-3 shadow-inner space-y-1">
-          <Skeleton className="h-3 w-1/4" />
-          <Skeleton className="h-5 w-1/2" />
-        </div>
-
-        <Skeleton className="h-9 w-full rounded-md" />
       </CardContent>
     </Card>
   );
 }
-
-export default HouseholdCardSkeleton;

@@ -1,29 +1,39 @@
 import api from '@/api/axios';
+import type { HouseholdMember, SuggestedMember } from '@/types/householdTypes';
 
 const householdMemberApi = () => {
-  const getAllHouseholdMembers = async (householdId: string): Promise<any[]> => {
+  const getAllHouseholdMembers = async (householdId: string): Promise<HouseholdMember[]> => {
     try {
-      if (householdId === undefined) return [];
-      const { data } = await api.get(`/household-member/all/${householdId}`);
-
-      if (!data) {
-        throw new Error('Failed to fetch household members');
-      }
-
-      return data;
+      if (!householdId) return [];
+      const res = await api.get(`/household-member/all/${householdId}`);
+      if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.data)) return res.data;
+      if (Array.isArray(res?.members)) return res.members;
+      return res?.data?.members || [];
     } catch (error) {
       console.error('Error fetching household members:', error);
       return [];
     }
   };
 
+  const getSuggestedMembers = async (): Promise<SuggestedMember[]> => {
+    try {
+      const res = await api.get('/household-member/suggested');
+      return res?.data?.suggestedMembers || res?.suggestedMembers || [];
+    } catch (error) {
+      console.error('Error fetching suggested members:', error);
+      return [];
+    }
+  };
+
   const leaveHousehold = async (householdId: string) => {
-    const { data, status } = await api.post(`/household-member/leave/${householdId}`);
-    return { data, status };
+    const data = await api.post(`/household-member/leave/${householdId}`, {});
+    return { data, status: 200 };
   };
 
   return {
     getAllHouseholdMembers,
+    getSuggestedMembers,
     leaveHousehold,
   };
 };

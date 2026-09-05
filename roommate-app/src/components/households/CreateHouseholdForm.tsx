@@ -1,165 +1,237 @@
-import { Button } from '@/components/ui/button';
-import { Clipboard, ClipboardCheck, Home, PartyPopper } from 'lucide-react';
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Home, Loader2, Plus, ArrowRight, Edit3, Users } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import householdApi from '@/api/householdApi';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import {
+  createHouseholdSchema,
+  type CreateHouseholdInput,
+} from '@/schemas/householdSchemas';
+import {
+  useCreateHouseholdMutation,
+  useSuggestedMembersQuery,
+} from '@/hooks/queries/useHouseholdQueries';
 import useHousehold from '@/hooks/useHousehold';
+import { toast } from 'sonner';
+import { getInitials } from '@/utils/utils';
 
-function CreateHouseholdSheet() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [householdName, setHouseholdName] = useState('');
+const CLASSIC_SUGGESTIONS = [
+  'The Penthouse',
+  'Baker St Crew',
+  'Flat 204',
+  'Casa de Amigos',
+  'The Hub',
+  'The Sunny Loft',
+] as const;
 
-  const HouseholdApi = householdApi();
-  const { fetchAllHouseholds } = useHousehold();
-  const { toast } = useToast();
-  const [isCreating, setIsCreating] = useState(false);
-  const [createdHousehold, setCreatedHousehold] = useState<{
-    name: string;
-    inviteCode: string;
-  } | null>(null);
-  const [copied, setCopied] = useState(false);
+type Props = {
+  onSuccess?: () => void;
+  onSwitchToJoin?: () => void;
+};
 
-  const handleSubmit = async () => {
-    if (!householdName.trim() || isCreating) return;
+export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props) {
+  const navigate = useNavigate();
+  const { switchActiveHousehold } = useHousehold();
+  const createMutation = useCreateHouseholdMutation();
+  const { data: suggestedMembers = [] } = useSuggestedMembersQuery();
+  const [activeChip, setActiveChip] = useState<string | null>(null);
 
-    setIsCreating(true);
+  const form = useForm<CreateHouseholdInput>({
+    resolver: zodResolver(createHouseholdSchema),
+    defaultValues: {
+      name: '',
+    },
+  });
+
+  const onSubmit = async (values: CreateHouseholdInput) => {
     try {
-      const { data } = await HouseholdApi.create({ name: householdName });
+      const response = await createMutation.mutateAsync({ name: values.name });
+      const created = response?.data?.household;
 
-      if (data?.data?.household) {
-        setCreatedHousehold(data.data.household);
-      } else {
-        toast({
-          title: 'Household created',
-          description: 'Your household was created successfully.',
-        });
-        setIsOpen(false);
-        setHouseholdName('');
+      if (created?.householdId) {
+        switchActiveHousehold(created.householdId);
       }
-      fetchAllHouseholds();
-    } catch (error) {
-      console.error('Error creating household:', error);
-      toast({ title: 'Error', description: 'Failed to create household. Please try again.' });
-    } finally {
-      setIsCreating(false);
+
+      toast.success(`Welcome to "${values.name}"! You are the space admin.`);
+
+      form.reset();
+      onSuccess?.();
+      navigate('/dashboard');
+    } catch (err: any) {
+      const errorMessage =
+        err?.response?.data?.message || 'Failed to create household. Please try again.';
+      form.setError('name', { message: errorMessage });
+      toast.error(errorMessage);
     }
   };
 
-  const handleCopy = async () => {
-    if (!createdHousehold) return;
-    try {
-      await navigator.clipboard.writeText(createdHousehold.inviteCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast({ title: 'Copied!', description: 'Invite code copied to clipboard.' });
-    } catch (err) {
-      console.error('Failed to copy: ', err);
-    }
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-    setCreatedHousehold(null);
-    setHouseholdName('');
+  const handleChipClick = (name: string) => {
+    setActiveChip(name);
+    form.setValue('name', name, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all">
-          <Home className="w-4 h-4" />
-          <span className="hidden sm:inline">Create Household</span>
-          <span className="sm:hidden">Create</span>
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        {!createdHousehold ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Create New Household</DialogTitle>
-              <DialogDescription>Enter a name for your new shared living space</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid gap-2">
-                <Label htmlFor="name">Household Name</Label>
-                <Input
-                  id="name"
-                  value={householdName}
-                  onChange={(e) => setHouseholdName(e.target.value)}
-                  placeholder="e.g., Downtown Apartment"
-                  onKeyDown={(e) => e.key === 'Enter' && !isCreating && handleSubmit()}
-                />
+    <div className="w-full flex flex-col justify-between space-y-4 pb-2">
+      {/* Hero Section */}
+      <div className="flex flex-col items-start space-y-2">
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary border border-primary/20 shadow-xs">
+          <Home className="w-6 h-6 stroke-[2.2]" />
+        </div>
+        <div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground leading-tight">
+            Name your space.
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Pick a classic name or type your own to start collaborating.
+          </p>
+        </div>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col flex-1">
+          {/* Classic Suggestion Grid */}
+          <div className="space-y-2">
+            <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">
+              Pick a classic:
+            </span>
+            <div className="grid grid-cols-2 gap-2">
+              {CLASSIC_SUGGESTIONS.map((name) => {
+                const isSelected = activeChip === name;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => handleChipClick(name)}
+                    className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left flex justify-between items-center transition-all cursor-pointer shadow-xs active:scale-95 group ${
+                      isSelected
+                        ? 'bg-primary/10 border-2 border-primary text-primary'
+                        : 'bg-surface-container border border-border text-foreground hover:border-primary/50 hover:bg-surface-container-high'
+                    }`}
+                  >
+                    <span className="truncate">{name}</span>
+                    <Plus
+                      className={`w-3.5 h-3.5 shrink-0 transition-opacity ${
+                        isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Custom Name Input */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="household-name"
+              className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground block"
+            >
+              Or type your own
+            </label>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        id="household-name"
+                        placeholder="e.g. The Sunny Loft"
+                        className="h-12 px-3.5 bg-surface border-border text-foreground focus:border-primary focus:ring-1 focus:ring-primary font-semibold text-sm sm:text-base rounded-xl shadow-xs pr-10"
+                        disabled={createMutation.isPending}
+                        {...field}
+                        onChange={(e) => {
+                          setActiveChip(null);
+                          field.onChange(e);
+                        }}
+                      />
+                    </FormControl>
+                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                      <Edit3 className="w-4 h-4" />
+                    </div>
+                  </div>
+                  <FormMessage className="text-xs text-destructive font-medium mt-1" />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Connected Roommates Recommendation Preview */}
+          {suggestedMembers.length > 0 && (
+            <div className="space-y-1.5 pt-0.5">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                <Users className="w-3.5 h-3.5 text-primary" /> Your connected flatmates:
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestedMembers.slice(0, 4).map((member) => (
+                  <div
+                    key={member.userId}
+                    className="bg-surface-container-low border border-border px-2.5 py-1 text-[11px] font-semibold rounded-lg text-foreground flex items-center gap-1.5 shadow-xs"
+                    title={`From ${member.sharedHouseholds.join(', ')}`}
+                  >
+                    <span className="w-4 h-4 rounded-full bg-surface text-[9px] font-bold flex items-center justify-center">
+                      {getInitials(member.name)}
+                    </span>
+                    <span>{member.name}</span>
+                  </div>
+                ))}
               </div>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsOpen(false)} className="cursor-pointer">
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!householdName.trim() || isCreating}
-                className="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {isCreating ? 'Creating...' : 'Create Household'}
-              </Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <div className="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                <PartyPopper className="w-6 h-6 text-green-600" />
-              </div>
-              <DialogTitle className="text-center text-2xl">Household Created!</DialogTitle>
-              <DialogDescription className="text-center text-base">
-                Your household <strong>{createdHousehold.name}</strong> is ready. Share this code
-                with your roommates to invite them.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col items-center gap-4 py-6">
-              <div className="w-full p-4 bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl flex items-center justify-between">
-                <span className="font-mono text-2xl font-bold tracking-wider text-gray-800">
-                  {createdHousehold.inviteCode}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCopy}
-                  className="cursor-pointer hover:bg-gray-200 transition-colors"
+          )}
+
+          {/* Action CTA */}
+          <div className="pt-2 space-y-2.5">
+            <Button
+              type="submit"
+              disabled={createMutation.isPending}
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-between px-5 shadow-md shadow-primary/20 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              {createMutation.isPending ? (
+                <div className="flex items-center gap-2 mx-auto">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Creating Space...</span>
+                </div>
+              ) : (
+                <>
+                  <span className="tracking-wide">Create &amp; Get Invite Link</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </Button>
+
+            {onSwitchToJoin && (
+              <p className="text-center text-xs text-muted-foreground">
+                Already have an invite code?{' '}
+                <button
+                  type="button"
+                  onClick={onSwitchToJoin}
+                  className="font-bold text-primary hover:underline cursor-pointer"
                 >
-                  {copied ? (
-                    <ClipboardCheck className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <Clipboard className="w-5 h-5 text-gray-500" />
-                  )}
-                </Button>
-              </div>
-              <p className="text-xs text-gray-400">Invite codes are case-sensitive</p>
-            </div>
-            <DialogFooter className="sm:justify-center">
-              <Button
-                onClick={handleClose}
-                className="w-full sm:w-auto cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-8"
-              >
-                Done
-              </Button>
-            </DialogFooter>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+                  Join existing space
+                </button>
+              </p>
+            )}
+
+            <p className="text-center text-[10px] sm:text-[11px] text-muted-foreground/80 max-w-xs mx-auto leading-normal">
+              By creating a household, you agree to our Shared Space Guidelines.
+            </p>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
-
-export default CreateHouseholdSheet;

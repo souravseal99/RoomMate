@@ -1,3 +1,2 @@
-export * from './ChoreDialog';
-export * from './ChoresGrid';
-export * from './ChoresLayout';
+export { ChoreTimelineCard } from './ChoreTimelineCard';
+export { AddChoreDialog } from './AddChoreDialog';

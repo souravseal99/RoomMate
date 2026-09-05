@@ -3,26 +3,15 @@ import type {
   CreateExpenseRequestType,
   SettlementRequest,
   SettlementResponse,
+  ExpenseResponse,
+  BalancesData,
+  BalanceEntry,
+  OptimizedSettlement,
 } from '@/types/expenseTypes';
 
-export interface BalanceEntry {
-  userId: string;
-  name: string;
-  balance: number;
-}
-
-export interface Settlement {
-  fromUserId: string;
-  fromName: string;
-  toUserId: string;
-  toName: string;
-  amount: number;
-}
-
-export interface BalancesResponse {
-  balances: BalanceEntry[];
-  settlements: Settlement[];
-}
+export type { BalanceEntry, OptimizedSettlement, BalancesData };
+export type Settlement = OptimizedSettlement;
+export type BalancesResponse = BalancesData;
 
 const expenseApi = () => {
   const create = async (requestBody: CreateExpenseRequestType) => {
@@ -30,25 +19,26 @@ const expenseApi = () => {
     return { data, status };
   };
 
-  const fetchByHouseholdId = async (householdId: string | undefined) => {
-    if (!householdId) return;
+  const fetchByHouseholdId = async (
+    householdId: string | undefined
+  ): Promise<ExpenseResponse[] | undefined> => {
+    if (!householdId) return [];
     const { data } = await api.get(`/expense/for/${householdId}`);
-    return data;
+    return data?.data || data || [];
   };
 
   const deleteByExpenseId = async (expenseId: string | undefined) => {
     if (!expenseId) return;
-    const deletedExpenseResp = await api.delete(`/expense/${expenseId}`);
-
-    return deletedExpenseResp;
+    const response = await api.delete(`/expense/${expenseId}`);
+    return response.data;
   };
 
   const fetchBalances = async (
     householdId: string | undefined
-  ): Promise<BalancesResponse | undefined> => {
-    if (!householdId) return;
+  ): Promise<BalancesData | undefined> => {
+    if (!householdId) return { balances: [], settlements: [] };
     const { data } = await api.get(`/expense/for/${householdId}/balances`);
-    return data.data;
+    return data?.data || { balances: [], settlements: [] };
   };
 
   const createSettlement = async (requestBody: SettlementRequest) => {
@@ -59,9 +49,9 @@ const expenseApi = () => {
   const fetchSettlements = async (
     householdId: string | undefined
   ): Promise<SettlementResponse[] | undefined> => {
-    if (!householdId) return;
+    if (!householdId) return [];
     const { data } = await api.get(`/expense/settlement/for/${householdId}`);
-    return data.data;
+    return data?.data || data || [];
   };
 
   return {

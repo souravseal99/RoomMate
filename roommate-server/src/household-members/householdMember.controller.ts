@@ -29,6 +29,18 @@ export class HouseholdMemberController {
     });
   }
 
+  static async getSuggestedMembers(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+
+    const { status, message, data } =
+      await HouseholdMemberService.getSuggestedMembers(userId);
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
   static async leave(request: Request, response: Response) {
     const { householdId } = request.params as { householdId: string };
     const { userId } = getUserFromRequestBody(request);

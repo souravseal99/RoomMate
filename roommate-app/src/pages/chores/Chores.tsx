@@ -1,366 +1,371 @@
-import { useState, useMemo, useEffect } from 'react';
-import { ChoreCard } from '@/components/chores/ChoresLayout';
-import { ChoreDialog } from '@/components/chores/ChoreDialog';
-import { ChoresEmptyState } from '@/components/chores/ChoresEmptyState';
-import HouseholdSelector from '@/components/expenses/HouseholdSelector';
-import type { ChoreItem, ChoreStatus } from '@/types/choreTypes';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Trash2, Edit } from 'lucide-react';
-import { choreApi } from '@/api/choreApi';
-import { toast } from 'sonner';
+import { useState, useMemo } from 'react';
+import { Plus, AlertTriangle, CheckCircle2, Sparkles, User, Users, Clock, Flame } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import {
+  useHouseholdChoresQuery,
+  useToggleChoreMutation,
+  useDeleteChoreMutation,
+} from '@/hooks/queries/useChoreQueries';
+import { ChoreTimelineCard } from '@/components/chores/ChoreTimelineCard';
+import { AddChoreDialog } from '@/components/chores/AddChoreDialog';
+import type { ChoreItem } from '@/types/choreTypes';
 
-function Chores() {
-  const { selectedHousehold } = useHousehold();
-  const [chores, setChores] = useState<ChoreItem[]>([]);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('dueDate');
-  const [loading, setLoading] = useState(false);
-  const [selectedChore, setSelectedChore] = useState<ChoreItem | null>(null);
+type ChoreFilterType = 'MY_CHORES' | 'ALL' | 'TODAY' | 'HIGH_PRIORITY';
 
-  const getChoreStatus = (chore: ChoreItem): ChoreStatus => {
-    if (chore.completed) return 'COMPLETED';
-    if (new Date(chore.nextDue) < new Date()) return 'OVERDUE';
-    return 'PENDING';
-  };
+export function Chores() {
+  const { toast } = useToast();
+  const { name: currentUserName } = useAuth();
+  const { activeHousehold, selectedHousehold } = useHousehold();
+  const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key;
 
-  const filteredAndSortedChores = useMemo(() => {
-    let filtered = chores.filter(
-      (chore) => !selectedHousehold?.key || chore.householdId === selectedHousehold.key
-    );
+  const [filter, setFilter] = useState<ChoreFilterType>('ALL');
+  const [isAddOpen, setIsAddOpen] = useState(false);
 
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter((chore) => {
-        const status = getChoreStatus(chore);
-        return status.toLowerCase() === statusFilter;
+  const { data: chores = [], isLoading, isError } = useHouseholdChoresQuery(activeHouseholdId);
+  const toggleMutation = useToggleChoreMutation();
+  const deleteMutation = useDeleteChoreMutation();
+
+  // Categorize chores into timeline sections
+  const { overdueChores, todayChores, upcomingChores, completedChores } = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Apply active filter
+    let filtered = chores;
+    if (filter === 'MY_CHORES' && currentUserName) {
+      filtered = chores.filter(
+        (c) =>
+          c.assignedToName &&
+          c.assignedToName.toLowerCase() === currentUserName.toLowerCase()
+      );
+    } else if (filter === 'HIGH_PRIORITY') {
+      filtered = chores.filter((c) => c.priority === 'HIGH');
+    }
+
+    const overdue: ChoreItem[] = [];
+    const dueToday: ChoreItem[] = [];
+    const upcoming: ChoreItem[] = [];
+    const completed: ChoreItem[] = [];
+
+    filtered.forEach((chore) => {
+      if (chore.completed) {
+        completed.push(chore);
+        return;
+      }
+
+      const dueDate = new Date(chore.nextDue);
+      dueDate.setHours(0, 0, 0, 0);
+
+      if (dueDate < today) {
+        overdue.push(chore);
+      } else if (dueDate.getTime() === today.getTime() || isNaN(dueDate.getTime())) {
+        dueToday.push(chore);
+      } else {
+        upcoming.push(chore);
+      }
+    });
+
+    if (filter === 'TODAY') {
+      return {
+        overdueChores: overdue,
+        todayChores: dueToday,
+        upcomingChores: [],
+        completedChores: [],
+      };
+    }
+
+    return {
+      overdueChores: overdue,
+      todayChores: dueToday,
+      upcomingChores: upcoming,
+      completedChores: completed,
+    };
+  }, [chores, filter, currentUserName]);
+
+  const handleToggle = async (chore: ChoreItem) => {
+    if (!activeHouseholdId) return;
+    const nextCompleted = !chore.completed;
+    try {
+      await toggleMutation.mutateAsync({
+        choreId: chore.choreId,
+        householdId: activeHouseholdId,
+        updates: { completed: nextCompleted },
+      });
+      toast({
+        title: nextCompleted ? 'Chore Completed! 🎉' : 'Chore Reopened',
+        description: `"${chore.description}" status has been updated.`,
+      });
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to update chore status.',
+        variant: 'destructive',
       });
     }
+  };
 
-    return filtered.sort((a, b) => {
-      if (sortBy === 'dueDate') {
-        return new Date(a.nextDue).getTime() - new Date(b.nextDue).getTime();
-      } else if (sortBy === 'priority') {
-        const priorityOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      } else if (sortBy === 'assignee') {
-        return (a.assignedToName || 'Unassigned').localeCompare(b.assignedToName || 'Unassigned');
-      }
-      return 0;
-    });
-  }, [chores, selectedHousehold?.key, statusFilter, sortBy]);
-
-  useEffect(() => {
-    if (selectedHousehold?.key) {
-      fetchChores();
-    } else {
-      setChores([]);
-    }
-  }, [selectedHousehold?.key]);
-
-  const fetchChores = async () => {
-    if (!selectedHousehold?.key) return;
-    setLoading(true);
+  const handleDelete = async (choreId: string) => {
+    if (!activeHouseholdId) return;
     try {
-      const data = await choreApi.getChoresByHousehold(selectedHousehold.key);
-      setChores(
-        (data || []).map((chore) => ({
-          ...chore,
-          assignedToName: chore.assignedTo?.name || '',
-          priority: chore.priority || 'MEDIUM',
-          notes: chore.notes || '',
-        }))
-      );
-    } catch (error) {
-      console.error('Fetch chores error:', error);
-      toast.error('Failed to fetch chores');
-    } finally {
-      setLoading(false);
+      await deleteMutation.mutateAsync({
+        choreId,
+        householdId: activeHouseholdId,
+      });
+      toast({
+        title: 'Chore Deleted',
+        description: 'Task removed from household board.',
+      });
+    } catch {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete chore.',
+        variant: 'destructive',
+      });
     }
   };
 
-  const handleCreateChore = async (newChore: Partial<ChoreItem>) => {
-    if (!selectedHousehold?.key) {
-      toast.error('Please select a household first');
-      return;
-    }
-    try {
-      const choreData: any = {
-        householdId: selectedHousehold.key,
-        description: newChore.description,
-        frequency: newChore.frequency,
-        priority: newChore.priority || 'MEDIUM',
-        notes: newChore.notes || '',
-        nextDue: newChore.nextDue
-          ? new Date(newChore.nextDue).toLocaleDateString('en-GB')
-          : new Date().toLocaleDateString('en-GB'),
-      };
-
-      if (
-        newChore.assignedToId &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          newChore.assignedToId
-        )
-      ) {
-        choreData.assignedToId = newChore.assignedToId;
-      }
-
-      await choreApi.createChore(choreData);
-      toast.success('Chore created successfully');
-      await fetchChores();
-    } catch (error: any) {
-      console.error('Create chore error:', error?.response?.data);
-      toast.error(
-        error?.response?.data?.errorMessage ||
-          error?.response?.data?.message ||
-          'Failed to create chore'
-      );
-    }
-  };
-
-  const handleUpdateChore = async (updatedChore: Partial<ChoreItem>) => {
-    if (!updatedChore.choreId) return;
-    try {
-      const updateData: any = {
-        description: updatedChore.description,
-        frequency: updatedChore.frequency,
-        priority: updatedChore.priority,
-        notes: updatedChore.notes,
-        completed: updatedChore.completed,
-        nextDue: updatedChore.nextDue
-          ? new Date(updatedChore.nextDue).toLocaleDateString('en-GB')
-          : undefined,
-      };
-
-      if (
-        updatedChore.assignedToId &&
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-          updatedChore.assignedToId
-        )
-      ) {
-        updateData.assignedToId = updatedChore.assignedToId;
-      }
-
-      console.log('Updating chore:', updateData);
-      await choreApi.updateChore(updatedChore.choreId, updateData);
-      toast.success('Chore updated successfully');
-      await fetchChores();
-    } catch (error: any) {
-      console.error('Update error:', error);
-      toast.error(
-        error?.response?.data?.errorMessage ||
-          error?.response?.data?.message ||
-          'Failed to update chore'
-      );
-    }
-  };
-
-  const handleDeleteChore = async (choreId: string) => {
-    try {
-      await choreApi.deleteChore(choreId);
-      toast.success('Chore deleted successfully');
-      fetchChores();
-    } catch (error) {
-      toast.error('Failed to delete chore');
-      console.error(error);
-    }
-  };
-
-  return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Chores Manager</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Organize and track your household chores
-          </p>
-        </div>
-        <ChoreDialog mode="create" onSave={handleCreateChore} />
+  if (!activeHouseholdId) {
+    return (
+      <div className="max-w-md mx-auto md:max-w-4xl py-12 text-center space-y-3">
+        <Sparkles className="w-10 h-10 text-primary mx-auto opacity-70" />
+        <h2 className="text-xl font-extrabold text-foreground">Select a Household</h2>
+        <p className="text-sm text-muted-foreground">
+          Please select or create a household space to view and manage shared chores.
+        </p>
       </div>
+    );
+  }
 
-      <div className="flex flex-col gap-4">
-        <HouseholdSelector />
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-              Filter by Status
-            </label>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full cursor-pointer bg-card border-2">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="cursor-pointer">
-                  📋 All Chores
-                </SelectItem>
-                <SelectItem value="pending" className="cursor-pointer">
-                  ⏳ Pending
-                </SelectItem>
-                <SelectItem value="completed" className="cursor-pointer">
-                  ✅ Completed
-                </SelectItem>
-                <SelectItem value="overdue" className="cursor-pointer">
-                  🔴 Overdue
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex-1">
-            <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
-              Sort by
-            </label>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full cursor-pointer bg-card border-2">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dueDate" className="cursor-pointer">
-                  📅 Due Date
-                </SelectItem>
-                <SelectItem value="priority" className="cursor-pointer">
-                  ⚡ Priority
-                </SelectItem>
-                <SelectItem value="assignee" className="cursor-pointer">
-                  👤 Assignee
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="text-center py-12">Loading chores...</div>
-      ) : !selectedHousehold?.key ? (
-        <div className="text-center py-12 text-muted-foreground">
-          Please select a household to view chores
-        </div>
-      ) : filteredAndSortedChores.length === 0 ? (
-        <ChoresEmptyState />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredAndSortedChores.map((chore) => (
-            <div key={chore.choreId} className="relative">
-              <div onClick={() => setSelectedChore(chore)} className="cursor-pointer">
-                <ChoreCard
-                  title={chore.description}
-                  description={`Frequency: ${chore.frequency}`}
-                  dueDate={new Date(chore.nextDue)}
-                  priority={chore.priority}
-                  status={getChoreStatus(chore)}
-                  assignee={{
-                    name: chore.assignedToName || 'Unassigned',
-                    avatar: undefined,
-                  }}
-                />
-              </div>
-              <div className="absolute bottom-3 right-3 flex gap-1.5">
-                <ChoreDialog mode="edit" chore={chore} onSave={handleUpdateChore} />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 bg-white/90 hover:bg-red-50 cursor-pointer shadow-sm"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-red-600" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Chore</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete this chore? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="border-slate-600 text-black-100 hover:bg-white/3 cursor-pointer">
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDeleteChore(chore.choreId)}
-                        className="bg-red-600 hover:bg-red-700 text-primary-foreground cursor-pointer"
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            </div>
+  if (isLoading) {
+    return (
+      <div className="max-w-md mx-auto md:max-w-4xl py-6 space-y-6">
+        <div className="flex gap-2 overflow-x-auto py-1">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-10 w-28 rounded-full bg-surface-container animate-pulse shrink-0" />
           ))}
         </div>
-      )}
+        <div className="space-y-4 pt-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-20 rounded-2xl bg-surface-container animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-      {selectedChore && (
-        <Dialog open={!!selectedChore} onOpenChange={() => setSelectedChore(null)}>
-          <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold break-words">
-                {selectedChore.description}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Priority</p>
-                  <p className="font-semibold text-sm">{selectedChore.priority || 'MEDIUM'}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Frequency</p>
-                  <p className="font-semibold text-sm capitalize">{selectedChore.frequency}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Due Date</p>
-                  <p className="font-semibold text-sm">
-                    {new Date(selectedChore.nextDue).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Status</p>
-                  <p className="font-semibold text-sm">{getChoreStatus(selectedChore)}</p>
-                </div>
-              </div>
+  if (isError) {
+    return (
+      <div className="max-w-md mx-auto md:max-w-4xl py-8 text-center space-y-3">
+        <p className="text-destructive font-bold text-base">Failed to load household chores.</p>
+        <p className="text-muted-foreground text-xs">Please verify your connection and try again.</p>
+      </div>
+    );
+  }
 
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Assigned To</p>
-                <p className="font-semibold text-sm">
-                  {selectedChore.assignedToName || 'Unassigned'}
+  const totalActiveChores = overdueChores.length + todayChores.length + upcomingChores.length;
+
+  return (
+    <div className="max-w-md mx-auto md:max-w-4xl py-2 space-y-6 relative pb-28">
+      {/* 1. Quick Filter Pills Bar */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 md:mx-0 md:px-0">
+        <button
+          type="button"
+          onClick={() => setFilter('ALL')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
+            filter === 'ALL'
+              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
+              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
+          }`}
+        >
+          <Users className="w-3.5 h-3.5" />
+          <span>All Chores</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilter('MY_CHORES')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
+            filter === 'MY_CHORES'
+              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
+              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
+          }`}
+        >
+          <User className="w-3.5 h-3.5" />
+          <span>My Chores</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilter('TODAY')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
+            filter === 'TODAY'
+              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
+              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
+          }`}
+        >
+          <Clock className="w-3.5 h-3.5" />
+          <span>Today</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setFilter('HIGH_PRIORITY')}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
+            filter === 'HIGH_PRIORITY'
+              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
+              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
+          }`}
+        >
+          <Flame className="w-3.5 h-3.5 text-primary" />
+          <span>High Priority</span>
+        </button>
+      </div>
+
+      {/* 2. Unified Vertical Timeline Stream */}
+      <div className="relative ml-2 sm:ml-4 pl-6 sm:pl-8 border-l-2 border-border/40 space-y-8">
+        {/* Overdue Section */}
+        {overdueChores.length > 0 && (
+          <section className="relative space-y-3">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-destructive shadow-[0_0_0_5px_theme('colors.background')]" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-destructive">
+                Overdue
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">
+                {overdueChores.length} Past Due
+              </span>
+            </div>
+
+            <div className="bg-destructive/10 border border-destructive/20 text-foreground rounded-2xl p-4 flex items-center gap-3">
+              <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-foreground">
+                  {overdueChores.length} Chore{overdueChores.length > 1 ? 's' : ''} Past Due
+                </p>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  {overdueChores.map((c) => c.description).join(', ')}
                 </p>
               </div>
-
-              {selectedChore.notes && (
-                <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground font-semibold">Notes</p>
-                  <div className="text-sm bg-muted p-3 rounded-md whitespace-pre-wrap break-words">
-                    {selectedChore.notes}
-                  </div>
-                </div>
-              )}
             </div>
-          </DialogContent>
-        </Dialog>
+
+            <div className="space-y-3 pt-1">
+              {overdueChores.map((chore) => (
+                <ChoreTimelineCard
+                  key={chore.choreId}
+                  chore={chore}
+                  isOverdue
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Due Today Section */}
+        {todayChores.length > 0 && (
+          <section className="relative space-y-3">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-primary shadow-[0_0_0_5px_theme('colors.background')]" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
+                Today
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                {todayChores.length} Task{todayChores.length > 1 ? 's' : ''}
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {todayChores.map((chore) => (
+                <ChoreTimelineCard
+                  key={chore.choreId}
+                  chore={chore}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Upcoming Section */}
+        {upcomingChores.length > 0 && (
+          <section className="relative space-y-3">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-muted-foreground/60 shadow-[0_0_0_5px_theme('colors.background')]" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
+                Upcoming
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-muted-foreground">
+                {upcomingChores.length} Scheduled
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {upcomingChores.map((chore) => (
+                <ChoreTimelineCard
+                  key={chore.choreId}
+                  chore={chore}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Completed Section */}
+        {completedChores.length > 0 && (
+          <section className="relative space-y-3 opacity-75">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-green-600 shadow-[0_0_0_5px_theme('colors.background')]" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
+                Completed
+              </span>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-600/10 text-green-600">
+                {completedChores.length} Done 🎉
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {completedChores.map((chore) => (
+                <ChoreTimelineCard
+                  key={chore.choreId}
+                  chore={chore}
+                  onToggle={handleToggle}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Empty State */}
+      {totalActiveChores === 0 && completedChores.length === 0 && (
+        <div className="bg-card border border-border rounded-3xl p-10 text-center space-y-3 shadow-xs">
+          <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto opacity-80" />
+          <h3 className="text-lg font-extrabold text-foreground">All Chores Done! ✨</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            Your shared space is in great shape. Tap the plus button to schedule new household chores.
+          </p>
+        </div>
       )}
+
+      {/* 3. Floating Action Button (Add Chore) */}
+      <button
+        type="button"
+        onClick={() => setIsAddOpen(true)}
+        className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 hover:scale-105 transition-all duration-200 z-40 cursor-pointer"
+        aria-label="Add new chore"
+      >
+        <Plus className="w-7 h-7 stroke-[2.5]" />
+      </button>
+
+      {/* Add Chore Dialog */}
+      <AddChoreDialog open={isAddOpen} onOpenChange={setIsAddOpen} />
     </div>
   );
 }

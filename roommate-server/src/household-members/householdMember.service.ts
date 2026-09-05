@@ -54,6 +54,17 @@ export class HouseholdMemberService {
     );
   }
 
+  static async getSuggestedMembers(userId: string) {
+    const suggestedMembers =
+      await HouseholdMemberRepo.getSuggestedCoMembers(userId);
+
+    return ApiResponse.success(
+      { suggestedMembers },
+      "Successfully fetched suggested roommates",
+      StatusCodes.OK,
+    );
+  }
+
   static async leave(userId: string, householdId: string) {
     // Check if user is a member
     const membership = await HouseholdMemberRepo.isExistingUser(

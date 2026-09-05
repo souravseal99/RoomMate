@@ -166,16 +166,16 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
                 <span className="font-medium text-foreground">{balance.name}</span>
                 <span
                   className={`font-semibold ${
-                    balance.netBalance > 0
+                    balance.balance > 0
                       ? 'text-emerald-700 font-bold'
-                      : balance.netBalance < 0
+                      : balance.balance < 0
                         ? 'text-destructive font-bold'
                         : 'text-muted-foreground'
                   }`}
                 >
-                  {balance.netBalance > 0
-                    ? `+${formatCurrency(balance.netBalance)}`
-                    : formatCurrency(balance.netBalance)}
+                  {balance.balance > 0
+                    ? `+${formatCurrency(balance.balance)}`
+                    : formatCurrency(balance.balance)}
                 </span>
               </li>
             ))}

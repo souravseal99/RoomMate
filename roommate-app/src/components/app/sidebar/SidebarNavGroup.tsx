@@ -3,7 +3,7 @@ import type { NavItem } from '@/types/themeTypes';
 
 export type SidebarNavGroupProps = {
   label?: string;
-  items: NavItem[];
+  items: (NavItem & { disabled?: boolean; badgeText?: string })[];
   currentPath: string;
 };
 
@@ -23,7 +23,9 @@ export function SidebarNavGroup({ label, items, currentPath }: SidebarNavGroupPr
             url={item.url}
             iconName={item.iconName}
             badge={item.badge}
+            badgeText={item.badgeText}
             isActive={currentPath === item.url}
+            disabled={item.disabled}
           />
         ))}
       </div>
