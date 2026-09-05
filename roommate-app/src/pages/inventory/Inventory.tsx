@@ -108,11 +108,10 @@ export default function Inventory() {
           <button
             type="button"
             onClick={() => setActiveTab('pantry')}
-            className={`flex-1 py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              activeTab === 'pantry'
+            className={`flex-1 py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${activeTab === 'pantry'
                 ? 'bg-card text-foreground shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             <Package className="w-4 h-4" />
             <span>Pantry Stock</span>
@@ -126,11 +125,10 @@ export default function Inventory() {
           <button
             type="button"
             onClick={() => setActiveTab('shopping')}
-            className={`flex-1 py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              activeTab === 'shopping'
+            className={`flex-1 py-2.5 px-3 text-xs sm:text-sm font-extrabold rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer ${activeTab === 'shopping'
                 ? 'bg-card text-foreground shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             <ShoppingCart className="w-4 h-4" />
             <span>Shopping Cart</span>
@@ -173,33 +171,30 @@ export default function Inventory() {
               <button
                 type="button"
                 onClick={() => setFilterStatus('all')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  filterStatus === 'all'
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${filterStatus === 'all'
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'bg-surface-container text-muted-foreground hover:text-foreground border border-border/40'
-                }`}
+                  }`}
               >
                 All ({inventoryItems.length})
               </button>
               <button
                 type="button"
                 onClick={() => setFilterStatus('low')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  filterStatus === 'low'
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${filterStatus === 'low'
                     ? 'bg-amber-500 text-white shadow-xs'
                     : 'bg-surface-container text-muted-foreground hover:text-foreground border border-border/40'
-                }`}
+                  }`}
               >
                 Running Low ({lowStockCount})
               </button>
               <button
                 type="button"
                 onClick={() => setFilterStatus('out')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  filterStatus === 'out'
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${filterStatus === 'out'
                     ? 'bg-destructive text-destructive-foreground shadow-xs'
                     : 'bg-surface-container text-muted-foreground hover:text-foreground border border-border/40'
-                }`}
+                  }`}
               >
                 Out of Stock ({inventoryItems.filter((i) => i.quantity === 0).length})
               </button>

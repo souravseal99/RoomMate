@@ -1,4 +1,3 @@
-
 import { Minus, Plus, MoreVertical, Trash2, Edit2 } from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
 import {
@@ -79,8 +78,8 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
   const categoryBg = isOutOfStock
     ? 'bg-destructive/10 text-destructive'
     : isRunningLow
-    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-    : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
 
   return (
     <div className="bg-card rounded-2xl p-4 flex items-center justify-between shadow-xs border border-border hover:border-primary/40 transition-all group">

@@ -40,11 +40,10 @@ export default function CreateJoinModal({
             <button
               type="button"
               onClick={() => setActiveTab('create')}
-              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'create'
+              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${activeTab === 'create'
                   ? 'bg-card text-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
-              }`}
+                }`}
             >
               <Plus className="w-3.5 h-3.5" />
               Create Space
@@ -52,11 +51,10 @@ export default function CreateJoinModal({
             <button
               type="button"
               onClick={() => setActiveTab('join')}
-              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                activeTab === 'join'
+              className={`flex-1 py-2 text-xs font-extrabold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer ${activeTab === 'join'
                   ? 'bg-card text-foreground shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
-              }`}
+                }`}
             >
               <KeyRound className="w-3.5 h-3.5" />
               Join Space

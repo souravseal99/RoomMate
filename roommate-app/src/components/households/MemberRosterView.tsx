@@ -225,11 +225,10 @@ export function MemberRosterView({
                           </span>
                         )}
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
-                            isAdmin
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${isAdmin
                               ? 'bg-primary/10 text-primary border border-primary/20'
                               : 'bg-surface-container-highest text-muted-foreground border border-border/40'
-                          }`}
+                            }`}
                         >
                           {member.role}
                         </span>

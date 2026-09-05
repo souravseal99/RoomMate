@@ -115,17 +115,15 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
                     key={name}
                     type="button"
                     onClick={() => handleChipClick(name)}
-                    className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left flex justify-between items-center transition-all cursor-pointer shadow-xs active:scale-95 group ${
-                      isSelected
+                    className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left flex justify-between items-center transition-all cursor-pointer shadow-xs active:scale-95 group ${isSelected
                         ? 'bg-primary/10 border-2 border-primary text-primary'
                         : 'bg-surface-container border border-border text-foreground hover:border-primary/50 hover:bg-surface-container-high'
-                    }`}
+                      }`}
                   >
                     <span className="truncate">{name}</span>
                     <Plus
-                      className={`w-3.5 h-3.5 shrink-0 transition-opacity ${
-                        isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
-                      }`}
+                      className={`w-3.5 h-3.5 shrink-0 transition-opacity ${isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
+                        }`}
                     />
                   </button>
                 );

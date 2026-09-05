@@ -139,8 +139,8 @@ export function useActiveHousehold() {
     isError,
     refetch,
     switchActiveHousehold,
-    setHouseholds: () => {},
-    setHouseholdMembers: () => {},
+    setHouseholds: () => { },
+    setHouseholdMembers: () => { },
     setSelectedHousehold: (opt: any) => {
       const id = typeof opt === 'string' ? opt : opt?.key;
       if (id) switchActiveHousehold(id);

@@ -130,9 +130,8 @@ export default function WeeklyShoppingList({ householdId }: Props) {
                       className="w-5 h-5 rounded-md border-2 border-border text-primary focus:ring-primary/20 cursor-pointer transition-all accent-primary"
                     />
                     <span
-                      className={`text-sm sm:text-base font-bold text-foreground transition-all truncate ${
-                        isChecked ? 'line-through opacity-50 text-muted-foreground' : ''
-                      }`}
+                      className={`text-sm sm:text-base font-bold text-foreground transition-all truncate ${isChecked ? 'line-through opacity-50 text-muted-foreground' : ''
+                        }`}
                     >
                       {item.itemName}
                     </span>
