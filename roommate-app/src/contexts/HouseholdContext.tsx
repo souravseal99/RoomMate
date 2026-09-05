@@ -12,6 +12,7 @@ import { APP_EVENTS } from '@/types/eventTypes';
 const ACTIVE_HOUSEHOLD_STORAGE_KEY = 'roommate_active_household_id';
 
 export type HouseholdContextType = {
+export type HouseholdContextType = {
   households: HouseholdResponse[];
   setHouseholds: (households: HouseholdResponse[]) => void;
   fetchAllHouseholds: () => void;
@@ -133,7 +134,9 @@ export default function HouseholdProvider({
       switchActiveHousehold,
       householdMembers,
       setHouseholdMembers: setLegacyMembers,
+      setHouseholdMembers: setLegacyMembers,
       isLoading,
+      isError,
       isError,
     }),
     [
@@ -153,7 +156,8 @@ export default function HouseholdProvider({
 
   return (
     <HouseholdContext.Provider value={providerValues}>
-      {children}
-    </HouseholdContext.Provider>
-  );
+      <HouseholdContext.Provider value={providerValues}>
+        {children}
+      </HouseholdContext.Provider>
+      );
 }
