@@ -17,13 +17,14 @@ class App {
   }
 
   async start(): Promise<HTTPServer> {
-    // CORS configuration - MUST BE FIRST!
+    /**
+     * CORS Configuration
+     * Must be initialized before routes to ensure preflight requests are handled correctly.
+     * Restricts API access to authorized client origins for local development and production.
+     */
     const allowedOrigins = [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "http://localhost:61481",
-      "http://127.0.0.1:61481",
-      // Add more ports if your frontend uses different ones
+      "http://localhost:5173",               // Local Development
+      "https://roommate-app-phi.vercel.app", // Production Client
     ];
 
     this.app.use(
