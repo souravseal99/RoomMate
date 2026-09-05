@@ -8,7 +8,7 @@ function ErrorPage() {
   return (
     <>
       <div>Page not found</div>
-      <Button variant="link" onClick={handleBackToHome}>
+      <Button variant="outline" onClick={handleBackToHome}>
         Back to Home
       </Button>
     </>

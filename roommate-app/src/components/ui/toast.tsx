@@ -46,6 +46,7 @@ const Toast = React.forwardRef<
   return (
     <ToastPrimitives.Root
       ref={ref}
+      duration={TOAST_AUTO_DISMISS_DURATION}
       className={cn(toastVariants({ variant }), className)}
       {...props}
     />
