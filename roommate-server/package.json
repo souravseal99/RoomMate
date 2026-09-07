@@ -14,6 +14,7 @@
     "start": "ts-node src/server.ts",
     "dev": "nodemon",
     "dev:serve": "nodemon --legacy-watch --watch /app/src --ext ts,js,json --exec \"vite-node src/server.ts\"",
+    "prod:serve": "npx prisma migrate deploy && vite-node src/server.ts",
     "db:migrate": "npx prisma migrate dev",
     "db:studio": "docker compose exec server npx prisma studio",
     "prisma:format": "npx prisma format",
