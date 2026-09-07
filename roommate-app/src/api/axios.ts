@@ -5,7 +5,7 @@ import TokenStore from '@/lib/TokenStore';
 const api = axios.create({
   baseURL: SERVER_BASE_URL,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 60000, // Increased to 60s for Render cold starts
 });
 
 // Attach access token and session ID

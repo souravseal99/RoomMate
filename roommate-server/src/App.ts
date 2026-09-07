@@ -25,6 +25,8 @@ class App {
     const allowedOrigins = [
       "http://localhost:5173",               // Local Development
       "https://roommate-app-phi.vercel.app", // Production Client
+      "https://roommate-app-beta.vercel.app", // Production Client Beta
+      "https://roommate-app-nightly.vercel.app", // Nightly builds
     ];
 
     this.app.use(
