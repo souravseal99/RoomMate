@@ -5,6 +5,8 @@ import { registerUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
 import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
+import { useEffect } from 'react';
+import { pingHealth } from '@/api/healthApi';
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -24,6 +26,10 @@ export default function RegisterPage() {
       alert(e.response?.data?.message ?? 'Registration failed');
     }
   };
+
+  useEffect(() => {
+    pingHealth();
+  }, []);
 
   return <AuthForm mode={AUTH_MODE_REGISTER} onSubmit={onSubmit} />;
 }

@@ -6,6 +6,7 @@ import useAuth from '@/hooks/useAuth';
 import { useEffect } from 'react';
 import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_LOGIN } from '@/schemas/authSchemas';
+import { pingHealth } from '@/api/healthApi';
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -33,6 +34,10 @@ export default function LoginPage() {
       nav('/dashboard');
     }
   }, [isAuthenticated, nav]);
+
+  useEffect(() => {
+    pingHealth();
+  }, []);
 
   return <AuthForm mode={AUTH_MODE_LOGIN} onSubmit={onSubmit} />;
 }
