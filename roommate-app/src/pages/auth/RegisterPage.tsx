@@ -5,12 +5,13 @@ import { registerUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
 import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { pingHealth } from '@/api/healthApi';
 
 export default function RegisterPage() {
   const nav = useNavigate();
   const { login } = useAuth();
+  const [isHealthChecking, setIsHealthChecking] = useState(true);
 
   const onSubmit = async (values: any) => {
     try {
@@ -28,8 +29,17 @@ export default function RegisterPage() {
   };
 
   useEffect(() => {
-    pingHealth();
+    let isMounted = true;
+    pingHealth().finally(() => {
+      if (isMounted) {
+        setIsHealthChecking(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  return <AuthForm mode={AUTH_MODE_REGISTER} onSubmit={onSubmit} />;
+  return <AuthForm mode={AUTH_MODE_REGISTER} onSubmit={onSubmit} isLoading={isHealthChecking} />;
 }

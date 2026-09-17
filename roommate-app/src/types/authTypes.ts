@@ -17,4 +17,5 @@ export interface LoginData {
 export interface AuthFormInputData {
   mode: AuthMode;
   onSubmit: (values: RegisterPayload | LoginPayload) => void;
+  isLoading?: boolean;
 }

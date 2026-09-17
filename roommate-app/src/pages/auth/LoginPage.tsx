@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '../../components/auth/AuthForm';
 import { loginUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_LOGIN } from '@/schemas/authSchemas';
 import { pingHealth } from '@/api/healthApi';
@@ -11,6 +11,7 @@ import { pingHealth } from '@/api/healthApi';
 export default function LoginPage() {
   const nav = useNavigate();
   const { login, isAuthenticated } = useAuth();
+  const [isHealthChecking, setIsHealthChecking] = useState(true);
 
   const onSubmit = async (values: any) => {
     try {
@@ -36,8 +37,17 @@ export default function LoginPage() {
   }, [isAuthenticated, nav]);
 
   useEffect(() => {
-    pingHealth();
+    let isMounted = true;
+    pingHealth().finally(() => {
+      if (isMounted) {
+        setIsHealthChecking(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  return <AuthForm mode={AUTH_MODE_LOGIN} onSubmit={onSubmit} />;
+  return <AuthForm mode={AUTH_MODE_LOGIN} onSubmit={onSubmit} isLoading={isHealthChecking} />;
 }
