@@ -5,9 +5,9 @@ import { loginSchema, registerSchema, AUTH_MODE_REGISTER } from '@/schemas/authS
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Home, Mail, Lock, User, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Home, Mail, Lock, User, CheckCircle2, ShieldCheck, Loader2 } from 'lucide-react';
 
-export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
+export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFormInputData>) {
   const isRegister = mode === AUTH_MODE_REGISTER;
   const schema = isRegister ? registerSchema : loginSchema;
   const form = useForm({
@@ -17,6 +17,7 @@ export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
   });
 
   const navigate = useNavigate();
+  const isPending = isLoading || form.formState.isSubmitting;
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 md:p-8 bg-background text-foreground font-sans relative">
@@ -116,31 +117,48 @@ export function AuthForm({ mode, onSubmit }: Readonly<AuthFormInputData>) {
                   </p>
                 )}
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg py-2 transition-colors cursor-pointer">
-                {isRegister ? 'Create Account' : 'Sign In'}
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg py-2 transition-colors cursor-pointer"
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Please wait
+                  </>
+                ) : (
+                  isRegister ? 'Create Account' : 'Sign In'
+                )}
               </Button>
             </form>
-            <div className="mt-5 text-center text-xs text-muted-foreground">
+            <div className="mt-5 text-center text-xs text-muted-foreground flex items-center justify-center">
               {isRegister ? (
-                <>
+                <span>
                   Already have an account?{' '}
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => navigate('/login')}
-                    className="font-semibold text-primary hover:underline cursor-pointer ml-1"
+                    className="font-semibold text-primary hover:underline hover:bg-transparent cursor-pointer h-auto p-0 inline font-inherit"
                   >
                     Sign In
-                  </button>
-                </>
+                  </Button>
+                </span>
               ) : (
-                <>
+                <span>
                   Don't have an account?{' '}
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => navigate('/register')}
-                    className="font-semibold text-primary hover:underline cursor-pointer ml-1"
+                    className="font-semibold text-primary hover:underline hover:bg-transparent cursor-pointer h-auto p-0 inline font-inherit"
                   >
                     Sign Up
-                  </button>
-                </>
+                  </Button>
+                </span>
               )}
             </div>
           </CardContent>
