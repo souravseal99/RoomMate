@@ -148,7 +148,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
                 key={preset.label}
                 type="button"
                 onClick={() => handleSelectPreset(preset.label)}
-                className="px-3 py-1 text-xs font-semibold rounded-full bg-surface-container hover:bg-surface-container-high text-foreground border border-border/50 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+                className="min-h-[44px] px-3.5 py-2 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border border-border/60 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <span>{preset.emoji}</span>
                 <span>{preset.label}</span>
@@ -167,7 +167,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               id="description"
               placeholder="e.g., Clean living room whiteboard"
               {...register('description')}
-              className={`bg-surface-container border-border rounded-xl ${
+              className={`min-h-[44px] bg-surface-container border-border rounded-xl ${
                 errors.description ? 'border-destructive' : ''
               }`}
             />
@@ -187,7 +187,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               <button
                 type="button"
                 onClick={() => setSelectedAssignee('')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                className={`min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer active:scale-95 ${
                   selectedAssignee === ''
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-surface-container text-muted-foreground border-border hover:text-foreground'
@@ -207,13 +207,13 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
                     key={memberId}
                     type="button"
                     onClick={() => setSelectedAssignee(memberId)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                    className={`min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer active:scale-95 ${
                       isSelected
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-surface-container text-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
-                    <span className="w-4 h-4 rounded-full bg-surface text-[10px] font-bold flex items-center justify-center border">
+                    <span className="w-5 h-5 rounded-full bg-surface text-[10px] font-bold flex items-center justify-center border">
                       {getInitials(memberName)}
                     </span>
                     <span className="truncate max-w-[90px]">{memberName}</span>

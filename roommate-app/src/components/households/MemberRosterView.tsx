@@ -132,7 +132,7 @@ export function MemberRosterView({
             <button
               type="button"
               onClick={onBack}
-              className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer active:scale-95"
+              className="min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer active:scale-95"
               aria-label="Back"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -248,7 +248,7 @@ export function MemberRosterView({
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface transition-colors cursor-pointer active:scale-95 shrink-0"
+                        className="min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer active:scale-95 shrink-0"
                         aria-label="Member options"
                       >
                         <MoreVertical className="w-4 h-4" />
@@ -323,7 +323,7 @@ export function MemberRosterView({
                   size="sm"
                   variant="outline"
                   onClick={handleCopyCode}
-                  className="h-7 text-[10px] font-bold px-2 border-border bg-surface hover:bg-surface-container shrink-0 cursor-pointer"
+                  className="min-h-[36px] text-[10px] font-bold px-2.5 border-border bg-surface hover:bg-surface-container shrink-0 cursor-pointer"
                 >
                   Share Code
                 </Button>
@@ -361,7 +361,8 @@ export function MemberRosterView({
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="p-2 rounded-lg hover:bg-surface-container text-foreground transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
+                aria-label="Copy Invite Code"
+                className="min-w-[44px] min-h-[44px] rounded-lg hover:bg-surface-container text-foreground transition-colors flex items-center justify-center cursor-pointer active:scale-95"
                 title="Copy Invite Code"
               >
                 {copiedCode ? (
@@ -377,7 +378,7 @@ export function MemberRosterView({
               <Button
                 variant="outline"
                 onClick={handleCopyLink}
-                className="h-10 text-xs font-bold border-border bg-surface-container-low hover:bg-surface-container text-foreground flex items-center justify-center gap-2 cursor-pointer active:scale-98 rounded-xl shadow-xs"
+                className="min-h-[44px] text-xs font-bold border-border bg-surface-container-low hover:bg-surface-container text-foreground flex items-center justify-center gap-2 cursor-pointer active:scale-98 rounded-xl shadow-xs"
               >
                 {copiedLink ? <Check className="w-3.5 h-3.5 text-primary" /> : <LinkIcon className="w-3.5 h-3.5" />}
                 Copy Link
@@ -385,7 +386,7 @@ export function MemberRosterView({
 
               <Button
                 onClick={handleNativeShare}
-                className="h-10 text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-2 cursor-pointer active:scale-98 rounded-xl shadow-xs"
+                className="min-h-[44px] text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center gap-2 cursor-pointer active:scale-98 rounded-xl shadow-xs"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 Share

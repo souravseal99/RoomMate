@@ -1,90 +1,156 @@
 import { useState, useMemo } from 'react';
-import { Plus, AlertTriangle, CheckCircle2, Sparkles, User, Users, Clock, Flame } from 'lucide-react';
+import { Plus, Sparkles, AlertCircle } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
 import useAuth from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import {
   useHouseholdChoresQuery,
   useToggleChoreMutation,
   useDeleteChoreMutation,
+  useCreateChoreMutation,
 } from '@/hooks/queries/useChoreQueries';
-import { ChoreTimelineCard } from '@/components/chores/ChoreTimelineCard';
-import { AddChoreDialog } from '@/components/chores/AddChoreDialog';
-import type { ChoreItem } from '@/types/choreTypes';
-
-type ChoreFilterType = 'MY_CHORES' | 'ALL' | 'TODAY' | 'HIGH_PRIORITY';
+import {
+  ChoresSubHeader,
+  HarmonyHealthMeter,
+  type ChoreFilterOption,
+  OverdueUrgencyAlert,
+  WhiteboardTimelineBoard,
+  FastTaskCreatorDock,
+  FridgeMagnetStandings,
+  SwapDutyModal,
+  DutyCharterModal,
+  AddChoreDialog,
+} from '@/components/chores';
+import type { ChoreItem, ChoreFrequency, ChorePriority } from '@/types/choreTypes';
 
 export function Chores() {
-  const { toast } = useToast();
-  const { name: currentUserName } = useAuth();
-  const { activeHousehold, selectedHousehold } = useHousehold();
-  const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key;
+  const { name: currentUserName = 'Sourav' } = useAuth();
+  const { activeHousehold, selectedHousehold, members = [] } = useHousehold();
+  const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key || '';
 
-  const [filter, setFilter] = useState<ChoreFilterType>('ALL');
-  const [isAddOpen, setIsAddOpen] = useState(false);
+  // Filter & Dialog States
+  const [filter, setFilter] = useState<ChoreFilterOption>('all');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isDutyCharterOpen, setIsDutyCharterOpen] = useState(false);
+  const [swapModalChore, setSwapModalChore] = useState<ChoreItem | null>(null);
 
+  // Queries & Mutations
   const { data: chores = [], isLoading, isError } = useHouseholdChoresQuery(activeHouseholdId);
   const toggleMutation = useToggleChoreMutation();
   const deleteMutation = useDeleteChoreMutation();
+  const createMutation = useCreateChoreMutation();
 
-  // Categorize chores into timeline sections
-  const { overdueChores, todayChores, upcomingChores, completedChores } = useMemo(() => {
+  // Cycle range display (computed from current week)
+  const cycleRange = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now);
+    start.setDate(now.getDate() - now.getDay() + 1); // Monday
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6); // Sunday
+
+    const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `Cycle ${fmt(start)} – ${fmt(end)}`;
+  }, []);
+
+  // Filter count metrics
+  const {
+    allCount,
+    mineCount,
+    todayCount,
+    urgentCount,
+    completedCount,
+    totalCount,
+    overdueChores,
+    filteredTodayChores,
+    filteredUpcomingChores,
+    filteredCompletedChores,
+  } = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Apply active filter
-    let filtered = chores;
-    if (filter === 'MY_CHORES' && currentUserName) {
-      filtered = chores.filter(
-        (c) =>
-          c.assignedToName &&
-          c.assignedToName.toLowerCase() === currentUserName.toLowerCase()
+    const isToday = (dateStr: string) => {
+      try {
+        const d = new Date(dateStr);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime() === today.getTime() || isNaN(d.getTime());
+      } catch {
+        return true;
+      }
+    };
+
+    const isPastDue = (dateStr: string) => {
+      try {
+        const d = new Date(dateStr);
+        d.setHours(0, 0, 0, 0);
+        return d < today;
+      } catch {
+        return false;
+      }
+    };
+
+    const isMe = (chore: ChoreItem) => {
+      if (!chore.assignedToName) return false;
+      return (
+        chore.assignedToName.toLowerCase() === currentUserName.toLowerCase() ||
+        chore.assignedToName.toLowerCase().includes('you')
       );
-    } else if (filter === 'HIGH_PRIORITY') {
+    };
+
+    // Raw metrics
+    const all = chores.length;
+    const mine = chores.filter((c) => !c.completed && isMe(c)).length;
+    const dueToday = chores.filter((c) => !c.completed && isToday(c.nextDue)).length;
+    const urgent = chores.filter((c) => !c.completed && c.priority === 'HIGH').length;
+    const completed = chores.filter((c) => c.completed).length;
+
+    // Filter application
+    let filtered = chores;
+    if (filter === 'mine') {
+      filtered = chores.filter((c) => isMe(c));
+    } else if (filter === 'today') {
+      filtered = chores.filter((c) => isToday(c.nextDue) || isPastDue(c.nextDue));
+    } else if (filter === 'urgent') {
       filtered = chores.filter((c) => c.priority === 'HIGH');
     }
 
-    const overdue: ChoreItem[] = [];
-    const dueToday: ChoreItem[] = [];
-    const upcoming: ChoreItem[] = [];
-    const completed: ChoreItem[] = [];
+    const overdueList: ChoreItem[] = [];
+    const todayList: ChoreItem[] = [];
+    const upcomingList: ChoreItem[] = [];
+    const completedList: ChoreItem[] = [];
 
+    // Bucket filtered chores
     filtered.forEach((chore) => {
       if (chore.completed) {
-        completed.push(chore);
-        return;
-      }
-
-      const dueDate = new Date(chore.nextDue);
-      dueDate.setHours(0, 0, 0, 0);
-
-      if (dueDate < today) {
-        overdue.push(chore);
-      } else if (dueDate.getTime() === today.getTime() || isNaN(dueDate.getTime())) {
-        dueToday.push(chore);
+        completedList.push(chore);
+      } else if (isPastDue(chore.nextDue)) {
+        overdueList.push(chore);
+        todayList.push(chore); // Group overdue into today's action block for attention
+      } else if (isToday(chore.nextDue)) {
+        todayList.push(chore);
       } else {
-        upcoming.push(chore);
+        upcomingList.push(chore);
       }
     });
 
-    if (filter === 'TODAY') {
-      return {
-        overdueChores: overdue,
-        todayChores: dueToday,
-        upcomingChores: [],
-        completedChores: [],
-      };
-    }
+    // Compute separate global overdue for alert banner regardless of active filter
+    const globalOverdue = chores.filter((c) => !c.completed && isPastDue(c.nextDue));
 
     return {
-      overdueChores: overdue,
-      todayChores: dueToday,
-      upcomingChores: upcoming,
-      completedChores: completed,
+      allCount: all,
+      mineCount: mine,
+      todayCount: dueToday,
+      urgentCount: urgent,
+      completedCount: completed,
+      totalCount: all,
+      overdueChores: globalOverdue,
+      filteredTodayChores: todayList,
+      filteredUpcomingChores: upcomingList,
+      filteredCompletedChores: completedList,
     };
   }, [chores, filter, currentUserName]);
 
-  const handleToggle = async (chore: ChoreItem) => {
+  // Actions
+  const handleToggleChore = async (chore: ChoreItem) => {
     if (!activeHouseholdId) return;
     const nextCompleted = !chore.completed;
     try {
@@ -93,46 +159,91 @@ export function Chores() {
         householdId: activeHouseholdId,
         updates: { completed: nextCompleted },
       });
-      toast({
-        title: nextCompleted ? 'Chore Completed! 🎉' : 'Chore Reopened',
-        description: `"${chore.description}" status has been updated.`,
-      });
+      if (nextCompleted) {
+        toast.success(`Chore completed! 🎉 (+15 Karma credited)`);
+      } else {
+        toast.info(`Chore reopened`);
+      }
     } catch {
-      toast({
-        title: 'Error',
-        description: 'Failed to update chore status.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update chore status');
     }
   };
 
-  const handleDelete = async (choreId: string) => {
+  const handleDeleteChore = async (choreId: string) => {
     if (!activeHouseholdId) return;
     try {
       await deleteMutation.mutateAsync({
         choreId,
         householdId: activeHouseholdId,
       });
-      toast({
-        title: 'Chore Deleted',
-        description: 'Task removed from household board.',
-      });
+      toast.success('Chore removed from household board');
     } catch {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete chore.',
-        variant: 'destructive',
+      toast.error('Failed to delete chore');
+    }
+  };
+
+  const handlePinFastTask = async (task: {
+    description: string;
+    assignedToId: string | null;
+    assignedToName: string;
+    frequency: ChoreFrequency;
+    priority: ChorePriority;
+    nextDue: string;
+  }) => {
+    if (!activeHouseholdId) {
+      toast.error('Please select an active household');
+      return;
+    }
+
+    try {
+      await createMutation.mutateAsync({
+        description: task.description,
+        assignedToId: task.assignedToId,
+        frequency: task.frequency,
+        priority: task.priority,
+        nextDue: task.nextDue,
+        completed: false,
+        householdId: activeHouseholdId,
+        notes: `Pinned to whiteboard by ${currentUserName}`,
       });
+      toast.success(`Pinned "${task.description}" to the household board! 📌`);
+    } catch {
+      toast.error('Failed to pin chore to the board');
+    }
+  };
+
+  const handleSendNudge = (chore: ChoreItem) => {
+    const name = chore.assignedToName || 'Flatmate';
+    toast.success(`Friendly reminder sent to ${name} for "${chore.description}"! 🔔`);
+  };
+
+  const handleConfirmSwap = (chore: ChoreItem, targetFlatmateName: string) => {
+    toast.success(`Swap request proposed to ${targetFlatmateName} for "${chore.description}"! ⇄`);
+  };
+
+  const handleTakeOverChore = async (chore: ChoreItem) => {
+    if (!activeHouseholdId) return;
+    try {
+      await toggleMutation.mutateAsync({
+        choreId: chore.choreId,
+        householdId: activeHouseholdId,
+        updates: {
+          assignedToId: null, // Assign to current user
+        },
+      });
+      toast.success(`You took over "${chore.description}"! (+10 Karma credited)`);
+    } catch {
+      toast.error('Failed to take over chore');
     }
   };
 
   if (!activeHouseholdId) {
     return (
-      <div className="max-w-md mx-auto md:max-w-4xl py-12 text-center space-y-3">
+      <div className="max-w-md mx-auto md:max-w-4xl py-16 text-center space-y-3">
         <Sparkles className="w-10 h-10 text-primary mx-auto opacity-70" />
         <h2 className="text-xl font-extrabold text-foreground">Select a Household</h2>
         <p className="text-sm text-muted-foreground">
-          Please select or create a household space to view and manage shared chores.
+          Please select or join a household space to access the shared chores whiteboard.
         </p>
       </div>
     );
@@ -140,16 +251,11 @@ export function Chores() {
 
   if (isLoading) {
     return (
-      <div className="max-w-md mx-auto md:max-w-4xl py-6 space-y-6">
-        <div className="flex gap-2 overflow-x-auto py-1">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-10 w-28 rounded-full bg-surface-container animate-pulse shrink-0" />
-          ))}
-        </div>
-        <div className="space-y-4 pt-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-2xl bg-surface-container animate-pulse" />
-          ))}
+      <div className="w-full space-y-6 py-6 max-w-7xl mx-auto">
+        <div className="h-14 w-full rounded-2xl bg-surface-container animate-pulse" />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-8 h-96 rounded-2xl bg-surface-container animate-pulse" />
+          <div className="lg:col-span-4 h-96 rounded-2xl bg-surface-container animate-pulse" />
         </div>
       </div>
     );
@@ -157,217 +263,106 @@ export function Chores() {
 
   if (isError) {
     return (
-      <div className="max-w-md mx-auto md:max-w-4xl py-8 text-center space-y-3">
+      <div className="w-full py-12 text-center space-y-3 max-w-md mx-auto">
+        <AlertCircle className="w-8 h-8 text-destructive mx-auto" />
         <p className="text-destructive font-bold text-base">Failed to load household chores.</p>
         <p className="text-muted-foreground text-xs">Please verify your connection and try again.</p>
       </div>
     );
   }
 
-  const totalActiveChores = overdueChores.length + todayChores.length + upcomingChores.length;
-
   return (
-    <div className="max-w-md mx-auto md:max-w-4xl py-2 space-y-6 relative pb-28">
-      {/* 1. Quick Filter Pills Bar */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 md:mx-0 md:px-0">
-        <button
-          type="button"
-          onClick={() => setFilter('ALL')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
-            filter === 'ALL'
-              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
-              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>All Chores</span>
-        </button>
+    <div className="w-full space-y-6 pb-28 animate-in fade-in duration-300">
+      {/* 1. Header Sub-bar & Context Bar */}
+      <ChoresSubHeader
+        cycleRange={cycleRange}
+        onOpenDutyCharter={() => setIsDutyCharterOpen(true)}
+        onOpenAddChore={() => setIsAddDialogOpen(true)}
+      />
 
-        <button
-          type="button"
-          onClick={() => setFilter('MY_CHORES')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
-            filter === 'MY_CHORES'
-              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
-              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
-          }`}
-        >
-          <User className="w-3.5 h-3.5" />
-          <span>My Chores</span>
-        </button>
+      {/* 2. Zero-Guilt Filter Bar & Harmony Health Meter */}
+      <HarmonyHealthMeter
+        activeFilter={filter}
+        onFilterChange={setFilter}
+        allCount={allCount}
+        mineCount={mineCount}
+        todayCount={todayCount}
+        urgentCount={urgentCount}
+        completedCount={completedCount}
+        totalCount={totalCount}
+      />
 
-        <button
-          type="button"
-          onClick={() => setFilter('TODAY')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
-            filter === 'TODAY'
-              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
-              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
-          }`}
-        >
-          <Clock className="w-3.5 h-3.5" />
-          <span>Today</span>
-        </button>
+      {/* 3. Overdue Gentle Urgency Alert Banner */}
+      <OverdueUrgencyAlert
+        overdueChores={overdueChores}
+        onSendNudge={handleSendNudge}
+      />
 
-        <button
-          type="button"
-          onClick={() => setFilter('HIGH_PRIORITY')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full font-bold text-xs whitespace-nowrap transition-all cursor-pointer active:scale-95 ${
-            filter === 'HIGH_PRIORITY'
-              ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-100'
-              : 'bg-surface-container text-foreground border border-border/50 hover:bg-surface-container-high'
-          }`}
-        >
-          <Flame className="w-3.5 h-3.5 text-primary" />
-          <span>High Priority</span>
-        </button>
-      </div>
-
-      {/* 2. Unified Vertical Timeline Stream */}
-      <div className="relative ml-2 sm:ml-4 pl-6 sm:pl-8 border-l-2 border-border/40 space-y-8">
-        {/* Overdue Section */}
-        {overdueChores.length > 0 && (
-          <section className="relative space-y-3">
-            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-destructive shadow-[0_0_0_5px_theme('colors.background')]" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-destructive">
-                Overdue
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">
-                {overdueChores.length} Past Due
-              </span>
-            </div>
-
-            <div className="bg-destructive/10 border border-destructive/20 text-foreground rounded-2xl p-4 flex items-center gap-3">
-              <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-foreground">
-                  {overdueChores.length} Chore{overdueChores.length > 1 ? 's' : ''} Past Due
-                </p>
-                <p className="text-[11px] text-muted-foreground truncate">
-                  {overdueChores.map((c) => c.description).join(', ')}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-1">
-              {overdueChores.map((chore) => (
-                <ChoreTimelineCard
-                  key={chore.choreId}
-                  chore={chore}
-                  isOverdue
-                  onToggle={handleToggle}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Due Today Section */}
-        {todayChores.length > 0 && (
-          <section className="relative space-y-3">
-            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-primary shadow-[0_0_0_5px_theme('colors.background')]" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-primary">
-                Today
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                {todayChores.length} Task{todayChores.length > 1 ? 's' : ''}
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {todayChores.map((chore) => (
-                <ChoreTimelineCard
-                  key={chore.choreId}
-                  chore={chore}
-                  onToggle={handleToggle}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Upcoming Section */}
-        {upcomingChores.length > 0 && (
-          <section className="relative space-y-3">
-            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-muted-foreground/60 shadow-[0_0_0_5px_theme('colors.background')]" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
-                Upcoming
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-surface-container text-muted-foreground">
-                {upcomingChores.length} Scheduled
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {upcomingChores.map((chore) => (
-                <ChoreTimelineCard
-                  key={chore.choreId}
-                  chore={chore}
-                  onToggle={handleToggle}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Completed Section */}
-        {completedChores.length > 0 && (
-          <section className="relative space-y-3 opacity-75">
-            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-3.5 h-3.5 rounded-full bg-green-600 shadow-[0_0_0_5px_theme('colors.background')]" />
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
-                Completed
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-600/10 text-green-600">
-                {completedChores.length} Done 🎉
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {completedChores.map((chore) => (
-                <ChoreTimelineCard
-                  key={chore.choreId}
-                  chore={chore}
-                  onToggle={handleToggle}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-
-      {/* Empty State */}
-      {totalActiveChores === 0 && completedChores.length === 0 && (
-        <div className="bg-card border border-border rounded-3xl p-10 text-center space-y-3 shadow-xs">
-          <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto opacity-80" />
-          <h3 className="text-lg font-extrabold text-foreground">All Chores Done! ✨</h3>
-          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-            Your shared space is in great shape. Tap the plus button to schedule new household chores.
-          </p>
+      {/* 4. Bento Core Grid: 2-Column Split (66% Left / 34% Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Chronological Timeline Board (8 cols desktop) */}
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <WhiteboardTimelineBoard
+            todayChores={filteredTodayChores}
+            upcomingChores={filteredUpcomingChores}
+            completedChores={filteredCompletedChores}
+            currentUserName={currentUserName}
+            onToggleChore={handleToggleChore}
+            onDeleteChore={handleDeleteChore}
+            onRequestSwap={(chore) => setSwapModalChore(chore)}
+            onTakeOverChore={handleTakeOverChore}
+          />
         </div>
-      )}
 
-      {/* 3. Floating Action Button (Add Chore) */}
+        {/* Right Column: Fast Task Creation & Fridge Standings (4 cols desktop) */}
+        <div className="lg:col-span-4 flex flex-col gap-6">
+          <FastTaskCreatorDock
+            currentUserName={currentUserName}
+            members={members.map((m: any) => ({
+              id: m.userId || m.id,
+              name: m.name || m.user?.name || 'Flatmate',
+            }))}
+            isSubmitting={createMutation.isPending}
+            onPinTask={handlePinFastTask}
+          />
+
+          <FridgeMagnetStandings
+            currentUserName={currentUserName}
+            chores={chores}
+            onOpenDutyCharter={() => setIsDutyCharterOpen(true)}
+          />
+        </div>
+      </div>
+
+      {/* Mobile Floating Action Button (FAB) */}
       <button
         type="button"
-        onClick={() => setIsAddOpen(true)}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center active:scale-90 hover:scale-105 transition-all duration-200 z-40 cursor-pointer"
-        aria-label="Add new chore"
+        onClick={() => setIsAddDialogOpen(true)}
+        aria-label="Add new household chore"
+        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
       >
-        <Plus className="w-7 h-7 stroke-[2.5]" />
+        <Plus className="w-7 h-7 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
       </button>
 
-      {/* Add Chore Dialog */}
-      <AddChoreDialog open={isAddOpen} onOpenChange={setIsAddOpen} />
+      {/* Interactive Modals */}
+      <SwapDutyModal
+        open={!!swapModalChore}
+        chore={swapModalChore}
+        onClose={() => setSwapModalChore(null)}
+        onConfirmSwap={handleConfirmSwap}
+      />
+
+      <DutyCharterModal
+        open={isDutyCharterOpen}
+        onClose={() => setIsDutyCharterOpen(false)}
+      />
+
+      <AddChoreDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        householdId={activeHouseholdId}
+      />
     </div>
   );
 }
-
 export default Chores;

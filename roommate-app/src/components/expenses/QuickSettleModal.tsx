@@ -158,8 +158,8 @@ export function QuickSettleModal({
               Settlement Amount
             </Label>
             <div className="relative">
-              <span className="absolute left-3.5 top-2.5 text-lg font-bold text-muted-foreground">
-                ₹
+              <span className="absolute left-3.5 top-2.5 text-lg font-bold text-muted-foreground font-mono">
+                $
               </span>
               <Input
                 type="number"
@@ -167,7 +167,7 @@ export function QuickSettleModal({
                 placeholder="0.00"
                 value={amount || ''}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="pl-8 text-xl font-extrabold bg-surface-container-low border-input text-foreground h-12 focus-visible:ring-primary"
+                className="pl-8 text-xl font-extrabold font-mono tabular-nums bg-surface-container-low border-input text-foreground h-12 focus-visible:ring-primary"
                 required
               />
             </div>
@@ -178,16 +178,16 @@ export function QuickSettleModal({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border-border text-foreground font-semibold text-xs"
+              className="border-border text-foreground font-semibold text-xs min-h-[44px]"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={createSettlementMutation.isPending || amount <= 0 || !toUserId}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs uppercase tracking-wider px-5 cursor-pointer shadow-xs active:scale-98"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs uppercase tracking-wider px-5 cursor-pointer shadow-xs active:scale-95 min-h-[44px]"
             >
-              {createSettlementMutation.isPending ? 'Recording...' : 'Record Payment'}
+              {createSettlementMutation.isPending ? 'Recording Settlement...' : 'Record Payment'}
             </Button>
           </DialogFooter>
         </form>

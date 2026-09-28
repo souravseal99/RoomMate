@@ -74,7 +74,8 @@ export function OtherSpaceCard({
       <button
         type="button"
         title="Switch to this Space"
-        className="w-10 h-10 rounded-full flex items-center justify-center text-muted-foreground bg-surface group-hover:bg-primary/10 group-hover:text-primary transition-colors border border-border shadow-xs shrink-0 active:scale-95 cursor-pointer ml-3"
+        aria-label="Switch to this Space"
+        className="min-w-[44px] min-h-[44px] rounded-xl flex items-center justify-center text-muted-foreground bg-surface group-hover:bg-primary/10 group-hover:text-primary transition-colors border border-border shadow-xs shrink-0 active:scale-95 cursor-pointer ml-3"
       >
         <ArrowRightLeft className="w-4 h-4" />
       </button>

@@ -122,18 +122,18 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
       {/* Right: Stepper Controls & Context Menu */}
       <div className="flex items-center gap-2 shrink-0">
         {/* Stepper Pill */}
-        <div className="flex items-center gap-1.5 bg-surface-container rounded-xl p-1 shadow-2xs border border-border/40">
+        <div className="flex items-center gap-1 bg-surface-container rounded-xl p-1 shadow-2xs border border-border/40">
           <button
             type="button"
             onClick={handleDecrement}
             disabled={item.quantity === 0 || updateMutation.isPending}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-foreground font-bold shadow-2xs active:scale-90 transition-all cursor-pointer disabled:opacity-40"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-foreground font-bold shadow-2xs active:scale-90 transition-all cursor-pointer disabled:opacity-40"
             aria-label="Decrease quantity"
           >
             <Minus className="w-4 h-4" />
           </button>
 
-          <span className="w-7 sm:w-8 text-center font-extrabold text-base sm:text-lg text-foreground tabular-nums">
+          <span className="w-7 sm:w-8 text-center font-extrabold text-base sm:text-lg text-foreground tabular-nums font-mono">
             {item.quantity}
           </span>
 
@@ -141,7 +141,7 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
             type="button"
             onClick={handleIncrement}
             disabled={updateMutation.isPending}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-primary font-bold shadow-2xs active:scale-90 transition-all cursor-pointer"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-primary font-bold shadow-2xs active:scale-90 transition-all cursor-pointer"
             aria-label="Increase quantity"
           >
             <Plus className="w-4 h-4" />
@@ -153,7 +153,7 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer"
+              className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer active:scale-95"
               aria-label="More options"
             >
               <MoreVertical className="w-4 h-4" />

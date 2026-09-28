@@ -7,3 +7,9 @@ export {
   InventoryPantrySkeleton,
   InventoryShoppingSkeleton,
 } from './InventorySkeletons';
+
+// Stitch-aligned pantry and shared cart hub components
+export { PantrySubHeader } from './PantrySubHeader';
+export { RestockCommandApron } from './RestockCommandApron';
+export { CommunalPantryShelf } from './CommunalPantryShelf';
+export { InStoreShoppingCard } from './InStoreShoppingCard';

@@ -120,23 +120,24 @@ export default function WeeklyShoppingList({ householdId }: Props) {
               return (
                 <div
                   key={item.shoppingCartId}
-                  className="pt-3 first:pt-0 flex items-center justify-between gap-3 group"
+                  className="pt-3 first:pt-0 flex items-center justify-between gap-3 group min-h-[48px]"
                 >
-                  <label className="flex items-center gap-3 cursor-pointer flex-1 min-w-0">
+                  <label className="flex items-center gap-3 cursor-pointer flex-1 min-w-0 min-h-[44px]">
                     <input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => toggleCheck(item.shoppingCartId)}
-                      className="w-5 h-5 rounded-md border-2 border-border text-primary focus:ring-primary/20 cursor-pointer transition-all accent-primary"
+                      className="w-5 h-5 rounded-md border-2 border-border text-primary focus:ring-primary/20 cursor-pointer transition-all accent-primary shrink-0"
                     />
                     <span
-                      className={`text-sm sm:text-base font-bold text-foreground transition-all truncate ${isChecked ? 'line-through opacity-50 text-muted-foreground' : ''
-                        }`}
+                      className={`text-sm sm:text-base font-bold text-foreground transition-all truncate ${
+                        isChecked ? 'line-through opacity-50 text-muted-foreground' : ''
+                      }`}
                     >
                       {item.itemName}
                     </span>
                     {item.quantity > 1 && (
-                      <span className="text-xs font-extrabold text-muted-foreground bg-surface-container px-2 py-0.5 rounded-md">
+                      <span className="text-xs font-mono font-extrabold text-muted-foreground bg-surface-container px-2 py-0.5 rounded-md shrink-0">
                         x{item.quantity}
                       </span>
                     )}
@@ -146,7 +147,7 @@ export default function WeeklyShoppingList({ householdId }: Props) {
                     type="button"
                     onClick={() => handleDeleteItem(item.shoppingCartId)}
                     disabled={deleteMutation.isPending}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer opacity-80 group-hover:opacity-100"
+                    className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer opacity-80 group-hover:opacity-100 active:scale-95 shrink-0"
                     aria-label="Remove item"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -163,13 +164,13 @@ export default function WeeklyShoppingList({ householdId }: Props) {
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             placeholder="Add an item (e.g. Dishwasher pods)..."
-            className="flex-1 bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+            className="flex-1 bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary h-11"
             disabled={addMutation.isPending}
           />
           <Button
             type="submit"
             disabled={!newItemName.trim() || addMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 rounded-xl cursor-pointer"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-5 h-11 rounded-xl cursor-pointer active:scale-95 shadow-xs"
           >
             {addMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />

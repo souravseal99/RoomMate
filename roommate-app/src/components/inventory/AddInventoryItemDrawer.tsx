@@ -140,7 +140,7 @@ export default function AddInventoryItemDrawer({
                       const cleanName = preset.split(' ')[0];
                       form.setValue('name', cleanName);
                     }}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface-container hover:bg-surface-container-high border border-border text-foreground transition-all cursor-pointer active:scale-95"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-surface-container hover:bg-surface-container-high border border-border text-foreground transition-all cursor-pointer active:scale-95 flex items-center"
                   >
                     {preset}
                   </button>
@@ -156,13 +156,13 @@ export default function AddInventoryItemDrawer({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                       Item Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g. Whole Milk"
-                        className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                        className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary h-11"
                         disabled={isPending}
                         {...field}
                       />
@@ -178,14 +178,14 @@ export default function AddInventoryItemDrawer({
                   name="quantity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                         Current Qty
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                          className="bg-surface border-border text-foreground text-sm font-semibold font-mono rounded-xl focus:border-primary h-11"
                           disabled={isPending}
                           {...field}
                         />
@@ -200,14 +200,14 @@ export default function AddInventoryItemDrawer({
                   name="lowThreshold"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                         Min Threshold
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                          className="bg-surface border-border text-foreground text-sm font-semibold font-mono rounded-xl focus:border-primary h-11"
                           disabled={isPending}
                           {...field}
                         />
@@ -224,14 +224,14 @@ export default function AddInventoryItemDrawer({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
-                  className="flex-1 border-border font-bold rounded-xl cursor-pointer"
+                  className="flex-1 min-h-[44px] border-border font-bold rounded-xl cursor-pointer"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs cursor-pointer"
+                  className="flex-1 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs cursor-pointer active:scale-95"
                 >
                   {isPending ? (
                     <>

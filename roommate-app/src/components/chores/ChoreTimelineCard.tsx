@@ -90,34 +90,38 @@ export function ChoreTimelineCard({
       </div>
 
       {/* Right: Actions & Circular Completion Checkbox */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1 shrink-0">
         {onDelete && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={() => onDelete(chore.choreId)}
-            className="w-8 h-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="min-w-[44px] min-h-[44px] rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity"
             aria-label="Delete chore"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
         )}
 
-        {/* Tactile Circular Checkbox */}
+        {/* Tactile Circular Checkbox with 44px Touch Pad */}
         <button
           type="button"
           onClick={() => onToggle(chore)}
-          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all active:scale-90 ${
-            isCompleted
-              ? 'bg-green-600 border-green-600 text-white'
-              : 'border-primary/40 hover:border-primary text-primary bg-card'
-          }`}
+          className="min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer active:scale-90 p-1"
           aria-label={`Mark "${chore.description}" as ${
             isCompleted ? 'incomplete' : 'complete'
           }`}
         >
-          {isCompleted && <Check className="w-4 h-4 stroke-[3]" />}
+          <div
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+              isCompleted
+                ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                : 'border-primary/40 hover:border-primary text-primary bg-card'
+            }`}
+          >
+            {isCompleted && <Check className="w-4 h-4 stroke-[3]" />}
+          </div>
         </button>
       </div>
     </article>

@@ -1,77 +1,74 @@
-import { ShoppingCart, CheckSquare, Package, Megaphone } from 'lucide-react';
+import { ReceiptText, PlusCircle, ShoppingBag, Banknote, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-interface Props {
+interface QuickActionsBarProps {
   lowStockCount?: number;
+  onOpenSettleModal?: () => void;
 }
 
-export default function QuickActionsBar({ lowStockCount = 0 }: Props) {
+export function QuickActionsBar({ lowStockCount = 2, onOpenSettleModal }: QuickActionsBarProps) {
   const navigate = useNavigate();
 
   return (
-    <section className="grid grid-cols-4 gap-3 py-1">
-      {/* 1. Log Expense */}
-      <button
-        type="button"
-        onClick={() => navigate('/expenses')}
-        className="flex flex-col items-center gap-2 active:scale-95 hover:-translate-y-0.5 transition-all cursor-pointer group"
-      >
-        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-md shadow-primary/20 group-hover:bg-primary/90 transition-colors">
-          <ShoppingCart className="w-6 h-6 sm:w-7 sm:h-7" />
+    <section
+      aria-label="1-Tap Living Actions Bar"
+      className="w-full bg-card rounded-2xl p-4 shadow-xs border border-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 select-none"
+    >
+      {/* Left Branding Group */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-primary-container text-primary-foreground flex items-center justify-center font-bold shadow-xs">
+          <Zap className="w-4 h-4 fill-current" />
         </div>
-        <span className="text-[11px] font-bold uppercase tracking-tight text-muted-foreground text-center leading-tight">
-          Log Expense
-        </span>
-      </button>
+        <div>
+          <p className="font-bold text-sm text-foreground leading-tight tracking-tight font-display">
+            Instant Living Actions
+          </p>
+          <p className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground leading-none mt-0.5 font-mono">
+            Tactile quick triggers
+          </p>
+        </div>
+      </div>
 
-      {/* 2. New Chore */}
-      <button
-        type="button"
-        onClick={() => navigate('/chores')}
-        className="flex flex-col items-center gap-2 active:scale-95 hover:-translate-y-0.5 transition-all cursor-pointer group"
-      >
-        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-card border border-border flex items-center justify-center group-hover:bg-surface-container transition-colors">
-          <CheckSquare className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-        </div>
-        <span className="text-[11px] font-bold uppercase tracking-tight text-muted-foreground text-center leading-tight">
-          New Chore
-        </span>
-      </button>
+      {/* Right Grid: 4 Tactile Action Buttons */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full md:w-auto">
+        <button
+          type="button"
+          onClick={() => navigate('/expenses')}
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-primary text-primary-foreground font-semibold text-xs tracking-tight shadow-[0_2px_0_#9A3412] hover:bg-primary/90 active:scale-95 transition-all cursor-pointer border-b-2 border-primary-fixed-dim"
+        >
+          <ReceiptText className="w-4 h-4 stroke-[2.2]" />
+          <span>+ Log Expense</span>
+        </button>
 
-      {/* 3. Restock */}
-      <button
-        type="button"
-        onClick={() => navigate('/inventory')}
-        className="flex flex-col items-center gap-2 active:scale-95 relative hover:-translate-y-0.5 transition-all cursor-pointer group"
-      >
-        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-card border border-border flex items-center justify-center group-hover:bg-surface-container transition-colors">
-          <Package className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-        </div>
-        <span className="text-[11px] font-bold uppercase tracking-tight text-muted-foreground text-center leading-tight">
-          Restock
-        </span>
-        {lowStockCount > 0 && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-destructive rounded-full border-2 border-background flex items-center justify-center shadow-xs">
-            <span className="text-[10px] font-bold text-white leading-none">
-              {lowStockCount}
-            </span>
-          </div>
-        )}
-      </button>
+        <button
+          type="button"
+          onClick={() => navigate('/chores')}
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container border border-border text-foreground font-semibold text-xs tracking-tight hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer"
+        >
+          <PlusCircle className="w-4 h-4 text-primary stroke-[2.2]" />
+          <span>+ Add Chore</span>
+        </button>
 
-      {/* 4. Announce */}
-      <button
-        type="button"
-        onClick={() => navigate('/households')}
-        className="flex flex-col items-center gap-2 active:scale-95 hover:-translate-y-0.5 transition-all cursor-pointer group"
-      >
-        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-2xl bg-card border border-border flex items-center justify-center group-hover:bg-surface-container transition-colors">
-          <Megaphone className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
-        </div>
-        <span className="text-[11px] font-bold uppercase tracking-tight text-muted-foreground text-center leading-tight">
-          Announce
-        </span>
-      </button>
+        <button
+          type="button"
+          onClick={() => navigate('/inventory')}
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container border border-border text-foreground font-semibold text-xs tracking-tight hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer relative"
+        >
+          <ShoppingBag className="w-4 h-4 text-primary stroke-[2.2]" />
+          <span>🛒 Cart ({lowStockCount} Low)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenSettleModal || (() => navigate('/expenses'))}
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-tertiary text-tertiary-foreground font-semibold text-xs tracking-tight shadow-xs hover:bg-tertiary/90 active:scale-95 transition-all cursor-pointer"
+        >
+          <Banknote className="w-4 h-4 stroke-[2.2]" />
+          <span>⚡ Settle Debt</span>
+        </button>
+      </div>
     </section>
   );
 }
+
+export default QuickActionsBar;

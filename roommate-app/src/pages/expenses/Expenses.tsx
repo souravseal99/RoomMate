@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Receipt, AlertCircle } from 'lucide-react';
+import { Plus, AlertCircle } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
 import { getCurrentUserId } from '@/utils/jwt';
 import {
@@ -8,32 +8,36 @@ import {
   useDeleteExpenseMutation,
 } from '@/hooks/queries/useExpenseQueries';
 import {
-  NetBalanceBanner,
-  RoommateBalancesGrid,
-  ExpenseActivityLedger,
+  ExpensesSubHeader,
+  ExpensesTabBar,
+  ActiveLedgerTab,
+  PaybackRoutesTab,
+  SpendCapsBudgetsTab,
+  ReceiptVaultTab,
   AddExpenseDialog,
   QuickSettleModal,
+  SundaySquareUpModal,
   NetBalanceBannerSkeleton,
   RoommateBalancesSkeleton,
   ExpenseLedgerSkeleton,
+  type ExpensesTabId,
 } from '@/components/expenses';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 export default function Expenses() {
   const { selectedHousehold, householdMembers } = useHousehold();
-  const currentUserId = useMemo(() => getCurrentUserId(), []);
+  const currentUserId = useMemo(() => getCurrentUserId() || '', []);
 
   const householdId = selectedHousehold?.key || '';
+  const householdName = selectedHousehold?.value || 'Household';
 
-  // Query Hooks
-  const { data: expenses = [], isLoading: isExpensesLoading } = useExpensesQuery(householdId);
-  const { data: balancesData, isLoading: isBalancesLoading } = useExpenseBalancesQuery(householdId);
-  const deleteExpenseMutation = useDeleteExpenseMutation();
+  // Tab State (4-tab contextual disclosure)
+  const [activeTab, setActiveTab] = useState<ExpensesTabId>('tab-active-ledger');
 
-  // Dialog State
+  // Dialog States
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [isQuickSettleOpen, setIsQuickSettleOpen] = useState(false);
+  const [isSundaySquareUpOpen, setIsSundaySquareUpOpen] = useState(false);
   const [activeSettlementTarget, setActiveSettlementTarget] = useState<{
     fromUserId: string;
     fromName: string;
@@ -42,19 +46,15 @@ export default function Expenses() {
     amount: number;
   } | null>(null);
 
+  // Query Hooks
+  const { data: expenses = [], isLoading: isExpensesLoading } = useExpensesQuery(householdId);
+  const { data: balancesData, isLoading: isBalancesLoading } = useExpenseBalancesQuery(householdId);
+  const deleteExpenseMutation = useDeleteExpenseMutation();
+
   const balances = balancesData?.balances || [];
   const settlements = balancesData?.settlements || [];
 
-  // Compute Current User's Net Position
-  const currentUserNetBalance = useMemo(() => {
-    if (!currentUserId || balances.length === 0) return 0;
-    const entry = balances.find((b) => b.userId === currentUserId);
-    return entry ? entry.balance : 0;
-  }, [balances, currentUserId]);
-
-  const hasPendingDebts = useMemo(() => {
-    return settlements.length > 0 || Math.abs(currentUserNetBalance) > 0.01;
-  }, [settlements, currentUserNetBalance]);
+  const isLoading = isExpensesLoading || isBalancesLoading;
 
   const handleDeleteExpense = async (expenseId: string) => {
     if (!householdId) return;
@@ -82,6 +82,34 @@ export default function Expenses() {
     setIsQuickSettleOpen(true);
   };
 
+  const handleExportCsv = () => {
+    if (expenses.length === 0) {
+      toast.info('No expenses available in ledger to export.');
+      return;
+    }
+
+    const headers = ['Date', 'Description', 'Payer', 'Total Amount', 'Split Count'];
+    const rows = expenses.map((e) => [
+      new Date(e.createdAt).toISOString().split('T')[0],
+      `"${e.description.replace(/"/g, '""')}"`,
+      `"${e.paidBy?.name || 'Unknown'}"`,
+      e.amount.toFixed(2),
+      (e.splits?.length || 1).toString(),
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${householdName.toLowerCase().replace(/\s+/g, '-')}-ledger.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success('Household ledger exported to CSV!');
+  };
+
   if (!selectedHousehold?.value) {
     return (
       <section className="container mx-auto px-4 py-8 max-w-5xl flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
@@ -98,37 +126,28 @@ export default function Expenses() {
     );
   }
 
-  const isLoading = isExpensesLoading || isBalancesLoading;
-
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-6 animate-in fade-in duration-300">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary border border-border shrink-0">
-            <Receipt className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-              Expenses & Balances
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Zero-mental-math debt minimization for{' '}
-              <span className="font-semibold text-foreground">{selectedHousehold.value}</span>
-            </p>
-          </div>
-        </div>
+    <div className="w-full max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300 pb-16 select-none">
+      {/* 1. TOP OPERATIONAL SUB-HEADER */}
+      <ExpensesSubHeader
+        householdName={householdName}
+        members={householdMembers}
+        onExportCsv={handleExportCsv}
+        onOpenSundaySquareUp={() => setIsSundaySquareUpOpen(true)}
+      />
 
-        {/* Action Header Button */}
-        <Button
-          onClick={() => setIsAddExpenseOpen(true)}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs uppercase tracking-wider px-4 py-2.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98"
-        >
-          <Plus className="w-4 h-4" /> Log Expense
-        </Button>
-      </div>
+      {/* 2. 4-TAB CONTEXTUAL NAVIGATION BAR */}
+      <ExpensesTabBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        badgeCount={{
+          ledgerCount: expenses.length,
+          debtsCount: settlements.length,
+          receiptsCount: 4,
+        }}
+      />
 
-      {/* Main Content Sections */}
+      {/* 3. DYNAMIC TAB PANELS */}
       {isLoading ? (
         <div className="space-y-6">
           <NetBalanceBannerSkeleton />
@@ -136,46 +155,55 @@ export default function Expenses() {
           <ExpenseLedgerSkeleton />
         </div>
       ) : (
-        <div className="space-y-6">
-          {/* Net Balance Snapshot Banner */}
-          <NetBalanceBanner
-            netBalance={currentUserNetBalance}
-            onQuickSettle={() => handleOpenSettle()}
-            hasPendingDebts={hasPendingDebts}
-          />
+        <div className="transition-all duration-300">
+          {activeTab === 'tab-active-ledger' && (
+            <ActiveLedgerTab
+              householdId={householdId}
+              householdMembers={householdMembers}
+              currentUserId={currentUserId}
+              expenses={expenses}
+              balances={balances}
+              onDeleteExpense={handleDeleteExpense}
+              deletingExpenseId={deleteExpenseMutation.isPending ? 'deleting' : null}
+              onOpenSettleModal={handleOpenSettle}
+            />
+          )}
 
-          {/* Roommate Balances Grid */}
-          <RoommateBalancesGrid
-            householdMembers={householdMembers}
-            balances={balances}
-            settlements={settlements}
-            currentUserId={currentUserId}
-            onSettle={(target) => handleOpenSettle(target)}
-            settlingKey={deleteExpenseMutation.isPending ? 'pending' : null}
-          />
+          {activeTab === 'tab-payback-routes' && (
+            <PaybackRoutesTab
+              settlements={settlements}
+              balances={balances}
+              householdMembers={householdMembers}
+              currentUserId={currentUserId}
+              onSettle={handleOpenSettle}
+            />
+          )}
 
-          {/* Recent Activity Ledger */}
-          <ExpenseActivityLedger
-            expenses={expenses}
-            currentUserId={currentUserId}
-            onDeleteExpense={handleDeleteExpense}
-            deletingExpenseId={deleteExpenseMutation.isPending ? 'deleting' : null}
-          />
+          {activeTab === 'tab-spend-caps' && (
+            <SpendCapsBudgetsTab
+              expenses={expenses}
+              householdMembers={householdMembers}
+              onOpenSundaySquareUp={() => setIsSundaySquareUpOpen(true)}
+            />
+          )}
+
+          {activeTab === 'tab-receipts' && <ReceiptVaultTab />}
         </div>
       )}
 
-      {/* Floating Action Button (FAB) for Mobile / Easy Access */}
+      {/* FLOATING ACTION BUTTON (Mobile & Desktop Quick Access) */}
       <div className="fixed bottom-24 right-4 md:bottom-8 md:right-8 z-40">
         <button
-          aria-label="Log Expense"
+          type="button"
+          aria-label="Log New Expense"
           onClick={() => setIsAddExpenseOpen(true)}
-          className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg border border-primary-foreground/20 hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
+          className="w-14 h-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg border border-primary-foreground/20 hover:bg-primary/90 active:scale-95 transition-all cursor-pointer min-h-[44px] min-w-[44px]"
         >
           <Plus className="w-6 h-6 stroke-[2.5]" />
         </button>
       </div>
 
-      {/* Add Expense Dialog */}
+      {/* MODALS */}
       <AddExpenseDialog
         open={isAddExpenseOpen}
         onOpenChange={setIsAddExpenseOpen}
@@ -184,7 +212,6 @@ export default function Expenses() {
         currentUserId={currentUserId}
       />
 
-      {/* Quick Settle Modal */}
       <QuickSettleModal
         open={isQuickSettleOpen}
         onOpenChange={setIsQuickSettleOpen}
@@ -193,6 +220,12 @@ export default function Expenses() {
         currentUserId={currentUserId}
         initialSettlement={activeSettlementTarget}
         pendingSettlements={settlements}
+      />
+
+      <SundaySquareUpModal
+        open={isSundaySquareUpOpen}
+        onOpenChange={setIsSundaySquareUpOpen}
+        householdName={householdName}
       />
     </div>
   );

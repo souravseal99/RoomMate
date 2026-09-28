@@ -5,9 +5,10 @@ import type { ThemeContextType } from '@/types/themeTypes';
 export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [themeName, setThemeName] = useState<string>(
-    () => localStorage.getItem('roommate_theme') ?? DEFAULT_THEME
-  );
+  const [themeName, setThemeName] = useState<string>(() => {
+    const saved = localStorage.getItem('roommate_theme');
+    return themes.some((t) => t.name === saved) ? saved! : DEFAULT_THEME;
+  });
 
   useEffect(() => {
     const theme = getTheme(themeName);

@@ -131,6 +131,7 @@ export function useActiveHousehold() {
   return {
     households,
     activeHousehold,
+    activeHouseholdId: activeHousehold?.householdId,
     selectedHousehold,
     householdMembers,
     hasActiveHousehold,
