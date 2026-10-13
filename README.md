@@ -1,3 +1,25 @@
+## 📑 Table of Contents
+
+- [🏡 RoomMate – Shared Living App](#-roommate--shared-living-app)
+- [✨ Features (MVP)](#-features-mvp)
+- [🧱 Tech Stack](#-tech-stack)
+  - [Frontend](#frontend)
+  - [Backend](#backend)
+- [📂 Project Structure](#-project-structure)
+- [⚡ Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [DB Setup](#db-setup)
+    - The postgres way
+    - The Docker way
+    - The Neon DB way
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+- [🚀 Deployment](#-deployment)
+- [🛠️ Future Improvements](#️-future-improvements)
+- [🤝 Contributing](#-contributing)
+- [📜 License](#-license)
+
+
 # 🏡 RoomMate – Shared Living App
 
 A full-stack web app that helps roommates manage shared living more easily.  
