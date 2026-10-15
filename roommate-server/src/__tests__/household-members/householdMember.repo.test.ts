@@ -33,7 +33,7 @@ describe("HouseholdMemberRepo", () => {
         role: Role.ADMIN,
       };
 
-      vi.mocked(prisma.householdMember.create).mockResolvedValue(mockMember);
+      vi.mocked(prisma.householdMember.create).mockResolvedValue({ ...mockMember });
 
       const result = await HouseholdMemberRepo.create(memberBody);
 
@@ -54,7 +54,7 @@ describe("HouseholdMemberRepo", () => {
       };
 
       vi.mocked(prisma.householdMember.findUnique).mockResolvedValue(
-        mockMember,
+        { ...mockMember },
       );
 
       const result = await HouseholdMemberRepo.isExistingUser(
@@ -102,7 +102,7 @@ describe("HouseholdMemberRepo", () => {
         role: Role.MEMBER,
       };
 
-      vi.mocked(prisma.householdMember.create).mockResolvedValue(mockMember);
+      vi.mocked(prisma.householdMember.create).mockResolvedValue({ ...mockMember });
 
       const result = await HouseholdMemberRepo.join(
         "user-789",
@@ -147,7 +147,7 @@ describe("HouseholdMemberRepo", () => {
       ];
 
       vi.mocked(prisma.householdMember.findMany).mockResolvedValue(
-        mockMembers as any,
+        ...mockMembers as any,
       );
 
       const result =

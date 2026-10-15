@@ -1,6 +1,9 @@
 import { ArrowUpRight, ArrowDownLeft, Check, CreditCard } from 'lucide-react';
 import { formatCurrency, getInitials } from '@/utils/utils';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import type { OptimizedSettlement } from '@/types/expenseTypes';
 
 interface RoommateBalanceCardProps {
@@ -40,32 +43,29 @@ export function RoommateBalanceCard({
   const canSettleDirectly = youOwe && !isCurrentUser;
 
   return (
-    <div
-      className={`rounded-xl p-4 flex flex-col justify-between gap-3 border border-border shadow-xs transition-all ${
+    <Card
+      className={`rounded-2xl p-4 flex flex-col justify-between gap-3 border-border shadow-xs transition-all select-none ${
         isSettled
-          ? 'bg-surface-container-lowest/70 opacity-80'
-          : 'bg-surface-container-lowest hover:border-border/80 hover:-translate-y-0.5'
+          ? 'bg-card/70 opacity-80'
+          : 'bg-card hover:border-border/80 hover:-translate-y-0.5'
       }`}
     >
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
-          {avatarUrl ? (
-            <div className="w-10 h-10 rounded-full border border-border overflow-hidden shrink-0">
-              <img src={avatarUrl} alt={roommateName} className="w-full h-full object-cover" />
-            </div>
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-bold text-xs shrink-0">
+          <Avatar className="w-10 h-10 border border-border shrink-0">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt={roommateName} />}
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
               {initials}
-            </div>
-          )}
+            </AvatarFallback>
+          </Avatar>
 
           <div>
             <p className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1.5">
               {roommateName}
               {isCurrentUser && (
-                <span className="text-[10px] bg-surface-container px-1.5 py-0.2 rounded text-muted-foreground font-medium">
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 rounded text-muted-foreground font-medium">
                   You
-                </span>
+                </Badge>
               )}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -87,19 +87,19 @@ export function RoommateBalanceCard({
         {/* Directional Indicator Badge */}
         <div className="shrink-0">
           {owesYou && (
-            <span className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
+            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-primary/10 text-primary flex items-center justify-center border-primary/20">
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-            </span>
+            </Badge>
           )}
           {youOwe && (
-            <span className="w-6 h-6 rounded-full bg-destructive/10 text-destructive flex items-center justify-center border border-destructive/20">
+            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-destructive/10 text-destructive flex items-center justify-center border-destructive/20">
               <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5]" />
-            </span>
+            </Badge>
           )}
           {isSettled && (
-            <span className="w-6 h-6 rounded-full bg-surface-container text-muted-foreground flex items-center justify-center border border-border">
+            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-surface-container text-muted-foreground flex items-center justify-center border-border">
               <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-            </span>
+            </Badge>
           )}
         </div>
       </div>
@@ -118,7 +118,6 @@ export function RoommateBalanceCard({
       {canSettleDirectly ? (
         <Button
           variant="outline"
-          size="sm"
           disabled={isSettling}
           onClick={() => {
             onSettle({
@@ -129,20 +128,22 @@ export function RoommateBalanceCard({
               amount: debtAmount,
             });
           }}
-          className="w-full h-8 text-xs font-bold border-border bg-surface-container-low hover:bg-surface-container text-foreground cursor-pointer flex items-center justify-center gap-1.5 rounded-lg active:scale-98"
+          className="w-full min-h-[44px] text-xs font-bold border-border bg-surface-container-low hover:bg-surface-container text-foreground cursor-pointer flex items-center justify-center gap-1.5 rounded-xl active:scale-98"
         >
           <CreditCard className="w-3.5 h-3.5 text-primary" />
           {isSettling ? 'Settling...' : `Settle ${formatCurrency(debtAmount)}`}
         </Button>
       ) : owesYou ? (
-        <div className="w-full py-1.5 text-center text-[11px] text-muted-foreground font-medium bg-surface-container-low/50 rounded-lg border border-border/50">
+        <div className="w-full py-2 min-h-[44px] flex items-center justify-center text-center text-[11px] text-muted-foreground font-medium bg-surface-container-low/50 rounded-xl border border-border/50">
           Awaiting roommate payment
         </div>
       ) : (
-        <div className="w-full py-1.5 text-center text-[11px] text-muted-foreground/80 font-medium">
+        <div className="w-full py-2 min-h-[44px] flex items-center justify-center text-center text-[11px] text-muted-foreground/80 font-medium">
           Zero pending debt
         </div>
       )}
-    </div>
+    </Card>
   );
 }
+
+export default RoommateBalanceCard;

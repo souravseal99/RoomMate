@@ -1,5 +1,8 @@
 import { Flame, Check, Trash2, Calendar, User as UserIcon } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { getInitials } from '@/utils/utils';
 import type { ChoreItem } from '@/types/choreTypes';
 
@@ -22,21 +25,21 @@ export function ChoreTimelineCard({
   const initials = getInitials(assigneeName);
 
   return (
-    <article
+    <Card
       className={`rounded-2xl p-4 transition-all duration-200 flex items-center justify-between gap-3.5 group relative overflow-hidden ${
         isCompleted
-          ? 'bg-surface-container-low border border-border/40 opacity-60'
+          ? 'bg-surface-container-low border-border/40 opacity-60'
           : isHighPriority
             ? 'bg-primary/10 border-2 border-primary/30 shadow-xs hover:border-primary/50'
             : isOverdue
-              ? 'bg-destructive/5 border border-destructive/20 shadow-xs'
-              : 'bg-card border border-border shadow-xs hover:border-primary/40'
+              ? 'bg-destructive/5 border-destructive/20 shadow-xs'
+              : 'bg-card border-border shadow-xs hover:border-primary/40'
       }`}
     >
       {/* Left: Assignee Avatar + Details */}
       <div className="flex items-center gap-3.5 flex-1 min-w-0">
-        <div
-          className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-xs shrink-0 border ${
+        <Avatar
+          className={`w-11 h-11 shrink-0 border ${
             isCompleted
               ? 'bg-muted text-muted-foreground border-border/40'
               : isHighPriority
@@ -45,12 +48,14 @@ export function ChoreTimelineCard({
           }`}
           title={`Assigned to ${assigneeName}`}
         >
-          {chore.assignedToName ? (
-            <span>{initials}</span>
-          ) : (
-            <UserIcon className="w-5 h-5 text-muted-foreground" />
-          )}
-        </div>
+          <AvatarFallback className="font-bold text-xs bg-transparent">
+            {chore.assignedToName ? (
+              initials
+            ) : (
+              <UserIcon className="w-5 h-5 text-muted-foreground" />
+            )}
+          </AvatarFallback>
+        </Avatar>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -65,10 +70,13 @@ export function ChoreTimelineCard({
             </h3>
 
             {isHighPriority && (
-              <span className="shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary uppercase tracking-wider">
+              <Badge
+                variant="outline"
+                className="shrink-0 flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary border-primary/30 uppercase tracking-wider"
+              >
                 <Flame className="w-3 h-3 fill-primary text-primary" />
                 <span>Urgent</span>
-              </span>
+              </Badge>
             )}
           </div>
 
@@ -90,37 +98,43 @@ export function ChoreTimelineCard({
       </div>
 
       {/* Right: Actions & Circular Completion Checkbox */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1 shrink-0">
         {onDelete && (
           <Button
             type="button"
             variant="ghost"
             size="icon"
             onClick={() => onDelete(chore.choreId)}
-            className="w-8 h-8 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="min-w-[44px] min-h-[44px] rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-70 sm:opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
             aria-label="Delete chore"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
         )}
 
-        {/* Tactile Circular Checkbox */}
-        <button
+        {/* Tactile Circular Checkbox with 44px Touch Pad */}
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={() => onToggle(chore)}
-          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer transition-all active:scale-90 ${
-            isCompleted
-              ? 'bg-green-600 border-green-600 text-white'
-              : 'border-primary/40 hover:border-primary text-primary bg-card'
-          }`}
+          className="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center cursor-pointer active:scale-90 p-0 hover:bg-transparent"
           aria-label={`Mark "${chore.description}" as ${
             isCompleted ? 'incomplete' : 'complete'
           }`}
         >
-          {isCompleted && <Check className="w-4 h-4 stroke-[3]" />}
-        </button>
+          <div
+            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+              isCompleted
+                ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                : 'border-primary/40 hover:border-primary text-primary bg-card'
+            }`}
+          >
+            {isCompleted && <Check className="w-4 h-4 stroke-[3]" />}
+          </div>
+        </Button>
       </div>
-    </article>
+    </Card>
   );
 }
 

@@ -1,76 +1,104 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 
-export default function DashboardSkeleton() {
+export function DashboardSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
-      {/* Header Skeleton */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-10 h-10 rounded-full bg-surface-container" />
-          <div className="space-y-1.5">
-            <Skeleton className="h-5 w-36 bg-surface-container" />
-            <Skeleton className="h-3 w-24 bg-surface-container" />
+    <div className="w-full space-y-4 animate-pulse">
+      {/* 1. Hero Cockpit Skeleton */}
+      <Card className="w-full rounded-2xl bg-card border-border/40 p-5 space-y-4 shadow-xs">
+        <div className="flex items-center justify-between pb-3 border-b border-border/30">
+          <div className="flex items-center gap-2.5">
+            <Skeleton className="w-8 h-8 rounded-lg bg-surface-container" />
+            <Skeleton className="h-6 w-44 bg-surface-container" />
           </div>
+          <Skeleton className="h-6 w-36 rounded-lg bg-surface-container" />
         </div>
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-8 w-16 rounded-full bg-surface-container" />
-          <Skeleton className="w-9 h-9 rounded-full bg-surface-container" />
-        </div>
-      </div>
 
-      {/* Net Balance Card Skeleton */}
-      <div className="rounded-2xl bg-card border border-border/40 p-6 space-y-4 shadow-sm">
-        <div className="flex justify-between items-start">
-          <div className="space-y-2">
-            <Skeleton className="h-3 w-24 bg-surface-container" />
-            <Skeleton className="h-10 w-48 bg-surface-container" />
-          </div>
-          <Skeleton className="w-12 h-12 rounded-xl bg-surface-container" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="rounded-xl bg-surface-container/50 border border-border/40 p-4 space-y-3">
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-3 w-20 bg-surface-container" />
+                <Skeleton className="h-4 w-14 rounded bg-surface-container" />
+              </div>
+              <Skeleton className="h-8 w-32 bg-surface-container" />
+              <Skeleton className="h-10 w-full rounded-lg bg-surface-container" />
+            </div>
+          ))}
         </div>
-        <div className="space-y-2 pt-3 border-t border-dashed border-border/30">
-          <Skeleton className="h-4 w-full bg-surface-container" />
-          <Skeleton className="h-4 w-3/4 bg-surface-container" />
-        </div>
-        <Skeleton className="h-12 w-full rounded-xl bg-surface-container" />
-      </div>
 
-      {/* Quick Action Grid Skeleton */}
-      <div className="grid grid-cols-4 gap-3">
+        <Skeleton className="h-10 w-full rounded-xl bg-surface-container/70" />
+      </Card>
+
+      {/* 2. Quick Actions Bar Skeleton */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex flex-col items-center gap-2">
-            <Skeleton className="w-16 h-16 rounded-2xl bg-surface-container" />
-            <Skeleton className="h-3 w-12 bg-surface-container" />
-          </div>
+          <Card key={i} className="rounded-2xl bg-card border-border/40 p-3.5 sm:p-4 shadow-xs">
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container shrink-0" />
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <Skeleton className="h-4 w-20 bg-surface-container" />
+                <Skeleton className="h-3 w-16 bg-surface-container" />
+              </div>
+            </div>
+          </Card>
         ))}
       </div>
 
-      {/* Chores Section Skeleton */}
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-5 w-32 bg-surface-container" />
-          <Skeleton className="h-4 w-16 bg-surface-container" />
-        </div>
-        <div className="flex gap-4 overflow-hidden">
-          <Skeleton className="w-44 h-32 rounded-2xl bg-surface-container shrink-0" />
-          <Skeleton className="w-44 h-32 rounded-2xl bg-surface-container shrink-0" />
-        </div>
-      </div>
-
-      {/* Activity Feed Skeleton */}
-      <div className="space-y-3">
-        <Skeleton className="h-5 w-28 bg-surface-container" />
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-3">
-              <Skeleton className="w-10 h-10 rounded-xl bg-surface-container shrink-0" />
-              <div className="space-y-1.5 flex-1">
-                <Skeleton className="h-4 w-3/4 bg-surface-container" />
-                <Skeleton className="h-3 w-20 bg-surface-container" />
-              </div>
+      {/* 3. 2-Column Main Bento Grid Skeleton (7 cols / 5 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start w-full">
+        {/* Left Operational Wing (7 cols) */}
+        <div className="lg:col-span-7 space-y-4">
+          <Card className="rounded-2xl bg-card border-border/40 p-5 space-y-4 shadow-xs">
+            <div className="flex justify-between items-center pb-3 border-b border-border/30">
+              <Skeleton className="h-5 w-36 bg-surface-container" />
+              <Skeleton className="h-5 w-24 rounded bg-surface-container" />
             </div>
-          ))}
+            {/* Direct Settlements rows */}
+            <Skeleton className="h-16 w-full rounded-xl bg-surface-container/60" />
+            <Skeleton className="h-16 w-full rounded-xl bg-surface-container/60" />
+            {/* Flatmate tabs */}
+            <Skeleton className="h-14 w-full rounded-xl bg-surface-container/40" />
+            {/* Bills */}
+            <Skeleton className="h-20 w-full rounded-xl bg-surface-container/30" />
+          </Card>
+
+          <Card className="rounded-2xl bg-card border-border/40 p-5 space-y-3 shadow-xs">
+            <div className="flex justify-between items-center pb-2 border-b border-border/30">
+              <Skeleton className="h-5 w-32 bg-surface-container" />
+              <Skeleton className="h-4 w-20 rounded bg-surface-container" />
+            </div>
+            <Skeleton className="h-12 w-full bg-surface-container/50 rounded-lg" />
+            <Skeleton className="h-12 w-full bg-surface-container/50 rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-xl bg-surface-container" />
+          </Card>
+        </div>
+
+        {/* Right Communal Wing (5 cols) */}
+        <div className="lg:col-span-5 space-y-4">
+          <Card className="rounded-2xl bg-card border-border/40 p-5 space-y-4 shadow-xs">
+            <div className="flex justify-between items-center pb-3 border-b border-border/30">
+              <Skeleton className="h-5 w-32 bg-surface-container" />
+              <Skeleton className="h-5 w-20 rounded bg-surface-container" />
+            </div>
+            <Skeleton className="h-20 w-full rounded-xl bg-surface-container/60" />
+            <Skeleton className="h-16 w-full rounded-xl bg-surface-container/40" />
+          </Card>
+
+          <Card className="rounded-2xl bg-card border-border/40 p-5 space-y-3 shadow-xs">
+            <Skeleton className="h-5 w-36 bg-surface-container" />
+            <Skeleton className="h-20 w-full rounded-xl bg-surface-container/50" />
+          </Card>
+
+          <Card className="rounded-2xl bg-card border-border/40 p-5 space-y-3 shadow-xs">
+            <Skeleton className="h-5 w-28 bg-surface-container" />
+            <Skeleton className="h-14 w-full rounded-lg bg-surface-container/50" />
+            <Skeleton className="h-14 w-full rounded-lg bg-surface-container/50" />
+          </Card>
         </div>
       </div>
     </div>
   );
 }
+
+export default DashboardSkeleton;

@@ -3,11 +3,17 @@ import { Role } from "@generated/prisma";
 import { nanoid } from "nanoid";
 
 export class HouseholdRepository {
-  static async create(name: string, userId: string, role?: Role) {
+  static async create(
+    name: string,
+    userId: string,
+    role?: Role,
+    settings?: any,
+  ) {
     return await prisma.household.create({
       data: {
         name,
         inviteCode: nanoid(8),
+        settings: settings || {},
 
         members: {
           create: {
@@ -17,6 +23,34 @@ export class HouseholdRepository {
         },
       },
       include: { members: true },
+    });
+  }
+
+  static async update(
+    householdId: string,
+    updateData: { name?: string; settings?: any },
+  ) {
+    return await prisma.household.update({
+      where: { householdId },
+      data: {
+        ...(updateData.name !== undefined && { name: updateData.name }),
+        ...(updateData.settings !== undefined && {
+          settings: updateData.settings,
+        }),
+      },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 

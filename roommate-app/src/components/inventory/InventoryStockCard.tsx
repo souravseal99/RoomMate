@@ -4,6 +4,9 @@ import {
   useUpdateInventoryMutation,
   useDeleteInventoryMutation,
 } from '@/hooks/queries/useInventoryQueries';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,15 +77,14 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
     });
   };
 
-  // Badge styles and icon backgrounds based on status
   const categoryBg = isOutOfStock
     ? 'bg-destructive/10 text-destructive'
     : isRunningLow
-      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+      ? 'bg-muted text-muted-foreground'
+      : 'bg-primary/10 text-primary';
 
   return (
-    <div className="bg-card rounded-2xl p-4 flex items-center justify-between shadow-xs border border-border hover:border-primary/40 transition-all group">
+    <Card className="rounded-2xl p-4 flex items-center justify-between shadow-xs border-border hover:border-primary/40 transition-all group">
       {/* Left: Thumbnail & Details */}
       <div className="flex items-center gap-3 min-w-0 pr-2">
         <div
@@ -98,22 +100,22 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
 
           <div className="flex items-center gap-2 mt-0.5">
             {isOutOfStock && (
-              <p className="text-xs font-bold text-destructive flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+              <Badge variant="destructive" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 <span>Out of Stock</span>
-              </p>
+              </Badge>
             )}
             {isRunningLow && (
-              <p className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <Badge variant="outline" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 border-border text-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
                 <span>Running Low (Min: {item.lowThreshold})</span>
-              </p>
+              </Badge>
             )}
             {isInStock && (
-              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <Badge variant="secondary" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 text-primary bg-primary/10 border-primary/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 <span>In Stock</span>
-              </p>
+              </Badge>
             )}
           </div>
         </div>
@@ -122,48 +124,54 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
       {/* Right: Stepper Controls & Context Menu */}
       <div className="flex items-center gap-2 shrink-0">
         {/* Stepper Pill */}
-        <div className="flex items-center gap-1.5 bg-surface-container rounded-xl p-1 shadow-2xs border border-border/40">
-          <button
+        <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 shadow-2xs border border-border/40">
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={handleDecrement}
             disabled={item.quantity === 0 || updateMutation.isPending}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-foreground font-bold shadow-2xs active:scale-90 transition-all cursor-pointer disabled:opacity-40"
+            className="min-w-[44px] min-h-[44px] bg-card hover:bg-muted rounded-lg text-foreground font-bold shadow-2xs active:scale-90"
             aria-label="Decrease quantity"
           >
             <Minus className="w-4 h-4" />
-          </button>
+          </Button>
 
-          <span className="w-7 sm:w-8 text-center font-extrabold text-base sm:text-lg text-foreground tabular-nums">
+          <span className="w-7 sm:w-8 text-center font-extrabold text-base sm:text-lg text-foreground tabular-nums font-mono">
             {item.quantity}
           </span>
 
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={handleIncrement}
             disabled={updateMutation.isPending}
-            className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-card hover:bg-surface-container-high rounded-lg text-primary font-bold shadow-2xs active:scale-90 transition-all cursor-pointer"
+            className="min-w-[44px] min-h-[44px] bg-card hover:bg-muted rounded-lg text-primary font-bold shadow-2xs active:scale-90"
             aria-label="Increase quantity"
           >
             <Plus className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
 
         {/* Dropdown Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button
+            <Button
               type="button"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer"
+              variant="ghost"
+              size="icon"
+              className="min-w-[44px] min-h-[44px] rounded-lg text-muted-foreground hover:text-foreground"
               aria-label="More options"
             >
               <MoreVertical className="w-4 h-4" />
-            </button>
+            </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40 bg-card border-border">
             {onEdit && (
               <DropdownMenuItem
                 onClick={() => onEdit(item)}
-                className="cursor-pointer text-xs font-semibold flex items-center gap-2"
+                className="cursor-pointer text-xs font-semibold flex items-center gap-2 min-h-[36px]"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 Edit Item
@@ -171,7 +179,7 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
             )}
             <DropdownMenuItem
               onClick={handleDelete}
-              className="cursor-pointer text-xs font-semibold text-destructive focus:text-destructive flex items-center gap-2"
+              className="cursor-pointer text-xs font-semibold text-destructive focus:text-destructive flex items-center gap-2 min-h-[36px]"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Remove Item
@@ -179,6 +187,6 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </div>
+    </Card>
   );
 }

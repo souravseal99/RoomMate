@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Minus, Plus } from 'lucide-react';
 import { useUpdateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
 import useHousehold from '@/hooks/useHousehold';
@@ -32,42 +33,44 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
   const isUpdating = updateMutation.isPending && updateMutation.variables?.itemId === item.inventoryItemId;
 
   return (
-    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors w-64">
-      <div className="flex items-center gap-2">
-        <span className="text-lg">{getItemEmoji(item.name)}</span>
-        <div>
-          <span className="text-sm font-medium">{item.name}</span>
-          <div className="text-xs text-gray-500">Qty: {item.quantity}</div>
+    <Card className="flex items-center justify-between p-3 bg-muted/40 rounded-xl hover:bg-muted/70 transition-colors w-full sm:w-72 border-border">
+      <div className="flex items-center gap-2.5 min-w-0">
+        <span className="text-xl shrink-0">{getItemEmoji(item.name)}</span>
+        <div className="min-w-0">
+          <span className="text-sm font-semibold text-foreground truncate block">{item.name}</span>
+          <div className="text-xs text-muted-foreground font-mono">Qty: {item.quantity}</div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
         <div className="flex items-center gap-1">
           <Button
-            size="sm"
+            size="icon"
             variant="outline"
             onClick={() => updateQuantity(item.quantity - 1)}
             disabled={isUpdating || item.quantity <= 0}
-            className="h-6 w-6 p-0 cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-lg"
+            aria-label={`Decrease ${item.name} quantity`}
           >
-            <Minus className="h-3 w-3" />
+            <Minus className="h-3.5 w-3.5" />
           </Button>
 
-          <span className="text-sm font-medium min-w-[2rem] text-center">{item.quantity}</span>
+          <span className="text-sm font-bold min-w-[1.75rem] text-center font-mono">{item.quantity}</span>
 
           <Button
-            size="sm"
+            size="icon"
             variant="outline"
             onClick={() => updateQuantity(item.quantity + 1)}
             disabled={isUpdating}
-            className="h-6 w-6 p-0 cursor-pointer"
+            className="min-h-[44px] min-w-[44px] rounded-lg"
+            aria-label={`Increase ${item.name} quantity`}
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-3.5 w-3.5" />
           </Button>
         </div>
 
         {getStatusBadge(item.quantity, item.lowThreshold)}
       </div>
-    </div>
+    </Card>
   );
 }

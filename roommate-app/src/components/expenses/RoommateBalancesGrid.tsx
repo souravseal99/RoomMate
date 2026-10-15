@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { Users, ArrowRightLeft } from 'lucide-react';
 import { RoommateBalanceCard } from './RoommateBalanceCard';
 import { formatCurrency } from '@/utils/utils';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import type { HouseholdMember } from '@/types/householdTypes';
 import type { BalanceEntry, OptimizedSettlement } from '@/types/expenseTypes';
 
@@ -85,15 +87,15 @@ export function RoommateBalancesGrid({
   }
 
   return (
-    <section className="w-full space-y-4">
+    <section className="w-full space-y-4 select-none">
       <div className="flex items-center justify-between">
         <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
           <Users className="w-4 h-4 text-primary" />
           Roommate Balances
         </h3>
-        <span className="text-xs font-semibold text-muted-foreground">
+        <Badge variant="outline" className="text-xs font-semibold text-muted-foreground border-border">
           {householdMembers.length} {householdMembers.length === 1 ? 'member' : 'members'}
-        </span>
+        </Badge>
       </div>
 
       {/* Cards Grid */}
@@ -115,7 +117,7 @@ export function RoommateBalancesGrid({
 
       {/* Other Household Settlements Notice (if any circular debts exist between other flatmates) */}
       {otherSettlements.length > 0 && (
-        <div className="bg-surface-container-low rounded-xl p-3.5 border border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-foreground">
+        <Card className="bg-surface-container-low rounded-xl p-3.5 border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-foreground shadow-none">
           <div className="flex items-center gap-2 font-medium">
             <ArrowRightLeft className="w-4 h-4 text-muted-foreground shrink-0" />
             <span>
@@ -127,11 +129,13 @@ export function RoommateBalancesGrid({
               ))}
             </span>
           </div>
-          <span className="text-[11px] text-muted-foreground font-medium shrink-0">
+          <Badge variant="secondary" className="text-[11px] text-muted-foreground font-medium shrink-0">
             Graph Debt Minimization
-          </span>
-        </div>
+          </Badge>
+        </Card>
       )}
     </section>
   );
 }
+
+export default RoommateBalancesGrid;

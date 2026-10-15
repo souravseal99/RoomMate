@@ -90,17 +90,17 @@ export function ExpenseActivityItem({
       </div>
 
       {/* Amount & Actions */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="text-right flex flex-col justify-center">
           <p
-            className={`text-sm font-bold tracking-tight ${
+            className={`text-sm font-bold tracking-tight font-mono tabular-nums ${
               isPaidByCurrentUser ? 'text-primary' : 'text-foreground'
             }`}
           >
             {isPaidByCurrentUser ? `+${formatCurrency(expense.amount)}` : formatCurrency(expense.amount)}
           </p>
           <p
-            className="text-[10px] text-muted-foreground mt-0.5"
+            className="text-[10px] text-muted-foreground mt-0.5 font-mono"
             title={dateFormatterUtc(expense.createdAt)}
           >
             {formatTimeAgo(expense.createdAt)}
@@ -109,7 +109,7 @@ export function ExpenseActivityItem({
 
         {/* Dropdown Menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-container cursor-pointer transition-colors">
+          <DropdownMenuTrigger className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-container cursor-pointer transition-colors active:scale-95">
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-card border-border shadow-md">

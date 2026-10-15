@@ -10,10 +10,11 @@ export function SidebarQuickSettle() {
 
   return (
     <button
+      type="button"
       onClick={handleQuickSettle}
-      className="w-full bg-sidebar-primary hover:opacity-90 text-sidebar-primary-foreground font-extrabold uppercase tracking-wider py-3.5 px-4 rounded-xl transition-all cursor-pointer text-xs flex items-center justify-center gap-2 shadow-xs active:scale-98"
+      className="w-full min-h-[44px] bg-sidebar-primary hover:opacity-95 text-sidebar-primary-foreground font-extrabold uppercase tracking-wider py-3 px-4 rounded-xl transition-all cursor-pointer text-xs flex items-center justify-center gap-2 shadow-xs active:scale-95 border-b-2 border-primary-fixed-dim"
     >
-      <HandCoins className="w-4 h-4" />
+      <HandCoins className="w-4 h-4 shrink-0" />
       <span>Quick Settle</span>
     </button>
   );

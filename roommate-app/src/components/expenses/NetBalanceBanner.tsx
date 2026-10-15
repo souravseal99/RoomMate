@@ -1,5 +1,6 @@
 import { ArrowUpRight, ArrowDownLeft, Check, Wallet } from 'lucide-react';
 import { formatCurrency } from '@/utils/utils';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
 interface NetBalanceBannerProps {
@@ -25,8 +26,8 @@ export function NetBalanceBanner({
     : Math.max(251.2 * (1 - Math.max(progressRatio, 0.25)), 0);
 
   return (
-    <section className="w-full">
-      <div className="bg-surface-container-lowest rounded-xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 border border-border shadow-xs relative overflow-hidden">
+    <section className="w-full select-none">
+      <Card className="bg-card rounded-2xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 border-border shadow-xs relative overflow-hidden">
         <div className="flex items-center gap-4 sm:gap-5">
           {/* Progress Ring Meter */}
           <div className="relative w-20 h-20 sm:w-[84px] sm:h-[84px] flex items-center justify-center shrink-0">
@@ -70,7 +71,7 @@ export function NetBalanceBanner({
 
           {/* Balance Details */}
           <div className="flex flex-col justify-center">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest font-mono">
               Net Position
             </span>
             <p className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mt-0.5">
@@ -86,18 +87,22 @@ export function NetBalanceBanner({
 
         {/* Action Button */}
         <Button
+          type="button"
           onClick={onQuickSettle}
           disabled={!hasPendingDebts}
-          className={`w-full md:w-auto h-11 px-5 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-transform active:scale-98 shadow-xs ${
+          variant={hasPendingDebts ? 'default' : 'outline'}
+          className={`w-full md:w-auto min-h-[44px] px-5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer transition-transform active:scale-98 shadow-xs ${
             hasPendingDebts
               ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-              : 'bg-surface-container text-muted-foreground border border-border'
+              : 'bg-surface-container text-muted-foreground border-border'
           }`}
         >
           <Wallet className="w-4 h-4" />
           {hasPendingDebts ? 'Settle Debts' : 'All Square'}
         </Button>
-      </div>
+      </Card>
     </section>
   );
 }
+
+export default NetBalanceBanner;

@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,12 +57,13 @@ const PRESET_TASKS = [
 interface AddChoreDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  householdId?: string;
 }
 
-export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
+export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDialogProps) {
   const { toast } = useToast();
   const { activeHousehold, selectedHousehold, householdMembers } = useHousehold();
-  const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key;
+  const targetHouseholdId = householdId || activeHousehold?.householdId || selectedHousehold?.key;
   const createMutation = useCreateChoreMutation();
   const [selectedAssignee, setSelectedAssignee] = useState<string>('');
 
@@ -83,7 +85,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
   });
 
   const onSubmit = async (data: ChoreFormData) => {
-    if (!activeHouseholdId) {
+    if (!targetHouseholdId) {
       toast({
         title: 'Household Required',
         description: 'Please select a household before adding chores.',
@@ -94,7 +96,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
 
     try {
       await createMutation.mutateAsync({
-        householdId: activeHouseholdId,
+        householdId: targetHouseholdId,
         description: data.description,
         frequency: data.frequency as ChoreFrequency,
         priority: data.priority as ChorePriority,
@@ -127,14 +129,14 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] bg-card text-card-foreground border-border rounded-3xl p-6 shadow-2xl">
-        <DialogHeader className="space-y-1">
+        <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary" />
             Add New Chore
           </DialogTitle>
-          <p className="text-xs text-muted-foreground">
+          <DialogDescription className="text-xs text-muted-foreground">
             Create a shared household task with 1-click presets and automated scheduling.
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         {/* 1-Click Preset Chips */}
@@ -144,15 +146,16 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
           </Label>
           <div className="flex flex-wrap gap-1.5">
             {PRESET_TASKS.map((preset) => (
-              <button
+              <Button
                 key={preset.label}
                 type="button"
+                variant="outline"
                 onClick={() => handleSelectPreset(preset.label)}
-                className="px-3 py-1 text-xs font-semibold rounded-full bg-surface-container hover:bg-surface-container-high text-foreground border border-border/50 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+                className="min-h-[44px] px-3.5 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border-border/60 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 h-auto py-2"
               >
                 <span>{preset.emoji}</span>
                 <span>{preset.label}</span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -167,7 +170,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               id="description"
               placeholder="e.g., Clean living room whiteboard"
               {...register('description')}
-              className={`bg-surface-container border-border rounded-xl ${
+              className={`min-h-[44px] bg-surface-container border-border rounded-xl ${
                 errors.description ? 'border-destructive' : ''
               }`}
             />
@@ -184,10 +187,11 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               Assign Roommate (Optional)
             </Label>
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-              <button
+              <Button
                 type="button"
+                variant={selectedAssignee === '' ? 'default' : 'outline'}
                 onClick={() => setSelectedAssignee('')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                className={`min-h-[44px] flex items-center gap-1.5 px-3.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 h-auto py-2 ${
                   selectedAssignee === ''
                     ? 'bg-primary text-primary-foreground border-primary'
                     : 'bg-surface-container text-muted-foreground border-border hover:text-foreground'
@@ -195,7 +199,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               >
                 <User className="w-3.5 h-3.5" />
                 <span>Anyone</span>
-              </button>
+              </Button>
 
               {householdMembers.map((member) => {
                 const memberId = member.userId || member.householdMemberId;
@@ -203,21 +207,22 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
                 const memberName = member.user?.name || 'Roommate';
 
                 return (
-                  <button
+                  <Button
                     key={memberId}
                     type="button"
+                    variant={isSelected ? 'default' : 'outline'}
                     onClick={() => setSelectedAssignee(memberId)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition-all cursor-pointer ${
+                    className={`min-h-[44px] flex items-center gap-1.5 px-3.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 h-auto py-2 ${
                       isSelected
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-surface-container text-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
-                    <span className="w-4 h-4 rounded-full bg-surface text-[10px] font-bold flex items-center justify-center border">
+                    <span className="w-5 h-5 rounded-full bg-surface text-[10px] font-bold flex items-center justify-center border">
                       {getInitials(memberName)}
                     </span>
                     <span className="truncate max-w-[90px]">{memberName}</span>
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -231,7 +236,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
                 defaultValue="weekly"
                 onValueChange={(val) => setValue('frequency', val as ChoreFrequency)}
               >
-                <SelectTrigger className="bg-surface-container border-border rounded-xl">
+                <SelectTrigger className="bg-surface-container border-border rounded-xl min-h-[44px]">
                   <SelectValue placeholder="Select cadence" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border rounded-xl">
@@ -250,7 +255,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
                 defaultValue="MEDIUM"
                 onValueChange={(val) => setValue('priority', val as ChorePriority)}
               >
-                <SelectTrigger className="bg-surface-container border-border rounded-xl">
+                <SelectTrigger className="bg-surface-container border-border rounded-xl min-h-[44px]">
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
                 <SelectContent className="bg-card border-border rounded-xl">
@@ -271,7 +276,7 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               id="notes"
               placeholder="e.g., Use the green microfiber cloth"
               {...register('notes')}
-              className="bg-surface-container border-border rounded-xl"
+              className="bg-surface-container border-border rounded-xl min-h-[44px]"
             />
           </div>
 
@@ -281,14 +286,14 @@ export function AddChoreDialog({ open, onOpenChange }: AddChoreDialogProps) {
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="rounded-full px-5 cursor-pointer border-border hover:bg-surface-container"
+              className="rounded-full px-5 min-h-[44px] cursor-pointer border-border hover:bg-surface-container"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || createMutation.isPending}
-              className="rounded-full px-6 bg-primary text-primary-foreground font-bold active:scale-95 shadow-md shadow-primary/20 cursor-pointer"
+              className="rounded-full px-6 min-h-[44px] bg-primary text-primary-foreground font-bold active:scale-95 shadow-md shadow-primary/20 cursor-pointer"
             >
               {createMutation.isPending ? (
                 <>
