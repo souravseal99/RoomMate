@@ -1,4 +1,5 @@
 import { Gauge, Scale, Users, Share2, LogOut } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export type HouseholdTabId =
   | 'tab-vitals'
@@ -49,21 +50,22 @@ export function HouseholdTabBar({ activeTab, onTabChange }: HouseholdTabBarProps
           const isActive = activeTab === tab.id;
 
           return (
-            <button
+            <Button
               key={tab.id}
               role="tab"
               aria-selected={isActive}
               type="button"
+              variant={isActive ? 'default' : 'ghost'}
               onClick={() => onTabChange(tab.id)}
-              className={`px-4 py-2 min-h-[44px] rounded-full text-xs transition-all flex items-center gap-2 cursor-pointer active:scale-95 ${
+              className={`px-4 py-2 min-h-[44px] h-auto rounded-full text-xs transition-all flex items-center gap-2 cursor-pointer active:scale-95 ${
                 isActive
-                  ? 'bg-primary text-primary-foreground shadow-sm font-bold border-b-2 border-primary-fixed-dim'
+                  ? 'bg-primary text-primary-foreground shadow-sm font-bold border-b-2 border-primary-fixed-dim hover:bg-primary/90 hover:text-primary-foreground'
                   : 'text-muted-foreground hover:bg-surface-container-high hover:text-foreground font-semibold'
               }`}
             >
               <Icon className="w-4 h-4 stroke-[2.2]" />
               <span>{tab.label}</span>
-            </button>
+            </Button>
           );
         })}
       </div>

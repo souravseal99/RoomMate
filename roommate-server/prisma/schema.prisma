@@ -49,6 +49,7 @@ model Household {
   householdId String   @id @default(uuid()) @map("household_id")
   name        String
   inviteCode  String   @unique
+  settings    Json?    @default("{}")
   createdAt   DateTime @default(now())
 
   // Relations

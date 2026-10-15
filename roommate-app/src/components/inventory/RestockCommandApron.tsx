@@ -1,5 +1,8 @@
 import { AlertTriangle, CalendarClock, RefreshCw, Zap } from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface RestockCommandApronProps {
   lowStockItems: InventoryItem[];
@@ -32,12 +35,12 @@ export function RestockCommandApron({
 
   return (
     <section className="w-full">
-      <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-surface-container-low to-card p-4 sm:p-5 shadow-xs transition-all">
+      <Card className="rounded-2xl border-primary/20 bg-gradient-to-r from-primary/10 via-card to-card p-4 sm:p-5 shadow-xs transition-all">
         {/* Top Split: Alert & Primary Sync Command */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-border/50">
           <div className="flex items-center gap-3.5">
             <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-xs ${
-              lowCount > 0 ? 'bg-primary text-primary-foreground' : 'bg-surface-container text-muted-foreground'
+              lowCount > 0 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}>
               <AlertTriangle className="w-5 h-5 stroke-[2.2]" />
             </div>
@@ -48,13 +51,13 @@ export function RestockCommandApron({
                   {lowCount > 0 ? `${lowCount} item${lowCount > 1 ? 's' : ''} running low or empty` : 'Pantry inventory is healthy'}
                 </span>
                 {lowCount > 0 ? (
-                  <span className="px-2 py-0.5 rounded-full bg-destructive/15 text-destructive text-[11px] font-extrabold uppercase tracking-wider">
+                  <Badge variant="destructive" className="text-[11px] font-extrabold uppercase tracking-wider h-5 px-2">
                     Restock needed
-                  </span>
+                  </Badge>
                 ) : (
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[11px] font-extrabold uppercase tracking-wider">
+                  <Badge variant="secondary" className="text-[11px] font-extrabold uppercase tracking-wider h-5 px-2 text-primary bg-primary/10 border-primary/20">
                     Optimal levels
-                  </span>
+                  </Badge>
                 )}
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -71,15 +74,15 @@ export function RestockCommandApron({
               </span>
             </div>
 
-            <button
+            <Button
               type="button"
               onClick={onSyncAllToCart}
               disabled={isSyncing || lowCount === 0}
-              className="inline-flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm font-bold shadow-xs transition-all cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="min-h-[44px] px-4 rounded-xl text-xs sm:text-sm font-bold gap-2"
             >
               <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
               <span>1-Tap Sync to Cart</span>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -90,18 +93,19 @@ export function RestockCommandApron({
           </span>
 
           {QUICK_PICK_STAPLES.map((staple) => (
-            <button
+            <Button
               key={staple.name}
               type="button"
+              variant="outline"
               onClick={() => onQuickAddStaple(staple.name, 1, staple.unit)}
-              className="shrink-0 px-3 py-2 min-h-[44px] rounded-xl bg-card hover:bg-surface-container border border-border/60 text-foreground font-medium text-xs transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95"
+              className="shrink-0 min-h-[44px] px-3 rounded-xl bg-card hover:bg-muted/50 border-border/60 text-foreground font-medium text-xs gap-1.5 shadow-2xs"
             >
               <span>{staple.emoji} {staple.name}</span>
               <span className="text-muted-foreground font-normal">{staple.price}</span>
-            </button>
+            </Button>
           ))}
         </div>
-      </div>
+      </Card>
     </section>
   );
 }

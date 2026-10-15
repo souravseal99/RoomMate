@@ -1,6 +1,17 @@
 import { ArrowRight, Check } from 'lucide-react';
 import type { BalanceEntry } from '@/types/expenseTypes';
 import type { HouseholdMember } from '@/types/householdTypes';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
 interface PairwiseBalanceMatrixTableProps {
   balances: BalanceEntry[];
@@ -48,46 +59,48 @@ export function PairwiseBalanceMatrixTable({
     });
 
   return (
-    <div className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border border-border space-y-4 select-none">
-      <div className="flex items-center justify-between pb-2 border-b border-border/40">
+    <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border space-y-4 select-none">
+      <CardHeader className="p-0 flex flex-row items-center justify-between pb-2 border-b border-border/40 space-y-0">
         <div>
-          <h3 className="font-display font-extrabold text-lg text-foreground">
+          <CardTitle className="font-display font-extrabold text-lg text-foreground">
             Pairwise Balance Matrix
-          </h3>
-          <p className="text-xs text-muted-foreground">
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-0.5">
             Detailed bilateral standing between you and each individual flatmate
           </p>
         </div>
-      </div>
+      </CardHeader>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
-          <thead>
-            <tr className="border-b border-border/40 text-muted-foreground font-mono text-[11px] uppercase">
-              <th className="py-2.5 px-3 font-semibold">Flatmate</th>
-              <th className="py-2.5 px-3 font-semibold">Flow</th>
-              <th className="py-2.5 px-3 font-semibold">Net Balance</th>
-              <th className="py-2.5 px-3 font-semibold text-right">Settlement Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border/40">
+      <CardContent className="p-0 overflow-x-auto">
+        <Table className="w-full text-left text-xs">
+          <TableHeader>
+            <TableRow className="border-b border-border/40 text-muted-foreground font-mono text-[11px] uppercase">
+              <TableHead className="py-2.5 px-3 font-semibold">Flatmate</TableHead>
+              <TableHead className="py-2.5 px-3 font-semibold">Flow</TableHead>
+              <TableHead className="py-2.5 px-3 font-semibold">Net Balance</TableHead>
+              <TableHead className="py-2.5 px-3 font-semibold text-right">Settlement Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="divide-y divide-border/40">
             {pairwiseRows.map(({ member, netAmount, owesYou, youOwe, isSettled }) => {
               const initial = (member.user.name[0] || 'U').toUpperCase();
 
               return (
-                <tr key={member.userId} className="hover:bg-surface-container/50 transition-colors">
-                  <td className="py-3 px-3">
+                <TableRow key={member.userId} className="hover:bg-surface-container/50 transition-colors">
+                  <TableCell className="py-3 px-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-surface-container-high text-foreground font-bold text-xs flex items-center justify-center">
-                        {initial}
-                      </div>
+                      <Avatar className="w-7 h-7 shrink-0">
+                        <AvatarFallback className="bg-surface-container-high text-foreground font-bold text-xs">
+                          {initial}
+                        </AvatarFallback>
+                      </Avatar>
                       <span className="font-bold text-foreground">
                         {member.user.name}
                       </span>
                     </div>
-                  </td>
+                  </TableCell>
 
-                  <td className="py-3 px-3 text-muted-foreground">
+                  <TableCell className="py-3 px-3 text-muted-foreground">
                     {owesYou ? (
                       <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">
                         They <ArrowRight className="w-3 h-3" /> You
@@ -101,9 +114,9 @@ export function PairwiseBalanceMatrixTable({
                         <Check className="w-3 h-3" /> Balanced
                       </span>
                     )}
-                  </td>
+                  </TableCell>
 
-                  <td className="py-3 px-3">
+                  <TableCell className="py-3 px-3">
                     <span
                       className={`font-mono font-bold tabular-nums ${
                         owesYou
@@ -119,16 +132,17 @@ export function PairwiseBalanceMatrixTable({
                         ? `-$${netAmount.toFixed(2)}`
                         : '$0.00'}
                     </span>
-                  </td>
+                  </TableCell>
 
-                  <td className="py-3 px-3 text-right">
+                  <TableCell className="py-3 px-3 text-right">
                     {isSettled ? (
                       <span className="text-[11px] font-mono text-muted-foreground">
                         All Square
                       </span>
                     ) : (
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
                         onClick={() =>
                           onSettle({
                             fromUserId: youOwe ? currentUserId : member.userId,
@@ -138,18 +152,20 @@ export function PairwiseBalanceMatrixTable({
                             amount: netAmount,
                           })
                         }
-                        className="px-3 py-1.5 min-h-[38px] rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground font-bold text-xs transition-all cursor-pointer active:scale-95 border border-border/50"
+                        className="px-3 min-h-[44px] rounded-lg bg-surface-container hover:bg-surface-container-high text-foreground font-bold text-xs transition-all cursor-pointer active:scale-95 border-border/50 h-auto py-1.5"
                       >
                         Settle Up
-                      </button>
+                      </Button>
                     )}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
+
+export default PairwiseBalanceMatrixTable;

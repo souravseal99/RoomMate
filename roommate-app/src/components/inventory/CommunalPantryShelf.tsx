@@ -10,6 +10,10 @@ import {
   Lightbulb,
 } from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface CommunalPantryShelfProps {
   items: InventoryItem[];
@@ -77,7 +81,7 @@ export function CommunalPantryShelf({
   }, [items]);
 
   const filteredAndSortedItems = useMemo(() => {
-    let result = items.filter((item) => {
+    const result = items.filter((item) => {
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase().trim());
       if (!matchesSearch) return false;
 
@@ -111,56 +115,56 @@ export function CommunalPantryShelf({
   }, [items, searchQuery, filterTab, sortOption]);
 
   return (
-    <div className="bg-card rounded-2xl border border-border/80 shadow-xs overflow-hidden flex flex-col">
+    <Card className="bg-card rounded-2xl border-border/80 shadow-xs overflow-hidden flex flex-col select-none">
       {/* View Controls Bar */}
       <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-low/40">
         {/* Segmented Filter Tabs */}
         <div className="inline-flex p-1 rounded-xl bg-surface-container border border-border/50 text-xs">
-          <button
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setFilterTab('all')}
-            className={`px-3 py-1.5 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer ${
-              filterTab === 'all'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'all'
                 ? 'bg-card text-foreground shadow-2xs'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             All Items ({items.length})
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setFilterTab('low')}
-            className={`px-3 py-1.5 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer ${
-              filterTab === 'low'
-                ? 'bg-amber-500 text-white shadow-2xs'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'low'
+                ? 'bg-amber-500 text-white shadow-2xs hover:bg-amber-600'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Running Low ({lowStockCount})
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="ghost"
             onClick={() => setFilterTab('out')}
-            className={`px-3 py-1.5 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer ${
-              filterTab === 'out'
-                ? 'bg-destructive text-destructive-foreground shadow-2xs'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'out'
+                ? 'bg-destructive text-destructive-foreground shadow-2xs hover:bg-destructive/90'
                 : 'text-muted-foreground hover:text-foreground'
-            }`}
+              }`}
           >
             Out of Stock ({outOfStockCount})
-          </button>
+          </Button>
         </div>
 
         {/* Search & Sort Controls */}
         <div className="flex items-center gap-2.5">
           <div className="relative flex-1 sm:w-56">
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search pantry items..."
-              className="w-full pl-9 pr-3 py-2 min-h-[44px] rounded-xl border border-border text-xs bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+              className="w-full pl-9 pr-3 min-h-[44px] rounded-xl border border-border text-xs bg-card text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
@@ -196,14 +200,14 @@ export function CommunalPantryShelf({
                 : 'Start tracking domestic supplies by adding your first household staple.'}
             </p>
             {!(searchQuery || filterTab !== 'all') && (
-              <button
+              <Button
                 type="button"
                 onClick={onAddNewItem}
-                className="inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-1.5 px-4 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add First Supply</span>
-              </button>
+              </Button>
             )}
           </div>
         ) : (
@@ -211,7 +215,7 @@ export function CommunalPantryShelf({
             const isOut = item.quantity === 0;
             const isLow = !isOut && item.quantity <= item.lowThreshold;
             const emoji = getItemEmoji(item.name);
-            
+
             // Stock percentage gauge calculation
             const maxRef = Math.max(item.lowThreshold * 2, item.quantity, 1);
             const gaugePercent = isOut ? 0 : Math.min(100, Math.round((item.quantity / maxRef) * 100));
@@ -219,20 +223,18 @@ export function CommunalPantryShelf({
             return (
               <div
                 key={item.inventoryItemId}
-                className={`p-4 hover:bg-surface-container-low/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                  isOut ? 'bg-destructive/5' : ''
-                }`}
+                className={`p-4 hover:bg-surface-container-low/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isOut ? 'bg-destructive/5' : ''
+                  }`}
               >
                 {/* Left: Item Emoji + Info + Gauge */}
                 <div className="flex items-start gap-3.5 min-w-0 flex-1">
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 border ${
-                      isOut
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 border ${isOut
                         ? 'bg-destructive/10 text-destructive border-destructive/20'
                         : isLow
-                        ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
-                        : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
-                    }`}
+                          ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
+                          : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
+                      }`}
                   >
                     {emoji}
                   </div>
@@ -244,17 +246,26 @@ export function CommunalPantryShelf({
                       </h3>
 
                       {isOut ? (
-                        <span className="px-2 py-0.5 rounded-md bg-destructive/15 text-destructive border border-destructive/20 text-[11px] font-bold">
+                        <Badge
+                          variant="destructive"
+                          className="px-2 py-0.5 rounded-md text-[11px] font-bold"
+                        >
                           Out of Stock (0 remaining)
-                        </span>
+                        </Badge>
                       ) : isLow ? (
-                        <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-[11px] font-semibold">
+                        <Badge
+                          variant="outline"
+                          className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/20 text-[11px] font-semibold"
+                        >
                           Running Low ({item.quantity} left · Min {item.lowThreshold})
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[11px] font-semibold">
+                        <Badge
+                          variant="outline"
+                          className="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-[11px] font-semibold"
+                        >
                           In Stock ({item.quantity} left · Min {item.lowThreshold})
-                        </span>
+                        </Badge>
                       )}
                     </div>
 
@@ -262,13 +273,12 @@ export function CommunalPantryShelf({
                     <div className="mt-1.5 flex items-center gap-2.5 max-w-xs">
                       <div className="flex-1 h-2 rounded-full bg-surface-container overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-300 ${
-                            isOut
+                          className={`h-full rounded-full transition-all duration-300 ${isOut
                               ? 'bg-destructive w-0'
                               : isLow
-                              ? 'bg-amber-500'
-                              : 'bg-emerald-500'
-                          }`}
+                                ? 'bg-amber-500'
+                                : 'bg-emerald-500'
+                            }`}
                           style={{ width: `${gaugePercent}%` }}
                         />
                       </div>
@@ -288,49 +298,57 @@ export function CommunalPantryShelf({
                 {/* Right: Tactile Stepper [-] [N] [+] & Cart / Edit actions */}
                 <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
                   <div className="inline-flex items-center border border-border rounded-xl bg-card shadow-2xs overflow-hidden">
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       disabled={item.quantity === 0}
                       onClick={() => onUpdateQuantity(item, -1)}
                       aria-label={`Decrease ${item.name} quantity`}
-                      className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:bg-surface-container hover:text-foreground active:bg-surface-container-high transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-none flex items-center justify-center text-muted-foreground hover:bg-surface-container hover:text-foreground active:bg-surface-container-high transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       <Minus className="w-4 h-4 stroke-[2.5]" />
-                    </button>
+                    </Button>
 
                     <span className="w-9 text-center text-xs sm:text-sm font-bold text-foreground select-none">
                       {item.quantity}
                     </span>
 
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => onUpdateQuantity(item, 1)}
                       aria-label={`Increase ${item.name} quantity`}
-                      className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center text-muted-foreground hover:bg-surface-container hover:text-foreground active:bg-surface-container-high transition-colors cursor-pointer"
+                      className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-none flex items-center justify-center text-muted-foreground hover:bg-surface-container hover:text-foreground active:bg-surface-container-high transition-colors cursor-pointer"
                     >
                       <Plus className="w-4 h-4 stroke-[2.5]" />
-                    </button>
+                    </Button>
                   </div>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onAddToCart(item)}
                     title="Add to shopping cart"
                     aria-label={`Add ${item.name} to shopping cart`}
                     className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-xl text-primary bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-colors cursor-pointer active:scale-95"
                   >
                     <ShoppingCart className="w-4 h-4 stroke-[2.2]" />
-                  </button>
+                  </Button>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onEditItem(item)}
                     title="Edit supply details"
                     aria-label={`Edit ${item.name}`}
                     className="w-10 h-10 min-h-[44px] min-w-[44px] rounded-xl text-muted-foreground hover:bg-surface-container flex items-center justify-center transition-colors cursor-pointer"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             );
@@ -347,6 +365,8 @@ export function CommunalPantryShelf({
           automatically triggers restock alerts when quantity drops below minimum threshold. Zero manual spreadsheets.
         </span>
       </div>
-    </div>
+    </Card>
   );
 }
+
+export default CommunalPantryShelf;

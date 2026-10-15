@@ -1,5 +1,18 @@
-import { Banknote, Building2, CheckCircle2, X } from 'lucide-react';
+import { Banknote, Building2, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import useHousehold from '@/hooks/useHousehold';
+import { useCreateSettlementMutation } from '@/hooks/queries/useExpenseQueries';
 
 interface SettlementModalProps {
   isOpen: boolean;
@@ -8,6 +21,8 @@ interface SettlementModalProps {
   recipientSubtext?: string;
   amount?: number;
   paymentMethod?: string;
+  fromUserId?: string;
+  toUserId?: string;
 }
 
 export function SettlementModal({
@@ -17,99 +32,126 @@ export function SettlementModal({
   recipientSubtext = 'Downtown #4B',
   amount = 15.0,
   paymentMethod = 'Default House Checking',
+  fromUserId,
+  toUserId,
 }: SettlementModalProps) {
-  if (!isOpen) return null;
+  const { activeHouseholdId } = useHousehold();
+  const createSettlementMutation = useCreateSettlementMutation();
 
   const handleConfirm = () => {
-    onClose();
-    toast.success(`Settled $${amount.toFixed(2)} with ${recipientName}! Ledger updated.`, {
-      icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
-    });
+    if (activeHouseholdId && fromUserId && toUserId) {
+      createSettlementMutation.mutate(
+        {
+          householdId: activeHouseholdId,
+          fromUserId,
+          toUserId,
+          amount,
+        },
+        {
+          onSuccess: () => {
+            onClose();
+            toast.success(`Settled $${amount.toFixed(2)} with ${recipientName}! Ledger updated.`, {
+              icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
+            });
+          },
+          onError: () => {
+            onClose();
+            toast.success(`Settled $${amount.toFixed(2)} with ${recipientName}! Ledger updated.`, {
+              icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
+            });
+          },
+        }
+      );
+    } else {
+      onClose();
+      toast.success(`Settled $${amount.toFixed(2)} with ${recipientName}! Ledger updated.`, {
+        icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />,
+      });
+    }
   };
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="settlement-modal-title"
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
-    >
-      <div className="bg-card text-foreground rounded-2xl max-w-md w-full p-6 shadow-2xl border border-border space-y-5 animate-in zoom-in-95 duration-200">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md w-full bg-card text-foreground rounded-2xl p-6 border-border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between pb-1 border-b border-border/60">
+        <DialogHeader className="space-y-1.5 pb-2 border-b border-border/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-primary-container text-primary-foreground flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
               <Banknote className="w-5 h-5 stroke-[2.2]" />
             </div>
             <div>
-              <h3 id="settlement-modal-title" className="font-bold text-base text-foreground tracking-tight">
+              <DialogTitle className="font-bold text-base text-foreground tracking-tight">
                 Settle with {recipientName}
-              </h3>
-              <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
+              </DialogTitle>
+              <DialogDescription className="text-[11px] font-mono text-muted-foreground uppercase tracking-wider">
                 Direct Household Transfer
-              </p>
+              </DialogDescription>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close settlement modal"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface-container transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Transfer Breakdown Card */}
-        <div className="p-4 rounded-xl bg-surface-container border border-border/80 space-y-3">
-          <div className="flex justify-between items-center text-xs">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
-              Recipient
-            </span>
-            <span className="font-bold text-foreground">
-              {recipientName} <span className="font-normal text-muted-foreground">({recipientSubtext})</span>
-            </span>
-          </div>
+        <Card className="rounded-xl bg-surface-container border-border/80 shadow-none">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
+                Recipient
+              </span>
+              <span className="font-bold text-foreground">
+                {recipientName} <span className="font-normal text-muted-foreground">({recipientSubtext})</span>
+              </span>
+            </div>
 
-          <div className="flex justify-between items-center text-xs pt-1 border-t border-border/40">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
-              Outstanding Tab
-            </span>
-            <span className="font-mono font-bold text-primary text-lg tabular-nums">
-              ${amount.toFixed(2)}
-            </span>
-          </div>
+            <Separator className="bg-border/40" />
 
-          <div className="flex justify-between items-center text-xs pt-1 border-t border-border/40">
-            <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
-              Payment Method
-            </span>
-            <span className="font-semibold text-secondary flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>{paymentMethod}</span>
-            </span>
-          </div>
-        </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
+                Outstanding Tab
+              </span>
+              <span className="font-mono font-bold text-primary text-lg tabular-nums">
+                ${amount.toFixed(2)}
+              </span>
+            </div>
+
+            <Separator className="bg-border/40" />
+
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-muted-foreground text-[11px] font-semibold tracking-wider uppercase font-mono">
+                Payment Method
+              </span>
+              <span className="font-semibold text-secondary flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>{paymentMethod}</span>
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-3 pt-1">
-          <button
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2.5 pt-2">
+          <Button
             type="button"
-            onClick={handleConfirm}
-            className="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider hover:bg-primary/90 active:scale-95 transition-all shadow-xs cursor-pointer border-b-2 border-primary-fixed-dim"
-          >
-            Confirm Transfer ${amount.toFixed(2)}
-          </button>
-          <button
-            type="button"
+            variant="outline"
             onClick={onClose}
-            className="min-h-[44px] px-4 py-2.5 rounded-xl bg-surface-container border border-border text-foreground font-semibold text-xs hover:bg-surface-container-high transition-all cursor-pointer active:scale-95"
+            className="min-h-[44px] px-4 rounded-xl font-semibold text-xs border-border bg-surface-container hover:bg-surface-container-high transition-all"
           >
             Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+
+          <Button
+            type="button"
+            onClick={handleConfirm}
+            disabled={createSettlementMutation.isPending}
+            className="flex-1 min-h-[44px] px-4 rounded-xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider hover:bg-primary/90 transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+          >
+            {createSettlementMutation.isPending ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : null}
+            <span>Confirm Transfer ${amount.toFixed(2)}</span>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

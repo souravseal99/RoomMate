@@ -8,7 +8,6 @@ import {
   LogOut,
   Palette,
   Bell,
-  ShieldCheck,
   Thermometer,
   Plus,
 } from 'lucide-react';
@@ -109,7 +108,7 @@ export function AppHeader() {
           </Link>
 
           {/* Active Space Switcher Pill Dropdown */}
-          <div className="relative shrink-0" ref={spaceMenuRef}>
+          <div className="relative shrink-0 hidden md:block" ref={spaceMenuRef}>
             <button
               type="button"
               onClick={() => setIsSpaceMenuOpen(!isSpaceMenuOpen)}

@@ -20,6 +20,7 @@ import {
   InStoreShoppingCard,
   AddInventoryItemDrawer,
 } from '@/components/inventory';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 export default function Inventory() {
@@ -192,14 +193,15 @@ export default function Inventory() {
       </div>
 
       {/* Floating Action Button (FAB) for rapid addition on mobile */}
-      <button
+      <Button
         type="button"
+        size="icon"
         onClick={handleOpenAddDrawer}
         aria-label="Add custom supply item"
-        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
+        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 min-h-[56px] min-w-[56px] rounded-2xl shadow-xl z-40 active:scale-95 group"
       >
         <Plus className="w-7 h-7 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
-      </button>
+      </Button>
 
       {/* Slide-over Drawer for Add/Edit Supply */}
       <AddInventoryItemDrawer

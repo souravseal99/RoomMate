@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { DoorOpen, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -70,61 +71,63 @@ export default function JoinHouseholdForm({ onSuccess }: Props) {
   };
 
   return (
-    <div className="bg-surface-container border border-border p-5 flex flex-col h-full relative rounded-2xl">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
-          <DoorOpen className="w-5 h-5 text-primary" />
-          Join Existing
-        </h3>
-      </div>
-      <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-        Got an invite code? Enter it below to join your roommates instantly.
-      </p>
+    <Card className="bg-surface-container border border-border p-5 flex flex-col h-full relative rounded-2xl select-none">
+      <CardContent className="p-0 flex flex-col h-full">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-lg text-foreground flex items-center gap-2">
+            <DoorOpen className="w-5 h-5 text-primary" />
+            Join Existing
+          </h3>
+        </div>
+        <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+          Got an invite code? Enter it below to join your roommates instantly.
+        </p>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col flex-1">
-          <FormField
-            control={form.control}
-            name="inviteCode"
-            render={({ field }) => (
-              <FormItem className="flex-1 flex flex-col justify-center">
-                <FormLabel className="text-xs font-bold text-foreground text-center block">
-                  Enter Invite Code
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g. HGnIiO9q"
-                    className="bg-surface border-border text-foreground text-center font-mono font-bold tracking-widest text-lg uppercase py-5 rounded-xl focus:ring-primary"
-                    disabled={joinMutation.isPending}
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e.target.value.toUpperCase().replace(/\s+/g, ''));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage className="text-xs text-destructive font-medium text-center" />
-              </FormItem>
-            )}
-          />
-
-          <div className="pt-4 mt-auto">
-            <Button
-              type="submit"
-              disabled={joinMutation.isPending}
-              className="w-full bg-surface hover:bg-surface-container-high border border-border text-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all shadow-xs cursor-pointer"
-            >
-              {joinMutation.isPending ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Joining...
-                </>
-              ) : (
-                'Join Space'
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col flex-1">
+            <FormField
+              control={form.control}
+              name="inviteCode"
+              render={({ field }) => (
+                <FormItem className="flex-1 flex flex-col justify-center">
+                  <FormLabel className="text-xs font-bold text-foreground text-center block font-mono">
+                    Enter Invite Code
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. HGNIIO9Q"
+                      className="bg-surface border-border text-foreground text-center font-mono font-bold tracking-widest text-lg uppercase py-5 min-h-[48px] rounded-xl focus:ring-primary"
+                      disabled={joinMutation.isPending}
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e.target.value.toUpperCase().replace(/\s+/g, ''));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs text-destructive font-medium text-center" />
+                </FormItem>
               )}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+            />
+
+            <div className="pt-4 mt-auto">
+              <Button
+                type="submit"
+                disabled={joinMutation.isPending}
+                className="w-full min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-2.5 rounded-xl active:scale-95 transition-all shadow-xs cursor-pointer border-b-2 border-primary-fixed-dim"
+              >
+                {joinMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <span>Joining...</span>
+                  </>
+                ) : (
+                  <span>Join Space</span>
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

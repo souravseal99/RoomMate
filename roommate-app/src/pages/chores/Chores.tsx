@@ -21,11 +21,13 @@ import {
   DutyCharterModal,
   AddChoreDialog,
 } from '@/components/chores';
+import { Button } from '@/components/ui/button';
 import type { ChoreItem, ChoreFrequency, ChorePriority } from '@/types/choreTypes';
 
 export function Chores() {
-  const { name: currentUserName = 'Sourav' } = useAuth();
-  const { activeHousehold, selectedHousehold, members = [] } = useHousehold();
+  const { name } = useAuth();
+  const currentUserName = name || 'Sourav';
+  const { activeHousehold, selectedHousehold, householdMembers = [] } = useHousehold();
   const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key || '';
 
   // Filter & Dialog States
@@ -318,9 +320,9 @@ export function Chores() {
         <div className="lg:col-span-4 flex flex-col gap-6">
           <FastTaskCreatorDock
             currentUserName={currentUserName}
-            members={members.map((m: any) => ({
-              id: m.userId || m.id,
-              name: m.name || m.user?.name || 'Flatmate',
+            members={householdMembers.map((m) => ({
+              id: m.userId || m.householdMemberId,
+              name: m.user?.name || 'Flatmate',
             }))}
             isSubmitting={createMutation.isPending}
             onPinTask={handlePinFastTask}
@@ -335,14 +337,15 @@ export function Chores() {
       </div>
 
       {/* Mobile Floating Action Button (FAB) */}
-      <button
+      <Button
         type="button"
+        size="icon"
         onClick={() => setIsAddDialogOpen(true)}
         aria-label="Add new household chore"
-        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
+        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 min-w-[56px] min-h-[56px] bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
       >
         <Plus className="w-7 h-7 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
-      </button>
+      </Button>
 
       {/* Interactive Modals */}
       <SwapDutyModal

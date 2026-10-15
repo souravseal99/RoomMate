@@ -9,6 +9,7 @@ import {
   Users,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -78,15 +79,15 @@ export default function HouseholdCard({
   return (
     <Card
       onClick={handleCardClick}
-      className={`group relative bg-card border-[1.5px] p-card-padding rounded-lg transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[190px] ${
+      className={`group relative bg-card border p-5 rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[190px] select-none ${
         isActive
-          ? 'border-primary-container shadow-[0_0_15px_2px_rgba(255,109,31,0.3)] ring-2 ring-primary-container'
-          : 'border-border shadow-sm hover:border-primary/60 hover:-translate-y-1'
+          ? 'border-primary ring-2 ring-primary shadow-md shadow-primary/20'
+          : 'border-border shadow-xs hover:border-primary/60 hover:-translate-y-1'
       }`}
     >
       {/* Top Banner / Active Tag */}
       {isActive && (
-        <div className="absolute top-0 right-0 bg-primary-container text-primary-foreground font-bold text-[10px] px-2.5 py-0.5 rounded-bl-md uppercase tracking-wider shadow-xs">
+        <div className="absolute top-0 right-0 bg-primary text-primary-foreground font-bold text-[10px] px-2.5 py-0.5 rounded-bl-md uppercase tracking-wider shadow-xs font-mono">
           Active Space
         </div>
       )}
@@ -101,15 +102,12 @@ export default function HouseholdCard({
           </div>
 
           <div className="flex items-center gap-2 mb-3">
-            <span
-              className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded ${
-                isAdmin
-                  ? 'bg-primary-container text-primary-foreground border-border'
-                  : 'bg-surface text-muted-foreground border-border'
-              }`}
+            <Badge
+              variant={isAdmin ? 'default' : 'outline'}
+              className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider font-mono"
             >
               {isAdmin ? 'Admin' : 'Member'}
-            </span>
+            </Badge>
 
             <span className="flex items-center gap-1 text-xs font-mono text-muted-foreground">
               <Users className="w-3.5 h-3.5 text-muted-foreground" />
@@ -134,7 +132,7 @@ export default function HouseholdCard({
                 <span className="sr-only">Actions</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-surface border-border shadow-tactile">
+            <DropdownMenuContent align="end" className="bg-card border-border shadow-lg">
               <DropdownMenuItem
                 onClick={() => onOpenEdit(household)}
                 className="cursor-pointer text-xs font-medium focus:bg-surface-container"
@@ -151,7 +149,7 @@ export default function HouseholdCard({
               </DropdownMenuItem>
               {isAdmin && (
                 <>
-                  <DropdownMenuSeparator className="bg-border/30" />
+                  <DropdownMenuSeparator className="bg-border/60" />
                   <DropdownMenuItem
                     onClick={() => onOpenDelete(household)}
                     className="cursor-pointer text-xs font-medium text-destructive focus:bg-destructive/10"
@@ -167,7 +165,7 @@ export default function HouseholdCard({
 
         {/* Footer Actions */}
         <div
-          className="pt-3 border-t border-border flex items-center justify-between gap-2"
+          className="pt-3 border-t border-border/60 flex items-center justify-between gap-2"
           onClick={(e) => e.stopPropagation()}
         >
           <Button
@@ -175,17 +173,17 @@ export default function HouseholdCard({
             variant="ghost"
             size="sm"
             onClick={handleCopyCode}
-            className="text-xs font-bold text-primary hover:bg-surface-container px-2.5 h-8 rounded cursor-pointer active:scale-95 transition-all"
+            className="text-xs font-bold text-primary hover:bg-surface-container px-3 min-h-[44px] h-auto rounded-xl cursor-pointer active:scale-95 transition-all"
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 mr-1 text-primary-container" />
-                Copied
+                <Check className="w-3.5 h-3.5 mr-1 text-emerald-500" />
+                <span>Copied</span>
               </>
             ) : (
               <>
                 <Copy className="w-3.5 h-3.5 mr-1" />
-                Invite
+                <span>Invite</span>
               </>
             )}
           </Button>
@@ -195,7 +193,7 @@ export default function HouseholdCard({
             variant="outline"
             size="sm"
             onClick={() => onOpenRoster(household)}
-            className="text-xs font-bold bg-surface hover:bg-surface-container-high border-border text-foreground px-3.5 h-8 rounded active:scale-95 transition-all cursor-pointer"
+            className="text-xs font-bold bg-surface hover:bg-surface-container-high border-border text-foreground px-3.5 min-h-[44px] h-auto rounded-xl active:scale-95 transition-all cursor-pointer"
           >
             Roommates
           </Button>

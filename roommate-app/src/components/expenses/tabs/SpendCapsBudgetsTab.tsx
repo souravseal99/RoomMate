@@ -1,6 +1,9 @@
 import { AlertTriangle, SunMedium, ArrowUpRight } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
 import type { HouseholdMember } from '@/types/householdTypes';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface SpendCapsBudgetsTabProps {
   expenses: ExpenseResponse[];
@@ -54,7 +57,7 @@ export function SpendCapsBudgetsTab({
     <div className="space-y-6 animate-in fade-in duration-300 select-none">
       {/* 1. Header Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-card rounded-2xl p-5 border border-border shadow-xs space-y-1">
+        <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
           <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
             Monthly Shared Outlay
           </span>
@@ -64,9 +67,9 @@ export function SpendCapsBudgetsTab({
           <span className="text-[11px] text-muted-foreground">
             Combined spend across {memberCount} flatmates
           </span>
-        </div>
+        </Card>
 
-        <div className="bg-card rounded-2xl p-5 border border-border shadow-xs space-y-1">
+        <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
           <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
             Fair Share Target
           </span>
@@ -76,9 +79,9 @@ export function SpendCapsBudgetsTab({
           <span className="text-[11px] text-muted-foreground">
             Per-tenant equalized domestic quota
           </span>
-        </div>
+        </Card>
 
-        <div className="bg-card rounded-2xl p-5 border border-border shadow-xs space-y-1">
+        <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
           <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
             Cap Health
           </span>
@@ -88,26 +91,29 @@ export function SpendCapsBudgetsTab({
           <span className="text-[11px] text-muted-foreground">
             $380 buffer remaining in cycle
           </span>
-        </div>
+        </Card>
       </div>
 
       {/* 2. Category Budget Progress Meters */}
-      <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40">
+      <Card className="bg-card rounded-2xl p-5 sm:p-6 border-border shadow-xs space-y-5">
+        <CardHeader className="p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40 space-y-0">
           <div>
-            <h3 className="font-display font-extrabold text-lg text-foreground">
+            <CardTitle className="font-display font-extrabold text-lg text-foreground">
               Category Spend Allocations
-            </h3>
-            <p className="text-xs text-muted-foreground">
+            </CardTitle>
+            <p className="text-xs text-muted-foreground mt-0.5">
               Progress against monthly flatmate expenditure thresholds
             </p>
           </div>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-surface-container border border-border/50 text-foreground">
+          <Badge
+            variant="outline"
+            className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-surface-container border-border/50 text-foreground"
+          >
             Cycle Cap: $1,600.00
-          </span>
-        </div>
+          </Badge>
+        </CardHeader>
 
-        <div className="space-y-4">
+        <CardContent className="p-0 space-y-4">
           {budgetCategories.map((cat) => {
             const percentage = Math.min(100, Math.round((cat.spent / cat.cap) * 100));
             const isNearCap = percentage >= 85;
@@ -119,9 +125,12 @@ export function SpendCapsBudgetsTab({
                     <span className="text-sm">{cat.emoji}</span>
                     <span className="font-bold text-foreground">{cat.category}</span>
                     {isNearCap && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.2 rounded">
+                      <Badge
+                        variant="outline"
+                        className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20 px-1.5 py-0.2 rounded"
+                      >
                         <AlertTriangle className="w-3 h-3" /> 85%+ Target
-                      </span>
+                      </Badge>
                     )}
                   </div>
                   <div className="font-mono tabular-nums text-foreground font-bold">
@@ -141,11 +150,11 @@ export function SpendCapsBudgetsTab({
               </div>
             );
           })}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* 3. Sunday Square-Up Protocol Card */}
-      <div className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <Card className="bg-card rounded-2xl p-5 sm:p-6 border-border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <SunMedium className="w-5 h-5 stroke-[2.2]" />
@@ -160,15 +169,17 @@ export function SpendCapsBudgetsTab({
           </div>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={onOpenSundaySquareUp}
-          className="px-4 py-2 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-sm border-b-2 border-primary-fixed-dim transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+          className="px-4 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-sm border-b-2 border-primary/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
         >
           <span>Trigger Early Square-Up</span>
           <ArrowUpRight className="w-4 h-4" />
-        </button>
-      </div>
+        </Button>
+      </Card>
     </div>
   );
 }
+
+export default SpendCapsBudgetsTab;

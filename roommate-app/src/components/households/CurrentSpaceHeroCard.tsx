@@ -7,6 +7,9 @@ import {
   Settings,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import type { HouseholdResponse, HouseholdMember } from '@/types/householdTypes';
 
 interface CurrentSpaceHeroCardProps {
@@ -34,10 +37,10 @@ export function CurrentSpaceHeroCard({
 
   const createdDate = household.createdAt
     ? new Date(household.createdAt).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
     : 'June 1, 2024';
 
   const handleCopyPasskey = () => {
@@ -47,29 +50,48 @@ export function CurrentSpaceHeroCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Dynamic billing cycle & rollover calculation
+  const billingDay = household.settings?.billingCycleDay ?? 1;
+  const now = new Date();
+  const currentMonthName = now.toLocaleString('en-US', { month: 'short' });
+  const currentMonthNumber = String(now.getMonth() + 1).padStart(2, '0');
+  const cycleText = `Cycle ${currentMonthNumber} / ${currentMonthName}`;
+
+  const nextRolloverDate = new Date(
+    now.getFullYear(),
+    now.getMonth() + (now.getDate() >= billingDay ? 1 : 0),
+    billingDay
+  );
+  const daysUntilRollover = Math.max(1, Math.ceil((nextRolloverDate.getTime() - now.getTime()) / 86400000));
+  const rolloverText = `Rollover in ${daysUntilRollover} ${daysUntilRollover === 1 ? 'day' : 'days'}`;
+  const unitText = household.settings?.unitOrApt ? `• ${household.settings.unitOrApt}` : '';
+
   return (
-    <section
+    <Card
       aria-label="Household Identity & Fast Actions"
-      className="w-full bg-card rounded-2xl p-5 sm:p-6 shadow-xs border border-border flex flex-col gap-4 select-none"
+      className="w-full bg-card rounded-2xl p-5 sm:p-6 shadow-xs border-border flex flex-col gap-4 select-none"
     >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <CardContent className="p-0 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Household Meta Group */}
         <div className="flex flex-col gap-2 min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-mono text-[10px] font-bold uppercase tracking-wider">
-              {household.name} • Unit 4B
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-mono text-[10px] font-bold uppercase tracking-wider">
+            <Badge
+              variant="outline"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border-primary/20 font-mono text-[10px] font-bold uppercase tracking-wider"
+            >
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Cycle 04 / Oct
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-mono text-[10px] font-bold uppercase tracking-wider">
+              {cycleText}
+            </Badge>
+            <Badge
+              variant="outline"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary border-primary/20 font-mono text-[10px] font-bold uppercase tracking-wider"
+            >
               {displayMembers.length} Active Flatmates
-            </span>
+            </Badge>
           </div>
 
           <h1 className="font-bold text-2xl sm:text-3xl text-foreground font-display tracking-tight leading-tight">
-            {household.name} - Household Hub
+            {household.name} {unitText} - Household Hub
           </h1>
 
           <div className="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-muted-foreground font-mono">
@@ -80,7 +102,7 @@ export function CurrentSpaceHeroCard({
             <span>•</span>
             <span>Created {createdDate}</span>
             <span>•</span>
-            <span className="text-primary font-bold">Next rollover in 8 days</span>
+            <span className="text-primary font-bold">{rolloverText}</span>
           </div>
         </div>
 
@@ -95,42 +117,47 @@ export function CurrentSpaceHeroCard({
                 {inviteCode}
               </span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={handleCopyPasskey}
               aria-label="Copy household passkey"
-              className="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-foreground flex items-center justify-center transition-colors cursor-pointer"
+              className="w-8 h-8 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-foreground flex items-center justify-center transition-colors cursor-pointer p-0"
             >
               {copied ? (
                 <Check className="w-3.5 h-3.5 text-emerald-500" />
               ) : (
                 <Copy className="w-3.5 h-3.5 text-muted-foreground" />
               )}
-            </button>
+            </Button>
           </div>
 
-          <button
+          <Button
             type="button"
             onClick={onOpenInvite}
-            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 min-h-[44px] rounded-full font-bold text-xs shadow-xs hover:bg-primary/90 active:scale-95 transition-all cursor-pointer border-b-2 border-primary-fixed-dim"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 min-h-[44px] h-auto rounded-full font-bold text-xs shadow-xs hover:bg-primary/90 active:scale-95 transition-all cursor-pointer border-b-2 border-primary-fixed-dim"
           >
             <QrCode className="w-4 h-4" />
             <span>Scan to Join</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={onOpenSettings}
             aria-label="Open space settings"
-            className="w-10 h-10 min-h-[40px] rounded-full bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors border border-border cursor-pointer active:scale-95"
+            className="w-11 h-11 min-h-[44px] min-w-[44px] rounded-full bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors border-border cursor-pointer active:scale-95 shadow-xs"
             title="Space Settings"
           >
             <Settings className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }
 
 export default CurrentSpaceHeroCard;
+

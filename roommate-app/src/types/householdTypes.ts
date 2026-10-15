@@ -24,10 +24,22 @@ export interface SuggestedMember {
   sharedHouseholds: string[];
 }
 
+export interface HouseholdSettings {
+  unitOrApt?: string;
+  billingCycleDay?: number;
+  targetRoommates?: number;
+  monthlyCommunalBudget?: number | null;
+  wifiSsid?: string;
+  wifiPassword?: string;
+  trashDay?: string;
+  currency?: string;
+}
+
 export interface HouseholdResponse {
   householdId: string;
   inviteCode: string;
   name: string;
+  settings?: HouseholdSettings;
   createdAt: string;
   members?: HouseholdMember[];
 }

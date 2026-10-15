@@ -5,11 +5,28 @@ import { HouseholdService } from "@src/households/household.service";
 export class HouseholdController {
   static async create(request: Request, response: Response) {
     const { userId } = getUserFromRequestBody(request);
-    const { name } = request.body;
+    const { name, settings } = request.body;
 
     const { status, data, message } = await HouseholdService.create(
       userId,
       name,
+      settings,
+    );
+
+    return response.status(status).json({
+      message: message,
+      data: data,
+    });
+  }
+
+  static async update(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { householdId, name, settings } = request.body;
+
+    const { status, data, message } = await HouseholdService.update(
+      userId,
+      householdId,
+      { name, settings },
     );
 
     return response.status(status).json({

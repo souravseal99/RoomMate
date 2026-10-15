@@ -1,6 +1,7 @@
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
 } from '@/components/ui/sheet';
 import { MemberRosterView } from './MemberRosterView';
 import type { HouseholdResponse } from '@/types/householdTypes';
@@ -28,6 +29,7 @@ export default function MemberRosterDrawer({
         side="right"
         className="w-full sm:max-w-md bg-card text-card-foreground border-border p-6 overflow-y-auto"
       >
+        <SheetTitle className="sr-only">Household Members Roster</SheetTitle>
         <MemberRosterView
           household={household}
           onBack={() => onOpenChange(false)}

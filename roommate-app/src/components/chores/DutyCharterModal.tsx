@@ -1,4 +1,14 @@
-import { BookOpen, X, CheckCircle, ShieldCheck } from 'lucide-react';
+import { CheckCircle, ShieldCheck } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface DutyCharterModalProps {
   open: boolean;
@@ -25,42 +35,32 @@ const CHARTER_RULES = [
 ];
 
 export function DutyCharterModal({ open, onClose }: DutyCharterModalProps) {
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-card rounded-2xl p-6 shadow-xl border border-border flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <DialogContent className="w-full max-w-lg bg-card rounded-2xl p-6 shadow-xl border-border flex flex-col gap-4 max-h-[85vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border/50 pb-3">
+        <DialogHeader className="p-0 border-b border-border/50 pb-3 text-left">
           <div className="flex items-center gap-2.5">
-            <span className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <span className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <ShieldCheck className="w-5 h-5 stroke-[2.2]" />
             </span>
             <div>
-              <h3 className="font-display font-bold text-base sm:text-lg text-foreground">
+              <DialogTitle className="font-display font-bold text-base sm:text-lg text-foreground">
                 Household Duty Charter
-              </h3>
-              <p className="text-xs text-muted-foreground">
+              </DialogTitle>
+              <DialogDescription className="text-xs text-muted-foreground mt-0.5">
                 Shared co-living standards &amp; rotation agreements
-              </p>
+              </DialogDescription>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close dialog"
-            className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        </DialogHeader>
 
         {/* Charter Principles */}
         <div className="flex flex-col gap-3 py-1">
           {CHARTER_RULES.map((rule, idx) => (
-            <div
+            <Card
               key={rule.title}
-              className="p-3.5 rounded-xl bg-surface-container-low/60 border border-border/40 flex items-start gap-3"
+              className="p-3.5 rounded-xl bg-surface-container-low/60 border-border/40 flex items-start gap-3 shadow-none"
             >
               <span className="w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                 {idx + 1}
@@ -73,25 +73,27 @@ export function DutyCharterModal({ open, onClose }: DutyCharterModalProps) {
                   {rule.desc}
                 </p>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+        <DialogFooter className="flex flex-row items-center justify-between pt-2 border-t border-border/50 sm:justify-between">
           <span className="text-[11px] text-muted-foreground italic flex items-center gap-1">
             <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
             Agreed by 4/4 flatmates
           </span>
-          <button
+          <Button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-xs transition-all cursor-pointer active:scale-95"
+            className="px-5 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-xs transition-all cursor-pointer active:scale-95"
           >
             Understood
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
+
+export default DutyCharterModal;

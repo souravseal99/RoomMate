@@ -7,6 +7,8 @@ import {
   ShoppingBag,
   History,
 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -89,7 +91,7 @@ export default function WeeklyShoppingList({ householdId }: Props) {
   return (
     <div className="space-y-6">
       {/* Weekly List Main Card */}
-      <div className="bg-card rounded-2xl p-5 sm:p-6 shadow-xs border border-border space-y-6">
+      <Card className="rounded-2xl p-5 sm:p-6 shadow-xs border border-border space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
@@ -99,14 +101,14 @@ export default function WeeklyShoppingList({ householdId }: Props) {
               Weekly Procurement List
             </h3>
           </div>
-          <span className="text-xs font-extrabold bg-surface-container text-primary px-3 py-1 rounded-full border border-border/40">
+          <Badge variant="secondary" className="text-xs font-extrabold text-primary bg-primary/10 border-primary/20 px-3 py-1 rounded-full">
             {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
-          </span>
+          </Badge>
         </div>
 
         {/* List items */}
         {cartItems.length === 0 ? (
-          <div className="p-8 bg-surface-container-low rounded-2xl border border-dashed border-border text-center space-y-2">
+          <div className="p-8 bg-muted/30 rounded-2xl border border-dashed border-border text-center space-y-2">
             <ShoppingBag className="w-8 h-8 text-muted-foreground/60 mx-auto" />
             <p className="text-sm font-bold text-foreground">Shopping list is clear!</p>
             <p className="text-xs text-muted-foreground max-w-xs mx-auto">
@@ -137,21 +139,23 @@ export default function WeeklyShoppingList({ householdId }: Props) {
                       {item.itemName}
                     </span>
                     {item.quantity > 1 && (
-                      <span className="text-xs font-mono font-extrabold text-muted-foreground bg-surface-container px-2 py-0.5 rounded-md shrink-0">
+                      <span className="text-xs font-mono font-extrabold text-muted-foreground bg-muted px-2 py-0.5 rounded-md shrink-0">
                         x{item.quantity}
                       </span>
                     )}
                   </label>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => handleDeleteItem(item.shoppingCartId)}
                     disabled={deleteMutation.isPending}
-                    className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all cursor-pointer opacity-80 group-hover:opacity-100 active:scale-95 shrink-0"
+                    className="min-w-[44px] min-h-[44px] rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
                     aria-label="Remove item"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               );
             })}
@@ -164,19 +168,20 @@ export default function WeeklyShoppingList({ householdId }: Props) {
             value={newItemName}
             onChange={(e) => setNewItemName(e.target.value)}
             placeholder="Add an item (e.g. Dishwasher pods)..."
-            className="flex-1 bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary h-11"
+            className="flex-1 bg-card border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary min-h-[44px]"
             disabled={addMutation.isPending}
           />
           <Button
             type="submit"
             disabled={!newItemName.trim() || addMutation.isPending}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-5 h-11 rounded-xl cursor-pointer active:scale-95 shadow-xs"
+            className="min-h-[44px] px-5 rounded-xl font-bold gap-2"
           >
             {addMutation.isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Plus className="w-4 h-4" />
             )}
+            <span>Add</span>
           </Button>
         </form>
 
@@ -186,7 +191,7 @@ export default function WeeklyShoppingList({ householdId }: Props) {
             <Button
               onClick={handleCheckout}
               disabled={checkoutMutation.isPending}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold text-base rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full min-h-[50px] font-extrabold text-base rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
             >
               {checkoutMutation.isPending ? (
                 <>
@@ -206,10 +211,10 @@ export default function WeeklyShoppingList({ householdId }: Props) {
             </Button>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Shopping Trip History Card */}
-      <div className="p-5 bg-surface-container-low rounded-2xl border border-dashed border-border flex flex-col items-center justify-center text-center py-8 space-y-1.5">
+      <Card className="p-5 bg-muted/20 rounded-2xl border border-dashed border-border flex flex-col items-center justify-center text-center py-8 space-y-1.5">
         <History className="w-8 h-8 text-muted-foreground/60 mb-1" />
         <p className="text-xs sm:text-sm font-bold text-foreground">
           Recent shopping receipts &amp; trips
@@ -217,7 +222,7 @@ export default function WeeklyShoppingList({ householdId }: Props) {
         <p className="text-xs text-muted-foreground max-w-xs">
           Completed trips and procurement receipts will be archived here.
         </p>
-      </div>
+      </Card>
     </div>
   );
 }

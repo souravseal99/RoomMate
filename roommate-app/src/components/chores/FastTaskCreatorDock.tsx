@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { Pin, Users, Sparkles } from 'lucide-react';
+import { Pin, Users } from 'lucide-react';
 import type { ChoreFrequency, ChorePriority } from '@/types/choreTypes';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface FastTaskCreatorDockProps {
   currentUserName?: string;
@@ -81,201 +86,216 @@ export function FastTaskCreatorDock({
   };
 
   return (
-    <div className="bg-card p-5 rounded-2xl border border-border/70 shadow-xs flex flex-col gap-4">
+    <Card className="bg-card p-5 rounded-2xl border-border/70 shadow-xs flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/50 pb-3">
+      <CardHeader className="p-0 flex flex-row items-center justify-between border-b border-border/50 pb-3 space-y-0">
         <div className="flex items-center gap-2">
           <span className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Pin className="w-4 h-4 stroke-[2.2]" />
           </span>
-          <h2 className="font-display font-bold text-sm sm:text-base text-foreground">
+          <CardTitle className="font-display font-bold text-sm sm:text-base text-foreground">
             Toss a Task on the Board
-          </h2>
+          </CardTitle>
         </div>
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground bg-surface-container px-2 py-0.5 rounded-full border border-border/40">
+        <Badge
+          variant="outline"
+          className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground bg-surface-container px-2 py-0.5 rounded-full border-border/40"
+        >
           FAST 1-CLICK DOCK
-        </span>
-      </div>
+        </Badge>
+      </CardHeader>
 
-      {/* Preset 1-Click Chips */}
-      <div className="flex flex-col gap-1.5">
-        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-          Quick Presets
-        </span>
-        <div className="flex flex-wrap gap-1.5">
-          {PRESET_CHORES.map((preset) => (
-            <button
-              key={preset.label}
-              type="button"
-              onClick={() => handleSelectPreset(preset.text)}
-              className="px-3 py-1.5 min-h-[36px] rounded-full bg-surface-container-low hover:bg-surface-container text-foreground text-xs font-semibold border border-border/50 transition-all cursor-pointer active:scale-95 shadow-2xs"
-            >
-              {preset.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 pt-1">
-        {/* Task Title Input */}
-        <div className="flex flex-col gap-1">
-          <label htmlFor="chore-dock-desc" className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Chore Details
-          </label>
-          <input
-            id="chore-dock-desc"
-            type="text"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="e.g., Clean microwave, wipe coffee maker..."
-            className="w-full px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container-low focus:bg-card border border-border text-foreground placeholder:text-muted-foreground text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-          />
-        </div>
-
-        {/* Flatmate Assignee Avatar Selector */}
+      <CardContent className="p-0 flex flex-col gap-4">
+        {/* Preset 1-Click Chips */}
         <div className="flex flex-col gap-1.5">
           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-            Assign To
+            Quick Presets
           </span>
-          <div className="grid grid-cols-5 gap-1.5 text-center">
-            {/* You */}
-            <button
-              type="button"
-              onClick={() => setSelectedAssignee('YOU')}
-              className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                selectedAssignee === 'YOU'
-                  ? 'bg-primary text-primary-foreground shadow-xs font-bold'
-                  : 'bg-surface-container-low hover:bg-surface-container text-foreground border border-border/40'
-              }`}
-            >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
-                selectedAssignee === 'YOU' ? 'bg-white/20 text-white' : 'bg-primary text-primary-foreground'
-              }`}>
-                {currentUserName.slice(0, 2).toUpperCase()}
-              </div>
-              <span className="text-[10px] leading-tight">You</span>
-            </button>
+          <div className="flex flex-wrap gap-1.5">
+            {PRESET_CHORES.map((preset) => (
+              <Button
+                key={preset.label}
+                type="button"
+                variant="outline"
+                onClick={() => handleSelectPreset(preset.text)}
+                className="px-3 min-h-[36px] rounded-full bg-surface-container-low hover:bg-surface-container text-foreground text-xs font-semibold border-border/50 transition-all cursor-pointer active:scale-95 shadow-2xs h-auto py-1.5"
+              >
+                {preset.label}
+              </Button>
+            ))}
+          </div>
+        </div>
 
-            {/* Other flatmates */}
-            {defaultMembers.map((member) => {
-              const isSelected = selectedAssignee === member.id;
-              const initials = member.name.slice(0, 2).toUpperCase();
-              return (
-                <button
-                  key={member.id}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 pt-1">
+          {/* Task Title Input */}
+          <div className="flex flex-col gap-1">
+            <Label htmlFor="chore-dock-desc" className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              Chore Details
+            </Label>
+            <Input
+              id="chore-dock-desc"
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="e.g., Clean microwave, wipe coffee maker..."
+              className="w-full px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container-low focus:bg-card border-border text-foreground placeholder:text-muted-foreground text-xs sm:text-sm"
+            />
+          </div>
+
+          {/* Flatmate Assignee Avatar Selector */}
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+              Assign To
+            </span>
+            <div className="grid grid-cols-5 gap-1.5 text-center">
+              {/* You */}
+              <Button
+                type="button"
+                variant={selectedAssignee === 'YOU' ? 'default' : 'outline'}
+                onClick={() => setSelectedAssignee('YOU')}
+                className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer h-auto ${
+                  selectedAssignee === 'YOU'
+                    ? 'bg-primary text-primary-foreground shadow-xs font-bold'
+                    : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
+                  selectedAssignee === 'YOU' ? 'bg-white/20 text-white' : 'bg-primary text-primary-foreground'
+                }`}>
+                  {currentUserName.slice(0, 2).toUpperCase()}
+                </div>
+                <span className="text-[10px] leading-tight">You</span>
+              </Button>
+
+              {/* Other flatmates */}
+              {defaultMembers.map((member) => {
+                const isSelected = selectedAssignee === member.id;
+                const initials = member.name.slice(0, 2).toUpperCase();
+                return (
+                  <Button
+                    key={member.id}
+                    type="button"
+                    variant={isSelected ? 'default' : 'outline'}
+                    onClick={() => setSelectedAssignee(member.id)}
+                    className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer h-auto ${
+                      isSelected
+                        ? 'bg-primary text-primary-foreground shadow-xs font-bold'
+                        : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-secondary text-secondary-foreground'
+                    }`}>
+                      {initials}
+                    </div>
+                    <span className="text-[10px] leading-tight truncate max-w-[48px]">
+                      {member.name.split(' ')[0]}
+                    </span>
+                  </Button>
+                );
+              })}
+
+              {/* Open / Any */}
+              <Button
+                type="button"
+                variant={selectedAssignee === 'OPEN' ? 'default' : 'outline'}
+                onClick={() => setSelectedAssignee('OPEN')}
+                className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer h-auto ${
+                  selectedAssignee === 'OPEN'
+                    ? 'bg-primary text-primary-foreground shadow-xs font-bold'
+                    : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  selectedAssignee === 'OPEN' ? 'bg-white/20 text-white' : 'bg-surface-container text-muted-foreground'
+                }`}>
+                  <Users className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[10px] leading-tight">Open</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* Cadence & Priority */}
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                Cadence
+              </span>
+              <div className="flex rounded-xl bg-surface-container p-1 gap-1 border border-border/50">
+                <Button
                   type="button"
-                  onClick={() => setSelectedAssignee(member.id)}
-                  className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-primary text-primary-foreground shadow-xs font-bold'
-                      : 'bg-surface-container-low hover:bg-surface-container text-foreground border border-border/40'
+                  variant="ghost"
+                  onClick={() => setCadence('daily')}
+                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 ${
+                    cadence === 'daily'
+                      ? 'bg-card text-foreground shadow-2xs'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-secondary text-secondary-foreground'
-                  }`}>
-                    {initials}
-                  </div>
-                  <span className="text-[10px] leading-tight truncate max-w-[48px]">
-                    {member.name.split(' ')[0]}
-                  </span>
-                </button>
-              );
-            })}
-
-            {/* Open / Any */}
-            <button
-              type="button"
-              onClick={() => setSelectedAssignee('OPEN')}
-              className={`p-1.5 min-h-[48px] rounded-xl flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                selectedAssignee === 'OPEN'
-                  ? 'bg-primary text-primary-foreground shadow-xs font-bold'
-                  : 'bg-surface-container-low hover:bg-surface-container text-foreground border border-border/40'
-              }`}
-            >
-              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                selectedAssignee === 'OPEN' ? 'bg-white/20 text-white' : 'bg-surface-container text-muted-foreground'
-              }`}>
-                <Users className="w-3.5 h-3.5" />
+                  Daily
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setCadence('weekly')}
+                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 ${
+                    cadence === 'weekly'
+                      ? 'bg-card text-foreground shadow-2xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Weekly
+                </Button>
               </div>
-              <span className="text-[10px] leading-tight">Open</span>
-            </button>
-          </div>
-        </div>
+            </div>
 
-        {/* Cadence & Priority */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-              Cadence
-            </span>
-            <div className="flex rounded-xl bg-surface-container p-1 gap-1 border border-border/50">
-              <button
-                type="button"
-                onClick={() => setCadence('daily')}
-                className={`flex-1 py-1.5 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  cadence === 'daily'
-                    ? 'bg-card text-foreground shadow-2xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Daily
-              </button>
-              <button
-                type="button"
-                onClick={() => setCadence('weekly')}
-                className={`flex-1 py-1.5 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  cadence === 'weekly'
-                    ? 'bg-card text-foreground shadow-2xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Weekly
-              </button>
+            <div className="flex flex-col gap-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+                Priority
+              </span>
+              <div className="flex rounded-xl bg-surface-container p-1 gap-1 border border-border/50">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setPriority('MEDIUM')}
+                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 ${
+                    priority === 'MEDIUM'
+                      ? 'bg-card text-foreground shadow-2xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Med
+                </Button>
+                <Button
+                  type="button"
+                  variant={priority === 'HIGH' ? 'default' : 'ghost'}
+                  onClick={() => setPriority('HIGH')}
+                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 ${
+                    priority === 'HIGH'
+                      ? 'bg-primary text-primary-foreground shadow-2xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  High 🔥
+                </Button>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-              Priority
-            </span>
-            <div className="flex rounded-xl bg-surface-container p-1 gap-1 border border-border/50">
-              <button
-                type="button"
-                onClick={() => setPriority('MEDIUM')}
-                className={`flex-1 py-1.5 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  priority === 'MEDIUM'
-                    ? 'bg-card text-foreground shadow-2xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Med
-              </button>
-              <button
-                type="button"
-                onClick={() => setPriority('HIGH')}
-                className={`flex-1 py-1.5 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  priority === 'HIGH'
-                    ? 'bg-primary text-primary-foreground shadow-2xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                High 🔥
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Pin to Board CTA */}
-        <button
-          type="submit"
-          disabled={!description.trim() || isSubmitting}
-          className="w-full py-3 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
-        >
-          <Pin className="w-4 h-4 stroke-[2.2]" />
-          <span>Pin to Household Board 📌</span>
-        </button>
-      </form>
-    </div>
+          {/* Pin to Board CTA */}
+          <Button
+            type="submit"
+            disabled={!description.trim() || isSubmitting}
+            className="w-full py-3 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+          >
+            <Pin className="w-4 h-4 stroke-[2.2]" />
+            <span>Pin to Household Board 📌</span>
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
+
+export default FastTaskCreatorDock;

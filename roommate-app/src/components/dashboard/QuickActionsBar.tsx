@@ -1,73 +1,104 @@
-import { ReceiptText, PlusCircle, ShoppingBag, Banknote, Zap } from 'lucide-react';
+import { ReceiptText, PlusCircle, ShoppingBag, Banknote } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface QuickActionsBarProps {
   lowStockCount?: number;
+  debtAmount?: number;
   onOpenSettleModal?: () => void;
 }
 
-export function QuickActionsBar({ lowStockCount = 2, onOpenSettleModal }: QuickActionsBarProps) {
+export function QuickActionsBar({
+  lowStockCount = 2,
+  debtAmount = 15.0,
+  onOpenSettleModal,
+}: QuickActionsBarProps) {
   const navigate = useNavigate();
 
   return (
-    <section
-      aria-label="1-Tap Living Actions Bar"
-      className="w-full bg-card rounded-2xl p-4 shadow-xs border border-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 select-none"
-    >
-      {/* Left Branding Group */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-primary-container text-primary-foreground flex items-center justify-center font-bold shadow-xs">
-          <Zap className="w-4 h-4 fill-current" />
-        </div>
-        <div>
-          <p className="font-bold text-sm text-foreground leading-tight tracking-tight font-display">
-            Instant Living Actions
-          </p>
-          <p className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground leading-none mt-0.5 font-mono">
-            Tactile quick triggers
-          </p>
-        </div>
-      </div>
-
-      {/* Right Grid: 4 Tactile Action Buttons */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full md:w-auto">
-        <button
-          type="button"
+    <nav aria-label="Quick Living Actions Ribbon" className="w-full">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full">
+        {/* Action 1: Log Expense */}
+        <Card
           onClick={() => navigate('/expenses')}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-primary text-primary-foreground font-semibold text-xs tracking-tight shadow-[0_2px_0_#9A3412] hover:bg-primary/90 active:scale-95 transition-all cursor-pointer border-b-2 border-primary-fixed-dim"
+          className="group cursor-pointer bg-card hover:bg-surface-container border-border/80 hover:border-primary/40 rounded-2xl shadow-xs transition-all active:scale-[0.98] select-none"
         >
-          <ReceiptText className="w-4 h-4 stroke-[2.2]" />
-          <span>+ Log Expense</span>
-        </button>
+          <CardContent className="p-3.5 sm:p-4 flex items-center gap-3 min-h-[56px]">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <ReceiptText className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
+                Log Expense
+              </p>
+              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate">
+                Split 4 ways
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <button
-          type="button"
+        {/* Action 2: Add Chore */}
+        <Card
           onClick={() => navigate('/chores')}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container border border-border text-foreground font-semibold text-xs tracking-tight hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer"
+          className="group cursor-pointer bg-card hover:bg-surface-container border-border/80 hover:border-border rounded-2xl shadow-xs transition-all active:scale-[0.98] select-none"
         >
-          <PlusCircle className="w-4 h-4 text-primary stroke-[2.2]" />
-          <span>+ Add Chore</span>
-        </button>
+          <CardContent className="p-3.5 sm:p-4 flex items-center gap-3 min-h-[56px]">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container border border-border text-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary stroke-[2.2]" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
+                Add Chore
+              </p>
+              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate">
+                Post to Rota
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <button
-          type="button"
+        {/* Action 3: Shopping Cart */}
+        <Card
           onClick={() => navigate('/inventory')}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-surface-container border border-border text-foreground font-semibold text-xs tracking-tight hover:bg-surface-container-high active:scale-95 transition-all cursor-pointer relative"
+          className="group cursor-pointer bg-card hover:bg-surface-container border-border/80 hover:border-border rounded-2xl shadow-xs transition-all active:scale-[0.98] select-none"
         >
-          <ShoppingBag className="w-4 h-4 text-primary stroke-[2.2]" />
-          <span>🛒 Cart ({lowStockCount} Low)</span>
-        </button>
+          <CardContent className="p-3.5 sm:p-4 flex items-center gap-3 min-h-[56px]">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container border border-border text-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-primary stroke-[2.2]" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
+                Shopping Cart
+              </p>
+              <p className="text-[11px] text-destructive dark:text-terracotta font-mono font-medium leading-tight mt-0.5 truncate">
+                {lowStockCount} {lowStockCount === 1 ? 'item' : 'items'} low
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <button
-          type="button"
+        {/* Action 4: Settle Balance */}
+        <Card
           onClick={onOpenSettleModal || (() => navigate('/expenses'))}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2.5 min-h-[44px] rounded-xl bg-tertiary text-tertiary-foreground font-semibold text-xs tracking-tight shadow-xs hover:bg-tertiary/90 active:scale-95 transition-all cursor-pointer"
+          className="group cursor-pointer bg-card hover:bg-surface-container border-border/80 hover:border-border rounded-2xl shadow-xs transition-all active:scale-[0.98] select-none"
         >
-          <Banknote className="w-4 h-4 stroke-[2.2]" />
-          <span>⚡ Settle Debt</span>
-        </button>
+          <CardContent className="p-3.5 sm:p-4 flex items-center gap-3 min-h-[56px]">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-tertiary text-tertiary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <Banknote className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
+                Settle Balance
+              </p>
+              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate tabular-nums">
+                ${debtAmount.toFixed(2)} owed
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </section>
+    </nav>
   );
 }
 

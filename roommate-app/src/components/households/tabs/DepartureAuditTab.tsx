@@ -1,7 +1,13 @@
-import { useState } from 'react';
-import { AlertTriangle, CheckSquare, Square, LogOut, Trash2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { AlertTriangle, CheckSquare, Square, LogOut, Trash2, CheckCircle2 } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
+import { useExpenseBalancesQuery } from '@/hooks/queries/useExpenseQueries';
+import { useHouseholdChoresQuery } from '@/hooks/queries/useChoreQueries';
 import { toast } from 'sonner';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface DepartureAuditTabProps {
   onOpenLeaveModal?: () => void;
@@ -12,27 +18,70 @@ export function DepartureAuditTab({
   onOpenLeaveModal,
   onOpenDeleteModal,
 }: DepartureAuditTabProps) {
-  const { activeHousehold } = useHousehold();
-  const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({
-    1: true,
-    2: false,
-    3: false,
-    4: false,
+  const { activeHousehold, activeHouseholdId, householdMembers } = useHousehold();
+  const { email, name } = useAuth();
+
+  const { data: balancesData } = useExpenseBalancesQuery(activeHouseholdId);
+  const { data: chores = [] } = useHouseholdChoresQuery(activeHouseholdId);
+
+  // Match current user
+  const currentMember = useMemo(() => {
+    return (
+      householdMembers.find(
+        (m) =>
+          (email && m.user?.email?.toLowerCase() === email.toLowerCase()) ||
+          (name && m.user?.name?.toLowerCase() === name.toLowerCase())
+      ) || null
+    );
+  }, [householdMembers, email, name]);
+
+  const currentUserId = currentMember?.userId;
+  const isAdmin = currentMember?.role === 'ADMIN';
+
+  // 1. Balance verification
+  const userBalance = useMemo(() => {
+    if (!balancesData?.balances || balancesData.balances.length === 0) return 0;
+    const found = balancesData.balances.find(
+      (b) =>
+        (currentUserId && b.userId === currentUserId) ||
+        (name && b.name?.toLowerCase() === name.toLowerCase())
+    );
+    return found ? found.balance : 0;
+  }, [balancesData, currentUserId, name]);
+
+  const isFinancialSettled = Math.abs(userBalance) < 0.01;
+
+  // 2. Pending chores verification
+  const myPendingChores = useMemo(() => {
+    if (!currentUserId) return [];
+    return chores.filter((c) => c.assignedToId === currentUserId && !c.completed);
+  }, [chores, currentUserId]);
+
+  const areChoresCleared = myPendingChores.length === 0;
+
+  // Manual checklist states
+  const [manualChecks, setManualChecks] = useState<Record<string, boolean>>({
+    keys: false,
+    pantry: false,
   });
 
-  const toggleCheck = (idx: number) => {
-    setCheckedItems((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  const toggleManualCheck = (key: 'keys' | 'pantry') => {
+    setManualChecks((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleInitiateMoveOut = () => {
     if (onOpenLeaveModal) {
       onOpenLeaveModal();
     } else {
-      toast.info('Departure pre-flight verified. Proceeding with safe exit.');
+      toast.info('Departure pre-flight verified. Opening leave dialogue.');
     }
   };
 
   const handleInitiateDissolve = () => {
+    if (!isAdmin) {
+      toast.error('Only household admins can dissolve this living space.');
+      return;
+    }
     if (onOpenDeleteModal) {
       onOpenDeleteModal();
     } else {
@@ -40,125 +89,155 @@ export function DepartureAuditTab({
     }
   };
 
-  return (
-    <div className="bg-card rounded-2xl p-5 sm:p-6 shadow-xs border border-border flex flex-col gap-6 w-full animate-in fade-in duration-200 select-none">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/60 pb-4">
-        <div>
-          <h2 className="font-bold text-lg text-foreground font-display tracking-tight">
-            Tenant Departure &amp; Pre-Flight Audit
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Orderly, zero-friction transition protocols for moving out or dissolving the household.
-          </p>
-        </div>
-        <span className="px-3 py-1.5 rounded-full bg-destructive/10 text-destructive font-mono text-[10px] font-bold uppercase self-start">
-          Audit Checklist
-        </span>
-      </div>
+  const currencySymbol = activeHousehold?.settings?.currency === 'EUR' ? '€' : '$';
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  return (
+    <Card className="bg-card rounded-2xl shadow-xs border-border flex flex-col gap-6 w-full animate-in fade-in duration-200 select-none overflow-hidden p-5 sm:p-6">
+      {/* Header */}
+      <CardHeader className="p-0 border-b border-border/60 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <CardTitle className="font-bold text-lg text-foreground font-display tracking-tight">
+              Tenant Departure &amp; Pre-Flight Audit
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">
+              Live checks for moving out cleanly or dissolving the household.
+            </CardDescription>
+          </div>
+          <Badge
+            variant="outline"
+            className="px-3 py-1.5 rounded-full bg-destructive/10 text-destructive border-destructive/20 font-mono text-[10px] font-bold uppercase self-start"
+          >
+            Audit Checklist
+          </Badge>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-0 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Moving Out Step-by-Step Checklist (7 cols) */}
         <div className="lg:col-span-7 flex flex-col gap-4">
           <span className="font-bold text-xs text-foreground font-display">
-            Your Departure Pre-Flight (Moving out of {activeHousehold?.name || 'Unit 4B'})
+            Your Departure Pre-Flight (Moving out of {activeHousehold?.name || 'Space'})
           </span>
 
-          <div className="bg-surface-container p-4 rounded-xl border border-border/80 flex flex-col gap-3.5">
-            {/* Item 1 */}
+          <div className="bg-muted/40 p-4 rounded-xl border border-border/80 flex flex-col gap-3">
+            {/* Item 1: Financial Settlement (Live) */}
+            <div className="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container/60 border border-border/60">
+              {isFinancialSettled ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              ) : (
+                <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+              )}
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-xs text-foreground">
+                    1. Financial Ledger Settlement
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={`font-mono text-[9px] font-bold uppercase ${
+                      isFinancialSettled
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                        : 'bg-warning/10 text-warning border-warning/20'
+                    }`}
+                  >
+                    {isFinancialSettled ? 'Resolved' : 'Pending Settle'}
+                  </Badge>
+                </div>
+                <span className="text-[11px] text-muted-foreground leading-relaxed mt-0.5 font-mono">
+                  {isFinancialSettled
+                    ? 'All debts are fully settled ($0.00 balance).'
+                    : userBalance > 0
+                    ? `You are owed ${currencySymbol}${userBalance.toFixed(2)} by flatmates before leaving.`
+                    : `You owe ${currencySymbol}${Math.abs(userBalance).toFixed(2)} to flatmates. Please settle up.`}
+                </span>
+              </div>
+            </div>
+
+            {/* Item 2: Chore Clearances (Live) */}
+            <div className="flex items-start gap-3 p-2.5 rounded-lg bg-surface-container/60 border border-border/60">
+              {areChoresCleared ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              ) : (
+                <Square className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+              )}
+              <div className="flex flex-col min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-xs text-foreground">
+                    2. Duty &amp; Chore Clearances
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={`font-mono text-[9px] font-bold uppercase ${
+                      areChoresCleared
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                        : 'bg-primary/10 text-primary border-primary/20'
+                    }`}
+                  >
+                    {areChoresCleared ? 'Cleared' : `${myPendingChores.length} Incomplete`}
+                  </Badge>
+                </div>
+                <span className="text-[11px] text-muted-foreground leading-relaxed mt-0.5 font-mono">
+                  {areChoresCleared
+                    ? 'You have 0 pending assigned chores in this space.'
+                    : `Complete or reassign your ${myPendingChores.length} scheduled duty items.`}
+                </span>
+              </div>
+            </div>
+
+            {/* Item 3: Key Fob Handover (Manual) */}
             <button
               type="button"
-              onClick={() => toggleCheck(1)}
-              className="flex items-start gap-3 text-left cursor-pointer group"
+              onClick={() => toggleManualCheck('keys')}
+              className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/60 transition-colors text-left cursor-pointer group min-h-[44px]"
             >
-              {checkedItems[1] ? (
+              {manualChecks.keys ? (
                 <CheckSquare className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               ) : (
                 <Square className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
               )}
               <div className="flex flex-col">
                 <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                  1. Financial Ledger Settlement
+                  3. Physical Key Fob &amp; Remote Handover
                 </span>
                 <span className="text-[11px] text-muted-foreground leading-relaxed">
-                  Current balance is positive (+$24.50). You need to receive funds before archive.
+                  Return apartment keys, garage clickers, and mail keys to the host admin.
                 </span>
               </div>
             </button>
 
-            {/* Item 2 */}
+            {/* Item 4: Pantry & Storage Clear-Out (Manual) */}
             <button
               type="button"
-              onClick={() => toggleCheck(2)}
-              className="flex items-start gap-3 text-left cursor-pointer group"
+              onClick={() => toggleManualCheck('pantry')}
+              className="flex items-start gap-3 p-2.5 rounded-lg hover:bg-muted/60 transition-colors text-left cursor-pointer group min-h-[44px]"
             >
-              {checkedItems[2] ? (
+              {manualChecks.pantry ? (
                 <CheckSquare className="w-4 h-4 text-primary shrink-0 mt-0.5" />
               ) : (
                 <Square className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
               )}
               <div className="flex flex-col">
                 <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                  2. Sublease / Successor Nomination
+                  4. Pantry &amp; Storage Clear-Out
                 </span>
                 <span className="text-[11px] text-muted-foreground leading-relaxed">
-                  Transfer lease agreement and introduce new flatmate candidate to current roster.
-                </span>
-              </div>
-            </button>
-
-            {/* Item 3 */}
-            <button
-              type="button"
-              onClick={() => toggleCheck(3)}
-              className="flex items-start gap-3 text-left cursor-pointer group"
-            >
-              {checkedItems[3] ? (
-                <CheckSquare className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-              ) : (
-                <Square className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-              )}
-              <div className="flex flex-col">
-                <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                  3. Physical Key Fob &amp; Garage Remote Handover
-                </span>
-                <span className="text-[11px] text-muted-foreground leading-relaxed">
-                  Return 2 sets of Medeco high-security keys to primary host admin.
-                </span>
-              </div>
-            </button>
-
-            {/* Item 4 */}
-            <button
-              type="button"
-              onClick={() => toggleCheck(4)}
-              className="flex items-start gap-3 text-left cursor-pointer group"
-            >
-              {checkedItems[4] ? (
-                <CheckSquare className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-              ) : (
-                <Square className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-              )}
-              <div className="flex flex-col">
-                <span className="font-bold text-xs text-foreground group-hover:text-primary transition-colors">
-                  4. Pantry &amp; Storage Clear-Out Inspection
-                </span>
-                <span className="text-[11px] text-muted-foreground leading-relaxed">
-                  Verify personal shelf, crisper bin, and basement locker are cleared.
+                  Verify personal food, refrigerator shelves, and communal lockers are emptied.
                 </span>
               </div>
             </button>
           </div>
 
           <div className="flex items-center gap-3 pt-1">
-            <button
+            <Button
               type="button"
+              variant="destructive"
               onClick={handleInitiateMoveOut}
-              className="px-5 py-2.5 min-h-[44px] bg-destructive text-white rounded-full font-bold text-xs hover:bg-destructive/90 active:scale-95 transition-all shadow-xs flex items-center gap-2 cursor-pointer"
+              className="px-5 min-h-[44px] rounded-full font-bold text-xs shadow-xs flex items-center gap-2 cursor-pointer active:scale-95 transition-all"
             >
               <LogOut className="w-4 h-4" />
               <span>Initiate Move-Out</span>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -172,28 +251,31 @@ export function DepartureAuditTab({
           </div>
 
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            When the master lease expires and all flatmates vacate simultaneously.
+            When all flatmates vacate simultaneously and the shared household is dissolved.
           </p>
 
-          <div className="bg-card p-3 rounded-lg border border-border/80 flex flex-col gap-1 text-[11px] text-muted-foreground">
-            <span className="font-bold text-destructive">Cascade Archive:</span>
-            <span>• Exports full 12-month expense history to PDF/CSV</span>
-            <span>• Releases locked security deposit calculation ledger</span>
-            <span>• Revokes shared smart-lock access passkeys</span>
-          </div>
+          <Card className="bg-card p-3 rounded-lg border-border/80 flex flex-col gap-1 text-[11px] text-muted-foreground shadow-none">
+            <span className="font-bold text-destructive">Cascade Archive Action:</span>
+            <span>• Permanently removes access for all {householdMembers.length} residents</span>
+            <span>• Archives shared expenses and shopping items</span>
+            <span>• Invalidates household invite passkey</span>
+          </Card>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleInitiateDissolve}
-            className="w-full mt-2 bg-destructive/10 hover:bg-destructive text-destructive hover:text-white py-2.5 min-h-[44px] rounded-xl font-bold text-xs transition-colors text-center cursor-pointer border border-destructive/30 flex items-center justify-center gap-2 active:scale-95"
+            disabled={!isAdmin}
+            className="w-full mt-2 bg-destructive/10 hover:bg-destructive text-destructive hover:text-destructive-foreground min-h-[44px] rounded-xl font-bold text-xs transition-colors border-destructive/30 flex items-center justify-center gap-2 active:scale-95 cursor-pointer disabled:opacity-50"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Dissolve Household</span>
-          </button>
+            <span>{isAdmin ? 'Dissolve Household' : 'Admin Authorization Required'}</span>
+          </Button>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
 
 export default DepartureAuditTab;
+

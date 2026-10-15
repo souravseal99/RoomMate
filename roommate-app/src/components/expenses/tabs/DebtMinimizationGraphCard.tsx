@@ -1,5 +1,8 @@
 import { ArrowRight, CheckCircle2, Zap } from 'lucide-react';
 import type { OptimizedSettlement } from '@/types/expenseTypes';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface DebtMinimizationGraphCardProps {
   settlements: OptimizedSettlement[];
@@ -42,23 +45,26 @@ export function DebtMinimizationGraphCard({
   const optimalHops = displaySettlements.length;
 
   return (
-    <div className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border border-border space-y-4 select-none">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40">
+    <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border space-y-4 select-none">
+      <CardHeader className="p-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-border/40 space-y-0">
         <div className="flex items-center gap-2.5">
-          <h3 className="font-display font-extrabold text-lg text-foreground">
+          <CardTitle className="font-display font-extrabold text-lg text-foreground">
             Debt Minimization Graph
-          </h3>
-          <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-mono text-[10px] font-bold">
+          </CardTitle>
+          <Badge
+            variant="outline"
+            className="px-2.5 py-0.5 rounded-lg bg-primary/10 text-primary font-mono text-[10px] font-bold border-primary/20"
+          >
             Optimal {optimalHops} Hops
-          </span>
+          </Badge>
         </div>
         <span className="text-xs text-muted-foreground font-mono">
           All pairwise debts reduced to {optimalHops} direct paths
         </span>
-      </div>
+      </CardHeader>
 
       {/* Path List */}
-      <div className="divide-y divide-border/40">
+      <CardContent className="p-0 divide-y divide-border/40">
         {displaySettlements.map((s, idx) => {
           const isDebtor = s.fromUserId === currentUserId;
           const isCreditor = s.toUserId === currentUserId;
@@ -114,7 +120,7 @@ export function DebtMinimizationGraphCard({
                   </span>
                 </div>
 
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     onSettle({
@@ -125,15 +131,15 @@ export function DebtMinimizationGraphCard({
                       amount: s.amount,
                     })
                   }
-                  className={`px-3.5 py-1.5 min-h-[44px] rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95 shrink-0 ${
+                  className={`px-3.5 min-h-[44px] rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer active:scale-95 shrink-0 ${
                     isDebtor
-                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground border-b-2 border-primary-fixed-dim'
+                      ? 'bg-primary hover:bg-primary/90 text-primary-foreground border-b-2 border-primary/30'
                       : 'bg-surface-container hover:bg-surface-container-high text-foreground border border-border/60'
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
                   <span>{isDebtor ? '⚡ Settle Now' : 'Record Paid'}</span>
-                </button>
+                </Button>
               </div>
             </div>
           );
@@ -155,11 +161,16 @@ export function DebtMinimizationGraphCard({
               </p>
             </div>
           </div>
-          <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+          <Badge
+            variant="outline"
+            className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase px-2.5 py-1 rounded-lg bg-emerald-500/10 border-emerald-500/20"
+          >
             All Square
-          </span>
+          </Badge>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
+
+export default DebtMinimizationGraphCard;

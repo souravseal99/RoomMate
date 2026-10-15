@@ -104,18 +104,6 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                 aria-hidden="true"
               />
 
-              {/* Pin & Header Badge */}
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container text-foreground text-xs font-semibold uppercase tracking-wider shadow-inner">
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span>Resident Check-In</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
-                  <MapPin className="w-3.5 h-3.5 text-primary" />
-                  <span>Doorstep & Noticeboard</span>
-                </div>
-              </div>
-
               {/* Friendly Welcome Title */}
               <div className="flex flex-col gap-1">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
@@ -154,22 +142,20 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                    !isRegister
-                      ? 'bg-foreground text-background shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${!isRegister
+                    ? 'bg-foreground text-background shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
                 >
                   Sign In
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/register')}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
-                    isRegister
-                      ? 'bg-foreground text-background shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${isRegister
+                    ? 'bg-foreground text-background shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                    }`}
                 >
                   New Flatmate / Join Flat
                 </button>
@@ -459,7 +445,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <Home className="w-3.5 h-3.5 text-primary" />
-            <span>RoomMate Living • Built for zero-drama households</span>
+            <span>RoomMate • Built for smart households</span>
           </div>
           <div className="flex items-center gap-6">
             <button type="button" onClick={() => toast.info('Flat Terms', { description: 'Household rules established by flatmates.' })} className="hover:text-foreground transition-colors cursor-pointer">

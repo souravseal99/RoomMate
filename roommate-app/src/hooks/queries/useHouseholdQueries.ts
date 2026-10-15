@@ -154,7 +154,7 @@ export function useCreateHouseholdMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { name: string }) => {
+    mutationFn: async (payload: { name: string; settings?: any }) => {
       const res = await householdApi().create(payload);
       return res.data;
     },
@@ -220,8 +220,16 @@ export function useUpdateHouseholdMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ householdId, name }: { householdId: string; name: string }) => {
-      const res = await householdApi().update(householdId, { name });
+    mutationFn: async ({
+      householdId,
+      name,
+      settings,
+    }: {
+      householdId: string;
+      name?: string;
+      settings?: any;
+    }) => {
+      const res = await householdApi().update(householdId, { name, settings });
       return res.data;
     },
     onSuccess: (_, variables) => {

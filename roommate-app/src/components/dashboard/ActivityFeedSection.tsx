@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import { Rss } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 interface FeedItem {
   id: string;
@@ -82,19 +86,19 @@ export function ActivityFeedSection() {
   );
 
   return (
-    <section
+    <Card
       aria-label="Household Pulse Activity Feed"
       className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-xs space-y-3 select-none"
     >
       {/* Header with Segmented Filter Tabs */}
-      <div className="flex items-center justify-between border-b border-border/60 pb-3">
+      <CardHeader className="p-0 flex flex-row items-center justify-between border-b border-border/60 pb-3 space-y-0">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary-container text-primary-foreground flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
             <Rss className="w-4 h-4 stroke-[2.2]" />
           </div>
-          <h3 className="text-xs font-semibold tracking-wider uppercase text-foreground font-mono">
+          <CardTitle className="text-xs font-semibold tracking-wider uppercase text-foreground font-mono">
             Pulse Activity
-          </h3>
+          </CardTitle>
         </div>
 
         <div className="inline-flex bg-surface-container border border-border p-0.5 rounded-lg">
@@ -113,51 +117,56 @@ export function ActivityFeedSection() {
             </button>
           ))}
         </div>
-      </div>
+      </CardHeader>
 
       {/* Feed List */}
-      <div className="divide-y divide-border/60">
-        {filteredItems.map((item) => {
-          const count = reactions[item.id] ?? item.reactionCount;
-          const isClicked = userReacted[item.id];
+      <CardContent className="p-0">
+        <div className="flex flex-col">
+          {filteredItems.map((item, idx) => {
+            const count = reactions[item.id] ?? item.reactionCount;
+            const isClicked = userReacted[item.id];
 
-          return (
-            <div
-              key={item.id}
-              className="py-2.5 flex items-start justify-between gap-3 transition-colors"
-            >
-              <div className="flex items-start gap-2.5 min-w-0">
-                <div className="w-6 h-6 rounded bg-surface-container border border-border text-foreground font-mono font-bold flex items-center justify-center shrink-0 text-[10px] mt-0.5">
-                  {item.userInitial}
+            return (
+              <div key={item.id}>
+                <div className="py-2.5 flex items-start justify-between gap-3 transition-colors">
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <Avatar className="w-6 h-6 rounded bg-surface-container border border-border text-foreground shrink-0 mt-0.5">
+                      <AvatarFallback className="rounded bg-surface-container font-mono font-bold text-[10px]">
+                        {item.userInitial}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-xs text-foreground leading-tight truncate">
+                        {item.actionHtml}
+                      </p>
+                      <p className="text-muted-foreground text-[10px] mt-0.5 font-mono">
+                        {item.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleToggleReaction(item.id)}
+                    aria-label={`React ${item.reactionEmoji}`}
+                    className={`min-h-[44px] h-auto px-2.5 py-1 text-xs rounded-lg border transition-all active:scale-95 shrink-0 flex items-center gap-1 cursor-pointer font-mono ${
+                      isClicked
+                        ? 'bg-primary/10 border-primary/40 text-primary font-bold hover:bg-primary/20 hover:text-primary'
+                        : 'bg-card border-border hover:bg-surface-container text-foreground'
+                    }`}
+                  >
+                    <span>{item.reactionEmoji}</span>
+                    <span>{count}</span>
+                  </Button>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-xs text-foreground leading-tight truncate">
-                    {item.actionHtml}
-                  </p>
-                  <p className="text-muted-foreground text-[10px] mt-0.5 font-mono">
-                    {item.subtitle}
-                  </p>
-                </div>
+                {idx < filteredItems.length - 1 && <Separator className="bg-border/60" />}
               </div>
-
-              <button
-                type="button"
-                onClick={() => handleToggleReaction(item.id)}
-                aria-label={`React ${item.reactionEmoji}`}
-                className={`min-h-[44px] px-2.5 py-1 text-xs rounded-lg border transition-all active:scale-95 shrink-0 flex items-center gap-1 cursor-pointer font-mono ${
-                  isClicked
-                    ? 'bg-primary/10 border-primary/40 text-primary font-bold'
-                    : 'bg-card border-border hover:bg-surface-container text-foreground'
-                }`}
-              >
-                <span>{item.reactionEmoji}</span>
-                <span>{count}</span>
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </section>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

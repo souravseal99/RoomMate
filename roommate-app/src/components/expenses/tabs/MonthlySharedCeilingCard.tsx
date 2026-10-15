@@ -1,5 +1,7 @@
 import { SunMedium } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface MonthlySharedCeilingCardProps {
   expenses: ExpenseResponse[];
@@ -33,17 +35,20 @@ export function MonthlySharedCeilingCard({
   const suppWidth = Math.min(20, Math.round((suppliesTotal / budgetCap) * 100));
 
   return (
-    <div className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border border-border flex flex-col justify-between gap-4 select-none">
-      <div className="space-y-3">
-        <div className="flex items-center justify-between pb-1 border-b border-border/40">
-          <h3 className="font-display font-extrabold text-lg text-foreground">
-            Monthly Shared Ceiling
-          </h3>
-          <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20">
-            OCTOBER
-          </span>
-        </div>
+    <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border flex flex-col justify-between gap-4 select-none">
+      <CardHeader className="p-0 space-y-0 flex flex-row items-center justify-between pb-1 border-b border-border/40">
+        <CardTitle className="font-display font-extrabold text-lg text-foreground">
+          Monthly Shared Ceiling
+        </CardTitle>
+        <Badge
+          variant="outline"
+          className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-primary/10 text-primary border-primary/20"
+        >
+          OCTOBER
+        </Badge>
+      </CardHeader>
 
+      <CardContent className="p-0 flex flex-col gap-4">
         {/* Spend Metrics */}
         <div className="flex items-baseline justify-between pt-1">
           <div className="flex items-baseline gap-1.5">
@@ -93,16 +98,18 @@ export function MonthlySharedCeilingCard({
             <span className="truncate">Supply ${suppliesTotal}</span>
           </div>
         </div>
-      </div>
 
-      {/* Sunday Square-Up Banner Notice */}
-      <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 flex items-center gap-2.5">
-        <SunMedium className="w-5 h-5 text-primary shrink-0" />
-        <p className="text-xs text-foreground leading-snug">
-          <strong className="font-bold text-primary">Sunday Square-Up:</strong>{' '}
-          Automated domestic debt archive scheduled for Sunday at midnight.
-        </p>
-      </div>
-    </div>
+        {/* Sunday Square-Up Banner Notice */}
+        <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 flex items-center gap-2.5">
+          <SunMedium className="w-5 h-5 text-primary shrink-0" />
+          <p className="text-xs text-foreground leading-snug">
+            <strong className="font-bold text-primary">Sunday Square-Up:</strong>{' '}
+            Automated domestic debt archive scheduled for Sunday at midnight.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
+
+export default MonthlySharedCeilingCard;

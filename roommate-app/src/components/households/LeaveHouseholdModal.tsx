@@ -73,79 +73,85 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-surface border-2 border-border max-w-md p-0 overflow-hidden shadow-tactile rounded-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="p-content-padding bg-surface-container border-b border-border">
+      <DialogContent className="bg-card text-foreground border border-border max-w-md p-0 overflow-hidden shadow-xl rounded-2xl max-h-[90vh] overflow-y-auto select-none">
+        <DialogHeader className="p-6 bg-surface-container border-b border-border/60">
           <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
             <LogOut className="w-5 h-5 text-destructive" />
-            Leave Household?
+            <span>Leave Household?</span>
           </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
+          <DialogDescription className="text-xs text-muted-foreground mt-1">
             Are you sure you want to leave <strong className="text-foreground">{household.name}</strong>?
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-content-padding space-y-4">
+        <div className="p-6 space-y-4">
           {/* Pre-Departure Audit Box */}
           {hasAuditFlags && (
             <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl space-y-3">
-              <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-amber-600 font-bold text-xs uppercase tracking-wider font-mono">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>Pre-Departure Audit Notice</span>
               </div>
 
               {/* Debt / Credit alert */}
               {userOwesMoney && (
-                <div className="flex items-center justify-between text-xs bg-background/80 p-2.5 rounded-lg border border-border/60">
+                <div className="flex items-center justify-between text-xs bg-card p-2.5 rounded-lg border border-border/60">
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-destructive shrink-0" />
                     <span>
                       You owe <strong className="font-mono tabular-nums text-destructive">${Math.abs(userBalance).toFixed(2)}</strong> to flatmates
                     </span>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={handleGoToExpenses}
-                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0"
+                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0 p-0 h-auto"
                   >
-                    Settle Now <ArrowRight className="w-3 h-3" />
-                  </button>
+                    <span>Settle Now</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Button>
                 </div>
               )}
 
               {userIsOwedMoney && (
-                <div className="flex items-center justify-between text-xs bg-background/80 p-2.5 rounded-lg border border-border/60">
+                <div className="flex items-center justify-between text-xs bg-card p-2.5 rounded-lg border border-border/60">
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>
                       Flatmates owe you <strong className="font-mono tabular-nums text-emerald-600">${userBalance.toFixed(2)}</strong>
                     </span>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={handleGoToExpenses}
-                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0"
+                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0 p-0 h-auto"
                   >
-                    View <ArrowRight className="w-3 h-3" />
-                  </button>
+                    <span>View</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Button>
                 </div>
               )}
 
               {/* Chores alert */}
               {hasPendingChores && (
-                <div className="flex items-center justify-between text-xs bg-background/80 p-2.5 rounded-lg border border-border/60">
+                <div className="flex items-center justify-between text-xs bg-card p-2.5 rounded-lg border border-border/60">
                   <div className="flex items-center gap-2">
                     <CheckSquare className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>
                       <strong className="font-mono tabular-nums">{assignedChores.length}</strong> active chore{assignedChores.length > 1 ? 's' : ''} assigned to you
                     </span>
                   </div>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={handleGoToChores}
-                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0"
+                    className="text-primary hover:underline font-bold text-[11px] flex items-center gap-1 cursor-pointer shrink-0 p-0 h-auto"
                   >
-                    Reassign <ArrowRight className="w-3 h-3" />
-                  </button>
+                    <span>Reassign</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </Button>
                 </div>
               )}
 
@@ -175,13 +181,13 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
           </div>
         </div>
 
-        <DialogFooter className="p-content-padding bg-surface-container-high/30 border-t border-border flex items-center justify-end gap-2.5">
+        <DialogFooter className="p-6 bg-surface-container-high/30 border-t border-border/60 flex items-center justify-end gap-2.5">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={leaveMutation.isPending}
-            className="min-h-[44px] bg-surface border-border hover:bg-surface-container text-foreground cursor-pointer"
+            className="min-h-[44px] bg-surface border-border hover:bg-surface-container text-foreground cursor-pointer rounded-xl"
           >
             Cancel
           </Button>
@@ -190,15 +196,15 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
             variant="destructive"
             onClick={handleLeave}
             disabled={leaveMutation.isPending || (hasAuditFlags && !acknowledged)}
-            className="min-h-[44px] bg-destructive hover:opacity-90 text-white font-bold active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+            className="min-h-[44px] bg-destructive hover:opacity-90 text-white font-bold active:scale-95 transition-all cursor-pointer disabled:opacity-50 rounded-xl"
           >
             {leaveMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Leaving...
+                <span>Leaving...</span>
               </>
             ) : (
-              'Yes, Leave Space'
+              <span>Yes, Leave Space</span>
             )}
           </Button>
         </DialogFooter>

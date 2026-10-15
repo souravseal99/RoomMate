@@ -28,4 +28,10 @@ householdRouter.post(
   HouseholdController.delete,
 );
 
+householdRouter.post(
+  "/update",
+  ensureAuthenticated,
+  HouseholdController.update,
+);
+
 export default householdRouter;

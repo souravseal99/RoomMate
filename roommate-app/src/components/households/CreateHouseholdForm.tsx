@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Home, Loader2, Plus, ArrowRight, Edit3, Users } from 'lucide-react';
+import { Home, Loader2, Plus, ArrowRight, Edit3, Users, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Form,
   FormControl,
@@ -44,17 +46,30 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
   const createMutation = useCreateHouseholdMutation();
   const { data: suggestedMembers = [] } = useSuggestedMembersQuery();
   const [activeChip, setActiveChip] = useState<string | null>(null);
+  const [showEssentials, setShowEssentials] = useState(false);
 
   const form = useForm<CreateHouseholdInput>({
     resolver: zodResolver(createHouseholdSchema),
     defaultValues: {
       name: '',
+      settings: {
+        unitOrApt: '',
+        targetRoommates: 4,
+        billingCycleDay: 1,
+        trashDay: 'Wednesday',
+        wifiSsid: '',
+        wifiPassword: '',
+        currency: 'USD',
+      },
     },
   });
 
   const onSubmit = async (values: CreateHouseholdInput) => {
     try {
-      const response = await createMutation.mutateAsync({ name: values.name });
+      const response = await createMutation.mutateAsync({
+        name: values.name,
+        settings: values.settings,
+      });
       const created = response?.data?.household;
 
       if (created?.householdId) {
@@ -104,28 +119,31 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 flex flex-col flex-1">
           {/* Classic Suggestion Grid */}
           <div className="space-y-2">
-            <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground">
+            <span className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground font-mono">
               Pick a classic:
             </span>
             <div className="grid grid-cols-2 gap-2">
               {CLASSIC_SUGGESTIONS.map((name) => {
                 const isSelected = activeChip === name;
                 return (
-                  <button
+                  <Button
                     key={name}
                     type="button"
+                    variant={isSelected ? 'default' : 'outline'}
                     onClick={() => handleChipClick(name)}
-                    className={`px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-left flex justify-between items-center transition-all cursor-pointer shadow-xs active:scale-95 group ${isSelected
-                        ? 'bg-primary/10 border-2 border-primary text-primary'
-                        : 'bg-surface-container border border-border text-foreground hover:border-primary/50 hover:bg-surface-container-high'
-                      }`}
+                    className={`px-3 py-2.5 min-h-[44px] h-auto rounded-xl text-xs sm:text-sm font-bold text-left flex justify-between items-center transition-all cursor-pointer shadow-xs active:scale-95 group ${
+                      isSelected
+                        ? 'bg-primary/10 border-2 border-primary text-primary hover:bg-primary/15'
+                        : 'bg-surface-container border-border text-foreground hover:border-primary/50 hover:bg-surface-container-high'
+                    }`}
                   >
                     <span className="truncate">{name}</span>
                     <Plus
-                      className={`w-3.5 h-3.5 shrink-0 transition-opacity ${isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
-                        }`}
+                      className={`w-3.5 h-3.5 shrink-0 transition-opacity ${
+                        isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
+                      }`}
                     />
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -135,7 +153,7 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
           <div className="space-y-1.5">
             <label
               htmlFor="household-name"
-              className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground block"
+              className="text-[11px] uppercase tracking-widest font-bold text-muted-foreground block font-mono"
             >
               Or type your own
             </label>
@@ -149,7 +167,7 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
                       <Input
                         id="household-name"
                         placeholder="e.g. The Sunny Loft"
-                        className="h-12 px-3.5 bg-surface border-border text-foreground focus:border-primary focus:ring-1 focus:ring-primary font-semibold text-sm sm:text-base rounded-xl shadow-xs pr-10"
+                        className="h-12 min-h-[44px] px-3.5 bg-surface border-border text-foreground focus:border-primary focus:ring-1 focus:ring-primary font-semibold text-sm sm:text-base rounded-xl shadow-xs pr-10"
                         disabled={createMutation.isPending}
                         {...field}
                         onChange={(e) => {
@@ -168,24 +186,208 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
             />
           </div>
 
+          {/* Progressive Disclosure: Flat Essentials (Optional) */}
+          <div className="border border-border/80 rounded-xl overflow-hidden bg-surface-container">
+            <button
+              type="button"
+              onClick={() => setShowEssentials((prev) => !prev)}
+              className="w-full px-3.5 py-2.5 flex items-center justify-between text-left cursor-pointer hover:bg-surface-container-high transition-colors min-h-[44px]"
+            >
+              <div className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold text-foreground">
+                  Living Space Essentials
+                </span>
+                <Badge
+                  variant="outline"
+                  className="text-[9px] font-mono font-bold uppercase tracking-wider bg-primary/10 text-primary border-primary/20 px-1.5 py-0.2"
+                >
+                  Optional
+                </Badge>
+              </div>
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground font-medium">
+                <span>{showEssentials ? 'Hide' : 'Configure now'}</span>
+                {showEssentials ? (
+                  <ChevronUp className="w-3.5 h-3.5" />
+                ) : (
+                  <ChevronDown className="w-3.5 h-3.5" />
+                )}
+              </div>
+            </button>
+
+            {showEssentials && (
+              <div className="p-3.5 pt-2 border-t border-border/60 space-y-3 bg-card/60">
+                <p className="text-[11px] text-muted-foreground">
+                  Personalize your flat vitals. You can update these anytime in space settings.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Unit or Apt # */}
+                  <FormField
+                    control={form.control}
+                    name="settings.unitOrApt"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Unit / Apt #
+                        </label>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g. Unit 4B"
+                            className="h-10 min-h-[40px] px-3 bg-surface border-border text-foreground text-xs rounded-lg"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Target Roommates */}
+                  <FormField
+                    control={form.control}
+                    name="settings.targetRoommates"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Target Capacity (Roommates)
+                        </label>
+                        <FormControl>
+                          <select
+                            className="w-full h-10 min-h-[40px] px-3 bg-surface border border-border text-foreground text-xs rounded-lg cursor-pointer focus:ring-1 focus:ring-primary"
+                            value={field.value ?? 4}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          >
+                            {[2, 3, 4, 5, 6, 7, 8].map((num) => (
+                              <option key={num} value={num}>
+                                {num} Flatmates
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Billing Rollover Day */}
+                  <FormField
+                    control={form.control}
+                    name="settings.billingCycleDay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Billing Rollover Day
+                        </label>
+                        <FormControl>
+                          <select
+                            className="w-full h-10 min-h-[40px] px-3 bg-surface border border-border text-foreground text-xs rounded-lg cursor-pointer focus:ring-1 focus:ring-primary"
+                            value={field.value ?? 1}
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          >
+                            <option value={1}>1st of month (Standard)</option>
+                            <option value={5}>5th of month</option>
+                            <option value={10}>10th of month</option>
+                            <option value={15}>15th of month (Mid-month)</option>
+                            <option value={20}>20th of month</option>
+                            <option value={25}>25th of month</option>
+                            <option value={28}>28th of month (End-month)</option>
+                          </select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Trash Night */}
+                  <FormField
+                    control={form.control}
+                    name="settings.trashDay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Trash Pickup Night
+                        </label>
+                        <FormControl>
+                          <select
+                            className="w-full h-10 min-h-[40px] px-3 bg-surface border border-border text-foreground text-xs rounded-lg cursor-pointer focus:ring-1 focus:ring-primary"
+                            value={field.value ?? 'Wednesday'}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          >
+                            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
+                              <option key={day} value={day}>
+                                {day} Night
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Wi-Fi SSID */}
+                  <FormField
+                    control={form.control}
+                    name="settings.wifiSsid"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Wi-Fi Network Name
+                        </label>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g. Loft_4B_5G"
+                            className="h-10 min-h-[40px] px-3 bg-surface border-border text-foreground text-xs rounded-lg"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Wi-Fi Password */}
+                  <FormField
+                    control={form.control}
+                    name="settings.wifiPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-wider block">
+                          Wi-Fi Password
+                        </label>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="e.g. FiberLoft@2024"
+                            className="h-10 min-h-[40px] px-3 bg-surface border-border text-foreground text-xs rounded-lg font-mono"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Connected Roommates Recommendation Preview */}
           {suggestedMembers.length > 0 && (
             <div className="space-y-1.5 pt-0.5">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1 font-mono">
                 <Users className="w-3.5 h-3.5 text-primary" /> Your connected flatmates:
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {suggestedMembers.slice(0, 4).map((member) => (
-                  <div
+                  <Badge
                     key={member.userId}
-                    className="bg-surface-container-low border border-border px-2.5 py-1 text-[11px] font-semibold rounded-lg text-foreground flex items-center gap-1.5 shadow-xs"
+                    variant="outline"
+                    className="bg-surface-container-low border-border px-2.5 py-1 text-[11px] font-semibold rounded-lg text-foreground flex items-center gap-1.5 shadow-xs"
                     title={`From ${member.sharedHouseholds.join(', ')}`}
                   >
-                    <span className="w-4 h-4 rounded-full bg-surface text-[9px] font-bold flex items-center justify-center">
-                      {getInitials(member.name)}
-                    </span>
+                    <Avatar className="w-4 h-4">
+                      <AvatarFallback className="bg-surface text-[9px] font-bold text-foreground">
+                        {getInitials(member.name)}
+                      </AvatarFallback>
+                    </Avatar>
                     <span>{member.name}</span>
-                  </div>
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -196,7 +398,7 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
             <Button
               type="submit"
               disabled={createMutation.isPending}
-              className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-between px-5 shadow-md shadow-primary/20 active:scale-[0.98] transition-all cursor-pointer"
+              className="w-full min-h-[48px] h-12 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-extrabold text-sm sm:text-base flex items-center justify-between px-5 shadow-sm active:scale-[0.98] transition-all cursor-pointer border-b-2 border-primary-fixed-dim"
             >
               {createMutation.isPending ? (
                 <div className="flex items-center gap-2 mx-auto">
@@ -214,13 +416,14 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
             {onSwitchToJoin && (
               <p className="text-center text-xs text-muted-foreground">
                 Already have an invite code?{' '}
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
                   onClick={onSwitchToJoin}
-                  className="font-bold text-primary hover:underline cursor-pointer"
+                  className="font-bold text-primary hover:underline cursor-pointer p-0 h-auto"
                 >
                   Join existing space
-                </button>
+                </Button>
               </p>
             )}
 

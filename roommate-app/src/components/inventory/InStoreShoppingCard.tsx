@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import type { ShoppingCartItem } from '@/types/inventoryTypes';
 import { toast } from 'sonner';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface InStoreShoppingCardProps {
   cartItems: ShoppingCartItem[];
@@ -122,9 +127,9 @@ export function InStoreShoppingCard({
 
   return (
     <aside className="w-full">
-      <div className="bg-card rounded-2xl border border-border/80 shadow-xs overflow-hidden sticky top-24 flex flex-col">
+      <Card className="rounded-2xl border-border/80 shadow-xs overflow-hidden sticky top-24 flex flex-col p-0">
         {/* Checklist Header */}
-        <div className="p-4 border-b border-border/60 bg-surface-container-low/40 flex items-center justify-between">
+        <div className="p-4 border-b border-border/60 bg-muted/40 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <span className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-lg shrink-0">
               <ShoppingCart className="w-4 h-4 stroke-[2.2]" />
@@ -140,10 +145,12 @@ export function InStoreShoppingCard({
           </div>
 
           {/* Assigned Flatmate Pill */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-xs font-medium text-foreground border border-border/50">
-            <div className="w-5 h-5 rounded-full bg-secondary text-secondary-foreground text-[10px] flex items-center justify-center font-bold">
-              {shopperInitials}
-            </div>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-xs font-medium text-foreground border border-border/50">
+            <Avatar className="w-5 h-5">
+              <AvatarFallback className="bg-secondary text-secondary-foreground text-[10px] font-bold">
+                {shopperInitials}
+              </AvatarFallback>
+            </Avatar>
             <span>{shopperName}</span>
           </div>
         </div>
@@ -169,7 +176,7 @@ export function InStoreShoppingCard({
               return (
                 <div
                   key={item.shoppingCartId}
-                  className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-surface-container-low transition-colors"
+                  className="group flex items-center justify-between p-2.5 rounded-xl hover:bg-muted/50 transition-colors"
                 >
                   <label
                     htmlFor={`cart-item-${item.shoppingCartId}`}
@@ -193,21 +200,23 @@ export function InStoreShoppingCard({
                           x{item.quantity}
                         </span>
                       </div>
-                      <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded bg-surface-container text-muted-foreground text-[10px] font-medium">
+                      <Badge variant="secondary" className="mt-0.5 text-[10px] font-medium h-5 px-1.5">
                         Staple item
-                      </span>
+                      </Badge>
                     </div>
                   </label>
 
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="icon"
                     onClick={() => onDeleteItem(item.shoppingCartId)}
                     title="Remove item from cart"
                     aria-label={`Remove ${item.itemName}`}
-                    className="p-1.5 min-h-[44px] min-w-[44px] rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center cursor-pointer"
+                    className="min-h-[44px] min-w-[44px] rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               );
             })
@@ -219,25 +228,26 @@ export function InStoreShoppingCard({
           onSubmit={handleInlineSubmit}
           className="p-3 border-t border-border/60 bg-card flex items-center gap-2"
         >
-          <input
+          <Input
             type="text"
             value={inlineInput}
             onChange={(e) => setInlineInput(e.target.value)}
             placeholder="+ Add one-off grocery item..."
-            className="flex-1 px-3 py-2 min-h-[44px] rounded-xl border border-border text-xs bg-surface-container-low focus:bg-card focus:outline-none focus:ring-1 focus:ring-primary transition-colors text-foreground placeholder:text-muted-foreground"
+            className="flex-1 min-h-[44px] rounded-xl text-xs bg-muted/30 focus:bg-card"
           />
-          <button
+          <Button
             type="submit"
+            variant="outline"
             disabled={!inlineInput.trim()}
-            className="px-4 py-2 min-h-[44px] rounded-xl bg-surface-container text-foreground hover:bg-surface-container-high text-xs font-semibold shrink-0 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+            className="min-h-[44px] px-4 rounded-xl text-xs font-semibold shrink-0 gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add</span>
-          </button>
+          </Button>
         </form>
 
         {/* Communal Split Summary */}
-        <div className="p-4 bg-surface-container-low/60 border-t border-border/70 space-y-2">
+        <div className="p-4 bg-muted/30 border-t border-border/70 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Estimated Total:</span>
             <span className="font-bold text-foreground text-sm">
@@ -260,28 +270,29 @@ export function InStoreShoppingCard({
 
         {/* Action Buttons */}
         <div className="p-4 pt-2 bg-card flex flex-col gap-2">
-          <button
+          <Button
             type="button"
             disabled={cartItems.length === 0 || isSubmitting}
             onClick={handleBulkCheckout}
-            className="w-full py-2.5 px-4 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full min-h-[44px] rounded-xl font-bold text-xs sm:text-sm gap-2"
           >
             <ShoppingBag className="w-4 h-4" />
             <span>
               Checkout Selected & Restock (${estimatedTotal.toFixed(2)})
             </span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={handleShareList}
-            className="w-full py-2.5 px-4 min-h-[44px] rounded-xl border border-border hover:bg-surface-container text-foreground font-semibold text-xs sm:text-sm transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+            className="w-full min-h-[44px] rounded-xl font-semibold text-xs sm:text-sm gap-1.5"
           >
             <Share2 className="w-4 h-4 text-muted-foreground" />
             <span>Share List via SMS / WhatsApp</span>
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
     </aside>
   );
 }
