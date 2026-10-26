@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { INTERNAL_SERVER_ERROR } from "@common/config";
 import { ApiError } from "@common/errors/ApiError";
+import { invalidCsrfTokenError } from "@common/middlewares/csrf";
 
 function errorHandler(
   error: Error | ApiError,
@@ -9,6 +10,17 @@ function errorHandler(
   resp: Response,
   _next: NextFunction,
 ) {
+  if (
+    error === invalidCsrfTokenError ||
+    ("code" in error && error.code === "EBADCSRFTOKEN")
+  ) {
+    return resp.status(StatusCodes.FORBIDDEN).json({
+      success: false,
+      errorMessage: error.message || "Invalid or missing CSRF token",
+      code: "EBADCSRFTOKEN",
+    });
+  }
+
   if (error instanceof ApiError) {
     return resp.status(error.statusCode).json({
       success: false,

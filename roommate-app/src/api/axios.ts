@@ -8,13 +8,39 @@ const api = axios.create({
   timeout: 60000, // Increased to 60s for Render cold starts
 });
 
-// Attach access token and session ID
-api.interceptors.request.use((config) => {
+// Attach access token, session ID, and CSRF token
+api.interceptors.request.use(async (config) => {
   const accessToken = TokenStore.getToken();
 
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   if (TokenStore.hasSession()) {
     config.headers['X-Session-Id'] = TokenStore.getSessionId();
+  }
+
+  // Attach CSRF token on mutating requests (POST, PUT, PATCH, DELETE)
+  const method = config.method?.toUpperCase();
+  if (method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    let csrfToken = TokenStore.getCsrfToken();
+    if (!csrfToken && !config.url?.includes('/auth/csrf-token')) {
+      try {
+        const res = await axios.get(`${SERVER_BASE_URL}/auth/csrf-token`, {
+          withCredentials: true,
+          headers: {
+            'X-Session-Id': TokenStore.getSessionId(),
+          },
+        });
+        csrfToken = res.data?.csrfToken;
+        if (csrfToken) {
+          TokenStore.setCsrfToken(csrfToken);
+        }
+      } catch (err) {
+        console.warn('Failed to pre-fetch CSRF token:', err);
+      }
+    }
+
+    if (csrfToken) {
+      config.headers['X-CSRF-Token'] = csrfToken;
+    }
   }
 
   return config;
@@ -24,6 +50,32 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Retry once on invalid or expired CSRF token
+    if (
+      error.response?.status === 403 &&
+      (error.response?.data?.code === 'EBADCSRFTOKEN' ||
+        error.response?.data?.errorMessage?.toLowerCase().includes('csrf')) &&
+      !originalRequest._csrfRetry
+    ) {
+      originalRequest._csrfRetry = true;
+      try {
+        const res = await axios.get(`${SERVER_BASE_URL}/auth/csrf-token`, {
+          withCredentials: true,
+          headers: {
+            'X-Session-Id': TokenStore.getSessionId(),
+          },
+        });
+        const newCsrf = res.data?.csrfToken;
+        if (newCsrf) {
+          TokenStore.setCsrfToken(newCsrf);
+          originalRequest.headers['X-CSRF-Token'] = newCsrf;
+          return api(originalRequest);
+        }
+      } catch (csrfErr) {
+        return Promise.reject(csrfErr);
+      }
+    }
 
     console.log('Trying to auto-refresh token... ', error.response?.status);
 
@@ -51,6 +103,17 @@ api.interceptors.response.use(
 );
 
 export default class Api {
+  static async initCsrfToken(): Promise<string | null> {
+    try {
+      const res = await api.get('/auth/csrf-token');
+      const token = res.data?.csrfToken;
+      if (token) TokenStore.setCsrfToken(token);
+      return token;
+    } catch {
+      return null;
+    }
+  }
+
   static async get<T = any>(route: string): Promise<T> {
     return (await api.get(route)).data;
   }

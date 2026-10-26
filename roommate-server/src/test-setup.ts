@@ -14,3 +14,5 @@ process.env.JWT_REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET || "test-refresh-secret";
 process.env.JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 process.env.USE_SECURE_COOKIE = process.env.USE_SECURE_COOKIE || "false";
+process.env.CSRF_SECRET =
+  process.env.CSRF_SECRET || "test-csrf-secret-key-roommate-32chars";

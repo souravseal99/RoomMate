@@ -6,6 +6,7 @@ import errorHandler from "@common/middlewares/errorHandlder";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { doubleCsrfProtection } from "@common/middlewares/csrf";
 
 class App {
   app: Express;
@@ -34,7 +35,13 @@ class App {
         origin: allowedOrigins,
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-        allowedHeaders: ["Content-Type", "Authorization", "X-Session-Id"],
+        allowedHeaders: [
+          "Content-Type",
+          "Authorization",
+          "X-Session-Id",
+          "X-CSRF-Token",
+          "x-csrf-token",
+        ],
       }),
     );
 
@@ -71,6 +78,9 @@ class App {
 
     //NOTE - cookie parser
     this.app.use(cookieParser());
+
+    //NOTE - CSRF protection middleware (Double Submit Cookie HMAC pattern)
+    this.app.use(doubleCsrfProtection);
   }
 }
 
