@@ -235,7 +235,7 @@ async function main() {
   console.log("----------------------------------------------------");
   for (const user of users) {
     console.log(
-      `• ${user.name.padEnd(16)} : ${user.email.padEnd(20)} / ${user.password}`,
+      `• ${user.name.padEnd(16)} : ${user.email.padEnd(20)} / [REDACTED]`,
     );
   }
   console.log("----------------------------------------------------");
