@@ -69,9 +69,7 @@ export function DutyCharterModal({ open, onClose }: DutyCharterModalProps) {
                 <h4 className="font-display font-bold text-xs sm:text-sm text-foreground">
                   {rule.title}
                 </h4>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {rule.desc}
-                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{rule.desc}</p>
               </div>
             </Card>
           ))}

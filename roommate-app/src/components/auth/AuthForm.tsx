@@ -35,9 +35,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
 
   const form = useForm({
     resolver: zodResolver(schema),
-    defaultValues: isRegister
-      ? { name: '', email: '', password: '' }
-      : { email: '', password: '' },
+    defaultValues: isRegister ? { name: '', email: '', password: '' } : { email: '', password: '' },
   });
 
   const navigate = useNavigate();
@@ -73,14 +71,22 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
           <div className="flex items-center gap-4 text-xs font-medium">
             <button
               type="button"
-              onClick={() => toast.info('Passkey Support', { description: 'Passkeys link your TouchID/FaceID directly to your flat.' })}
+              onClick={() =>
+                toast.info('Passkey Support', {
+                  description: 'Passkeys link your TouchID/FaceID directly to your flat.',
+                })
+              }
               className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               Help with Passkey
             </button>
             <button
               type="button"
-              onClick={() => toast.info('Support Desk', { description: 'Contact your house admin for code resets.' })}
+              onClick={() =>
+                toast.info('Support Desk', {
+                  description: 'Contact your house admin for code resets.',
+                })
+              }
               className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               Support
@@ -123,8 +129,12 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                     <Fingerprint className="w-5 h-5" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-foreground">Household Quick Passkey</span>
-                    <span className="text-xs text-muted-foreground">Instant unlock via TouchID, FaceID or Keychain</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      Household Quick Passkey
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Instant unlock via TouchID, FaceID or Keychain
+                    </span>
                   </div>
                 </div>
                 <Button
@@ -142,20 +152,22 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                 <button
                   type="button"
                   onClick={() => navigate('/login')}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${!isRegister
-                    ? 'bg-foreground text-background shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    !isRegister
+                      ? 'bg-foreground text-background shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
                   Sign In
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/register')}
-                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${isRegister
-                    ? 'bg-foreground text-background shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                    }`}
+                  className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
+                    isRegister
+                      ? 'bg-foreground text-background shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
                 >
                   New Flatmate / Join Flat
                 </button>
@@ -212,7 +224,10 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 {isRegister && (
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-semibold text-foreground" htmlFor="roommate-name">
+                    <label
+                      className="text-xs font-semibold text-foreground"
+                      htmlFor="roommate-name"
+                    >
                       Full Name
                     </label>
                     <div className="relative flex items-center">
@@ -235,7 +250,10 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
 
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-foreground" htmlFor="roommate-email">
+                    <label
+                      className="text-xs font-semibold text-foreground"
+                      htmlFor="roommate-email"
+                    >
                       Flatmate Email or Handle
                     </label>
                     <span className="text-[11px] text-muted-foreground">e.g. sam@flat4b.house</span>
@@ -259,13 +277,20 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
 
                 <div className="flex flex-col gap-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-foreground" htmlFor="roommate-password">
+                    <label
+                      className="text-xs font-semibold text-foreground"
+                      htmlFor="roommate-password"
+                    >
                       Passcode / Keyphrase
                     </label>
                     {!isRegister && (
                       <button
                         type="button"
-                        onClick={() => toast.info('Passcode Reset', { description: 'Ask your flat admin to share the house keyphrase.' })}
+                        onClick={() =>
+                          toast.info('Passcode Reset', {
+                            description: 'Ask your flat admin to share the house keyphrase.',
+                          })
+                        }
                         className="text-[11px] text-primary hover:underline cursor-pointer"
                       >
                         Forgot passcode?
@@ -306,7 +331,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                       onChange={(e) => setRememberMe(e.target.checked)}
                       className="w-4 h-4 rounded border-border text-primary focus:ring-primary accent-primary"
                     />
-                    <span className="text-xs text-foreground font-medium">Keep my flatmate profile active on this device</span>
+                    <span className="text-xs text-foreground font-medium">
+                      Keep my flatmate profile active on this device
+                    </span>
                   </label>
                 </div>
 
@@ -323,7 +350,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                     </>
                   ) : (
                     <>
-                      <span>{isRegister ? 'Create Account & Join Flat' : 'Sign In to Account'}</span>
+                      <span>
+                        {isRegister ? 'Create Account & Join Flat' : 'Sign In to Account'}
+                      </span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -341,10 +370,14 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                   </div>
                   <div className="flex flex-col">
                     <span className="text-xs font-semibold text-foreground">
-                      {isRegister ? 'Already registered for your flat?' : 'Have an invite code from flatmates?'}
+                      {isRegister
+                        ? 'Already registered for your flat?'
+                        : 'Have an invite code from flatmates?'}
                     </span>
                     <span className="text-[11px] text-muted-foreground">
-                      {isRegister ? 'Sign in with your existing credentials' : 'Create an account first to join your shared home'}
+                      {isRegister
+                        ? 'Sign in with your existing credentials'
+                        : 'Create an account first to join your shared home'}
                     </span>
                   </div>
                 </div>
@@ -376,14 +409,17 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                   </div>
                 </div>
                 <p className="text-sm font-normal leading-relaxed italic mb-4">
-                  “Communal memos, morning grocery drops, and fridge notes are only accessible to verified flatmates. Sign in to view and post updates for Flat 4B.”
+                  “Communal memos, morning grocery drops, and fridge notes are only accessible to
+                  verified flatmates. Sign in to view and post updates for Flat 4B.”
                 </p>
                 <div className="flex items-center justify-between pt-3 border-t border-amber-200/80 dark:border-amber-800/60">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-amber-200 dark:bg-amber-800/80 flex items-center justify-center text-xs text-amber-900 dark:text-amber-100">
                       <Home className="w-3.5 h-3.5" />
                     </div>
-                    <span className="text-xs font-semibold text-amber-900 dark:text-amber-100">Resident Noticeboard</span>
+                    <span className="text-xs font-semibold text-amber-900 dark:text-amber-100">
+                      Resident Noticeboard
+                    </span>
                   </div>
                   <Pin className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                 </div>
@@ -394,9 +430,13 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                 <div className="flex items-center justify-between pb-2 border-b border-border">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">Domestic Preview Locked</span>
+                    <span className="text-xs font-bold text-foreground uppercase tracking-wider">
+                      Domestic Preview Locked
+                    </span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground font-medium">Requires Sign-in</span>
+                  <span className="text-[11px] text-muted-foreground font-medium">
+                    Requires Sign-in
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-border/40">
@@ -409,7 +449,9 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                   <div className="flex items-center justify-between p-3 rounded-xl bg-surface-container-low border border-border/40">
                     <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
                       <Sparkles className="w-4 h-4 text-primary" />
-                      <span className="font-medium text-foreground">Today's Cleaning & Chore Wheel</span>
+                      <span className="font-medium text-foreground">
+                        Today's Cleaning & Chore Wheel
+                      </span>
                     </div>
                     <Lock className="w-3.5 h-3.5 text-muted-foreground" />
                   </div>
@@ -429,9 +471,12 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-xs font-semibold text-foreground">Gentle Domestic Agreement</span>
+                  <span className="text-xs font-semibold text-foreground">
+                    Gentle Domestic Agreement
+                  </span>
                   <span className="text-[11px] text-muted-foreground leading-relaxed">
-                    All household ledgers, rosters, and door logs are strictly private to confirmed flatmates. No uninvited guests, no public feeds.
+                    All household ledgers, rosters, and door logs are strictly private to confirmed
+                    flatmates. No uninvited guests, no public feeds.
                   </span>
                 </div>
               </div>
@@ -448,13 +493,35 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
             <span>RoomMate • Built for smart households</span>
           </div>
           <div className="flex items-center gap-6">
-            <button type="button" onClick={() => toast.info('Flat Terms', { description: 'Household rules established by flatmates.' })} className="hover:text-foreground transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={() =>
+                toast.info('Flat Terms', {
+                  description: 'Household rules established by flatmates.',
+                })
+              }
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
               Flat Terms
             </button>
-            <button type="button" onClick={() => toast.info('Privacy & Keys', { description: 'Encrypted domestic data privacy.' })} className="hover:text-foreground transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={() =>
+                toast.info('Privacy & Keys', { description: 'Encrypted domestic data privacy.' })
+              }
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
               Privacy & Keys
             </button>
-            <button type="button" onClick={() => toast.info('Resident Help Desk', { description: 'Need flat onboarding assistance?' })} className="hover:text-foreground transition-colors cursor-pointer">
+            <button
+              type="button"
+              onClick={() =>
+                toast.info('Resident Help Desk', {
+                  description: 'Need flat onboarding assistance?',
+                })
+              }
+              className="hover:text-foreground transition-colors cursor-pointer"
+            >
               Resident Help Desk
             </button>
           </div>

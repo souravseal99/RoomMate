@@ -2,7 +2,7 @@ name: Scheduled CodeQL Analysis
 
 on:
   schedule:
-    - cron: '0 2 * * 1' # Every Monday at 2am
+    - cron: "0 2 * * 1" # Every Monday at 2am
   workflow_dispatch:
 
 jobs:

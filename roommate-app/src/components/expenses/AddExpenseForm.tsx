@@ -175,7 +175,10 @@ export default function AddExpenseForm({
 
           {/* Description Input */}
           <div className="grid gap-1.5">
-            <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono">
+            <Label
+              htmlFor="description"
+              className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono"
+            >
               <FileText className="w-3.5 h-3.5 text-primary" /> Description
             </Label>
             <Input
@@ -191,11 +194,16 @@ export default function AddExpenseForm({
 
           {/* Amount Input */}
           <div className="grid gap-1.5">
-            <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono">
+            <Label
+              htmlFor="amount"
+              className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono"
+            >
               <DollarSign className="w-3.5 h-3.5 text-primary" /> Total Amount
             </Label>
             <div className="relative">
-              <span className="absolute left-3.5 top-3 text-muted-foreground text-sm font-bold font-mono">$</span>
+              <span className="absolute left-3.5 top-3 text-muted-foreground text-sm font-bold font-mono">
+                $
+              </span>
               <Input
                 id="amount"
                 name="amount"
@@ -220,14 +228,18 @@ export default function AddExpenseForm({
                 </span>
               </div>
               <span className="font-mono font-extrabold text-sm text-primary tabular-nums">
-                ${splitAmount} <span className="text-[10px] text-muted-foreground font-normal">/ person</span>
+                ${splitAmount}{' '}
+                <span className="text-[10px] text-muted-foreground font-normal">/ person</span>
               </span>
             </div>
           )}
 
           {/* Paid By Dropdown */}
           <div className="grid gap-1.5">
-            <Label htmlFor="paidById" className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono">
+            <Label
+              htmlFor="paidById"
+              className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-1.5 font-mono"
+            >
               <UserCheck className="w-3.5 h-3.5 text-primary" /> Paid By
             </Label>
             <PayerDropdown

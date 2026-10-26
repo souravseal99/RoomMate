@@ -2,11 +2,7 @@ import { Gauge, Scale, Users, Share2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export type HouseholdTabId =
-  | 'tab-vitals'
-  | 'tab-fairness'
-  | 'tab-roster'
-  | 'tab-invites'
-  | 'tab-offboarding';
+  'tab-vitals' | 'tab-fairness' | 'tab-roster' | 'tab-invites' | 'tab-offboarding';
 
 interface HouseholdTabBarProps {
   activeTab: HouseholdTabId;

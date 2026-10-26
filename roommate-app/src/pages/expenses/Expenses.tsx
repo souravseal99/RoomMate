@@ -119,7 +119,8 @@ export default function Expenses() {
         <div className="space-y-1 max-w-md">
           <h2 className="text-xl font-bold text-foreground">No Household Selected</h2>
           <p className="text-xs text-muted-foreground">
-            Please select or create a household space in the top navigation bar to view and manage shared expenses.
+            Please select or create a household space in the top navigation bar to view and manage
+            shared expenses.
           </p>
         </div>
       </section>

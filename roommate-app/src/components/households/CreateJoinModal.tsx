@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Plus, KeyRound } from 'lucide-react';
 import CreateHouseholdForm from './CreateHouseholdForm';
@@ -15,11 +11,7 @@ type Props = {
   defaultTab?: 'create' | 'join';
 };
 
-export default function CreateJoinModal({
-  open,
-  onOpenChange,
-  defaultTab = 'create',
-}: Props) {
+export default function CreateJoinModal({ open, onOpenChange, defaultTab = 'create' }: Props) {
   const [activeTab, setActiveTab] = useState<'create' | 'join'>(defaultTab);
 
   // Sync activeTab whenever defaultTab or modal open changes

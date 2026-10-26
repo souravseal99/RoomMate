@@ -46,9 +46,7 @@ export function AddExpenseDialog({
 }: AddExpenseDialogProps) {
   const createExpenseMutation = useCreateExpenseMutation();
 
-  const allMemberIds = householdMembers.map(
-    (m) => m.userId || m.householdMemberId
-  );
+  const allMemberIds = householdMembers.map((m) => m.userId || m.householdMemberId);
 
   const [isSplitEqually, setIsSplitEqually] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -216,9 +214,7 @@ export function AddExpenseDialog({
               className="bg-surface-container-low border-input text-foreground text-sm"
             />
             {errors.description && (
-              <p className="text-xs text-destructive font-medium">
-                {errors.description.message}
-              </p>
+              <p className="text-xs text-destructive font-medium">{errors.description.message}</p>
             )}
           </div>
 
@@ -273,9 +269,7 @@ export function AddExpenseDialog({
 
             {/* Split preview indicator */}
             <div className="p-2.5 bg-surface-container rounded-lg flex items-center justify-between text-xs">
-              <span className="font-semibold text-foreground">
-                Split {activeSplitCount} ways
-              </span>
+              <span className="font-semibold text-foreground">Split {activeSplitCount} ways</span>
               <span className="font-bold text-primary">
                 {perPersonShare > 0 ? `${formatCurrency(perPersonShare)} / person` : '—'}
               </span>

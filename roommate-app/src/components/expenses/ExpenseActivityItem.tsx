@@ -30,7 +30,13 @@ interface ExpenseActivityItemProps {
 function resolveCategoryIcon(description: string, category?: string) {
   const text = (category || description).toLowerCase();
 
-  if (text.includes('pizza') || text.includes('food') || text.includes('dinner') || text.includes('lunch') || text.includes('takeout')) {
+  if (
+    text.includes('pizza') ||
+    text.includes('food') ||
+    text.includes('dinner') ||
+    text.includes('lunch') ||
+    text.includes('takeout')
+  ) {
     return <Utensils className="w-4 h-4 text-primary" />;
   }
   if (text.includes('grocery') || text.includes('groceries') || text.includes('market')) {
@@ -42,7 +48,12 @@ function resolveCategoryIcon(description: string, category?: string) {
   if (text.includes('wifi') || text.includes('internet')) {
     return <Wifi className="w-4 h-4 text-primary-container" />;
   }
-  if (text.includes('electric') || text.includes('utility') || text.includes('power') || text.includes('bill')) {
+  if (
+    text.includes('electric') ||
+    text.includes('utility') ||
+    text.includes('power') ||
+    text.includes('bill')
+  ) {
     return <Zap className="w-4 h-4 text-primary-container" />;
   }
   if (text.includes('rent') || text.includes('house') || text.includes('apartment')) {
@@ -83,9 +94,7 @@ export function ExpenseActivityItem({
           <p className="text-sm font-semibold text-foreground truncate tracking-tight">
             {expense.description}
           </p>
-          <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-            {splitSummary}
-          </p>
+          <p className="text-[11px] text-muted-foreground truncate mt-0.5">{splitSummary}</p>
         </div>
       </div>
 
@@ -97,7 +106,9 @@ export function ExpenseActivityItem({
               isPaidByCurrentUser ? 'text-primary' : 'text-foreground'
             }`}
           >
-            {isPaidByCurrentUser ? `+${formatCurrency(expense.amount)}` : formatCurrency(expense.amount)}
+            {isPaidByCurrentUser
+              ? `+${formatCurrency(expense.amount)}`
+              : formatCurrency(expense.amount)}
           </p>
           <p
             className="text-[10px] text-muted-foreground mt-0.5 font-mono"

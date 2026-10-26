@@ -20,7 +20,7 @@ export function ShoppingCartTable() {
   const { data: cartItems = [], isLoading: isLoadingCart } = useShoppingCartQuery(
     selectedHousehold?.key
   );
-  
+
   const addMutation = useAddToCartMutation();
   const updateMutation = useUpdateCartItemMutation();
   const deleteMutation = useDeleteCartItemMutation();
@@ -117,25 +117,38 @@ export function ShoppingCartTable() {
       ) : (
         <div className="space-y-2">
           {cartItems.map((item) => (
-            <div key={item.shoppingCartId} className="flex items-center justify-between p-3 bg-muted/40 rounded-xl border border-border/50">
+            <div
+              key={item.shoppingCartId}
+              className="flex items-center justify-between p-3 bg-muted/40 rounded-xl border border-border/50"
+            >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-sm font-semibold text-foreground truncate">{item.itemName}</span>
+                <span className="text-sm font-semibold text-foreground truncate">
+                  {item.itemName}
+                </span>
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
                 <Input
                   type="number"
                   value={item.quantity}
-                  onChange={(e) => handleUpdateQuantity(item.shoppingCartId, parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleUpdateQuantity(item.shoppingCartId, parseInt(e.target.value))
+                  }
                   min="1"
                   className="w-20 min-h-[44px] font-mono text-center"
-                  disabled={updateMutation.isPending && updateMutation.variables?.cartItemId === item.shoppingCartId}
+                  disabled={
+                    updateMutation.isPending &&
+                    updateMutation.variables?.cartItemId === item.shoppingCartId
+                  }
                 />
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => handleRemoveItem(item.shoppingCartId)}
-                  disabled={deleteMutation.isPending && deleteMutation.variables?.cartItemId === item.shoppingCartId}
+                  disabled={
+                    deleteMutation.isPending &&
+                    deleteMutation.variables?.cartItemId === item.shoppingCartId
+                  }
                   className="min-h-[44px] min-w-[44px] text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   aria-label={`Remove ${item.itemName}`}
                 >

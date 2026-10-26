@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-  CheckCircle2,
-  Trash2,
-  Plus,
-  Loader2,
-  ShoppingBag,
-  History,
-} from 'lucide-react';
+import { CheckCircle2, Trash2, Plus, Loader2, ShoppingBag, History } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -73,9 +66,7 @@ export default function WeeklyShoppingList({ householdId }: Props) {
     if (cartItems.length === 0) return;
     // If specific items are checked, checkout checked items; otherwise checkout all items
     const itemsToCheckout =
-      checkedIds.size > 0
-        ? Array.from(checkedIds)
-        : cartItems.map((item) => item.shoppingCartId);
+      checkedIds.size > 0 ? Array.from(checkedIds) : cartItems.map((item) => item.shoppingCartId);
 
     try {
       await checkoutMutation.mutateAsync({
@@ -101,7 +92,10 @@ export default function WeeklyShoppingList({ householdId }: Props) {
               Weekly Procurement List
             </h3>
           </div>
-          <Badge variant="secondary" className="text-xs font-extrabold text-primary bg-primary/10 border-primary/20 px-3 py-1 rounded-full">
+          <Badge
+            variant="secondary"
+            className="text-xs font-extrabold text-primary bg-primary/10 border-primary/20 px-3 py-1 rounded-full"
+          >
             {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
           </Badge>
         </div>

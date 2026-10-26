@@ -75,8 +75,7 @@ export function QuickSplitDock({
       return;
     }
 
-    const finalDescription =
-      customDescription.trim() || `${selectedCategory} run`;
+    const finalDescription = customDescription.trim() || `${selectedCategory} run`;
 
     const sharedWithIds = splitAll
       ? householdMembers.map((m) => m.userId)
@@ -119,9 +118,7 @@ export function QuickSplitDock({
               INSTANT SPLIT
             </span>
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-            <span className="font-mono text-[10px] text-muted-foreground">
-              FAST LOG
-            </span>
+            <span className="font-mono text-[10px] text-muted-foreground">FAST LOG</span>
           </div>
           <h2 className="font-display font-extrabold text-xl text-foreground mt-0.5">
             Log Shared Bill
@@ -133,9 +130,7 @@ export function QuickSplitDock({
 
         {/* Quick Amount Picks */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs text-muted-foreground font-semibold mr-1">
-            Quick Picks:
-          </span>
+          <span className="text-xs text-muted-foreground font-semibold mr-1">Quick Picks:</span>
           {QUICK_AMOUNTS.map((val) => {
             const isSelected = parseFloat(amount) === val;
             return (
@@ -161,9 +156,7 @@ export function QuickSplitDock({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center bg-surface-container p-3 sm:p-4 rounded-xl">
         {/* Odometer Amount Input */}
         <div className="md:col-span-3 flex items-center bg-card px-3.5 py-2.5 rounded-lg border border-border shadow-inner">
-          <span className="font-display text-xl text-primary font-bold mr-1">
-            $
-          </span>
+          <span className="font-display text-xl text-primary font-bold mr-1">$</span>
           <label htmlFor={amountInputId} className="sr-only">
             Split Amount
           </label>
@@ -253,9 +246,7 @@ export function QuickSplitDock({
 
         {/* Real-time Math Output */}
         <div className="font-mono text-xs font-bold text-foreground bg-surface-container px-3 py-1.5 rounded-lg border border-border/40 flex items-center gap-1.5 self-start sm:self-auto">
-          <span className="text-muted-foreground font-sans font-normal">
-            Live Math:
-          </span>
+          <span className="text-muted-foreground font-sans font-normal">Live Math:</span>
           <span className="text-primary tabular-nums">
             Split {splitCount} ways • ${perPersonAmount} each
           </span>

@@ -72,6 +72,7 @@ describe("HouseholdRepository", () => {
         data: {
           name: "My Apartment",
           inviteCode: "ABC12345",
+          settings: {},
           members: {
             create: {
               userId: "user-123",
@@ -113,6 +114,7 @@ describe("HouseholdRepository", () => {
         data: {
           name: "Shared House",
           inviteCode: "XYZ98765",
+          settings: {},
           members: {
             create: {
               userId: "user-456",

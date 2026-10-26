@@ -9,10 +9,7 @@ interface OverdueUrgencyAlertProps {
   onSendNudge: (chore: ChoreItem) => void;
 }
 
-export function OverdueUrgencyAlert({
-  overdueChores,
-  onSendNudge,
-}: OverdueUrgencyAlertProps) {
+export function OverdueUrgencyAlert({ overdueChores, onSendNudge }: OverdueUrgencyAlertProps) {
   if (overdueChores.length === 0) return null;
 
   const topOverdue = overdueChores[0];

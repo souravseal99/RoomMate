@@ -63,7 +63,10 @@ export function RoommateBalanceCard({
             <p className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1.5">
               {roommateName}
               {isCurrentUser && (
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 rounded text-muted-foreground font-medium">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0 rounded text-muted-foreground font-medium"
+                >
                   You
                 </Badge>
               )}
@@ -71,12 +74,14 @@ export function RoommateBalanceCard({
             <p className="text-xs text-muted-foreground mt-0.5">
               {owesYou && (
                 <>
-                  Owes you <span className="text-primary font-bold">{formatCurrency(debtAmount)}</span>
+                  Owes you{' '}
+                  <span className="text-primary font-bold">{formatCurrency(debtAmount)}</span>
                 </>
               )}
               {youOwe && (
                 <>
-                  You owe <span className="text-destructive font-bold">{formatCurrency(debtAmount)}</span>
+                  You owe{' '}
+                  <span className="text-destructive font-bold">{formatCurrency(debtAmount)}</span>
                 </>
               )}
               {isSettled && <span className="text-muted-foreground italic">All settled up</span>}
@@ -87,17 +92,26 @@ export function RoommateBalanceCard({
         {/* Directional Indicator Badge */}
         <div className="shrink-0">
           {owesYou && (
-            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-primary/10 text-primary flex items-center justify-center border-primary/20">
+            <Badge
+              variant="outline"
+              className="w-6 h-6 p-0 rounded-full bg-primary/10 text-primary flex items-center justify-center border-primary/20"
+            >
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </Badge>
           )}
           {youOwe && (
-            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-destructive/10 text-destructive flex items-center justify-center border-destructive/20">
+            <Badge
+              variant="outline"
+              className="w-6 h-6 p-0 rounded-full bg-destructive/10 text-destructive flex items-center justify-center border-destructive/20"
+            >
               <ArrowDownLeft className="w-3.5 h-3.5 stroke-[2.5]" />
             </Badge>
           )}
           {isSettled && (
-            <Badge variant="outline" className="w-6 h-6 p-0 rounded-full bg-surface-container text-muted-foreground flex items-center justify-center border-border">
+            <Badge
+              variant="outline"
+              className="w-6 h-6 p-0 rounded-full bg-surface-container text-muted-foreground flex items-center justify-center border-border"
+            >
               <Check className="w-3.5 h-3.5 stroke-[2.5]" />
             </Badge>
           )}
@@ -110,7 +124,9 @@ export function RoommateBalanceCard({
           className={`h-full rounded-full transition-all duration-500 ${
             owesYou ? 'bg-primary' : youOwe ? 'bg-destructive' : 'bg-surface-container'
           }`}
-          style={{ width: isSettled ? '0%' : `${Math.min(Math.max((debtAmount / 2000) * 100, 20), 100)}%` }}
+          style={{
+            width: isSettled ? '0%' : `${Math.min(Math.max((debtAmount / 2000) * 100, 20), 100)}%`,
+          }}
         />
       </div>
 

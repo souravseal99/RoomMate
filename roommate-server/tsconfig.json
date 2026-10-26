@@ -1,32 +1,18 @@
 {
   "compilerOptions": {
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "target": "ES2022",
     "skipLibCheck": true,
     "module": "esnext",
     "baseUrl": "./src",
     "rootDir": "../",
     "paths": {
-      "@src/*": [
-        "./*"
-      ],
-      "@common/*": [
-        "./common/*"
-      ],
-      "@types/*": [
-        "./common/types/*"
-      ],
-      "@generated/*": [
-        "../generated/*"
-      ],
-      "@config/*": [
-        "./config/*"
-      ],
-      "@test/*": [
-        "../test/*"
-      ]
+      "@src/*": ["./*"],
+      "@common/*": ["./common/*"],
+      "@types/*": ["./common/types/*"],
+      "@generated/*": ["../generated/*"],
+      "@config/*": ["./config/*"],
+      "@test/*": ["../test/*"]
     },
     "outDir": "./build",
     "moduleResolution": "node",
@@ -37,22 +23,10 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "src",
-    "tests",
-    "prisma"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist",
-    "cfn",
-    "**/*.test.ts"
-  ],
+  "include": ["src", "tests", "prisma"],
+  "exclude": ["node_modules", "build", "dist", "cfn", "**/*.test.ts"],
   "ts-node": {
     // Do not forget to `npm i -D tsconfig-paths`
-    "require": [
-      "tsconfig-paths/register"
-    ]
+    "require": ["tsconfig-paths/register"]
   }
 }

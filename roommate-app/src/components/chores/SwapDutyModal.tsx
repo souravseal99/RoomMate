@@ -25,12 +25,7 @@ const SWAP_CANDIDATES = [
   { name: 'Alex Chen', initials: 'AC', role: 'Compost & Boxes' },
 ];
 
-export function SwapDutyModal({
-  open,
-  chore,
-  onClose,
-  onConfirmSwap,
-}: SwapDutyModalProps) {
+export function SwapDutyModal({ open, chore, onClose, onConfirmSwap }: SwapDutyModalProps) {
   const [selectedTarget, setSelectedTarget] = useState('Sarah Lin');
 
   if (!chore) return null;
@@ -56,9 +51,7 @@ export function SwapDutyModal({
               </DialogTitle>
               <DialogDescription className="text-xs text-muted-foreground mt-0.5">
                 Ask a flatmate to swap for:{' '}
-                <strong className="text-foreground font-semibold">
-                  {chore.description}
-                </strong>
+                <strong className="text-foreground font-semibold">{chore.description}</strong>
               </DialogDescription>
             </div>
           </div>
@@ -85,9 +78,13 @@ export function SwapDutyModal({
                   }`}
                 >
                   <Avatar className="w-8 h-8 shrink-0">
-                    <AvatarFallback className={`text-xs font-bold ${
-                      isSelected ? 'bg-primary text-primary-foreground' : 'bg-surface-container text-muted-foreground'
-                    }`}>
+                    <AvatarFallback
+                      className={`text-xs font-bold ${
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-surface-container text-muted-foreground'
+                      }`}
+                    >
                       {cand.initials}
                     </AvatarFallback>
                   </Avatar>

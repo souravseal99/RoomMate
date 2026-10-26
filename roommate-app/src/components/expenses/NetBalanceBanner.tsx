@@ -21,9 +21,7 @@ export function NetBalanceBanner({
   // Calculate circumference offset for circular meter (circumference = 2 * PI * 40 ~= 251.2)
   const maxScale = 5000;
   const progressRatio = Math.min(Math.abs(netBalance) / maxScale, 1);
-  const strokeDashoffset = isZero
-    ? 0
-    : Math.max(251.2 * (1 - Math.max(progressRatio, 0.25)), 0);
+  const strokeDashoffset = isZero ? 0 : Math.max(251.2 * (1 - Math.max(progressRatio, 0.25)), 0);
 
   return (
     <section className="w-full select-none">
@@ -45,11 +43,7 @@ export function NetBalanceBanner({
               {/* Active Progress Track */}
               <circle
                 className={
-                  isPositive
-                    ? 'text-primary'
-                    : isNegative
-                      ? 'text-destructive'
-                      : 'text-primary/40'
+                  isPositive ? 'text-primary' : isNegative ? 'text-destructive' : 'text-primary/40'
                 }
                 cx="50"
                 cy="50"

@@ -84,10 +84,7 @@ export function useUpdateInventoryMutation() {
     },
     onError: (_err, _variables, context) => {
       if (context?.previousItems && context?.householdId) {
-        queryClient.setQueryData(
-          inventoryKeys.list(context.householdId),
-          context.previousItems
-        );
+        queryClient.setQueryData(inventoryKeys.list(context.householdId), context.previousItems);
       }
       toast.error('Failed to update inventory quantity');
     },

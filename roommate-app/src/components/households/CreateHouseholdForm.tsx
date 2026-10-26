@@ -2,22 +2,23 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Home, Loader2, Plus, ArrowRight, Edit3, Users, ChevronDown, ChevronUp, Sliders } from 'lucide-react';
+import {
+  Home,
+  Loader2,
+  Plus,
+  ArrowRight,
+  Edit3,
+  Users,
+  ChevronDown,
+  ChevronUp,
+  Sliders,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  createHouseholdSchema,
-  type CreateHouseholdInput,
-} from '@/schemas/householdSchemas';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { createHouseholdSchema, type CreateHouseholdInput } from '@/schemas/householdSchemas';
 import {
   useCreateHouseholdMutation,
   useSuggestedMembersQuery,
@@ -140,7 +141,9 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
                     <span className="truncate">{name}</span>
                     <Plus
                       className={`w-3.5 h-3.5 shrink-0 transition-opacity ${
-                        isSelected ? 'opacity-100 text-primary' : 'opacity-40 group-hover:opacity-100'
+                        isSelected
+                          ? 'opacity-100 text-primary'
+                          : 'opacity-40 group-hover:opacity-100'
                       }`}
                     />
                   </Button>
@@ -195,9 +198,7 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
             >
               <div className="flex items-center gap-2">
                 <Sliders className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold text-foreground">
-                  Living Space Essentials
-                </span>
+                <span className="text-xs font-bold text-foreground">Living Space Essentials</span>
                 <Badge
                   variant="outline"
                   className="text-[9px] font-mono font-bold uppercase tracking-wider bg-primary/10 text-primary border-primary/20 px-1.5 py-0.2"
@@ -311,7 +312,15 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
                             value={field.value ?? 'Wednesday'}
                             onChange={(e) => field.onChange(e.target.value)}
                           >
-                            {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
+                            {[
+                              'Sunday',
+                              'Monday',
+                              'Tuesday',
+                              'Wednesday',
+                              'Thursday',
+                              'Friday',
+                              'Saturday',
+                            ].map((day) => (
                               <option key={day} value={day}>
                                 {day} Night
                               </option>

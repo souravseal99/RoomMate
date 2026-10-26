@@ -268,7 +268,9 @@ export function Chores() {
       <div className="w-full py-12 text-center space-y-3 max-w-md mx-auto">
         <AlertCircle className="w-8 h-8 text-destructive mx-auto" />
         <p className="text-destructive font-bold text-base">Failed to load household chores.</p>
-        <p className="text-muted-foreground text-xs">Please verify your connection and try again.</p>
+        <p className="text-muted-foreground text-xs">
+          Please verify your connection and try again.
+        </p>
       </div>
     );
   }
@@ -295,10 +297,7 @@ export function Chores() {
       />
 
       {/* 3. Overdue Gentle Urgency Alert Banner */}
-      <OverdueUrgencyAlert
-        overdueChores={overdueChores}
-        onSendNudge={handleSendNudge}
-      />
+      <OverdueUrgencyAlert overdueChores={overdueChores} onSendNudge={handleSendNudge} />
 
       {/* 4. Bento Core Grid: 2-Column Split (66% Left / 34% Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -355,10 +354,7 @@ export function Chores() {
         onConfirmSwap={handleConfirmSwap}
       />
 
-      <DutyCharterModal
-        open={isDutyCharterOpen}
-        onClose={() => setIsDutyCharterOpen(false)}
-      />
+      <DutyCharterModal open={isDutyCharterOpen} onClose={() => setIsDutyCharterOpen(false)} />
 
       <AddChoreDialog
         open={isAddDialogOpen}

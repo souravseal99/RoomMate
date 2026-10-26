@@ -7,9 +7,7 @@ interface MonthlySharedCeilingCardProps {
   expenses: ExpenseResponse[];
 }
 
-export function MonthlySharedCeilingCard({
-  expenses,
-}: MonthlySharedCeilingCardProps) {
+export function MonthlySharedCeilingCard({ expenses }: MonthlySharedCeilingCardProps) {
   // Derive category totals dynamically from expenses or fallback to Stitch demo baseline
   const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0);
   const displayTotal = totalSpent > 0 ? totalSpent : 1420;
@@ -18,17 +16,36 @@ export function MonthlySharedCeilingCard({
   const percentage = Math.min(100, Math.round((displayTotal / budgetCap) * 100));
 
   // Compute breakdown proportions
-  const groceriesTotal = expenses
-    .filter((e) => e.description.toLowerCase().includes('grocer') || e.description.toLowerCase().includes('food') || e.description.toLowerCase().includes('trader'))
-    .reduce((acc, curr) => acc + curr.amount, 0) || 680;
+  const groceriesTotal =
+    expenses
+      .filter(
+        (e) =>
+          e.description.toLowerCase().includes('grocer') ||
+          e.description.toLowerCase().includes('food') ||
+          e.description.toLowerCase().includes('trader')
+      )
+      .reduce((acc, curr) => acc + curr.amount, 0) || 680;
 
-  const utilitiesTotal = expenses
-    .filter((e) => e.description.toLowerCase().includes('util') || e.description.toLowerCase().includes('wi-fi') || e.description.toLowerCase().includes('coned') || e.description.toLowerCase().includes('electric'))
-    .reduce((acc, curr) => acc + curr.amount, 0) || 285;
+  const utilitiesTotal =
+    expenses
+      .filter(
+        (e) =>
+          e.description.toLowerCase().includes('util') ||
+          e.description.toLowerCase().includes('wi-fi') ||
+          e.description.toLowerCase().includes('coned') ||
+          e.description.toLowerCase().includes('electric')
+      )
+      .reduce((acc, curr) => acc + curr.amount, 0) || 285;
 
-  const suppliesTotal = expenses
-    .filter((e) => e.description.toLowerCase().includes('supply') || e.description.toLowerCase().includes('clean') || e.description.toLowerCase().includes('coffee'))
-    .reduce((acc, curr) => acc + curr.amount, 0) || 145;
+  const suppliesTotal =
+    expenses
+      .filter(
+        (e) =>
+          e.description.toLowerCase().includes('supply') ||
+          e.description.toLowerCase().includes('clean') ||
+          e.description.toLowerCase().includes('coffee')
+      )
+      .reduce((acc, curr) => acc + curr.amount, 0) || 145;
 
   const grocWidth = Math.min(60, Math.round((groceriesTotal / budgetCap) * 100));
   const utilWidth = Math.min(30, Math.round((utilitiesTotal / budgetCap) * 100));
@@ -103,8 +120,8 @@ export function MonthlySharedCeilingCard({
         <div className="p-3 bg-primary/5 rounded-xl border border-primary/20 flex items-center gap-2.5">
           <SunMedium className="w-5 h-5 text-primary shrink-0" />
           <p className="text-xs text-foreground leading-snug">
-            <strong className="font-bold text-primary">Sunday Square-Up:</strong>{' '}
-            Automated domestic debt archive scheduled for Sunday at midnight.
+            <strong className="font-bold text-primary">Sunday Square-Up:</strong> Automated domestic
+            debt archive scheduled for Sunday at midnight.
           </p>
         </div>
       </CardContent>

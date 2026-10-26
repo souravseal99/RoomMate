@@ -21,7 +21,9 @@ export function SharedActivityLedger({
   deletingExpenseId,
 }: SharedActivityLedgerProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<'All' | 'Groceries' | 'Utilities' | 'Supplies'>('All');
+  const [selectedFilter, setSelectedFilter] = useState<
+    'All' | 'Groceries' | 'Utilities' | 'Supplies'
+  >('All');
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter((expense) => {
@@ -33,13 +35,25 @@ export function SharedActivityLedger({
       if (!matchesSearch) return false;
 
       if (selectedFilter === 'Groceries') {
-        return expense.description.toLowerCase().includes('grocer') || expense.description.toLowerCase().includes('food') || expense.description.toLowerCase().includes('trader');
+        return (
+          expense.description.toLowerCase().includes('grocer') ||
+          expense.description.toLowerCase().includes('food') ||
+          expense.description.toLowerCase().includes('trader')
+        );
       }
       if (selectedFilter === 'Utilities') {
-        return expense.description.toLowerCase().includes('util') || expense.description.toLowerCase().includes('wi-fi') || expense.description.toLowerCase().includes('electric');
+        return (
+          expense.description.toLowerCase().includes('util') ||
+          expense.description.toLowerCase().includes('wi-fi') ||
+          expense.description.toLowerCase().includes('electric')
+        );
       }
       if (selectedFilter === 'Supplies') {
-        return expense.description.toLowerCase().includes('supply') || expense.description.toLowerCase().includes('clean') || expense.description.toLowerCase().includes('coffee');
+        return (
+          expense.description.toLowerCase().includes('supply') ||
+          expense.description.toLowerCase().includes('clean') ||
+          expense.description.toLowerCase().includes('coffee')
+        );
       }
 
       return true;
@@ -97,7 +111,13 @@ export function SharedActivityLedger({
                       : 'bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground border-transparent'
                   }`}
                 >
-                  {filter === 'Groceries' ? '🛒 Groceries' : filter === 'Utilities' ? '⚡ Utilities' : filter === 'Supplies' ? '🧻 Supplies' : 'All'}
+                  {filter === 'Groceries'
+                    ? '🛒 Groceries'
+                    : filter === 'Utilities'
+                      ? '⚡ Utilities'
+                      : filter === 'Supplies'
+                        ? '🧻 Supplies'
+                        : 'All'}
                 </Button>
               );
             })}
@@ -153,10 +173,7 @@ export function SharedActivityLedger({
 
                       <div className="flex items-center gap-2 text-[11px] text-muted-foreground font-medium pt-0.5">
                         <span>
-                          Paid by{' '}
-                          <strong className="text-foreground">
-                            {payerName}
-                          </strong>
+                          Paid by <strong className="text-foreground">{payerName}</strong>
                         </span>
                         <span>•</span>
                         <span>{formattedDate}</span>

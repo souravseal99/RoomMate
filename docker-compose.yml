@@ -49,11 +49,10 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d roommate" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d roommate"]
       interval: 5s
       timeout: 5s
       retries: 5
 
 volumes:
   pgdata:
-

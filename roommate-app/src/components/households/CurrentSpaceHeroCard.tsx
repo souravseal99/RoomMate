@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  Calendar,
-  Copy,
-  Check,
-  QrCode,
-  Settings,
-} from 'lucide-react';
+import { Calendar, Copy, Check, QrCode, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,10 +31,10 @@ export function CurrentSpaceHeroCard({
 
   const createdDate = household.createdAt
     ? new Date(household.createdAt).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    })
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
     : 'June 1, 2024';
 
   const handleCopyPasskey = () => {
@@ -62,7 +56,10 @@ export function CurrentSpaceHeroCard({
     now.getMonth() + (now.getDate() >= billingDay ? 1 : 0),
     billingDay
   );
-  const daysUntilRollover = Math.max(1, Math.ceil((nextRolloverDate.getTime() - now.getTime()) / 86400000));
+  const daysUntilRollover = Math.max(
+    1,
+    Math.ceil((nextRolloverDate.getTime() - now.getTime()) / 86400000)
+  );
   const rolloverText = `Rollover in ${daysUntilRollover} ${daysUntilRollover === 1 ? 'day' : 'days'}`;
   const unitText = household.settings?.unitOrApt ? `• ${household.settings.unitOrApt}` : '';
 
@@ -160,4 +157,3 @@ export function CurrentSpaceHeroCard({
 }
 
 export default CurrentSpaceHeroCard;
-

@@ -29,17 +29,80 @@ type SortOption = 'urgency' | 'name' | 'recent';
 
 function getItemEmoji(name: string): string {
   const lower = name.toLowerCase();
-  if (lower.includes('milk') || lower.includes('oat') || lower.includes('barista') || lower.includes('dairy') || lower.includes('cream')) return '🥛';
+  if (
+    lower.includes('milk') ||
+    lower.includes('oat') ||
+    lower.includes('barista') ||
+    lower.includes('dairy') ||
+    lower.includes('cream')
+  )
+    return '🥛';
   if (lower.includes('egg')) return '🥚';
-  if (lower.includes('bread') || lower.includes('sourdough') || lower.includes('toast') || lower.includes('bagel')) return '🍞';
-  if (lower.includes('coffee') || lower.includes('espresso') || lower.includes('roast') || lower.includes('bean')) return '☕';
-  if (lower.includes('oil') || lower.includes('olive') || lower.includes('sauce') || lower.includes('vinegar')) return '🫒';
-  if (lower.includes('paper') || lower.includes('towel') || lower.includes('tissue') || lower.includes('roll')) return '🧻';
-  if (lower.includes('soap') || lower.includes('dish') || lower.includes('pod') || lower.includes('detergent') || lower.includes('sponge')) return '🧼';
-  if (lower.includes('apple') || lower.includes('banana') || lower.includes('fruit') || lower.includes('berry')) return '🍎';
-  if (lower.includes('pasta') || lower.includes('noodle') || lower.includes('rice') || lower.includes('grain')) return '🍝';
-  if (lower.includes('snack') || lower.includes('chip') || lower.includes('cookie') || lower.includes('cracker')) return '🍪';
-  if (lower.includes('drink') || lower.includes('soda') || lower.includes('water') || lower.includes('tea') || lower.includes('juice')) return '🥤';
+  if (
+    lower.includes('bread') ||
+    lower.includes('sourdough') ||
+    lower.includes('toast') ||
+    lower.includes('bagel')
+  )
+    return '🍞';
+  if (
+    lower.includes('coffee') ||
+    lower.includes('espresso') ||
+    lower.includes('roast') ||
+    lower.includes('bean')
+  )
+    return '☕';
+  if (
+    lower.includes('oil') ||
+    lower.includes('olive') ||
+    lower.includes('sauce') ||
+    lower.includes('vinegar')
+  )
+    return '🫒';
+  if (
+    lower.includes('paper') ||
+    lower.includes('towel') ||
+    lower.includes('tissue') ||
+    lower.includes('roll')
+  )
+    return '🧻';
+  if (
+    lower.includes('soap') ||
+    lower.includes('dish') ||
+    lower.includes('pod') ||
+    lower.includes('detergent') ||
+    lower.includes('sponge')
+  )
+    return '🧼';
+  if (
+    lower.includes('apple') ||
+    lower.includes('banana') ||
+    lower.includes('fruit') ||
+    lower.includes('berry')
+  )
+    return '🍎';
+  if (
+    lower.includes('pasta') ||
+    lower.includes('noodle') ||
+    lower.includes('rice') ||
+    lower.includes('grain')
+  )
+    return '🍝';
+  if (
+    lower.includes('snack') ||
+    lower.includes('chip') ||
+    lower.includes('cookie') ||
+    lower.includes('cracker')
+  )
+    return '🍪';
+  if (
+    lower.includes('drink') ||
+    lower.includes('soda') ||
+    lower.includes('water') ||
+    lower.includes('tea') ||
+    lower.includes('juice')
+  )
+    return '🥤';
   if (lower.includes('salt') || lower.includes('pepper') || lower.includes('spice')) return '🧂';
   return '📦';
 }
@@ -124,10 +187,11 @@ export function CommunalPantryShelf({
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('all')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'all'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+              filterTab === 'all'
                 ? 'bg-card text-foreground shadow-2xs'
                 : 'text-muted-foreground hover:text-foreground'
-              }`}
+            }`}
           >
             All Items ({items.length})
           </Button>
@@ -135,10 +199,11 @@ export function CommunalPantryShelf({
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('low')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'low'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+              filterTab === 'low'
                 ? 'bg-amber-500 text-white shadow-2xs hover:bg-amber-600'
                 : 'text-muted-foreground hover:text-foreground'
-              }`}
+            }`}
           >
             Running Low ({lowStockCount})
           </Button>
@@ -146,10 +211,11 @@ export function CommunalPantryShelf({
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('out')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${filterTab === 'out'
+            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+              filterTab === 'out'
                 ? 'bg-destructive text-destructive-foreground shadow-2xs hover:bg-destructive/90'
                 : 'text-muted-foreground hover:text-foreground'
-              }`}
+            }`}
           >
             Out of Stock ({outOfStockCount})
           </Button>
@@ -192,7 +258,9 @@ export function CommunalPantryShelf({
           <div className="p-10 text-center space-y-3 bg-surface-container-low/20">
             <PackageOpen className="w-10 h-10 text-muted-foreground/60 mx-auto" />
             <p className="text-sm font-bold text-foreground">
-              {searchQuery || filterTab !== 'all' ? 'No matching supplies found' : 'Your pantry is empty'}
+              {searchQuery || filterTab !== 'all'
+                ? 'No matching supplies found'
+                : 'Your pantry is empty'}
             </p>
             <p className="text-xs text-muted-foreground max-w-xs mx-auto">
               {searchQuery || filterTab !== 'all'
@@ -218,23 +286,27 @@ export function CommunalPantryShelf({
 
             // Stock percentage gauge calculation
             const maxRef = Math.max(item.lowThreshold * 2, item.quantity, 1);
-            const gaugePercent = isOut ? 0 : Math.min(100, Math.round((item.quantity / maxRef) * 100));
+            const gaugePercent = isOut
+              ? 0
+              : Math.min(100, Math.round((item.quantity / maxRef) * 100));
 
             return (
               <div
                 key={item.inventoryItemId}
-                className={`p-4 hover:bg-surface-container-low/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${isOut ? 'bg-destructive/5' : ''
-                  }`}
+                className={`p-4 hover:bg-surface-container-low/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                  isOut ? 'bg-destructive/5' : ''
+                }`}
               >
                 {/* Left: Item Emoji + Info + Gauge */}
                 <div className="flex items-start gap-3.5 min-w-0 flex-1">
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 border ${isOut
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 border ${
+                      isOut
                         ? 'bg-destructive/10 text-destructive border-destructive/20'
                         : isLow
                           ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20'
                           : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
-                      }`}
+                    }`}
                   >
                     {emoji}
                   </div>
@@ -273,12 +345,9 @@ export function CommunalPantryShelf({
                     <div className="mt-1.5 flex items-center gap-2.5 max-w-xs">
                       <div className="flex-1 h-2 rounded-full bg-surface-container overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-300 ${isOut
-                              ? 'bg-destructive w-0'
-                              : isLow
-                                ? 'bg-amber-500'
-                                : 'bg-emerald-500'
-                            }`}
+                          className={`h-full rounded-full transition-all duration-300 ${
+                            isOut ? 'bg-destructive w-0' : isLow ? 'bg-amber-500' : 'bg-emerald-500'
+                          }`}
                           style={{ width: `${gaugePercent}%` }}
                         />
                       </div>
@@ -361,8 +430,11 @@ export function CommunalPantryShelf({
         <Lightbulb className="w-4 h-4 text-amber-500 shrink-0" />
         <span>
           <strong className="text-foreground font-semibold">Pantry Protocol:</strong> Tapping{' '}
-          <code className="px-1.5 py-0.5 rounded bg-surface-container font-mono text-[11px] text-foreground">[-]</code>{' '}
-          automatically triggers restock alerts when quantity drops below minimum threshold. Zero manual spreadsheets.
+          <code className="px-1.5 py-0.5 rounded bg-surface-container font-mono text-[11px] text-foreground">
+            [-]
+          </code>{' '}
+          automatically triggers restock alerts when quantity drops below minimum threshold. Zero
+          manual spreadsheets.
         </span>
       </div>
     </Card>

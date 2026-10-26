@@ -104,11 +104,13 @@ export function WhiteboardTimelineBoard({
                       chore.completed
                         ? 'bg-emerald-600 text-white border-emerald-600'
                         : isMe
-                        ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground'
-                        : 'bg-surface-container text-muted-foreground border-border hover:bg-surface-container-high'
+                          ? 'bg-primary/10 text-primary border-primary/30 hover:bg-primary hover:text-primary-foreground'
+                          : 'bg-surface-container text-muted-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
-                    <Check className={`w-5 h-5 stroke-[2.5] ${chore.completed ? '' : 'opacity-70'}`} />
+                    <Check
+                      className={`w-5 h-5 stroke-[2.5] ${chore.completed ? '' : 'opacity-70'}`}
+                    />
                   </Button>
 
                   <div className="flex flex-col gap-1 min-w-0 flex-1">
@@ -147,9 +149,11 @@ export function WhiteboardTimelineBoard({
                       </Badge>
                     </div>
 
-                    <h3 className={`font-display font-bold text-sm sm:text-base text-foreground ${
-                      chore.completed ? 'line-through opacity-60' : ''
-                    }`}>
+                    <h3
+                      className={`font-display font-bold text-sm sm:text-base text-foreground ${
+                        chore.completed ? 'line-through opacity-60' : ''
+                      }`}
+                    >
                       {chore.description}
                     </h3>
 
@@ -268,11 +272,7 @@ export function WhiteboardTimelineBoard({
                       {chore.description}
                     </h3>
 
-                    {chore.notes && (
-                      <p className="text-xs text-muted-foreground">
-                        {chore.notes}
-                      </p>
-                    )}
+                    {chore.notes && <p className="text-xs text-muted-foreground">{chore.notes}</p>}
                   </div>
                 </div>
 

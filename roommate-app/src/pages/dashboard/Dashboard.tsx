@@ -68,7 +68,12 @@ export function Dashboard() {
   const peerDebtName = firstSettlement?.toName || 'Alex';
   const peerDebtAmount = firstSettlement?.amount || 15.0;
 
-  const handleOpenSettle = (recipient?: { name: string; amount: number; fromUserId?: string; toUserId?: string }) => {
+  const handleOpenSettle = (recipient?: {
+    name: string;
+    amount: number;
+    fromUserId?: string;
+    toUserId?: string;
+  }) => {
     if (recipient) {
       setSettleRecipient(recipient);
     } else {

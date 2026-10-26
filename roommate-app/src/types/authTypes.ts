@@ -2,7 +2,6 @@ import type { LoginPayload, RegisterPayload, AuthMode } from '@/schemas/authSche
 
 export type { RegisterPayload, LoginPayload, AuthMode };
 
-
 export interface RegisterData {
   name: string;
   email: string;

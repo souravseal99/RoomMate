@@ -79,9 +79,7 @@ export function FridgeBulletinSection() {
                   <span className="text-xs font-bold text-foreground truncate max-w-[90px]">
                     {member.user?.name?.split(' ')[0] || 'Roomie'}
                   </span>
-                  <span className="text-[10px] text-muted-foreground font-mono">
-                    {member.tag}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">{member.tag}</span>
                 </div>
               </div>
             ))
@@ -117,9 +115,7 @@ export function FridgeBulletinSection() {
               <div
                 className={`absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full border border-black/20 shadow-xs ${note.pin}`}
               />
-              <p className="text-xs font-medium leading-relaxed mt-1">
-                "{note.text}"
-              </p>
+              <p className="text-xs font-medium leading-relaxed mt-1">"{note.text}"</p>
               <div className="mt-2.5 flex items-center justify-between text-[10px] font-mono opacity-70">
                 <span>— {note.author}</span>
                 <span>Pinned</span>

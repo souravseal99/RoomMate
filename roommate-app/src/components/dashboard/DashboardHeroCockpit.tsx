@@ -39,11 +39,12 @@ export function DashboardHeroCockpit({
   const { activeHousehold, activeHouseholdId, hasActiveHousehold } = useHousehold();
   const addLowStockMutation = useAddLowStockToCartMutation();
 
-  const householdDisplayName = hasActiveHousehold && activeHousehold?.name
-    ? activeHousehold.settings?.unitOrApt
-      ? `${activeHousehold.name} • ${activeHousehold.settings.unitOrApt}`
-      : activeHousehold.name
-    : 'NorthWing #4B';
+  const householdDisplayName =
+    hasActiveHousehold && activeHousehold?.name
+      ? activeHousehold.settings?.unitOrApt
+        ? `${activeHousehold.name} • ${activeHousehold.settings.unitOrApt}`
+        : activeHousehold.name
+      : 'NorthWing #4B';
 
   const billingDay = activeHousehold?.settings?.billingCycleDay || 1;
   const currencyCode = activeHousehold?.settings?.currency || 'USD';
@@ -67,7 +68,10 @@ export function DashboardHeroCockpit({
   const lowCount = lowStockItems.length > 0 ? lowStockItems.length : 2;
   const lowSummary =
     lowStockItems.length > 0
-      ? lowStockItems.slice(0, 2).map((i) => `${i.name} (${i.quantity} left)`).join(', ')
+      ? lowStockItems
+          .slice(0, 2)
+          .map((i) => `${i.name} (${i.quantity} left)`)
+          .join(', ')
       : 'Barista Oat Milk (0.3L), EVOO (10%)';
 
   return (
@@ -91,7 +95,9 @@ export function DashboardHeroCockpit({
 
         <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/80 bg-black/40 border border-white/10 px-2.5 py-1 rounded-lg shrink-0">
           <Calendar className="w-3.5 h-3.5 text-primary-fixed" />
-          <span>Auto-draft: Day {billingDay} • {currencyCode}</span>
+          <span>
+            Auto-draft: Day {billingDay} • {currencyCode}
+          </span>
         </div>
       </div>
 
@@ -135,7 +141,9 @@ export function DashboardHeroCockpit({
               className="w-full min-h-[44px] py-2 px-3 rounded-lg bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground font-semibold text-xs tracking-tight transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border-b-2 border-primary-fixed-dim"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Settle ${peerDebtAmount.toFixed(2)} with {peerDebtName}</span>
+              <span>
+                Settle ${peerDebtAmount.toFixed(2)} with {peerDebtName}
+              </span>
             </Button>
           </CardContent>
         </Card>

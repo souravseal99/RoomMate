@@ -90,9 +90,7 @@ export function FlatmateStandingsCard({
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-xs sm:text-sm text-foreground">
-                      {m.name}
-                    </span>
+                    <span className="font-bold text-xs sm:text-sm text-foreground">{m.name}</span>
                     {m.isCurrentUser && (
                       <Badge
                         variant="secondary"
@@ -102,9 +100,7 @@ export function FlatmateStandingsCard({
                       </Badge>
                     )}
                   </div>
-                  <span className="text-[11px] text-muted-foreground block">
-                    {m.status}
-                  </span>
+                  <span className="text-[11px] text-muted-foreground block">{m.status}</span>
                 </div>
               </div>
 
@@ -115,11 +111,15 @@ export function FlatmateStandingsCard({
                   isPositive
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                     : isNegative
-                    ? 'bg-destructive/10 text-destructive border-destructive/20'
-                    : 'bg-surface-container-high text-muted-foreground border-transparent'
+                      ? 'bg-destructive/10 text-destructive border-destructive/20'
+                      : 'bg-surface-container-high text-muted-foreground border-transparent'
                 }`}
               >
-                {isPositive ? `+$${m.balance.toFixed(2)}` : isNegative ? `-$${Math.abs(m.balance).toFixed(2)}` : '$0.00'}
+                {isPositive
+                  ? `+$${m.balance.toFixed(2)}`
+                  : isNegative
+                    ? `-$${Math.abs(m.balance).toFixed(2)}`
+                    : '$0.00'}
               </Badge>
             </div>
           );

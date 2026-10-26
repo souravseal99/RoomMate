@@ -42,7 +42,7 @@ export function KitchenTableCard() {
           variant="outline"
           className="text-[10px] font-mono text-muted-foreground bg-surface-container border border-border px-2 py-0.5 rounded"
         >
-          {isAttending ? '4 RSVP\'d' : '3 RSVP\'d'}
+          {isAttending ? "4 RSVP'd" : "3 RSVP'd"}
         </Badge>
       </CardHeader>
 
@@ -58,7 +58,9 @@ export function KitchenTableCard() {
               </Avatar>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold text-xs text-foreground tracking-tight">{chefName}</span>
+                  <span className="font-semibold text-xs text-foreground tracking-tight">
+                    {chefName}
+                  </span>
                   <Badge
                     variant="outline"
                     className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-primary/10 border-primary/20 text-primary font-mono"
@@ -67,7 +69,8 @@ export function KitchenTableCard() {
                   </Badge>
                 </div>
                 <p className="text-xs text-foreground mt-1 leading-snug">
-                  Thai curry w/ jasmine rice at <strong className="text-primary font-bold">8:00 PM</strong>.{' '}
+                  Thai curry w/ jasmine rice at{' '}
+                  <strong className="text-primary font-bold">8:00 PM</strong>.{' '}
                   <span className="text-muted-foreground">3 extra portions ready!</span>
                 </p>
               </div>

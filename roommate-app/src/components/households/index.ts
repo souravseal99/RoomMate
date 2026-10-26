@@ -2,10 +2,7 @@ export { CurrentSpaceHeroCard } from './CurrentSpaceHeroCard';
 export { OtherSpaceCard } from './OtherSpaceCard';
 export { InviteRoommatesModal } from './InviteRoommatesModal';
 export { MemberRosterView } from './MemberRosterView';
-export {
-  CurrentSpaceHeroSkeleton,
-  OtherSpacesGridSkeleton,
-} from './HouseholdHubSkeletons';
+export { CurrentSpaceHeroSkeleton, OtherSpacesGridSkeleton } from './HouseholdHubSkeletons';
 export { default as HouseholdCard } from './HouseholdCard';
 export { default as HouseholdCardSkeleton } from './HouseholdCardSkeleton';
 export { default as HouseholdEmptyState } from './HouseholdEmptyState';

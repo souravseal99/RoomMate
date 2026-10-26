@@ -1,12 +1,4 @@
-import {
-  Wallet,
-  ArrowRight,
-  Send,
-  Building2,
-  Zap,
-  Users,
-  CheckCircle2,
-} from 'lucide-react';
+import { Wallet, ArrowRight, Send, Building2, Zap, Users, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -88,9 +80,7 @@ export function OdometerBalanceCard({
             <span className="text-[11px] font-semibold tracking-wider uppercase text-muted-foreground font-mono">
               Direct Settlements (2 Pending)
             </span>
-            <span className="text-[10px] font-mono text-muted-foreground">
-              Peer-to-peer Net
-            </span>
+            <span className="text-[10px] font-mono text-muted-foreground">Peer-to-peer Net</span>
           </div>
 
           <div className="space-y-2">
@@ -235,8 +225,8 @@ export function OdometerBalanceCard({
                             isZero
                               ? 'text-muted-foreground'
                               : isCredit
-                              ? 'text-primary'
-                              : 'text-destructive dark:text-terracotta'
+                                ? 'text-primary'
+                                : 'text-destructive dark:text-terracotta'
                           }`}
                         >
                           {statusLabel}
@@ -248,8 +238,8 @@ export function OdometerBalanceCard({
                         isZero
                           ? 'text-muted-foreground'
                           : isCredit
-                          ? 'text-primary'
-                          : 'text-destructive dark:text-terracotta'
+                            ? 'text-primary'
+                            : 'text-destructive dark:text-terracotta'
                       }`}
                     >
                       {formatted}
@@ -277,7 +267,9 @@ export function OdometerBalanceCard({
                     </div>
                   </div>
                   <span className="font-mono font-bold text-primary text-[11px] tabular-nums">
-                    {expensesAmount >= 0 ? `+$${expensesAmount.toFixed(2)}` : `-$${Math.abs(expensesAmount).toFixed(2)}`}
+                    {expensesAmount >= 0
+                      ? `+$${expensesAmount.toFixed(2)}`
+                      : `-$${Math.abs(expensesAmount).toFixed(2)}`}
                   </span>
                 </div>
 
@@ -298,7 +290,9 @@ export function OdometerBalanceCard({
                       </p>
                     </div>
                   </div>
-                  <span className="font-mono font-bold text-destructive text-[11px] tabular-nums">-$39.50</span>
+                  <span className="font-mono font-bold text-destructive text-[11px] tabular-nums">
+                    -$39.50
+                  </span>
                 </div>
 
                 {/* Alex */}
@@ -318,7 +312,9 @@ export function OdometerBalanceCard({
                       </p>
                     </div>
                   </div>
-                  <span className="font-mono font-bold text-primary text-[11px] tabular-nums">+$15.00</span>
+                  <span className="font-mono font-bold text-primary text-[11px] tabular-nums">
+                    +$15.00
+                  </span>
                 </div>
 
                 {/* Leo */}
@@ -338,7 +334,9 @@ export function OdometerBalanceCard({
                       </p>
                     </div>
                   </div>
-                  <span className="font-mono text-muted-foreground text-[11px] tabular-nums">$0.00</span>
+                  <span className="font-mono text-muted-foreground text-[11px] tabular-nums">
+                    $0.00
+                  </span>
                 </div>
               </>
             )}
@@ -385,8 +383,12 @@ export function OdometerBalanceCard({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <span className="font-mono font-bold text-foreground text-xs block tabular-nums">$800.00</span>
-                <span className="font-mono text-[10px] text-muted-foreground block tabular-nums">$3,200 total</span>
+                <span className="font-mono font-bold text-foreground text-xs block tabular-nums">
+                  $800.00
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground block tabular-nums">
+                  $3,200 total
+                </span>
               </div>
             </div>
 
@@ -425,8 +427,12 @@ export function OdometerBalanceCard({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <span className="font-mono font-bold text-foreground text-xs block tabular-nums">$16.00</span>
-                <span className="font-mono text-[10px] text-muted-foreground block tabular-nums">$64 total split</span>
+                <span className="font-mono font-bold text-foreground text-xs block tabular-nums">
+                  $16.00
+                </span>
+                <span className="font-mono text-[10px] text-muted-foreground block tabular-nums">
+                  $64 total split
+                </span>
               </div>
             </div>
           </div>
@@ -438,12 +444,18 @@ export function OdometerBalanceCard({
                 Oct Household Budget
               </span>
               <span className="font-mono font-bold text-foreground tabular-nums">
-                ${budgetSpent.toLocaleString()} <span className="text-muted-foreground font-normal">/ ${budgetTotal.toLocaleString()} spent</span>{' '}
+                ${budgetSpent.toLocaleString()}{' '}
+                <span className="text-muted-foreground font-normal">
+                  / ${budgetTotal.toLocaleString()} spent
+                </span>{' '}
                 <span className="text-primary font-bold">({budgetPercent}%)</span>
               </span>
             </div>
             <div className="w-full h-2 rounded-full bg-surface-container-high border border-border/40 overflow-hidden flex">
-              <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${budgetPercent}%` }} />
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${budgetPercent}%` }}
+              />
             </div>
           </div>
         </div>

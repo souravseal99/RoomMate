@@ -98,7 +98,11 @@ export function InvitesNetworksTab() {
                   aria-label="Copy household passkey"
                   className="w-6 h-6 rounded-full text-muted-foreground hover:text-foreground transition-colors cursor-pointer p-0"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-500" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5" />
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -165,11 +169,19 @@ export function InvitesNetworksTab() {
               ) : suggestedMembers.length > 0 ? (
                 suggestedMembers.map((sm) => {
                   const initials = sm.name
-                    ? sm.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+                    ? sm.name
+                        .split(' ')
+                        .map((n) => n[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase()
                     : sm.email.slice(0, 2).toUpperCase();
 
                   return (
-                    <Card key={sm.userId} className="bg-surface-container-low p-3.5 rounded-xl border-border shadow-xs">
+                    <Card
+                      key={sm.userId}
+                      className="bg-surface-container-low p-3.5 rounded-xl border-border shadow-xs"
+                    >
                       <CardContent className="p-0 flex items-center justify-between gap-3 w-full">
                         <div className="flex items-center gap-3 min-w-0">
                           <Avatar className="w-9 h-9 rounded-full shrink-0 shadow-xs border border-border">
@@ -208,7 +220,8 @@ export function InvitesNetworksTab() {
                     No Past Co-Residents Found
                   </span>
                   <p className="text-[11px] text-muted-foreground max-w-sm">
-                    As you live in multiple households, former flatmates will automatically appear here for quick invites to new spaces.
+                    As you live in multiple households, former flatmates will automatically appear
+                    here for quick invites to new spaces.
                   </p>
                 </Card>
               )}
@@ -221,4 +234,3 @@ export function InvitesNetworksTab() {
 }
 
 export default InvitesNetworksTab;
-

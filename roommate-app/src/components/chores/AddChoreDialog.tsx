@@ -31,13 +31,7 @@ const choreSchema = z.object({
     .string()
     .min(2, 'Task title must be at least 2 characters')
     .max(100, 'Task title is too long'),
-  frequency: z.enum([
-    'daily',
-    'twice-weekly',
-    'weekly',
-    'bi-weekly',
-    'monthly',
-  ] as const),
+  frequency: z.enum(['daily', 'twice-weekly', 'weekly', 'bi-weekly', 'monthly'] as const),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH'] as const),
   assignedToId: z.string().optional(),
   notes: z.string().max(200, 'Notes are too long').optional(),
@@ -175,17 +169,13 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
               }`}
             />
             {errors.description && (
-              <p className="text-destructive text-xs font-semibold">
-                {errors.description.message}
-              </p>
+              <p className="text-destructive text-xs font-semibold">{errors.description.message}</p>
             )}
           </div>
 
           {/* Roommate Assignment Avatar Selector */}
           <div className="space-y-2">
-            <Label className="text-xs font-bold text-foreground">
-              Assign Roommate (Optional)
-            </Label>
+            <Label className="text-xs font-bold text-foreground">Assign Roommate (Optional)</Label>
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
               <Button
                 type="button"

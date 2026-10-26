@@ -11,10 +11,7 @@ interface OtherSpaceCardProps {
   onOpenRoster?: () => void;
 }
 
-export function OtherSpaceCard({
-  household,
-  onSwitch,
-}: OtherSpaceCardProps) {
+export function OtherSpaceCard({ household, onSwitch }: OtherSpaceCardProps) {
   const initial = (household.name.trim()[0] || 'H').toUpperCase();
   const members = household.members || [];
   const memberCount = members.length;

@@ -13,9 +13,7 @@ export function PantryFuelGauges() {
   const { data: inventory = [] } = useInventoryQuery(activeHouseholdId);
   const addLowStockMutation = useAddLowStockToCartMutation();
 
-  const lowStockItems = inventory.filter(
-    (item) => item.quantity <= (item.lowThreshold || 3)
-  );
+  const lowStockItems = inventory.filter((item) => item.quantity <= (item.lowThreshold || 3));
 
   const displayItems: Array<{ id: string; name: string; remainingText: string }> =
     lowStockItems.length > 0

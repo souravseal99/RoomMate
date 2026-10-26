@@ -80,7 +80,8 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
             <span>Leave Household?</span>
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground mt-1">
-            Are you sure you want to leave <strong className="text-foreground">{household.name}</strong>?
+            Are you sure you want to leave{' '}
+            <strong className="text-foreground">{household.name}</strong>?
           </DialogDescription>
         </DialogHeader>
 
@@ -99,7 +100,11 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-destructive shrink-0" />
                     <span>
-                      You owe <strong className="font-mono tabular-nums text-destructive">${Math.abs(userBalance).toFixed(2)}</strong> to flatmates
+                      You owe{' '}
+                      <strong className="font-mono tabular-nums text-destructive">
+                        ${Math.abs(userBalance).toFixed(2)}
+                      </strong>{' '}
+                      to flatmates
                     </span>
                   </div>
                   <Button
@@ -119,7 +124,10 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-emerald-600 shrink-0" />
                     <span>
-                      Flatmates owe you <strong className="font-mono tabular-nums text-emerald-600">${userBalance.toFixed(2)}</strong>
+                      Flatmates owe you{' '}
+                      <strong className="font-mono tabular-nums text-emerald-600">
+                        ${userBalance.toFixed(2)}
+                      </strong>
                     </span>
                   </div>
                   <Button
@@ -140,7 +148,8 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
                   <div className="flex items-center gap-2">
                     <CheckSquare className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>
-                      <strong className="font-mono tabular-nums">{assignedChores.length}</strong> active chore{assignedChores.length > 1 ? 's' : ''} assigned to you
+                      <strong className="font-mono tabular-nums">{assignedChores.length}</strong>{' '}
+                      active chore{assignedChores.length > 1 ? 's' : ''} assigned to you
                     </span>
                   </div>
                   <Button

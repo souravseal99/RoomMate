@@ -88,9 +88,7 @@ export function SpendCapsBudgetsTab({
           <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
             78% Utilized
           </div>
-          <span className="text-[11px] text-muted-foreground">
-            $380 buffer remaining in cycle
-          </span>
+          <span className="text-[11px] text-muted-foreground">$380 buffer remaining in cycle</span>
         </Card>
       </div>
 
@@ -160,11 +158,10 @@ export function SpendCapsBudgetsTab({
             <SunMedium className="w-5 h-5 stroke-[2.2]" />
           </div>
           <div>
-            <h4 className="font-bold text-sm text-foreground">
-              Sunday Square-Up Protocol Active
-            </h4>
+            <h4 className="font-bold text-sm text-foreground">Sunday Square-Up Protocol Active</h4>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Every Sunday at 11:59 PM, all balanced ledger records are consolidated and archived to keep the active feed crisp and zero-friction.
+              Every Sunday at 11:59 PM, all balanced ledger records are consolidated and archived to
+              keep the active feed crisp and zero-friction.
             </p>
           </div>
         </div>

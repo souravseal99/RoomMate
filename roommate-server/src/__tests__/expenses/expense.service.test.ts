@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ExpenseService } from "@src/expenses/expense.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
+import { SettlementRepo } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import calculateBalance, {
@@ -11,6 +12,7 @@ import { Expense } from "@generated/prisma";
 import { StatusCodes } from "http-status-codes";
 
 vi.mock("@src/expenses/expense.repo");
+vi.mock("@src/expenses/settlement.repo");
 vi.mock("@src/household-members/householdMember.repo");
 vi.mock("@src/expense-split/expenseSplit.service");
 vi.mock("@src/expenses/calculateBalance");
@@ -346,6 +348,7 @@ describe("ExpenseService", () => {
       vi.mocked(HouseholdMemberRepo.getByHouseholdId).mockResolvedValue(
         mockHouseholdMembers as any,
       );
+      vi.mocked(SettlementRepo.getByHouseholdId).mockResolvedValue([]);
 
       const result = await ExpenseService.getBalances("household-123");
 

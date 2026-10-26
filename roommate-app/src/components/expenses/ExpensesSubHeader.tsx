@@ -30,9 +30,7 @@ export function ExpensesSubHeader({
         </div>
         <p className="text-xs sm:text-sm text-muted-foreground">
           All balances square •{' '}
-          <span className="font-semibold text-primary">
-            {activeMembersCount} flatmates active
-          </span>{' '}
+          <span className="font-semibold text-primary">{activeMembersCount} flatmates active</span>{' '}
           in <span className="font-medium text-foreground">{householdName}</span>
         </p>
       </div>

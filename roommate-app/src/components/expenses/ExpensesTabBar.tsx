@@ -4,10 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 export type ExpensesTabId =
-  | 'tab-active-ledger'
-  | 'tab-payback-routes'
-  | 'tab-spend-caps'
-  | 'tab-receipts';
+  'tab-active-ledger' | 'tab-payback-routes' | 'tab-spend-caps' | 'tab-receipts';
 
 interface ExpensesTabBarProps {
   activeTab: ExpensesTabId;
@@ -19,11 +16,7 @@ interface ExpensesTabBarProps {
   };
 }
 
-export function ExpensesTabBar({
-  activeTab,
-  onTabChange,
-  badgeCount = {},
-}: ExpensesTabBarProps) {
+export function ExpensesTabBar({ activeTab, onTabChange, badgeCount = {} }: ExpensesTabBarProps) {
   const tabs = [
     {
       id: 'tab-active-ledger' as ExpensesTabId,

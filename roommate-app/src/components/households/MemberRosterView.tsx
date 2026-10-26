@@ -22,7 +22,10 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useHouseholdMembersQuery, useSuggestedMembersQuery } from '@/hooks/queries/useHouseholdQueries';
+import {
+  useHouseholdMembersQuery,
+  useSuggestedMembersQuery,
+} from '@/hooks/queries/useHouseholdQueries';
 import useAuth from '@/hooks/useAuth';
 import { getInitials } from '@/utils/utils';
 import { toast } from 'sonner';
@@ -53,8 +56,7 @@ export function MemberRosterView({
 
   if (!household) return null;
 
-  const displayMembers: HouseholdMember[] =
-    members.length > 0 ? members : household.members || [];
+  const displayMembers: HouseholdMember[] = members.length > 0 ? members : household.members || [];
 
   const inviteCode = household.inviteCode || '';
   const joinUrl =
@@ -149,7 +151,8 @@ export function MemberRosterView({
               <span>Roommates</span>
             </h2>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {household.name} • {displayMembers.length} {displayMembers.length === 1 ? 'member' : 'members'}
+              {household.name} • {displayMembers.length}{' '}
+              {displayMembers.length === 1 ? 'member' : 'members'}
             </p>
           </div>
         </div>
@@ -210,7 +213,9 @@ export function MemberRosterView({
                     <div className="flex items-center gap-3 min-w-0">
                       {/* Avatar */}
                       <Avatar className="w-11 h-11 border border-border shadow-xs shrink-0">
-                        {avatarUrl && <AvatarImage src={avatarUrl} alt={name} className="object-cover" />}
+                        {avatarUrl && (
+                          <AvatarImage src={avatarUrl} alt={name} className="object-cover" />
+                        )}
                         <AvatarFallback className="bg-surface font-bold text-sm text-foreground">
                           {getInitials(name)}
                         </AvatarFallback>
@@ -219,9 +224,7 @@ export function MemberRosterView({
                       {/* Member Info */}
                       <div className="min-w-0 space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-foreground truncate">
-                            {name}
-                          </span>
+                          <span className="text-sm font-bold text-foreground truncate">{name}</span>
                           {isSelf && (
                             <span className="text-[10px] font-semibold text-muted-foreground font-mono">
                               (You)
@@ -235,9 +238,7 @@ export function MemberRosterView({
                           </Badge>
                         </div>
 
-                        {email && (
-                          <p className="text-xs text-muted-foreground truncate">{email}</p>
-                        )}
+                        {email && <p className="text-xs text-muted-foreground truncate">{email}</p>}
                         <p className="text-[11px] text-muted-foreground/80 font-mono">
                           {formatJoinedDate(member.createdAt)}
                         </p>
@@ -257,7 +258,10 @@ export function MemberRosterView({
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-card text-foreground border-border">
+                      <DropdownMenuContent
+                        align="end"
+                        className="w-44 bg-card text-foreground border-border"
+                      >
                         {isSelf && onOpenLeave && (
                           <DropdownMenuItem
                             onClick={onOpenLeave}
@@ -288,9 +292,7 @@ export function MemberRosterView({
           </div>
         ) : (
           <Card className="bg-surface-container rounded-xl p-6 text-center text-xs text-muted-foreground border-border">
-            <CardContent className="p-0">
-              No flatmates listed in this space yet.
-            </CardContent>
+            <CardContent className="p-0">No flatmates listed in this space yet.</CardContent>
           </Card>
         )}
       </div>
@@ -392,7 +394,11 @@ export function MemberRosterView({
               onClick={handleCopyLink}
               className="min-h-[44px] text-xs font-bold border-border bg-surface-container-low hover:bg-surface-container text-foreground flex items-center justify-center gap-2 cursor-pointer active:scale-98 rounded-xl shadow-xs"
             >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-primary" /> : <LinkIcon className="w-3.5 h-3.5" />}
+              {copiedLink ? (
+                <Check className="w-3.5 h-3.5 text-primary" />
+              ) : (
+                <LinkIcon className="w-3.5 h-3.5" />
+              )}
               <span>Copy Link</span>
             </Button>
 

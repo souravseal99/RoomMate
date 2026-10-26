@@ -41,16 +41,10 @@ export function AppHeader() {
   // Close menus on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        spaceMenuRef.current &&
-        !spaceMenuRef.current.contains(event.target as Node)
-      ) {
+      if (spaceMenuRef.current && !spaceMenuRef.current.contains(event.target as Node)) {
         setIsSpaceMenuOpen(false);
       }
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target as Node)
-      ) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
         setIsProfileMenuOpen(false);
       }
     }
@@ -125,8 +119,9 @@ export function AppHeader() {
                 </span>
               )}
               <ChevronDown
-                className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform ${isSpaceMenuOpen ? 'rotate-180' : ''
-                  }`}
+                className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform ${
+                  isSpaceMenuOpen ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -148,10 +143,11 @@ export function AppHeader() {
                           switchActiveHousehold(h.householdId);
                           setIsSpaceMenuOpen(false);
                         }}
-                        className={`w-full min-h-[40px] px-2.5 py-2 rounded-xl flex items-center justify-between text-xs transition-colors cursor-pointer text-left ${isCurrent
-                          ? 'bg-primary/10 text-primary font-bold'
-                          : 'hover:bg-surface-container text-foreground'
-                          }`}
+                        className={`w-full min-h-[40px] px-2.5 py-2 rounded-xl flex items-center justify-between text-xs transition-colors cursor-pointer text-left ${
+                          isCurrent
+                            ? 'bg-primary/10 text-primary font-bold'
+                            : 'hover:bg-surface-container text-foreground'
+                        }`}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <Building className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -200,10 +196,11 @@ export function AppHeader() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[36px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${active
-                  ? 'bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
-                  }`}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[36px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
+                  active
+                    ? 'bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
+                }`}
               >
                 {item.label}
               </Link>
@@ -247,8 +244,9 @@ export function AppHeader() {
                 </span>
               </div>
               <ChevronDown
-                className={`w-3.5 h-3.5 text-muted-foreground hidden sm:inline transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''
-                  }`}
+                className={`w-3.5 h-3.5 text-muted-foreground hidden sm:inline transition-transform ${
+                  isProfileMenuOpen ? 'rotate-180' : ''
+                }`}
               />
             </button>
 
@@ -294,10 +292,11 @@ export function AppHeader() {
                             key={theme.name}
                             type="button"
                             onClick={() => setTheme(theme.name)}
-                            className={`w-full min-h-[36px] px-2 py-1 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer ${isSelected
-                              ? 'bg-primary/10 text-primary font-bold'
-                              : 'hover:bg-surface-container text-foreground'
-                              }`}
+                            className={`w-full min-h-[36px] px-2 py-1 rounded-lg flex items-center justify-between text-xs transition-colors cursor-pointer ${
+                              isSelected
+                                ? 'bg-primary/10 text-primary font-bold'
+                                : 'hover:bg-surface-container text-foreground'
+                            }`}
                           >
                             <div className="flex items-center gap-2">
                               <span

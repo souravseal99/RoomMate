@@ -35,7 +35,10 @@ export function BuySoonPopover() {
         <Button variant="outline" className="relative min-h-[44px] px-4 font-semibold">
           Buy Soon
           {buySoonItems.length > 0 && (
-            <Badge variant="destructive" className="absolute -top-2 -right-2 flex h-5 w-5 p-0 items-center justify-center rounded-full text-xs font-bold">
+            <Badge
+              variant="destructive"
+              className="absolute -top-2 -right-2 flex h-5 w-5 p-0 items-center justify-center rounded-full text-xs font-bold"
+            >
               {buySoonItems.length}
             </Badge>
           )}
@@ -46,13 +49,20 @@ export function BuySoonPopover() {
           <div className="flex items-center justify-between">
             <h4 className="font-bold text-sm text-foreground">Items to Buy Soon</h4>
             {buySoonItems.length > 0 && (
-              <Button size="sm" className="min-h-[44px] px-3 font-semibold text-xs" onClick={handleAddAllToCart} disabled={isAdding}>
+              <Button
+                size="sm"
+                className="min-h-[44px] px-3 font-semibold text-xs"
+                onClick={handleAddAllToCart}
+                disabled={isAdding}
+              >
                 {isAdding ? 'Adding...' : 'Add All to Cart'}
               </Button>
             )}
           </div>
           {buySoonItems.length === 0 ? (
-            <p className="text-muted-foreground text-sm text-center py-4">No items need restocking</p>
+            <p className="text-muted-foreground text-sm text-center py-4">
+              No items need restocking
+            </p>
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {buySoonItems.map((item) => (
@@ -63,8 +73,12 @@ export function BuySoonPopover() {
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-base shrink-0">{getItemEmoji(item.name)}</span>
                     <div className="min-w-0">
-                      <span className="text-sm font-semibold text-foreground truncate block">{item.name}</span>
-                      <div className="text-xs text-muted-foreground font-mono">Qty: {item.quantity}</div>
+                      <span className="text-sm font-semibold text-foreground truncate block">
+                        {item.name}
+                      </span>
+                      <div className="text-xs text-muted-foreground font-mono">
+                        Qty: {item.quantity}
+                      </div>
                     </div>
                   </div>
                   {getStatusBadge(item.quantity, item.lowThreshold)}

@@ -15,7 +15,6 @@ import { HouseholdService } from "@src/households/household.service";
 import { HouseholdRepository } from "@src/households/household.repo";
 import { UserRepo } from "@src/users/user.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
-import UserDto from "@src/common/dtos/UserDto";
 
 describe("HouseholdService", () => {
   beforeEach(() => {

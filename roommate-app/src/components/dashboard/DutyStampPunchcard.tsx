@@ -171,9 +171,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 <Badge
                   variant={isStamped ? 'secondary' : 'default'}
                   className={`font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0 ${
-                    isStamped
-                      ? 'bg-emerald-600 text-white'
-                      : 'bg-primary text-primary-foreground'
+                    isStamped ? 'bg-emerald-600 text-white' : 'bg-primary text-primary-foreground'
                   }`}
                 >
                   {isStamped ? 'STAMPED ✓ (+15)' : '+15 Karma'}
@@ -203,7 +201,9 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 <h3 className="font-semibold text-xs text-foreground mt-0.5 tracking-tight truncate">
                   Take Out Compost &amp; Cardboard
                 </h3>
-                <p className="text-muted-foreground text-[10px]">Curbside bin collection by alley</p>
+                <p className="text-muted-foreground text-[10px]">
+                  Curbside bin collection by alley
+                </p>
               </div>
             </div>
             <Button
@@ -224,7 +224,9 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground text-[10px] font-mono">8:15 AM · Sarah</span>
+                  <span className="text-muted-foreground text-[10px] font-mono">
+                    8:15 AM · Sarah
+                  </span>
                   <Badge
                     variant="outline"
                     className="text-[10px] font-semibold uppercase text-emerald-600 dark:text-emerald-400 font-mono border-0 p-0"

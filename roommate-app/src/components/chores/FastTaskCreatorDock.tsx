@@ -41,11 +41,14 @@ export function FastTaskCreatorDock({
   const [cadence, setCadence] = useState<ChoreFrequency>('daily');
   const [priority, setPriority] = useState<ChorePriority>('HIGH');
 
-  const defaultMembers = members.length > 0 ? members : [
-    { id: 'sarah', name: 'Sarah Lin' },
-    { id: 'leo', name: 'Leo Keller' },
-    { id: 'alex', name: 'Alex Chen' },
-  ];
+  const defaultMembers =
+    members.length > 0
+      ? members
+      : [
+          { id: 'sarah', name: 'Sarah Lin' },
+          { id: 'leo', name: 'Leo Keller' },
+          { id: 'alex', name: 'Alex Chen' },
+        ];
 
   const handleSelectPreset = (text: string) => {
     setDescription(text);
@@ -129,7 +132,10 @@ export function FastTaskCreatorDock({
         <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 pt-1">
           {/* Task Title Input */}
           <div className="flex flex-col gap-1">
-            <Label htmlFor="chore-dock-desc" className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
+            <Label
+              htmlFor="chore-dock-desc"
+              className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
+            >
               Chore Details
             </Label>
             <Input
@@ -159,9 +165,13 @@ export function FastTaskCreatorDock({
                     : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
                 }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
-                  selectedAssignee === 'YOU' ? 'bg-white/20 text-white' : 'bg-primary text-primary-foreground'
-                }`}>
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold ${
+                    selectedAssignee === 'YOU'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-primary text-primary-foreground'
+                  }`}
+                >
                   {currentUserName.slice(0, 2).toUpperCase()}
                 </div>
                 <span className="text-[10px] leading-tight">You</span>
@@ -183,9 +193,13 @@ export function FastTaskCreatorDock({
                         : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
                     }`}
                   >
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                      isSelected ? 'bg-white/20 text-white' : 'bg-secondary text-secondary-foreground'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        isSelected
+                          ? 'bg-white/20 text-white'
+                          : 'bg-secondary text-secondary-foreground'
+                      }`}
+                    >
                       {initials}
                     </div>
                     <span className="text-[10px] leading-tight truncate max-w-[48px]">
@@ -206,9 +220,13 @@ export function FastTaskCreatorDock({
                     : 'bg-surface-container-low hover:bg-surface-container text-foreground border-border/40'
                 }`}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                  selectedAssignee === 'OPEN' ? 'bg-white/20 text-white' : 'bg-surface-container text-muted-foreground'
-                }`}>
+                <div
+                  className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                    selectedAssignee === 'OPEN'
+                      ? 'bg-white/20 text-white'
+                      : 'bg-surface-container text-muted-foreground'
+                  }`}
+                >
                   <Users className="w-3.5 h-3.5" />
                 </div>
                 <span className="text-[10px] leading-tight">Open</span>

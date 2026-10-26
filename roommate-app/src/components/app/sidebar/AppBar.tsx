@@ -138,7 +138,9 @@ export function AppBar() {
                           />
                           <div className="flex flex-col text-left">
                             <span className="text-xs font-semibold">{theme.label}</span>
-                            <span className="text-[10px] text-muted-foreground font-mono">{theme.fontLabel}</span>
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              {theme.fontLabel}
+                            </span>
                           </div>
                         </div>
                         {isSelected && <Check className="w-4 h-4 text-primary shrink-0 ml-2" />}

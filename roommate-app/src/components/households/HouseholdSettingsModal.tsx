@@ -225,7 +225,15 @@ export default function HouseholdSettingsModal({ household, open, onOpenChange }
                         onChange={(e) => field.onChange(e.target.value)}
                         disabled={updateMutation.isPending}
                       >
-                        {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
+                        {[
+                          'Sunday',
+                          'Monday',
+                          'Tuesday',
+                          'Wednesday',
+                          'Thursday',
+                          'Friday',
+                          'Saturday',
+                        ].map((day) => (
                           <option key={day} value={day}>
                             {day} Night
                           </option>

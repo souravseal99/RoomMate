@@ -93,7 +93,10 @@ export function RoommateBalancesGrid({
           <Users className="w-4 h-4 text-primary" />
           Roommate Balances
         </h3>
-        <Badge variant="outline" className="text-xs font-semibold text-muted-foreground border-border">
+        <Badge
+          variant="outline"
+          className="text-xs font-semibold text-muted-foreground border-border"
+        >
           {householdMembers.length} {householdMembers.length === 1 ? 'member' : 'members'}
         </Badge>
       </div>
@@ -129,7 +132,10 @@ export function RoommateBalancesGrid({
               ))}
             </span>
           </div>
-          <Badge variant="secondary" className="text-[11px] text-muted-foreground font-medium shrink-0">
+          <Badge
+            variant="secondary"
+            className="text-[11px] text-muted-foreground font-medium shrink-0"
+          >
             Graph Debt Minimization
           </Badge>
         </Card>

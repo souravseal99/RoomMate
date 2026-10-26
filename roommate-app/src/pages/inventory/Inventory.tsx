@@ -1,10 +1,7 @@
 import { useState, useMemo, useRef } from 'react';
 import { Plus } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
-import {
-  useInventoryQuery,
-  useUpdateInventoryMutation,
-} from '@/hooks/queries/useInventoryQueries';
+import { useInventoryQuery, useUpdateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
 import {
   useShoppingCartQuery,
   useAddToCartMutation,
@@ -38,8 +35,7 @@ export default function Inventory() {
   // TanStack Queries
   const { data: inventoryItems = [], isLoading: isInventoryLoading } =
     useInventoryQuery(householdId);
-  const { data: cartItems = [], isLoading: isCartLoading } =
-    useShoppingCartQuery(householdId);
+  const { data: cartItems = [], isLoading: isCartLoading } = useShoppingCartQuery(householdId);
 
   // TanStack Mutations
   const updateInventoryMutation = useUpdateInventoryMutation();
@@ -50,9 +46,7 @@ export default function Inventory() {
 
   // Low stock items memo
   const lowStockItems = useMemo(() => {
-    return inventoryItems.filter(
-      (item) => item.quantity <= item.lowThreshold
-    );
+    return inventoryItems.filter((item) => item.quantity <= item.lowThreshold);
   }, [inventoryItems]);
 
   // Stepper quantity update handler with optimistic update

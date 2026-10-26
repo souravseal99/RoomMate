@@ -19,7 +19,8 @@ export default function HouseholdEmptyState({ onCreateClick, onJoinClick }: Prop
           Welcome to RoomMate
         </h2>
         <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-          To get started with chores, expense tracking, and shared inventory, you need to be part of at least one living space.
+          To get started with chores, expense tracking, and shared inventory, you need to be part of
+          at least one living space.
         </p>
       </div>
 
@@ -38,7 +39,8 @@ export default function HouseholdEmptyState({ onCreateClick, onJoinClick }: Prop
               <div>
                 <h3 className="text-lg font-bold text-foreground">Create a Space</h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-normal">
-                  Set up a brand new household for your apartment, dorm, or flat and invite your roommates.
+                  Set up a brand new household for your apartment, dorm, or flat and invite your
+                  roommates.
                 </p>
               </div>
             </div>
@@ -70,7 +72,8 @@ export default function HouseholdEmptyState({ onCreateClick, onJoinClick }: Prop
               <div>
                 <h3 className="text-lg font-bold text-foreground">Join with Code</h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-normal">
-                  Already have an 8-character invite code from your flatmates? Join their active space instantly.
+                  Already have an 8-character invite code from your flatmates? Join their active
+                  space instantly.
                 </p>
               </div>
             </div>

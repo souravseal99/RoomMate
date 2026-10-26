@@ -87,7 +87,8 @@ export function ReceiptVaultTab() {
             Drop receipts or invoice scans here
           </h3>
           <p className="text-xs text-muted-foreground max-w-md">
-            Drag in grocery store receipts, utility statements, or restaurant slips. Automatic itemized OCR will extract totals and flatmate shares.
+            Drag in grocery store receipts, utility statements, or restaurant slips. Automatic
+            itemized OCR will extract totals and flatmate shares.
           </p>
         </div>
         <Button
@@ -123,9 +124,7 @@ export function ReceiptVaultTab() {
                     <FileText className="w-5 h-5 stroke-[2.2]" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm text-foreground">
-                      {receipt.merchant}
-                    </h4>
+                    <h4 className="font-bold text-sm text-foreground">{receipt.merchant}</h4>
                     <p className="text-xs text-muted-foreground pt-0.5">
                       Uploaded by <strong>{receipt.uploadedBy}</strong> • {receipt.date}
                     </p>

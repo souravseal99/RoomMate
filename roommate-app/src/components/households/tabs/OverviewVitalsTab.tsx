@@ -30,10 +30,7 @@ interface OverviewVitalsTabProps {
   onOpenSettleModal?: () => void;
 }
 
-export function OverviewVitalsTab({
-  onNavigateTab,
-  onOpenSettleModal,
-}: OverviewVitalsTabProps) {
+export function OverviewVitalsTab({ onNavigateTab, onOpenSettleModal }: OverviewVitalsTabProps) {
   const { activeHousehold, activeHouseholdId, householdMembers } = useHousehold();
   const { email, name } = useAuth();
 
@@ -60,7 +57,8 @@ export function OverviewVitalsTab({
   // --- 1. DUTY OPERATIONS / CHORES TELEMETRY ---
   const totalTasks = chores.length;
   const completedTasks = chores.filter((c) => c.completed).length;
-  const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 100;
+  const completionPercentage =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 100;
 
   // Next up pending chore (sorted by nextDue date)
   const upNextChore = useMemo(() => {
@@ -135,12 +133,10 @@ export function OverviewVitalsTab({
         (e) =>
           e.paidById === member.userId ||
           e.paidBy?.userId === member.userId ||
-          (member.user?.name &&
-            e.paidBy?.name?.toLowerCase() === member.user.name.toLowerCase())
+          (member.user?.name && e.paidBy?.name?.toLowerCase() === member.user.name.toLowerCase())
       );
       const paidTotal = memberExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-      const percentage =
-        totalSpending > 0 ? Math.round((paidTotal / totalSpending) * 100) : 0;
+      const percentage = totalSpending > 0 ? Math.round((paidTotal / totalSpending) * 100) : 0;
       const completedCount = chores.filter(
         (c) => c.assignedToId === member.userId && c.completed
       ).length;
@@ -231,7 +227,11 @@ export function OverviewVitalsTab({
                   </div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-wider">
-                      Up Next • Due {new Date(upNextChore.nextDue).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      Up Next • Due{' '}
+                      {new Date(upNextChore.nextDue).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
                     </span>
                     <span className="font-bold text-xs text-foreground truncate">
                       {upNextChore.assignedToName || 'Unassigned'}: {upNextChore.description}
@@ -337,7 +337,10 @@ export function OverviewVitalsTab({
               <>
                 {lowStockItems.slice(0, 3).map((item) => {
                   const threshold = item.threshold ?? 1;
-                  const ratio = Math.min(100, Math.round((item.quantity / (threshold * 2 || 2)) * 100));
+                  const ratio = Math.min(
+                    100,
+                    Math.round((item.quantity / (threshold * 2 || 2)) * 100)
+                  );
                   return (
                     <div
                       key={item.inventoryItemId}
@@ -359,7 +362,9 @@ export function OverviewVitalsTab({
                         />
                       </div>
                       <div className="flex justify-between text-muted-foreground text-[10px] font-mono">
-                        <span>Threshold: {threshold} {item.unit || 'units'} min reserve</span>
+                        <span>
+                          Threshold: {threshold} {item.unit || 'units'} min reserve
+                        </span>
                         <span>Category: {item.category || 'General'}</span>
                       </div>
                     </div>
@@ -378,7 +383,8 @@ export function OverviewVitalsTab({
                     <ShoppingCart className="w-4 h-4" />
                   )}
                   <span>
-                    Push {lowStockItems.length} Low Item{lowStockItems.length === 1 ? '' : 's'} to Shared Cart
+                    Push {lowStockItems.length} Low Item{lowStockItems.length === 1 ? '' : 's'} to
+                    Shared Cart
                   </span>
                 </Button>
               </>
@@ -433,11 +439,15 @@ export function OverviewVitalsTab({
                       isNetCredit
                         ? 'text-emerald-600 dark:text-emerald-400'
                         : isNetDebt
-                        ? 'text-destructive'
-                        : 'text-foreground'
+                          ? 'text-destructive'
+                          : 'text-foreground'
                     }`}
                   >
-                    {isNetCredit ? `+${currencySymbol}${userBalance.toFixed(2)}` : isNetDebt ? `-${currencySymbol}${Math.abs(userBalance).toFixed(2)}` : `${currencySymbol}0.00`}
+                    {isNetCredit
+                      ? `+${currencySymbol}${userBalance.toFixed(2)}`
+                      : isNetDebt
+                        ? `-${currencySymbol}${Math.abs(userBalance).toFixed(2)}`
+                        : `${currencySymbol}0.00`}
                   </span>
                   <Badge
                     variant="outline"
@@ -445,8 +455,8 @@ export function OverviewVitalsTab({
                       isNetCredit
                         ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
                         : isNetDebt
-                        ? 'text-destructive bg-destructive/10 border-destructive/20'
-                        : 'text-muted-foreground bg-muted border-border'
+                          ? 'text-destructive bg-destructive/10 border-destructive/20'
+                          : 'text-muted-foreground bg-muted border-border'
                     }`}
                   >
                     {isNetCredit ? 'Net in Credit' : isNetDebt ? 'Net in Debt' : 'Settled Up'}
@@ -456,8 +466,8 @@ export function OverviewVitalsTab({
                   {isNetCredit
                     ? 'You have covered more communal expenses and are owed funds.'
                     : isNetDebt
-                    ? 'You have pending shared expenses to reimburse.'
-                    : 'Your balance with flatmates is currently fully resolved.'}
+                      ? 'You have pending shared expenses to reimburse.'
+                      : 'Your balance with flatmates is currently fully resolved.'}
                 </span>
               </div>
               <div className="flex flex-col gap-2 w-full sm:w-auto shrink-0">
@@ -503,7 +513,9 @@ export function OverviewVitalsTab({
                               : 'text-destructive'
                           }`}
                         >
-                          {isIncoming ? '+' : '-'}{currencySymbol}{settlement.amount.toFixed(2)}
+                          {isIncoming ? '+' : '-'}
+                          {currencySymbol}
+                          {settlement.amount.toFixed(2)}
                         </span>
                       </div>
                       <span className="text-[11px] text-muted-foreground font-mono">
@@ -533,11 +545,13 @@ export function OverviewVitalsTab({
                     Monthly Communal Outlay
                   </span>
                   <p className="text-[10px] text-muted-foreground font-mono">
-                    Total tracked: {currencySymbol}{totalSpending.toFixed(2)}
+                    Total tracked: {currencySymbol}
+                    {totalSpending.toFixed(2)}
                   </p>
                 </div>
                 <span className="font-mono font-bold text-base text-foreground">
-                  {currencySymbol}{totalSpending.toFixed(2)}
+                  {currencySymbol}
+                  {totalSpending.toFixed(2)}
                 </span>
               </div>
 
@@ -557,7 +571,8 @@ export function OverviewVitalsTab({
                           </span>
                         </div>
                         <span className="font-mono font-bold text-foreground shrink-0">
-                          {currencySymbol}{entry.paidTotal.toFixed(2)} ({entry.percentage}%)
+                          {currencySymbol}
+                          {entry.paidTotal.toFixed(2)} ({entry.percentage}%)
                         </span>
                       </div>
                       <div className="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
@@ -569,7 +584,9 @@ export function OverviewVitalsTab({
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-muted-foreground font-mono">No flatmate telemetry available.</p>
+                  <p className="text-xs text-muted-foreground font-mono">
+                    No flatmate telemetry available.
+                  </p>
                 )}
               </div>
             </div>

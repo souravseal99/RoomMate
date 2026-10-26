@@ -87,12 +87,8 @@ function generateQrMatrix(text: string): boolean[][] {
   const totalBytes = [...dataBytes, ...Array.from(ecBytes)];
 
   // Matrix creation: null = empty, true = black, false = white
-  const matrix: (boolean | null)[][] = Array.from({ length: size }, () =>
-    Array(size).fill(null)
-  );
-  const isFunction: boolean[][] = Array.from({ length: size }, () =>
-    Array(size).fill(false)
-  );
+  const matrix: (boolean | null)[][] = Array.from({ length: size }, () => Array(size).fill(null));
+  const isFunction: boolean[][] = Array.from({ length: size }, () => Array(size).fill(false));
 
   function setFunction(r: number, c: number, val: boolean) {
     matrix[r][c] = val;

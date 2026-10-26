@@ -51,7 +51,8 @@ export function SundaySquareUpModal({
               <span>Zero-Friction Consolidation</span>
             </div>
             <p className="text-muted-foreground leading-relaxed">
-              Square-Up rolls over fixed utilities into the new cycle, archives fully settled transactions, and generates an immutable ledger snapshot for flatmate peace of mind.
+              Square-Up rolls over fixed utilities into the new cycle, archives fully settled
+              transactions, and generates an immutable ledger snapshot for flatmate peace of mind.
             </p>
           </div>
 

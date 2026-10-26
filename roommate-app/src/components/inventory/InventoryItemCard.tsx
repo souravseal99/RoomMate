@@ -30,7 +30,8 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
     }
   };
 
-  const isUpdating = updateMutation.isPending && updateMutation.variables?.itemId === item.inventoryItemId;
+  const isUpdating =
+    updateMutation.isPending && updateMutation.variables?.itemId === item.inventoryItemId;
 
   return (
     <Card className="flex items-center justify-between p-3 bg-muted/40 rounded-xl hover:bg-muted/70 transition-colors w-full sm:w-72 border-border">
@@ -55,7 +56,9 @@ export function InventoryItemCard({ item, onUpdate }: InventoryItemCardProps) {
             <Minus className="h-3.5 w-3.5" />
           </Button>
 
-          <span className="text-sm font-bold min-w-[1.75rem] text-center font-mono">{item.quantity}</span>
+          <span className="text-sm font-bold min-w-[1.75rem] text-center font-mono">
+            {item.quantity}
+          </span>
 
           <Button
             size="icon"

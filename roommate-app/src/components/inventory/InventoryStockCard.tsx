@@ -100,19 +100,28 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
 
           <div className="flex items-center gap-2 mt-0.5">
             {isOutOfStock && (
-              <Badge variant="destructive" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5">
+              <Badge
+                variant="destructive"
+                className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
                 <span>Out of Stock</span>
               </Badge>
             )}
             {isRunningLow && (
-              <Badge variant="outline" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 border-border text-foreground">
+              <Badge
+                variant="outline"
+                className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 border-border text-foreground"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-foreground" />
                 <span>Running Low (Min: {item.lowThreshold})</span>
               </Badge>
             )}
             {isInStock && (
-              <Badge variant="secondary" className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 text-primary bg-primary/10 border-primary/20">
+              <Badge
+                variant="secondary"
+                className="text-[11px] font-bold h-5 px-1.5 flex items-center gap-1.5 text-primary bg-primary/10 border-primary/20"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                 <span>In Stock</span>
               </Badge>

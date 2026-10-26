@@ -1,14 +1,14 @@
-import { PrismaClient, Role } from '@generated/prisma';
-import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
+import { PrismaClient, Role } from "@generated/prisma";
+import bcrypt from "bcrypt";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
 // Helper function to read JSON seed files
 function loadSeedData<T>(fileName: string): T {
-  const filePath = path.join(__dirname, 'seeds', fileName);
-  const rawData = fs.readFileSync(filePath, 'utf-8');
+  const filePath = path.join(__dirname, "seeds", fileName);
+  const rawData = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(rawData) as T;
 }
 
@@ -21,7 +21,7 @@ interface UserSeed {
 
 interface HouseholdMemberSeed {
   userId: string;
-  role: 'ADMIN' | 'MEMBER';
+  role: "ADMIN" | "MEMBER";
 }
 
 interface HouseholdSeed {
@@ -81,10 +81,10 @@ interface SettlementSeed {
 }
 
 async function main() {
-  console.log('🌱 Starting JSON-driven database seeding...');
+  console.log("🌱 Starting JSON-driven database seeding...");
 
   // 1. Clean existing records (in reverse dependency order)
-  console.log('🧹 Cleaning existing database records...');
+  console.log("🧹 Cleaning existing database records...");
   await prisma.settlement.deleteMany({});
   await prisma.shoppingCart.deleteMany({});
   await prisma.inventoryItem.deleteMany({});
@@ -97,13 +97,13 @@ async function main() {
   await prisma.user.deleteMany({});
 
   // 2. Load JSON files from prisma/seeds/
-  const users = loadSeedData<UserSeed[]>('users.json');
-  const households = loadSeedData<HouseholdSeed[]>('households.json');
-  const expenses = loadSeedData<ExpenseSeed[]>('expenses.json');
-  const chores = loadSeedData<ChoreSeed[]>('chores.json');
-  const inventoryItems = loadSeedData<InventoryItemSeed[]>('inventory.json');
-  const shoppingCarts = loadSeedData<ShoppingCartSeed[]>('shoppingCarts.json');
-  const settlements = loadSeedData<SettlementSeed[]>('settlements.json');
+  const users = loadSeedData<UserSeed[]>("users.json");
+  const households = loadSeedData<HouseholdSeed[]>("households.json");
+  const expenses = loadSeedData<ExpenseSeed[]>("expenses.json");
+  const chores = loadSeedData<ChoreSeed[]>("chores.json");
+  const inventoryItems = loadSeedData<InventoryItemSeed[]>("inventory.json");
+  const shoppingCarts = loadSeedData<ShoppingCartSeed[]>("shoppingCarts.json");
+  const settlements = loadSeedData<SettlementSeed[]>("settlements.json");
 
   // 3. Seed Users
   console.log(`👤 Seeding ${users.length} users from users.json...`);
@@ -120,7 +120,9 @@ async function main() {
   }
 
   // 4. Seed Households & Memberships
-  console.log(`🏡 Seeding ${households.length} households from households.json...`);
+  console.log(
+    `🏡 Seeding ${households.length} households from households.json...`,
+  );
   for (const household of households) {
     await prisma.household.create({
       data: {
@@ -161,7 +163,9 @@ async function main() {
   console.log(`🧹 Seeding ${chores.length} chores from chores.json...`);
   const now = new Date();
   for (const chore of chores) {
-    const nextDue = new Date(now.getTime() + chore.daysFromNow * 24 * 60 * 60 * 1000);
+    const nextDue = new Date(
+      now.getTime() + chore.daysFromNow * 24 * 60 * 60 * 1000,
+    );
     await prisma.chore.create({
       data: {
         choreId: chore.choreId,
@@ -178,7 +182,9 @@ async function main() {
   }
 
   // 7. Seed Inventory Items
-  console.log(`📦 Seeding ${inventoryItems.length} inventory items from inventory.json...`);
+  console.log(
+    `📦 Seeding ${inventoryItems.length} inventory items from inventory.json...`,
+  );
   for (const item of inventoryItems) {
     await prisma.inventoryItem.create({
       data: {
@@ -192,7 +198,9 @@ async function main() {
   }
 
   // 8. Seed Shopping Cart Items
-  console.log(`🛒 Seeding ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`);
+  console.log(
+    `🛒 Seeding ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`,
+  );
   for (const cartItem of shoppingCarts) {
     await prisma.shoppingCart.create({
       data: {
@@ -205,7 +213,9 @@ async function main() {
   }
 
   // 9. Seed Settlements
-  console.log(`💳 Seeding ${settlements.length} settlements from settlements.json...`);
+  console.log(
+    `💳 Seeding ${settlements.length} settlements from settlements.json...`,
+  );
   for (const settlement of settlements) {
     await prisma.settlement.create({
       data: {
@@ -218,19 +228,25 @@ async function main() {
     });
   }
 
-  console.log('✅ JSON-driven database seeding completed successfully!');
-  console.log('\n🔐 Pre-configured Test Accounts (from prisma/seeds/users.json):');
-  console.log('----------------------------------------------------');
+  console.log("✅ JSON-driven database seeding completed successfully!");
+  console.log(
+    "\n🔐 Pre-configured Test Accounts (from prisma/seeds/users.json):",
+  );
+  console.log("----------------------------------------------------");
   for (const user of users) {
-    console.log(`• ${user.name.padEnd(16)} : ${user.email.padEnd(20)} / ${user.password}`);
+    console.log(
+      `• ${user.name.padEnd(16)} : ${user.email.padEnd(20)} / ${user.password}`,
+    );
   }
-  console.log('----------------------------------------------------');
-  console.log('💡 Dev Tip: Edit any JSON file in `prisma/seeds/` to customize test data!\n');
+  console.log("----------------------------------------------------");
+  console.log(
+    "💡 Dev Tip: Edit any JSON file in `prisma/seeds/` to customize test data!\n",
+  );
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error during seeding:', e);
+    console.error("❌ Error during seeding:", e);
     process.exit(1);
   })
   .finally(async () => {

@@ -16,7 +16,10 @@ export function DashboardSkeleton() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-xl bg-surface-container/50 border border-border/40 p-4 space-y-3">
+            <div
+              key={i}
+              className="rounded-xl bg-surface-container/50 border border-border/40 p-4 space-y-3"
+            >
               <div className="flex justify-between items-center">
                 <Skeleton className="h-3 w-20 bg-surface-container" />
                 <Skeleton className="h-4 w-14 rounded bg-surface-container" />

@@ -61,9 +61,7 @@ export function ChoreTimelineCard({
           <div className="flex items-center gap-2">
             <h3
               className={`font-bold text-sm sm:text-base leading-snug truncate ${
-                isCompleted
-                  ? 'line-through text-muted-foreground'
-                  : 'text-foreground'
+                isCompleted ? 'line-through text-muted-foreground' : 'text-foreground'
               }`}
             >
               {chore.description}
@@ -81,17 +79,13 @@ export function ChoreTimelineCard({
           </div>
 
           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground font-medium flex-wrap">
-            <span className="flex items-center gap-1 truncate">
-              👤 {assigneeName}
-            </span>
+            <span className="flex items-center gap-1 truncate">👤 {assigneeName}</span>
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               <span>{chore.frequency}</span>
             </span>
             {chore.notes && (
-              <span className="truncate italic text-muted-foreground/80">
-                • {chore.notes}
-              </span>
+              <span className="truncate italic text-muted-foreground/80">• {chore.notes}</span>
             )}
           </div>
         </div>
@@ -119,9 +113,7 @@ export function ChoreTimelineCard({
           size="icon"
           onClick={() => onToggle(chore)}
           className="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center cursor-pointer active:scale-90 p-0 hover:bg-transparent"
-          aria-label={`Mark "${chore.description}" as ${
-            isCompleted ? 'incomplete' : 'complete'
-          }`}
+          aria-label={`Mark "${chore.description}" as ${isCompleted ? 'incomplete' : 'complete'}`}
         >
           <div
             className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${

@@ -61,9 +61,20 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
     let staples = 0;
     for (const e of expenses) {
       const cat = (e.category || '').toLowerCase();
-      if (cat.includes('util') || cat.includes('electric') || cat.includes('wifi') || cat.includes('gas') || cat.includes('water')) {
+      if (
+        cat.includes('util') ||
+        cat.includes('electric') ||
+        cat.includes('wifi') ||
+        cat.includes('gas') ||
+        cat.includes('water')
+      ) {
         util += e.amount || 0;
-      } else if (cat.includes('groc') || cat.includes('pantry') || cat.includes('food') || cat.includes('staple')) {
+      } else if (
+        cat.includes('groc') ||
+        cat.includes('pantry') ||
+        cat.includes('food') ||
+        cat.includes('staple')
+      ) {
         staples += e.amount || 0;
       }
     }
@@ -101,10 +112,20 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
     if (text.includes('coffee') || text.includes('cafe') || text.includes('espresso')) {
       return <Coffee className="w-3.5 h-3.5" />;
     }
-    if (text.includes('electric') || text.includes('utility') || text.includes('power') || text.includes('gas')) {
+    if (
+      text.includes('electric') ||
+      text.includes('utility') ||
+      text.includes('power') ||
+      text.includes('gas')
+    ) {
       return <Zap className="w-3.5 h-3.5" />;
     }
-    if (text.includes('pantry') || text.includes('paper') || text.includes('cleaning') || text.includes('soap')) {
+    if (
+      text.includes('pantry') ||
+      text.includes('paper') ||
+      text.includes('cleaning') ||
+      text.includes('soap')
+    ) {
       return <Package className="w-3.5 h-3.5" />;
     }
     return <ShoppingBag className="w-3.5 h-3.5" />;
@@ -134,7 +155,10 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
     const link = document.createElement('a');
     link.setAttribute('href', url);
     const safeName = (activeHousehold?.name || 'household').toLowerCase().replace(/\s+/g, '-');
-    link.setAttribute('download', `${safeName}-ledger-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      'download',
+      `${safeName}-ledger-${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -209,7 +233,8 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
                 </Badge>
               </div>
               <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
-                Spend distribution across {householdMembers.length} active flatmate{householdMembers.length === 1 ? '' : 's'}.
+                Spend distribution across {householdMembers.length} active flatmate
+                {householdMembers.length === 1 ? '' : 's'}.
               </p>
             </CardContent>
           </Card>
@@ -223,9 +248,12 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
               </span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-display font-extrabold text-3xl text-foreground font-mono">
-                  {currencySymbol}{utilitiesTotal.toFixed(2)}
+                  {currencySymbol}
+                  {utilitiesTotal.toFixed(2)}
                 </span>
-                <span className="text-[11px] text-muted-foreground font-mono">Electric + Internet + Gas</span>
+                <span className="text-[11px] text-muted-foreground font-mono">
+                  Electric + Internet + Gas
+                </span>
               </div>
               <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
                 Aggregated communal infrastructure expenses recorded this cycle.
@@ -242,7 +270,8 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
               </span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-display font-extrabold text-3xl text-foreground font-mono">
-                  {currencySymbol}{staplesTotal.toFixed(2)}
+                  {currencySymbol}
+                  {staplesTotal.toFixed(2)}
                 </span>
                 <Badge
                   variant="outline"
@@ -317,16 +346,16 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
                         {isYouPayer ? `${name || 'You'} (You)` : expense.paidBy?.name || 'Flatmate'}
                       </div>
                       <div className="col-span-2 sm:col-span-3 text-right font-mono font-bold text-foreground">
-                        {currencySymbol}{(expense.amount || 0).toFixed(2)}
+                        {currencySymbol}
+                        {(expense.amount || 0).toFixed(2)}
                       </div>
                       <div
                         className={`col-span-2 sm:col-span-2 text-right font-mono font-bold ${
-                          isYouPayer
-                            ? 'text-emerald-600 dark:text-emerald-400'
-                            : 'text-destructive'
+                          isYouPayer ? 'text-emerald-600 dark:text-emerald-400' : 'text-destructive'
                         }`}
                       >
-                        {isYouPayer ? '+' : '-'}{currencySymbol}
+                        {isYouPayer ? '+' : '-'}
+                        {currencySymbol}
                         {(isYouPayer ? expense.amount - splitAmount : splitAmount).toFixed(2)}
                       </div>
                     </div>
@@ -350,4 +379,3 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
 }
 
 export default FairnessLedgerTab;
-

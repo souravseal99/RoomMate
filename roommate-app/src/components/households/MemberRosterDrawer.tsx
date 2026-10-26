@@ -1,8 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { MemberRosterView } from './MemberRosterView';
 import type { HouseholdResponse } from '@/types/householdTypes';
 

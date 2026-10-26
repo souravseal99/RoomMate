@@ -6,8 +6,7 @@ import type {
 } from '@/types/dashboardTypes';
 
 export type FeedItem =
-  | ({ kind: 'EXPENSE' } & RecentExpenseActivity)
-  | ({ kind: 'CHORE' } & RecentChoreActivity);
+  ({ kind: 'EXPENSE' } & RecentExpenseActivity) | ({ kind: 'CHORE' } & RecentChoreActivity);
 
 export function useActivityFeed(
   expenses: RecentExpenseActivity[] = [],

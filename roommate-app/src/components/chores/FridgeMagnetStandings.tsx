@@ -120,12 +120,8 @@ export function FridgeMagnetStandings({
               </div>
 
               <div className="flex flex-col items-end shrink-0 pl-2">
-                <span className={`text-xs ${flatmate.statusColor}`}>
-                  {flatmate.karmaBadge}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  {flatmate.statusText}
-                </span>
+                <span className={`text-xs ${flatmate.statusColor}`}>{flatmate.karmaBadge}</span>
+                <span className="text-[10px] text-muted-foreground">{flatmate.statusText}</span>
               </div>
             </div>
           ))}
@@ -140,7 +136,8 @@ export function FridgeMagnetStandings({
             </span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Next weekly chore shuffle happens Sunday during coffee at 10:00 AM. Any unfinished tasks roll forward smoothly.
+            Next weekly chore shuffle happens Sunday during coffee at 10:00 AM. Any unfinished tasks
+            roll forward smoothly.
           </p>
           <Button
             type="button"

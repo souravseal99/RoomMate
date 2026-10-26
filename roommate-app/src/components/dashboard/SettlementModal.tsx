@@ -98,7 +98,8 @@ export function SettlementModal({
                 Recipient
               </span>
               <span className="font-bold text-foreground">
-                {recipientName} <span className="font-normal text-muted-foreground">({recipientSubtext})</span>
+                {recipientName}{' '}
+                <span className="font-normal text-muted-foreground">({recipientSubtext})</span>
               </span>
             </div>
 

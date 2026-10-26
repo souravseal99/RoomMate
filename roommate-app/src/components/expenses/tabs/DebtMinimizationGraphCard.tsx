@@ -105,15 +105,15 @@ export function DebtMinimizationGraphCard({
                       isDebtor
                         ? 'text-destructive'
                         : isCreditor
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-foreground'
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-foreground'
                     }`}
                   >
                     {isDebtor
                       ? `-$${s.amount.toFixed(2)}`
                       : isCreditor
-                      ? `+$${s.amount.toFixed(2)}`
-                      : `$${s.amount.toFixed(2)}`}
+                        ? `+$${s.amount.toFixed(2)}`
+                        : `$${s.amount.toFixed(2)}`}
                   </div>
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
                     {isDebtor ? 'You Owe' : isCreditor ? 'Owed to You' : 'Flatmate Debt'}

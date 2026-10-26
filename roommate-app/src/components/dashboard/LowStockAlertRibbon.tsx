@@ -22,7 +22,10 @@ export function LowStockAlertRibbon({ lowStockItems = [] }: LowStockAlertRibbonP
     addLowStockMutation.mutate(activeHouseholdId);
   };
 
-  const itemNames = lowStockItems.slice(0, 3).map((item) => item.name).join(', ');
+  const itemNames = lowStockItems
+    .slice(0, 3)
+    .map((item) => item.name)
+    .join(', ');
   const remainingCount = lowStockItems.length - 3;
   const summaryText = remainingCount > 0 ? `${itemNames} +${remainingCount} more` : itemNames;
 

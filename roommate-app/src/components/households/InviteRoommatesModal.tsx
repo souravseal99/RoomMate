@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Copy, Check, MessageCircle, Share2, Link as LinkIcon, UserPlus, QrCode } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  MessageCircle,
+  Share2,
+  Link as LinkIcon,
+  UserPlus,
+  QrCode,
+} from 'lucide-react';
 import { QRCodeSVG } from '@/components/ui/qrcode';
 import {
   Dialog,
@@ -19,11 +27,7 @@ interface InviteRoommatesModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function InviteRoommatesModal({
-  household,
-  open,
-  onOpenChange,
-}: InviteRoommatesModalProps) {
+export function InviteRoommatesModal({ household, open, onOpenChange }: InviteRoommatesModalProps) {
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showQrCode, setShowQrCode] = useState(true);
@@ -31,9 +35,10 @@ export function InviteRoommatesModal({
   if (!household) return null;
 
   const inviteCode = household.inviteCode || '';
-  const joinUrl = typeof window !== 'undefined'
-    ? `${window.location.origin}/join?code=${inviteCode}`
-    : `https://roommate.app/join?code=${inviteCode}`;
+  const joinUrl =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/join?code=${inviteCode}`
+      : `https://roommate.app/join?code=${inviteCode}`;
 
   const handleCopyCode = async () => {
     try {

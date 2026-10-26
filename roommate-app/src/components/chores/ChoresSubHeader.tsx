@@ -16,9 +16,7 @@ export function ChoresSubHeader({
     <section className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2 pb-1 select-none">
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-muted-foreground font-medium">
-            {cycleRange}
-          </span>
+          <span className="text-xs text-muted-foreground font-medium">{cycleRange}</span>
         </div>
 
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-foreground tracking-tight">
@@ -26,7 +24,8 @@ export function ChoresSubHeader({
         </h1>
 
         <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-          Glanceable whiteboard timeline • 1-tap checkoffs, zero-guilt filtering &amp; fair-share flatmate rota
+          Glanceable whiteboard timeline • 1-tap checkoffs, zero-guilt filtering &amp; fair-share
+          flatmate rota
         </p>
       </div>
 

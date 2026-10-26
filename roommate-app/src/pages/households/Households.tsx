@@ -23,13 +23,8 @@ import {
 import type { HouseholdTabId } from '@/components/households';
 
 export default function Households() {
-  const {
-    households,
-    activeHousehold,
-    switchActiveHousehold,
-    householdMembers,
-    isLoading,
-  } = useHousehold();
+  const { households, activeHousehold, switchActiveHousehold, householdMembers, isLoading } =
+    useHousehold();
 
   // Tab state (Stitch 5-tab contextual disclosure)
   const [activeTab, setActiveTab] = useState<HouseholdTabId>('tab-vitals');
@@ -75,10 +70,7 @@ export default function Households() {
   if (households.length === 0) {
     return (
       <div className="w-full max-w-5xl mx-auto py-8">
-        <HouseholdEmptyState
-          onCreateClick={openCreateModal}
-          onJoinClick={openJoinModal}
-        />
+        <HouseholdEmptyState onCreateClick={openCreateModal} onJoinClick={openJoinModal} />
         <CreateJoinModal
           open={isCreateJoinOpen}
           defaultTab={activeModalTab}
@@ -101,10 +93,7 @@ export default function Households() {
       )}
 
       {/* 2. 5-TAB SEGMENTED CONTEXTUAL DISCLOSURE BAR */}
-      <HouseholdTabBar
-        activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab)}
-      />
+      <HouseholdTabBar activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab)} />
 
       {/* 3. ACTIVE TAB PANEL CONTENT */}
       <div className="w-full">
@@ -115,19 +104,11 @@ export default function Households() {
           />
         )}
 
-        {activeTab === 'tab-fairness' && (
-          <FairnessLedgerTab
-            onRecordBill={() => {}}
-          />
-        )}
+        {activeTab === 'tab-fairness' && <FairnessLedgerTab onRecordBill={() => {}} />}
 
-        {activeTab === 'tab-roster' && (
-          <RosterGovernanceTab />
-        )}
+        {activeTab === 'tab-roster' && <RosterGovernanceTab />}
 
-        {activeTab === 'tab-invites' && (
-          <InvitesNetworksTab />
-        )}
+        {activeTab === 'tab-invites' && <InvitesNetworksTab />}
 
         {activeTab === 'tab-offboarding' && (
           <DepartureAuditTab
@@ -156,7 +137,11 @@ export default function Households() {
               className="text-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer min-h-[44px]"
             >
               <span>{showOtherSpaces ? 'Hide Spaces' : 'View Spaces'}</span>
-              {showOtherSpaces ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {showOtherSpaces ? (
+                <ChevronUp className="w-4 h-4" />
+              ) : (
+                <ChevronDown className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -175,9 +160,7 @@ export default function Households() {
       )}
 
       {/* 5. STICKY HOUSEHOLD FOOTER DOCK */}
-      <HouseholdFooterDock
-        onSelectTab={(tab) => setActiveTab(tab)}
-      />
+      <HouseholdFooterDock onSelectTab={(tab) => setActiveTab(tab)} />
 
       {/* MODALS */}
       {inviteHousehold && (

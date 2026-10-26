@@ -74,9 +74,7 @@ export function QuickSettleModal({
     }
   }, [open, initialSettlement, pendingSettlements, currentUserId, householdMembers]);
 
-  const targetMember = householdMembers.find(
-    (m) => (m.userId || m.householdMemberId) === toUserId
-  );
+  const targetMember = householdMembers.find((m) => (m.userId || m.householdMemberId) === toUserId);
   const payeeName = targetMember?.user?.name || initialSettlement?.toName || 'Roommate';
 
   const handleConfirm = async (e: React.FormEvent) => {

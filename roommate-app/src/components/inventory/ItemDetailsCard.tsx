@@ -31,7 +31,9 @@ export function ItemDetailsCard({ itemDetails, onAddToList }: ItemDetailsCardPro
               {itemDetails.name}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs text-muted-foreground font-mono">Qty: {itemDetails.quantity}</span>
+              <span className="text-xs text-muted-foreground font-mono">
+                Qty: {itemDetails.quantity}
+              </span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground">
                 {dateFormatterUtc(itemDetails.lastUpdated ?? new Date().toISOString())}

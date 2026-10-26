@@ -1,13 +1,5 @@
 import { useState } from 'react';
-import {
-  Check,
-  Copy,
-  Edit,
-  LogOut,
-  MoreVertical,
-  Trash2,
-  Users,
-} from 'lucide-react';
+import { Check, Copy, Edit, LogOut, MoreVertical, Trash2, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -48,8 +40,7 @@ export default function HouseholdCard({
 
   // Determine if current user is admin in this space
   const currentMember = household.members?.find((m) => m.user?.email === email);
-  const isAdmin =
-    currentMember?.role === 'ADMIN' || (household.members?.[0]?.user?.email === email);
+  const isAdmin = currentMember?.role === 'ADMIN' || household.members?.[0]?.user?.email === email;
 
   const handleCopyCode = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -117,10 +108,7 @@ export default function HouseholdCard({
         </div>
 
         {/* Action / Context Menu Trigger */}
-        <div
-          className="absolute top-3.5 right-3.5 z-10"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="absolute top-3.5 right-3.5 z-10" onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

@@ -14,10 +14,7 @@ interface DepartureAuditTabProps {
   onOpenDeleteModal?: () => void;
 }
 
-export function DepartureAuditTab({
-  onOpenLeaveModal,
-  onOpenDeleteModal,
-}: DepartureAuditTabProps) {
+export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: DepartureAuditTabProps) {
   const { activeHousehold, activeHouseholdId, householdMembers } = useHousehold();
   const { email, name } = useAuth();
 
@@ -148,8 +145,8 @@ export function DepartureAuditTab({
                   {isFinancialSettled
                     ? 'All debts are fully settled ($0.00 balance).'
                     : userBalance > 0
-                    ? `You are owed ${currencySymbol}${userBalance.toFixed(2)} by flatmates before leaving.`
-                    : `You owe ${currencySymbol}${Math.abs(userBalance).toFixed(2)} to flatmates. Please settle up.`}
+                      ? `You are owed ${currencySymbol}${userBalance.toFixed(2)} by flatmates before leaving.`
+                      : `You owe ${currencySymbol}${Math.abs(userBalance).toFixed(2)} to flatmates. Please settle up.`}
                 </span>
               </div>
             </div>
@@ -278,4 +275,3 @@ export function DepartureAuditTab({
 }
 
 export default DepartureAuditTab;
-

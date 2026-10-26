@@ -78,7 +78,9 @@ export function PairwiseBalanceMatrixTable({
               <TableHead className="py-2.5 px-3 font-semibold">Flatmate</TableHead>
               <TableHead className="py-2.5 px-3 font-semibold">Flow</TableHead>
               <TableHead className="py-2.5 px-3 font-semibold">Net Balance</TableHead>
-              <TableHead className="py-2.5 px-3 font-semibold text-right">Settlement Action</TableHead>
+              <TableHead className="py-2.5 px-3 font-semibold text-right">
+                Settlement Action
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-border/40">
@@ -86,7 +88,10 @@ export function PairwiseBalanceMatrixTable({
               const initial = (member.user.name[0] || 'U').toUpperCase();
 
               return (
-                <TableRow key={member.userId} className="hover:bg-surface-container/50 transition-colors">
+                <TableRow
+                  key={member.userId}
+                  className="hover:bg-surface-container/50 transition-colors"
+                >
                   <TableCell className="py-3 px-3">
                     <div className="flex items-center gap-2.5">
                       <Avatar className="w-7 h-7 shrink-0">
@@ -94,9 +99,7 @@ export function PairwiseBalanceMatrixTable({
                           {initial}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-bold text-foreground">
-                        {member.user.name}
-                      </span>
+                      <span className="font-bold text-foreground">{member.user.name}</span>
                     </div>
                   </TableCell>
 
@@ -122,15 +125,15 @@ export function PairwiseBalanceMatrixTable({
                         owesYou
                           ? 'text-emerald-600 dark:text-emerald-400'
                           : youOwe
-                          ? 'text-destructive'
-                          : 'text-muted-foreground'
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
                       }`}
                     >
                       {owesYou
                         ? `+$${netAmount.toFixed(2)}`
                         : youOwe
-                        ? `-$${netAmount.toFixed(2)}`
-                        : '$0.00'}
+                          ? `-$${netAmount.toFixed(2)}`
+                          : '$0.00'}
                     </span>
                   </TableCell>
 

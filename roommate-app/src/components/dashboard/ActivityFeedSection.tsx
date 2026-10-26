@@ -81,9 +81,7 @@ export function ActivityFeedSection() {
     }));
   };
 
-  const filteredItems = feedItems.filter(
-    (item) => filter === 'all' || item.category === filter
-  );
+  const filteredItems = feedItems.filter((item) => filter === 'all' || item.category === filter);
 
   return (
     <Card

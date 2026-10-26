@@ -38,12 +38,15 @@ export class HouseholdService {
       }
     }
 
-    const createdHouseholdRecord: Household = await HouseholdRepository.create(
-      finalName,
-      userId,
-      Role.ADMIN,
-      settings,
-    );
+    const createdHouseholdRecord: Household =
+      settings !== undefined
+        ? await HouseholdRepository.create(
+            finalName,
+            userId,
+            Role.ADMIN,
+            settings,
+          )
+        : await HouseholdRepository.create(finalName, userId, Role.ADMIN);
 
     if (!createdHouseholdRecord)
       return ApiResponse.error(

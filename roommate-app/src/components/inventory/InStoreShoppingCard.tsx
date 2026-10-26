@@ -1,13 +1,5 @@
 import { useState, useMemo } from 'react';
-import {
-  ShoppingCart,
-  Users,
-  Share2,
-  ShoppingBag,
-  Trash2,
-  Plus,
-  CheckCircle2,
-} from 'lucide-react';
+import { ShoppingCart, Users, Share2, ShoppingBag, Trash2, Plus, CheckCircle2 } from 'lucide-react';
 import type { ShoppingCartItem } from '@/types/inventoryTypes';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
@@ -72,14 +64,14 @@ export function InStoreShoppingCard({
       const unitEst = item.itemName.toLowerCase().includes('coffee')
         ? 14.5
         : item.itemName.toLowerCase().includes('oil')
-        ? 12.99
-        : item.itemName.toLowerCase().includes('paper')
-        ? 18.0
-        : item.itemName.toLowerCase().includes('soap')
-        ? 5.2
-        : item.itemName.toLowerCase().includes('egg')
-        ? 4.5
-        : 3.89;
+          ? 12.99
+          : item.itemName.toLowerCase().includes('paper')
+            ? 18.0
+            : item.itemName.toLowerCase().includes('soap')
+              ? 5.2
+              : item.itemName.toLowerCase().includes('egg')
+                ? 4.5
+                : 3.89;
       return acc + unitEst * (item.quantity || 1);
     }, 0);
   }, [cartItems]);
@@ -95,9 +87,8 @@ export function InStoreShoppingCard({
     setIsSubmitting(true);
     try {
       // If some items are checked, checkout checked items; otherwise checkout all
-      const itemsToCheckout = checkedIds.size > 0
-        ? Array.from(checkedIds)
-        : cartItems.map((item) => item.shoppingCartId);
+      const itemsToCheckout =
+        checkedIds.size > 0 ? Array.from(checkedIds) : cartItems.map((item) => item.shoppingCartId);
 
       await onCheckout(itemsToCheckout);
       setCheckedIds(new Set());
@@ -112,9 +103,7 @@ export function InStoreShoppingCard({
   };
 
   const handleShareList = async () => {
-    const listText = cartItems
-      .map((item) => `• ${item.itemName} (x${item.quantity})`)
-      .join('\n');
+    const listText = cartItems.map((item) => `• ${item.itemName} (x${item.quantity})`).join('\n');
     const shareMessage = `🛒 ${householdName} Grocery List:\n${listText}\n\nEstimated Total: $${estimatedTotal.toFixed(2)}`;
 
     if (navigator.clipboard) {
@@ -196,11 +185,12 @@ export function InStoreShoppingCard({
                         }`}
                       >
                         <span>{item.itemName}</span>
-                        <span className="text-muted-foreground font-normal">
-                          x{item.quantity}
-                        </span>
+                        <span className="text-muted-foreground font-normal">x{item.quantity}</span>
                       </div>
-                      <Badge variant="secondary" className="mt-0.5 text-[10px] font-medium h-5 px-1.5">
+                      <Badge
+                        variant="secondary"
+                        className="mt-0.5 text-[10px] font-medium h-5 px-1.5"
+                      >
                         Staple item
                       </Badge>
                     </div>
@@ -250,9 +240,7 @@ export function InStoreShoppingCard({
         <div className="p-4 bg-muted/30 border-t border-border/70 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Estimated Total:</span>
-            <span className="font-bold text-foreground text-sm">
-              ${estimatedTotal.toFixed(2)}
-            </span>
+            <span className="font-bold text-foreground text-sm">${estimatedTotal.toFixed(2)}</span>
           </div>
 
           <div className="p-2.5 rounded-xl bg-card border border-border/60 flex items-center justify-between text-xs">
@@ -277,9 +265,7 @@ export function InStoreShoppingCard({
             className="w-full min-h-[44px] rounded-xl font-bold text-xs sm:text-sm gap-2"
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>
-              Checkout Selected & Restock (${estimatedTotal.toFixed(2)})
-            </span>
+            <span>Checkout Selected & Restock (${estimatedTotal.toFixed(2)})</span>
           </Button>
 
           <Button

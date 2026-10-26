@@ -38,7 +38,6 @@ export function PantrySubHeader({
               <Thermometer className="w-3.5 h-3.5 text-primary" />
               <span>71°F</span>
             </Badge>
-
           </div>
 
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-foreground tracking-tight flex items-center gap-2.5">
@@ -49,7 +48,8 @@ export function PantrySubHeader({
           </h1>
 
           <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-            Zero-mental-math shared pantry stock, 1-tap tactile steppers, and automated in-store grocery checklist for {householdName}.
+            Zero-mental-math shared pantry stock, 1-tap tactile steppers, and automated in-store
+            grocery checklist for {householdName}.
           </p>
         </div>
 

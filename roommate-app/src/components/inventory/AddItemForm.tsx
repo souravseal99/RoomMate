@@ -44,7 +44,9 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-1.5">
-        <Label htmlFor="name" className="text-xs font-bold text-foreground">Item Name</Label>
+        <Label htmlFor="name" className="text-xs font-bold text-foreground">
+          Item Name
+        </Label>
         <Input
           id="name"
           value={name}
@@ -56,7 +58,9 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="quantity" className="text-xs font-bold text-foreground">Current Quantity</Label>
+        <Label htmlFor="quantity" className="text-xs font-bold text-foreground">
+          Current Quantity
+        </Label>
         <Input
           id="quantity"
           type="number"
@@ -70,7 +74,9 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="lowThreshold" className="text-xs font-bold text-foreground">Low Stock Threshold</Label>
+        <Label htmlFor="lowThreshold" className="text-xs font-bold text-foreground">
+          Low Stock Threshold
+        </Label>
         <Input
           id="lowThreshold"
           type="number"
@@ -84,10 +90,19 @@ export function AddItemForm({ onSuccess, onCancel }: AddItemFormProps) {
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={isLoading} className="flex-1 min-h-[44px] rounded-xl font-bold">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 min-h-[44px] rounded-xl font-bold"
+        >
           {isLoading ? 'Adding...' : 'Add Item'}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="flex-1 min-h-[44px] rounded-xl font-bold">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="flex-1 min-h-[44px] rounded-xl font-bold"
+        >
           Cancel
         </Button>
       </div>

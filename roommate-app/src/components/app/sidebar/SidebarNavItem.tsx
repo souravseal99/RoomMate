@@ -56,7 +56,9 @@ export function SidebarNavItem({
       <Icon
         className={cn(
           'w-5 h-5 transition-colors shrink-0',
-          isActive ? 'text-sidebar-primary' : 'text-sidebar-muted group-hover:text-sidebar-foreground'
+          isActive
+            ? 'text-sidebar-primary'
+            : 'text-sidebar-muted group-hover:text-sidebar-foreground'
         )}
       />
       <span className="truncate">{title}</span>

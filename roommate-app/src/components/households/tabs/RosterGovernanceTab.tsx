@@ -105,7 +105,9 @@ export function RosterGovernanceTab() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 min-w-0">
                         <Avatar className="w-11 h-11 rounded-xl shrink-0 shadow-xs border border-border/40">
-                          <AvatarFallback className={`rounded-xl ${f.color} font-bold text-sm font-mono`}>
+                          <AvatarFallback
+                            className={`rounded-xl ${f.color} font-bold text-sm font-mono`}
+                          >
                             {f.initials}
                           </AvatarFallback>
                         </Avatar>
@@ -135,10 +137,12 @@ export function RosterGovernanceTab() {
 
                     <div className="flex items-center justify-between bg-card p-2.5 rounded-lg text-xs border border-border/60">
                       <span className="text-muted-foreground">
-                        Completed Duties: <strong className="text-foreground font-mono">{f.dutiesDone}</strong>
+                        Completed Duties:{' '}
+                        <strong className="text-foreground font-mono">{f.dutiesDone}</strong>
                       </span>
                       <span className="text-muted-foreground">
-                        Pending: <strong className="text-foreground font-mono">{f.dutiesPending}</strong>
+                        Pending:{' '}
+                        <strong className="text-foreground font-mono">{f.dutiesPending}</strong>
                       </span>
                       <span className="text-primary font-bold font-mono text-[11px]">
                         {f.isAdmin ? 'Primary Admin' : 'Resident'}
@@ -153,7 +157,9 @@ export function RosterGovernanceTab() {
           <div className="p-8 text-center flex flex-col items-center justify-center gap-2 text-xs text-muted-foreground">
             <Users className="w-8 h-8 text-primary/60 mb-1" />
             <span className="font-bold text-foreground">No Registered Roster</span>
-            <span className="text-[11px] font-mono">Invite roommates to start tracking duties.</span>
+            <span className="text-[11px] font-mono">
+              Invite roommates to start tracking duties.
+            </span>
           </div>
         )}
 
@@ -167,7 +173,9 @@ export function RosterGovernanceTab() {
               Governance Consensus Protocol
             </span>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              {activeHousehold?.name || 'This household'} operates under a supermajority consensus rule ({supermajorityCount} of {householdMembers.length || 1} members) for lease agreements, house policy updates, and communal asset expenditures.
+              {activeHousehold?.name || 'This household'} operates under a supermajority consensus
+              rule ({supermajorityCount} of {householdMembers.length || 1} members) for lease
+              agreements, house policy updates, and communal asset expenditures.
             </p>
           </div>
         </div>
@@ -177,4 +185,3 @@ export function RosterGovernanceTab() {
 }
 
 export default RosterGovernanceTab;
-
