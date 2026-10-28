@@ -1,6 +1,6 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "roommate-app/dist",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
