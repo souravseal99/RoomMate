@@ -31,7 +31,7 @@
     "type-check:app": "npm run type-check --workspace=roommate-app",
     "type-check:server": "npm run type-check --workspace=roommate-server",
     "type-check": "npm run type-check:app && npm run type-check:server",
-    "build": "npm run build --workspace=roommate-app",
+    "build": "npm run build --output roommate-app/dist --workspace=roommate-app",
     "build:app": "npm run build --workspace=roommate-app",
     "test": "npm test --workspace=roommate-server"
   }
