@@ -36,7 +36,7 @@ export default function HouseholdSettingsModal({ household, open, onOpenChange }
   const updateMutation = useUpdateHouseholdMutation();
 
   const form = useForm<UpdateHouseholdInput>({
-    resolver: zodResolver(updateHouseholdSchema),
+    resolver: zodResolver(updateHouseholdSchema) as any,
     defaultValues: {
       name: household.name,
       settings: {

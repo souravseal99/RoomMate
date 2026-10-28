@@ -13,7 +13,6 @@ import {
   Eye,
   EyeOff,
   Fingerprint,
-  MapPin,
   Pin,
   ArrowRight,
   ChevronRight,

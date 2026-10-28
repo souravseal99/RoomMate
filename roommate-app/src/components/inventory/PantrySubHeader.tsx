@@ -1,4 +1,4 @@
-import { Plus, ShoppingCart, Thermometer, Lock, Package } from 'lucide-react';
+import { Plus, ShoppingCart, Thermometer, Package } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 

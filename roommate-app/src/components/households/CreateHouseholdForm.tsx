@@ -50,7 +50,7 @@ export default function CreateHouseholdForm({ onSuccess, onSwitchToJoin }: Props
   const [showEssentials, setShowEssentials] = useState(false);
 
   const form = useForm<CreateHouseholdInput>({
-    resolver: zodResolver(createHouseholdSchema),
+    resolver: zodResolver(createHouseholdSchema) as any,
     defaultValues: {
       name: '',
       settings: {
