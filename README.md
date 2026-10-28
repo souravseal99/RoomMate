@@ -5,6 +5,8 @@ Track **expenses**, assign **chores**, manage **inventory**, and see household *
 
 Built with **React + Vite + TypeScript** on the frontend, and **Express + Prisma + PostgreSQL** on the backend.
 
+### **Nightly Build**: https://roommate-app-nightly.vercel.app
+
 ---
 
 ## ✨ Features (MVP)
