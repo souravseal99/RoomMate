@@ -282,7 +282,7 @@ All commits in RoomMate must adhere to the following standard structure:
 #### Examples:
 
 ```text
-feat: (roommate-v1.2.2) seeder fixes and enhancemnts to auto seed in local and new seeder route for testing envs
+feat: (roommate-v1.2.2) seeder fixes, enhancemnts to the auto seeder in local and new seeder route for testing envs and enhancemnts to auto seed in local and new seeder route for testing envs
 fix: (fix-login-403) resolve csrf validation failure on public login route
 refac: (household-service) extract role verification into reusable tenancy helper
 docs: (readme-update) add commit message standards and developer runbooks

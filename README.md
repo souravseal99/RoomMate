@@ -288,7 +288,7 @@ First-time contributors are warmly welcomed. To ensure a smooth experience:
    npm run lint         # ESLint across fullstack
    npm test             # Vitest suite
    ```
-6. **Commit & Submit PR**: Format commit messages as `<keyword>: (<branch-name>) <description>` (e.g., `feat: (roommate-v1.2.2) seeder fixes and enhancemnts to auto seed in local and new seeder route for testing envs`). Open a Pull Request targeting the **`develop`** branch and reference your issue (`Closes #XYZ`).
+6. **Commit & Submit PR**: Format commit messages as `<keyword>: (<branch-name>) <description>` (e.g., `feat: (roommate-v1.2.2) seeder fixes, enhancemnts to the auto seeder in local and new seeder route for testing envs and enhancemnts to auto seed in local and new seeder route for testing envs`). Open a Pull Request targeting the **`develop`** branch and reference your issue (`Closes #XYZ`).
 
 👉 **For the complete step-by-step onboarding guide, Docker setup, and seeded test credentials, check out [CONTRIBUTING.md](./CONTRIBUTING.md).**
 
