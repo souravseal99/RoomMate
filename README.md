@@ -10,8 +10,6 @@ Built with **React 19 + Vite + TypeScript** on the frontend, and **Express 5 + P
 - 🌐 **Nightly Build**: [roommate-app-nightly.vercel.app](https://roommate-app-nightly.vercel.app)
 - 🤝 **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - 📜 **Code of Conduct**: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
-- 📐 **Architecture Guidelines**: [Frontend Guidelines](.agents/skills/roommate-app-frontend-guidelines.md) | [Backend Guidelines](.agents/skills/roommate-server-backend-guidelines.md)
-
 ---
 
 ## ✨ Features (MVP)
@@ -50,22 +48,19 @@ Built with **React 19 + Vite + TypeScript** on the frontend, and **Express 5 + P
 
 ---
 
-## 📐 Architecture & Engineering Guidelines
+## 📐 Architecture & Engineering
 
 The codebase strictly enforces established architectural contracts:
 
-- 🎨 **[Frontend Engineering Guidelines](.agents/skills/roommate-app-frontend-guidelines.md)**:
-  - **Primitive Immutability**: Absolute freeze on modifying `src/components/ui/` (shadcn primitives).
+- 🎨 **Frontend Engineering Guidelines**:
+  - **Primitive Immutability**: Absolute freeze on the modification of `src/components/ui/` (shadcn primitives).
   - **Token Purity**: Hardcoded hex codes are forbidden; only semantic CSS custom property classes (`bg-background`, `bg-surface`, `text-primary`, etc.) are allowed.
   - **Server State vs Client State**: TanStack Query v5 handles server data caching; React Context handles local workspace selection.
   - **Multi-Tab Sync**: Out-of-the-box cross-tab sync powered by the `BroadcastChannel` Event Bus (`src/lib/eventBus.ts`).
 
-- ⚙️ **[Backend Engineering Guidelines](.agents/skills/roommate-server-backend-guidelines.md)**:
+- ⚙️ **Backend Engineering Guidelines]**:
   - **3-Tier Layering**: Strict separation between Routes -> Controllers -> Services -> Repositories. Controllers never call Prisma directly; Services never handle raw Express `req`/`res`.
   - **Multi-Tenancy**: Every household resource is guarded by `authorizeHousehold({ requireAdmin?: boolean })`.
-  - **Relational Integrity**: Multi-table updates and cascading entity purges must run inside atomic `prisma.$transaction` blocks.
-  - **CSRF Whitelisting**: Unauthenticated routes (`/auth/login`, `/auth/register`, `/health`, `/dev/seed`) are safely bypassed via `skipCsrfProtection`.
-
 ---
 
 ## 📂 Project Structure
@@ -262,10 +257,10 @@ After running `npm run db:seed`, you can log into the local web client (`http://
 
 ---
 
-## 🛠️ Future Improvements
+## 🛠️ Upcoming...
 
 - 📅 Google Calendar sync for chores
-- 💳 Stripe integration for rent splitting
+- 💳 Payment system
 - 📱 PWA support
 - 🧾 OCR receipt scanner
 
