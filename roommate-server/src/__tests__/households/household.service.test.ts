@@ -225,7 +225,46 @@ describe("HouseholdService", () => {
   });
 
   describe("delete", () => {
-    it("should successfully delete household", async () => {
+    it("should reject when user does not belong to the household", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue(null);
+
+      const result = await HouseholdService.delete(
+        "household-123",
+        "user-not-member",
+      );
+
+      expect(HouseholdMemberRepo.isExistingUser).toHaveBeenCalledWith(
+        "user-not-member",
+        "household-123",
+      );
+      expect(HouseholdRepository.delete).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.FORBIDDEN,
+        message: "You do not belong to this household",
+      });
+    });
+
+    it("should reject when user is a member but not an admin", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-1",
+        userId: "user-member",
+        householdId: "household-123",
+        role: Role.MEMBER,
+      } as any);
+
+      const result = await HouseholdService.delete(
+        "household-123",
+        "user-member",
+      );
+
+      expect(HouseholdRepository.delete).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.FORBIDDEN,
+        message: "Only space administrators can delete a household",
+      });
+    });
+
+    it("should successfully delete household when user is an admin", async () => {
       const mockHousehold = {
         householdId: "household-123",
         name: "House to Delete",
@@ -242,6 +281,12 @@ describe("HouseholdService", () => {
         mockHousehold, // household
       ];
 
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-admin",
+        userId: "user-admin",
+        householdId: "household-123",
+        role: Role.ADMIN,
+      } as any);
       vi.mocked(HouseholdRepository.getHouseholdById).mockResolvedValue(
         mockHousehold,
       );
@@ -249,8 +294,15 @@ describe("HouseholdService", () => {
         mockDeleteResponse as any,
       );
 
-      const result = await HouseholdService.delete("household-123");
+      const result = await HouseholdService.delete(
+        "household-123",
+        "user-admin",
+      );
 
+      expect(HouseholdMemberRepo.isExistingUser).toHaveBeenCalledWith(
+        "user-admin",
+        "household-123",
+      );
       expect(HouseholdRepository.getHouseholdById).toHaveBeenCalledWith(
         "household-123",
       );
@@ -264,10 +316,19 @@ describe("HouseholdService", () => {
       });
     });
 
-    it("should reject when household not found", async () => {
+    it("should reject when household not found for admin", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-admin",
+        userId: "user-admin",
+        householdId: "household-nonexistent",
+        role: Role.ADMIN,
+      } as any);
       vi.mocked(HouseholdRepository.getHouseholdById).mockResolvedValue(null);
 
-      const result = await HouseholdService.delete("household-nonexistent");
+      const result = await HouseholdService.delete(
+        "household-nonexistent",
+        "user-admin",
+      );
 
       expect(HouseholdRepository.getHouseholdById).toHaveBeenCalledWith(
         "household-nonexistent",

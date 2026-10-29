@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { ExpenseService } from "@src/expenses/expense.service";
 import { SettlementService } from "@src/expenses/settlement.service";
 import ExpenseDto from "@src/common/dtos/ExpenseDto";
+import { getUserFromRequestBody } from "@common/utils/utils";
+import { StatusCodes } from "http-status-codes";
 
 export class ExpenseController {
   static async getExpensesByHousehold(request: Request, response: Response) {
@@ -17,9 +19,13 @@ export class ExpenseController {
   }
 
   static async delete(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { expenseId } = request.params as { expenseId: string };
 
-    const { status, message, data } = await ExpenseService.delete(expenseId);
+    const { status, message, data } = await ExpenseService.delete(
+      expenseId,
+      userId,
+    );
 
     return response.status(status).json({
       message: message,
@@ -40,10 +46,8 @@ export class ExpenseController {
   }
 
   static async create(request: Request, response: Response) {
-    const { householdId, amount, description, paidById, sharedWith } =
-      request.body;
-
-    //TODO - add validaiton
+    const { userId } = getUserFromRequestBody(request);
+    const { householdId, amount, description, sharedWith } = request.body;
 
     const amountInNumber = parseFloat(amount);
 
@@ -51,7 +55,7 @@ export class ExpenseController {
       householdId,
       amount: amountInNumber,
       description,
-      paidById,
+      paidById: userId, // Enforce authenticated user as the payer
     };
 
     const { status, message, data } = await ExpenseService.create(
@@ -67,14 +71,12 @@ export class ExpenseController {
   }
 
   static async createSettlement(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { fromUserId, toUserId, householdId, amount } = request.body;
 
-    // Get the current user from the request (set by auth middleware)
-    const currentUserId = request.body.user?.userId;
-
-    // Only allow users to settle their own debts
-    if (currentUserId !== fromUserId) {
-      return response.status(403).json({
+    // Only allow authenticated users to settle their own debts (remediate VULN-02)
+    if (userId !== fromUserId) {
+      return response.status(StatusCodes.FORBIDDEN).json({
         message: "You can only settle your own debts",
         data: null,
       });
@@ -84,7 +86,7 @@ export class ExpenseController {
       fromUserId,
       toUserId,
       householdId,
-      amount,
+      amount: parseFloat(amount),
     });
 
     return response.status(status).json({

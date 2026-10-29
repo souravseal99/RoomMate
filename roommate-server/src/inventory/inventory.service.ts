@@ -4,6 +4,7 @@ import CreateItemRequest from "@src/inventory/types/CreateItemRequest";
 import { InventoryRepo } from "@src/inventory/inventory.repo";
 import UpdateItemRequest from "@src/inventory/types/UpdateItemRequest";
 import { HouseholdRepository } from "@src/households/household.repo";
+import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 
 export class InventoryService {
   static async createItem(createItemRequest: CreateItemRequest) {
@@ -25,10 +26,27 @@ export class InventoryService {
     return ApiResponse.success(items);
   }
 
-  static async update(itemId: string, updateItemRequest: UpdateItemRequest) {
+  static async update(
+    itemId: string,
+    updateItemRequest: UpdateItemRequest,
+    userId?: string,
+  ) {
     const item = await InventoryRepo.getByItemId(itemId);
     if (!item)
       return ApiResponse.error("Item not found", StatusCodes.NOT_FOUND);
+
+    if (userId) {
+      const isMember = await HouseholdMemberRepo.isExistingUser(
+        userId,
+        item.householdId,
+      );
+      if (!isMember) {
+        return ApiResponse.error(
+          "You do not belong to this household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+    }
 
     const updatedItem = await InventoryRepo.update(itemId, updateItemRequest);
 
@@ -39,11 +57,24 @@ export class InventoryService {
     );
   }
 
-  static async delete(itemId: string) {
+  static async delete(itemId: string, userId?: string) {
     const item = await InventoryRepo.getByItemId(itemId);
 
     if (!item)
       return ApiResponse.error("Item not found", StatusCodes.NOT_FOUND);
+
+    if (userId) {
+      const isMember = await HouseholdMemberRepo.isExistingUser(
+        userId,
+        item.householdId,
+      );
+      if (!isMember) {
+        return ApiResponse.error(
+          "You do not belong to this household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+    }
 
     const deletedItem = await InventoryRepo.delete(itemId);
 

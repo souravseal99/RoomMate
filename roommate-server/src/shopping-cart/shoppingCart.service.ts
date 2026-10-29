@@ -1,4 +1,5 @@
 import { ShoppingCartRepo } from "@src/shopping-cart/shoppingCart.repo";
+import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import CreateCartItemRequest from "@src/shopping-cart/types/CreateCartItemRequest";
 import UpdateCartItemRequest from "@src/shopping-cart/types/UpdateCartItemRequest";
 import { ApiResponse } from "@src/common/utils/ApiResponse";
@@ -41,13 +42,39 @@ export class ShoppingCartService {
   static async update(
     cartItemId: string,
     updateCartItemRequest: UpdateCartItemRequest,
+    userId?: string,
   ) {
     try {
-      const cartItem = await ShoppingCartRepo.update(
+      const cartItem = await ShoppingCartRepo.getById(cartItemId);
+      if (!cartItem) {
+        return ApiResponse.error(
+          "Cart item not found",
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      if (userId) {
+        const isMember = await HouseholdMemberRepo.isExistingUser(
+          userId,
+          cartItem.householdId,
+        );
+        if (!isMember) {
+          return ApiResponse.error(
+            "You do not belong to this household",
+            StatusCodes.FORBIDDEN,
+          );
+        }
+      }
+
+      const updatedCartItem = await ShoppingCartRepo.update(
         cartItemId,
         updateCartItemRequest,
       );
-      return ApiResponse.success(cartItem, "Cart item updated", StatusCodes.OK);
+      return ApiResponse.success(
+        updatedCartItem,
+        "Cart item updated",
+        StatusCodes.OK,
+      );
     } catch (error) {
       return ApiResponse.error(
         "Failed to update cart item",
@@ -56,8 +83,29 @@ export class ShoppingCartService {
     }
   }
 
-  static async delete(cartItemId: string) {
+  static async delete(cartItemId: string, userId?: string) {
     try {
+      const cartItem = await ShoppingCartRepo.getById(cartItemId);
+      if (!cartItem) {
+        return ApiResponse.error(
+          "Cart item not found",
+          StatusCodes.NOT_FOUND,
+        );
+      }
+
+      if (userId) {
+        const isMember = await HouseholdMemberRepo.isExistingUser(
+          userId,
+          cartItem.householdId,
+        );
+        if (!isMember) {
+          return ApiResponse.error(
+            "You do not belong to this household",
+            StatusCodes.FORBIDDEN,
+          );
+        }
+      }
+
       await ShoppingCartRepo.delete(cartItemId);
       return ApiResponse.success(
         null,

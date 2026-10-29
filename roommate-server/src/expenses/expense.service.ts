@@ -22,6 +22,21 @@ export class ExpenseService {
     if (!isHouseholdMember)
       return ApiResponse.error("User is not a member of the household");
 
+    if (sharedWith && sharedWith.length > 0) {
+      for (const splitUserId of sharedWith) {
+        const isMember = await HouseholdMemberRepo.isExistingUser(
+          splitUserId,
+          expense.householdId,
+        );
+        if (!isMember) {
+          return ApiResponse.error(
+            "One or more split users do not belong to this household",
+            StatusCodes.BAD_REQUEST,
+          );
+        }
+      }
+    }
+
     try {
       if (!sharedWith || !sharedWith?.length) {
         const createdExpense: Expense = await ExpenseRepo.create(expense);
@@ -63,15 +78,20 @@ export class ExpenseService {
     return ApiResponse.success(expenses);
   }
 
-  static async delete(expenseId: string) {
+  static async delete(expenseId: string, userId?: string) {
     const expense = await ExpenseRepo.getExpenseByExpenseId(expenseId);
 
     if (!expense)
       return ApiResponse.error("Expense Not found", StatusCodes.NOT_FOUND);
 
+    if (userId && expense.paidById !== userId) {
+      return ApiResponse.error(
+        "You can only modify or delete your own expenses",
+        StatusCodes.FORBIDDEN,
+      );
+    }
+
     const deleteExpenseResponse = await ExpenseRepo.delete(expenseId);
-    console.log("Expense Id: ", expenseId);
-    console.log("deleteExpenseResponse: ", deleteExpenseResponse);
 
     return ApiResponse.success(
       deleteExpenseResponse,

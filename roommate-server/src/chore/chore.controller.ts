@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ChoreService } from "@src/chore/chore.service";
 import ChoreDto from "@src/common/dtos/ChoreDto";
 import UpdateChoreType from "@src/chore/types/UpdateChoreType";
-import { parseDate } from "@src/common/utils/utils";
+import { parseDate, getUserFromRequestBody } from "@src/common/utils/utils";
 
 export class ChoreController {
   static async add(request: Request, response: Response) {
@@ -35,6 +35,7 @@ export class ChoreController {
   }
 
   static async completeChore(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { choreId } = request.params as { choreId: string };
     const {
       assignedToId,
@@ -60,8 +61,10 @@ export class ChoreController {
     if (updateChoreRequest.nextDue)
       updateChoreRequest.nextDue = parseDate(nextDue);
 
-    const { status, message, data } =
-      await ChoreService.completeChore(updateChoreRequest);
+    const { status, message, data } = await ChoreService.completeChore(
+      updateChoreRequest,
+      userId,
+    );
 
     return response.status(status).json({
       message: message,
@@ -82,9 +85,13 @@ export class ChoreController {
   }
 
   static async delete(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { choreId } = request.params as { choreId: string };
 
-    const { status, message, data } = await ChoreService.delete(choreId);
+    const { status, message, data } = await ChoreService.delete(
+      choreId,
+      userId,
+    );
 
     return response.status(status).json({
       message: message,

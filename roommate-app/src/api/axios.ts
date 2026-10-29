@@ -13,15 +13,22 @@ api.interceptors.request.use(async (config) => {
   const accessToken = TokenStore.getToken();
 
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
-  if (TokenStore.hasSession()) {
-    config.headers['X-Session-Id'] = TokenStore.getSessionId();
-  }
+  config.headers['X-Session-Id'] = TokenStore.getSessionId();
 
-  // Attach CSRF token on mutating requests (POST, PUT, PATCH, DELETE)
+  // Attach CSRF token on mutating requests (POST, PUT, PATCH, DELETE), excluding public auth routes
   const method = config.method?.toUpperCase();
-  if (method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+  const isPublicAuthRoute =
+    config.url?.includes('/auth/login') ||
+    config.url?.includes('/auth/register') ||
+    config.url?.includes('/auth/csrf-token');
+
+  if (
+    method &&
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) &&
+    !isPublicAuthRoute
+  ) {
     let csrfToken = TokenStore.getCsrfToken();
-    if (!csrfToken && !config.url?.includes('/auth/csrf-token')) {
+    if (!csrfToken) {
       try {
         const res = await axios.get(`${SERVER_BASE_URL}/auth/csrf-token`, {
           withCredentials: true,
@@ -69,6 +76,7 @@ api.interceptors.response.use(
         const newCsrf = res.data?.csrfToken;
         if (newCsrf) {
           TokenStore.setCsrfToken(newCsrf);
+          originalRequest.headers['X-Session-Id'] = TokenStore.getSessionId();
           originalRequest.headers['X-CSRF-Token'] = newCsrf;
           return api(originalRequest);
         }

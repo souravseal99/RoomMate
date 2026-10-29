@@ -18,9 +18,9 @@ export const {
     (req.headers["x-session-id"] as string) || "",
   cookieName: "x-csrf-token",
   cookieOptions: {
-    sameSite: "strict",
+    sameSite: isProduction || useSecureCookie ? "none" : "lax",
     path: "/",
-    secure: isProduction && useSecureCookie,
+    secure: isProduction || useSecureCookie,
     httpOnly: true,
   },
   size: 32,
@@ -31,5 +31,22 @@ export const {
     statusCode: 403,
     message: "Invalid or missing CSRF token",
     code: "EBADCSRFTOKEN",
+  },
+  skipCsrfProtection: (req: Request) => {
+    const publicPaths = [
+      "/auth/login",
+      "/auth/register",
+      "/auth/csrf-token",
+      "/health",
+    ];
+    const cleanPath = (req.path || "").split("?")[0];
+    const cleanOriginalUrl = (req.originalUrl || "").split("?")[0];
+    return publicPaths.some(
+      (p) =>
+        cleanPath === p ||
+        cleanPath.endsWith(p) ||
+        cleanOriginalUrl === p ||
+        cleanOriginalUrl.endsWith(p),
+    );
   },
 });

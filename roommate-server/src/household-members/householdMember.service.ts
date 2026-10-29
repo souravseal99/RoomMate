@@ -31,7 +31,24 @@ export class HouseholdMemberService {
     );
   }
 
-  static async getHouseholdMembersByHouseholdId(householdId: string) {
+  static async getHouseholdMembersByHouseholdId(
+    householdId: string,
+    requesterUserId?: string,
+  ) {
+    if (requesterUserId) {
+      const membership = await HouseholdMemberRepo.isExistingUser(
+        requesterUserId,
+        householdId,
+      );
+
+      if (!membership) {
+        return ApiResponse.error(
+          "You do not belong to this household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+    }
+
     const household = await HouseholdRepository.getHouseholdById(householdId);
 
     if (!household) {

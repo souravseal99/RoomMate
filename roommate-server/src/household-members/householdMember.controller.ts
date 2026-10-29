@@ -16,11 +16,13 @@ export class HouseholdMemberController {
   }
 
   static async getAllHouseholdMembers(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { householdId } = request.params as { householdId: string };
 
     const { status, message, data } =
       await HouseholdMemberService.getHouseholdMembersByHouseholdId(
         householdId,
+        userId,
       );
 
     return response.status(status).json({

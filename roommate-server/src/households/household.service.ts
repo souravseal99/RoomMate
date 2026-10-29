@@ -127,7 +127,28 @@ export class HouseholdService {
     );
   }
 
-  static async delete(householdId: string) {
+  static async delete(householdId: string, userId?: string) {
+    if (userId) {
+      const membership = await HouseholdMemberRepo.isExistingUser(
+        userId,
+        householdId,
+      );
+
+      if (!membership) {
+        return ApiResponse.error(
+          "You do not belong to this household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+
+      if (membership.role !== Role.ADMIN) {
+        return ApiResponse.error(
+          "Only space administrators can delete a household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+    }
+
     const household: HouseholdDto | null =
       await HouseholdRepository.getHouseholdById(householdId);
 

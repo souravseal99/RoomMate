@@ -9,6 +9,7 @@ describe("CSRF Protection Middleware", () => {
   it("should allow safe HTTP methods (GET, HEAD, OPTIONS) without a CSRF token", () => {
     const req = {
       method: "GET",
+      path: "/household/all",
       headers: {},
       cookies: {},
     } as unknown as Request;
@@ -43,14 +44,50 @@ describe("CSRF Protection Middleware", () => {
       expect.objectContaining({
         httpOnly: true,
         path: "/",
-        sameSite: "strict",
+        sameSite: expect.stringMatching(/lax|none|strict/),
       }),
     );
   });
 
-  it("should reject mutating requests (POST) when CSRF token is missing", () => {
+  it("should allow public auth route POST /auth/login without a CSRF token", () => {
     const req = {
       method: "POST",
+      path: "/auth/login",
+      originalUrl: "/auth/login",
+      headers: {},
+      cookies: {},
+    } as unknown as Request;
+
+    const res = {} as unknown as Response;
+    const next = vi.fn() as NextFunction;
+
+    doubleCsrfProtection(req, res, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it("should allow public auth route POST /auth/register without a CSRF token", () => {
+    const req = {
+      method: "POST",
+      path: "/auth/register",
+      originalUrl: "/auth/register",
+      headers: {},
+      cookies: {},
+    } as unknown as Request;
+
+    const res = {} as unknown as Response;
+    const next = vi.fn() as NextFunction;
+
+    doubleCsrfProtection(req, res, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
+
+  it("should reject mutating requests (POST) on protected endpoints when CSRF token is missing", () => {
+    const req = {
+      method: "POST",
+      path: "/expense/create",
+      originalUrl: "/expense/create",
       headers: {},
       cookies: {},
     } as unknown as Request;
@@ -68,7 +105,7 @@ describe("CSRF Protection Middleware", () => {
     );
   });
 
-  it("should accept mutating requests (POST) when valid CSRF token and cookie are provided", () => {
+  it("should accept mutating requests (POST) on protected endpoints when valid CSRF token and cookie are provided", () => {
     const cookieMock = vi.fn();
     const reqGen = {
       headers: { "x-session-id": "session-456" },
@@ -83,6 +120,8 @@ describe("CSRF Protection Middleware", () => {
 
     const reqPost = {
       method: "POST",
+      path: "/expense/create",
+      originalUrl: "/expense/create",
       headers: {
         "x-session-id": "session-456",
         "x-csrf-token": validToken,

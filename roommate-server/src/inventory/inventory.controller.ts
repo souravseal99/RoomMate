@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { InventoryService } from "@src/inventory/inventory.service";
 import CreateItemRequest from "@src/inventory/types/CreateItemRequest";
 import UpdateItemRequest from "@src/inventory/types/UpdateItemRequest";
+import { getUserFromRequestBody } from "@common/utils/utils";
 
 export class InventoryController {
   static async create(request: Request, response: Response) {
@@ -36,6 +37,7 @@ export class InventoryController {
   }
 
   static async update(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { itemId } = request.params as { itemId: string };
     const { name, quantity, lowThreshold } = request.body;
 
@@ -48,6 +50,7 @@ export class InventoryController {
     const { status, message, data } = await InventoryService.update(
       itemId,
       updateItemRequest,
+      userId,
     );
 
     return response.status(status).json({
@@ -57,9 +60,13 @@ export class InventoryController {
   }
 
   static async delete(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { itemId } = request.params as { itemId: string };
 
-    const { status, message, data } = await InventoryService.delete(itemId);
+    const { status, message, data } = await InventoryService.delete(
+      itemId,
+      userId,
+    );
 
     return response.status(status).json({
       message: message,

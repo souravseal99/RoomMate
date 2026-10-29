@@ -51,10 +51,13 @@ export class HouseholdController {
   }
 
   static async delete(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { householdId } = request.body;
 
-    const { status, data, message } =
-      await HouseholdService.delete(householdId);
+    const { status, data, message } = await HouseholdService.delete(
+      householdId,
+      userId,
+    );
 
     return response.status(status).json({
       message: message,

@@ -1,4 +1,5 @@
 import "express";
+import { HouseholdMember } from "@generated/prisma";
 
 declare global {
   namespace Express {
@@ -7,6 +8,8 @@ declare global {
         userId: string;
         role?: string;
       };
+      householdMember?: HouseholdMember;
     }
   }
 }
+
