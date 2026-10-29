@@ -28,8 +28,7 @@ describe("SettlementService", () => {
         },
       );
 
-      const result =
-        await SettlementService.createSettlement(validSettlement);
+      const result = await SettlementService.createSettlement(validSettlement);
 
       expect(result).toMatchObject({
         status: StatusCodes.BAD_REQUEST,
@@ -47,8 +46,7 @@ describe("SettlementService", () => {
         },
       );
 
-      const result =
-        await SettlementService.createSettlement(validSettlement);
+      const result = await SettlementService.createSettlement(validSettlement);
 
       expect(result).toMatchObject({
         status: StatusCodes.BAD_REQUEST,
@@ -72,8 +70,7 @@ describe("SettlementService", () => {
         mockSavedSettlement as any,
       );
 
-      const result =
-        await SettlementService.createSettlement(validSettlement);
+      const result = await SettlementService.createSettlement(validSettlement);
 
       expect(SettlementRepo.create).toHaveBeenCalledWith(validSettlement);
       expect(result).toMatchObject({

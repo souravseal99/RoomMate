@@ -22,11 +22,7 @@ api.interceptors.request.use(async (config) => {
     config.url?.includes('/auth/register') ||
     config.url?.includes('/auth/csrf-token');
 
-  if (
-    method &&
-    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) &&
-    !isPublicAuthRoute
-  ) {
+  if (method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method) && !isPublicAuthRoute) {
     let csrfToken = TokenStore.getCsrfToken();
     if (!csrfToken) {
       try {

@@ -40,7 +40,11 @@ async function runPipeline({
   controller,
   req,
 }: {
-  middleware?: (req: Request, res: Response, next: NextFunction) => Promise<any> | any;
+  middleware?: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<any> | any;
   controller: (req: Request, res: Response) => Promise<any> | any;
   req: MockRequest;
 }) {
@@ -132,7 +136,11 @@ describe("End-to-End Multi-Tenant Authorization Integration Tests", () => {
               userId: "user-A",
               householdId: "h1",
               role: Role.ADMIN,
-              user: { userId: "user-A", name: "Alpha", email: "alpha@test.com" },
+              user: {
+                userId: "user-A",
+                name: "Alpha",
+                email: "alpha@test.com",
+              },
             },
             {
               householdMemberId: "hm-B",
@@ -150,14 +158,22 @@ describe("End-to-End Multi-Tenant Authorization Integration Tests", () => {
               userId: "user-C",
               householdId: "h2",
               role: Role.ADMIN,
-              user: { userId: "user-C", name: "Gamma", email: "gamma@test.com" },
+              user: {
+                userId: "user-C",
+                name: "Gamma",
+                email: "gamma@test.com",
+              },
             },
             {
               householdMemberId: "hm-D",
               userId: "user-D",
               householdId: "h2",
               role: Role.MEMBER,
-              user: { userId: "user-D", name: "Delta", email: "delta@test.com" },
+              user: {
+                userId: "user-D",
+                name: "Delta",
+                email: "delta@test.com",
+              },
             },
           ] as any;
         }
@@ -231,7 +247,9 @@ describe("End-to-End Multi-Tenant Authorization Integration Tests", () => {
       });
 
       expect(result.status).toBe(StatusCodes.FORBIDDEN);
-      expect(result.body.message).toMatch(/only modify or delete your own expenses/i);
+      expect(result.body.message).toMatch(
+        /only modify or delete your own expenses/i,
+      );
       expect(ExpenseRepo.delete).not.toHaveBeenCalled();
     });
   });
@@ -318,7 +336,9 @@ describe("End-to-End Multi-Tenant Authorization Integration Tests", () => {
       });
 
       expect(result.status).toBe(StatusCodes.BAD_REQUEST);
-      expect(result.body.message).toMatch(/both users must be members of the household/i);
+      expect(result.body.message).toMatch(
+        /both users must be members of the household/i,
+      );
     });
   });
 

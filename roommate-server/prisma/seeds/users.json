@@ -22,5 +22,11 @@
     "name": "Morgan Davis",
     "email": "morgan@roommate.dev",
     "password": "Password123!"
+  },
+  {
+    "userId": "usr_casey_05",
+    "name": "Casey Miller",
+    "email": "casey@roommate.dev",
+    "password": "Password123!"
   }
 ]

@@ -109,7 +109,9 @@ function assertSafetyGuard(force = false) {
   if ((isProdEnv || pointsToRemoteProduction) && !force) {
     console.error("\n❌ SAFETY ERROR: Refusing to seed database!");
     console.error("---------------------------------------------------------");
-    console.error(`Target DATABASE_URL appears to be a remote or production database.`);
+    console.error(
+      `Target DATABASE_URL appears to be a remote or production database.`,
+    );
     console.error(`NODE_ENV: "${process.env.NODE_ENV}"`);
     console.error(`To bypass this guard, pass --force explicitly.\n`);
     throw new Error("Seeder aborted by Production Safety Guard");
@@ -122,7 +124,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
 
   assertSafetyGuard(force);
 
-  console.log(`\n🌱 Starting Database Seeding [Mode: ${clean ? "Clean Wipe & Re-seed" : "Idempotent Upsert"}]...`);
+  console.log(
+    `\n🌱 Starting Database Seeding [Mode: ${clean ? "Clean Wipe & Re-seed" : "Idempotent Upsert"}]...`,
+  );
 
   // 1. Clean existing records if requested
   if (clean) {
@@ -169,7 +173,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
   }
 
   // 4. Seed Households & Memberships
-  console.log(`🏡 Processing ${households.length} households from households.json...`);
+  console.log(
+    `🏡 Processing ${households.length} households from households.json...`,
+  );
   for (const household of households) {
     await prisma.household.upsert({
       where: { householdId: household.householdId },
@@ -205,7 +211,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
   }
 
   // 5. Seed Expenses & Splits
-  console.log(`💰 Processing ${expenses.length} expenses from expenses.json...`);
+  console.log(
+    `💰 Processing ${expenses.length} expenses from expenses.json...`,
+  );
   for (const expense of expenses) {
     await prisma.expense.upsert({
       where: { expenseId: expense.expenseId },
@@ -265,7 +273,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
   }
 
   // 7. Seed Inventory Items
-  console.log(`📦 Processing ${inventoryItems.length} inventory items from inventory.json...`);
+  console.log(
+    `📦 Processing ${inventoryItems.length} inventory items from inventory.json...`,
+  );
   for (const item of inventoryItems) {
     await prisma.inventoryItem.upsert({
       where: { inventoryItemId: item.inventoryItemId },
@@ -286,7 +296,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
   }
 
   // 8. Seed Shopping Cart Items
-  console.log(`🛒 Processing ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`);
+  console.log(
+    `🛒 Processing ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`,
+  );
   for (const cartItem of shoppingCarts) {
     await prisma.shoppingCart.upsert({
       where: { shoppingCartId: cartItem.shoppingCartId },
@@ -305,7 +317,9 @@ export async function seedDatabase(options: SeedOptions = {}) {
   }
 
   // 9. Seed Settlements
-  console.log(`💳 Processing ${settlements.length} settlements from settlements.json...`);
+  console.log(
+    `💳 Processing ${settlements.length} settlements from settlements.json...`,
+  );
   for (const settlement of settlements) {
     await prisma.settlement.upsert({
       where: { settlementId: settlement.settlementId },
@@ -325,33 +339,49 @@ export async function seedDatabase(options: SeedOptions = {}) {
     });
   }
 
-  console.log("\n================================================================================");
+  console.log(
+    "\n================================================================================",
+  );
   console.log("🏡 ROOMMATE DEV DATABASE SEEDED SUCCESSFULLY");
-  console.log("================================================================================");
-  console.log("Role    | Name            | Email                 | Password      | Household");
-  console.log("--------+-----------------+-----------------------+---------------+-----------------");
+  console.log(
+    "================================================================================",
+  );
+  console.log(
+    "Role    | Name            | Email                 | Password      | Household",
+  );
+  console.log(
+    "--------+-----------------+-----------------------+---------------+-----------------",
+  );
   for (const user of users) {
     const memberHousehold = households.find((h) =>
       h.members.some((m) => m.userId === user.userId),
     );
-    const membership = memberHousehold?.members.find((m) => m.userId === user.userId);
+    const membership = memberHousehold?.members.find(
+      (m) => m.userId === user.userId,
+    );
     const roleStr = membership?.role || "MEMBER";
     const houseName = memberHousehold?.name || "None";
     console.log(
       `${roleStr.padEnd(7)} | ${user.name.padEnd(15)} | ${user.email.padEnd(21)} | ${user.password.padEnd(13)} | ${houseName}`,
     );
   }
-  console.log("--------------------------------------------------------------------------------");
+  console.log(
+    "--------------------------------------------------------------------------------",
+  );
   console.log("Household Invite Codes:");
   for (const h of households) {
     console.log(` • ${h.name.padEnd(20)} : ${h.inviteCode}`);
   }
-  console.log("================================================================================\n");
+  console.log(
+    "================================================================================\n",
+  );
 }
 
 seedDatabase({
   clean: !process.argv.includes("--idempotent"),
-  force: process.argv.includes("--force") || process.argv.includes("--force-production-seed"),
+  force:
+    process.argv.includes("--force") ||
+    process.argv.includes("--force-production-seed"),
 })
   .catch((e) => {
     console.error("❌ Seeding execution failed:", e.message);

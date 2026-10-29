@@ -47,10 +47,7 @@ export class ShoppingCartService {
     try {
       const cartItem = await ShoppingCartRepo.getById(cartItemId);
       if (!cartItem) {
-        return ApiResponse.error(
-          "Cart item not found",
-          StatusCodes.NOT_FOUND,
-        );
+        return ApiResponse.error("Cart item not found", StatusCodes.NOT_FOUND);
       }
 
       if (userId) {
@@ -87,10 +84,7 @@ export class ShoppingCartService {
     try {
       const cartItem = await ShoppingCartRepo.getById(cartItemId);
       if (!cartItem) {
-        return ApiResponse.error(
-          "Cart item not found",
-          StatusCodes.NOT_FOUND,
-        );
+        return ApiResponse.error("Cart item not found", StatusCodes.NOT_FOUND);
       }
 
       if (userId) {

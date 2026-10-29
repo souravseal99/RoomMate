@@ -15,7 +15,8 @@
     "inviteCode": "LOFT2026",
     "members": [
       { "userId": "usr_jordan_03", "role": "ADMIN" },
-      { "userId": "usr_morgan_04", "role": "MEMBER" }
+      { "userId": "usr_morgan_04", "role": "MEMBER" },
+      { "userId": "usr_casey_05", "role": "MEMBER" }
     ]
   }
 ]
