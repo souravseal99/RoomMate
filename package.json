@@ -22,6 +22,7 @@
     "dev:app": "npm run dev --workspace=roommate-app",
     "dev:server": "npm run dev --workspace=roommate-server",
     "db:seed": "npm run db:seed --workspace=roommate-server",
+    "db:seed:idempotent": "npm run db:seed:idempotent --workspace=roommate-server",
     "db:studio": "npm run db:studio --workspace=roommate-server",
     "lint": "eslint .",
     "lint:app": "eslint roommate-app",

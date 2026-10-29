@@ -38,6 +38,7 @@ export const {
       "/auth/register",
       "/auth/csrf-token",
       "/health",
+      "/dev/seed",
     ];
     const cleanPath = (req.path || "").split("?")[0];
     const cleanOriginalUrl = (req.originalUrl || "").split("?")[0];

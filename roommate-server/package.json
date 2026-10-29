@@ -20,6 +20,7 @@
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
     "db:seed": "vite-node prisma/seed.ts",
+    "db:seed:idempotent": "vite-node prisma/seed.ts --idempotent",
     "docker:up": "docker-compose up --build"
   },
   "prisma": {

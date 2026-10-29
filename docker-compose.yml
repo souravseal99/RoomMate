@@ -35,7 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma generate && npx prisma db push && npm run dev:serve"
+    command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed && npm run dev:serve"
 
   db:
     image: postgres:15

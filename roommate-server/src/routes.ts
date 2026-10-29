@@ -43,7 +43,24 @@ routes.use("/household", householdRouter);
 
 routes.use("/household-member", hosueholdMemberRouter);
 
-routes.use("/household-member", hosueholdMemberRouter);
+if (process.env.NODE_ENV === "development") {
+  routes.post("/dev/seed", async (_req, response) => {
+    const { exec } = await import("child_process");
+    exec("npm run db:seed", (error, stdout, stderr) => {
+      if (error) {
+        return response.status(500).json({
+          message: "Seeding failed",
+          error: error.message,
+          stderr,
+        });
+      }
+      return response.status(200).json({
+        message: "Database seeded successfully for development",
+        output: stdout,
+      });
+    });
+  });
+}
 
 routes.use("/expense", expenseRouter);
 
