@@ -10,6 +10,7 @@ Built with **React 19 + Vite + TypeScript** on the frontend, and **Express 5 + P
 - 🌐 **Nightly Build**: [roommate-app-nightly.vercel.app](https://roommate-app-nightly.vercel.app)
 - 🤝 **Contributing Guide**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - 📜 **Code of Conduct**: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
 ---
 
 ## ✨ Features (MVP)
@@ -61,6 +62,7 @@ The codebase strictly enforces established architectural contracts:
 - ⚙️ **Backend Engineering Guidelines]**:
   - **3-Tier Layering**: Strict separation between Routes -> Controllers -> Services -> Repositories. Controllers never call Prisma directly; Services never handle raw Express `req`/`res`.
   - **Multi-Tenancy**: Every household resource is guarded by `authorizeHousehold({ requireAdmin?: boolean })`.
+
 ---
 
 ## 📂 Project Structure

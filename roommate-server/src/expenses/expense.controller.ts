@@ -75,18 +75,35 @@ export class ExpenseController {
     const { fromUserId, toUserId, householdId, amount } = request.body;
 
     // Only allow authenticated users to settle their own debts (remediate VULN-02)
-    if (userId !== fromUserId) {
+    if (fromUserId && fromUserId !== userId) {
       return response.status(StatusCodes.FORBIDDEN).json({
         message: "You can only settle your own debts",
         data: null,
       });
     }
 
+    // A user cannot settle debts with themselves
+    if (toUserId === userId) {
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "You cannot settle debts with yourself",
+        data: null,
+      });
+    }
+
+    const parsedAmount =
+      typeof amount === "number" ? amount : parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "Settlement amount must be a number greater than 0",
+        data: null,
+      });
+    }
+
     const { status, message, data } = await SettlementService.createSettlement({
-      fromUserId,
+      fromUserId: userId,
       toUserId,
       householdId,
-      amount: parseFloat(amount),
+      amount: parsedAmount,
     });
 
     return response.status(status).json({

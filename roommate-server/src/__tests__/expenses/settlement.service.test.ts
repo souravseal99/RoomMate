@@ -20,6 +20,56 @@ describe("SettlementService", () => {
       amount: 45.5,
     };
 
+    it("should reject when debtor and creditor are the same user (self-settlement)", async () => {
+      const result = await SettlementService.createSettlement({
+        ...validSettlement,
+        fromUserId: "user-same",
+        toUserId: "user-same",
+      });
+
+      expect(result).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "Cannot settle debts with yourself",
+      });
+      expect(SettlementRepo.create).not.toHaveBeenCalled();
+    });
+
+    it("should reject when settlement amount is zero or negative", async () => {
+      const zeroResult = await SettlementService.createSettlement({
+        ...validSettlement,
+        amount: 0,
+      });
+
+      expect(zeroResult).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "Settlement amount must be a number greater than 0",
+      });
+
+      const negativeResult = await SettlementService.createSettlement({
+        ...validSettlement,
+        amount: -50,
+      });
+
+      expect(negativeResult).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "Settlement amount must be a number greater than 0",
+      });
+      expect(SettlementRepo.create).not.toHaveBeenCalled();
+    });
+
+    it("should reject when settlement amount is NaN", async () => {
+      const nanResult = await SettlementService.createSettlement({
+        ...validSettlement,
+        amount: NaN,
+      });
+
+      expect(nanResult).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "Settlement amount must be a number greater than 0",
+      });
+      expect(SettlementRepo.create).not.toHaveBeenCalled();
+    });
+
     it("should reject when debtor (fromUserId) is not a member of the household", async () => {
       vi.mocked(HouseholdMemberRepo.isExistingUser).mockImplementation(
         async (userId: string, _householdId: string) => {

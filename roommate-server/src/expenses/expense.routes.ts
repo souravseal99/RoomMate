@@ -2,6 +2,8 @@ import { Router } from "express";
 import { ExpenseController } from "@src/expenses/expense.controller";
 import ensureAuthenticated from "@src/auth/middlewares/ensureAuthenticated";
 import authorizeHousehold from "@src/auth/middlewares/authorizeHousehold";
+import { settlementValidator } from "@src/expenses/settlementValidator";
+import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 
 const expenseRouter = Router();
 
@@ -37,6 +39,8 @@ expenseRouter.post(
   "/settlement",
   ensureAuthenticated,
   authorizeHousehold(),
+  ...settlementValidator,
+  validationErrorHandler,
   ExpenseController.createSettlement,
 );
 

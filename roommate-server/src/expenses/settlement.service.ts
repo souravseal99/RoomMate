@@ -5,6 +5,24 @@ import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo
 
 export class SettlementService {
   static async createSettlement(settlement: SettlementDto) {
+    if (settlement.fromUserId === settlement.toUserId) {
+      return ApiResponse.error(
+        "Cannot settle debts with yourself",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    if (
+      typeof settlement.amount !== "number" ||
+      isNaN(settlement.amount) ||
+      settlement.amount <= 0
+    ) {
+      return ApiResponse.error(
+        "Settlement amount must be a number greater than 0",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
     // Validate that both users are household members
     const fromIsMember = await HouseholdMemberRepo.isExistingUser(
       settlement.fromUserId,

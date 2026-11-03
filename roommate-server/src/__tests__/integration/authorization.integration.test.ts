@@ -365,6 +365,76 @@ describe("End-to-End Multi-Tenant Authorization Integration Tests", () => {
       expect(result.status).toBe(StatusCodes.FORBIDDEN);
       expect(result.body.message).toMatch(/only settle your own debts/i);
     });
+
+    it("User Beta cannot bypass check by sending spoofed user object in body", async () => {
+      const req: MockRequest = {
+        user: { userId: "user-B" },
+        body: {
+          householdId: "h1",
+          fromUserId: "user-A",
+          toUserId: "user-B",
+          amount: 100,
+          user: { userId: "user-A" }, // VULN-02 exploit payload
+        },
+        params: {},
+        query: {},
+      };
+
+      const result = await runPipeline({
+        middleware: authorizeHousehold(),
+        controller: ExpenseController.createSettlement,
+        req,
+      });
+
+      expect(result.status).toBe(StatusCodes.FORBIDDEN);
+      expect(result.body.message).toMatch(/only settle your own debts/i);
+    });
+
+    it("User Alpha cannot settle debt with themselves (self-settlement denial)", async () => {
+      const req: MockRequest = {
+        user: { userId: "user-A" },
+        body: {
+          householdId: "h1",
+          toUserId: "user-A",
+          amount: 50,
+        },
+        params: {},
+        query: {},
+      };
+
+      const result = await runPipeline({
+        middleware: authorizeHousehold(),
+        controller: ExpenseController.createSettlement,
+        req,
+      });
+
+      expect(result.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(result.body.message).toMatch(/cannot settle debts with yourself/i);
+    });
+
+    it("User Alpha cannot record settlement with invalid or negative amount", async () => {
+      const req: MockRequest = {
+        user: { userId: "user-A" },
+        body: {
+          householdId: "h1",
+          toUserId: "user-B",
+          amount: -50,
+        },
+        params: {},
+        query: {},
+      };
+
+      const result = await runPipeline({
+        middleware: authorizeHousehold(),
+        controller: ExpenseController.createSettlement,
+        req,
+      });
+
+      expect(result.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(result.body.message).toMatch(
+        /settlement amount must be a number greater than 0/i,
+      );
+    });
   });
 
   describe("INT-8: Cross-Household Inventory Access Denial", () => {
