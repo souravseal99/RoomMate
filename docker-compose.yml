@@ -4,7 +4,9 @@ services:
     ports:
       - "5173:5173"
     environment:
+      - VITE_SERVER_BASE_URL=http://localhost:5000
       - SERVER_BASE_URL=http://localhost:5000
+      - NODE_ENV=development
     volumes:
       - ./roommate-app:/app
       - /app/node_modules
@@ -23,33 +25,38 @@ services:
     environment:
       - NODE_ENV=development
       - APP_PORT=5000
-      - DATABASE_URL=postgresql://postgres:password@db:5432/roommate?schema=public
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:${POSTGRES_PASSWORD:-password}@db:5432/roommate?schema=public}
       - BCRYPT_SALT_ROUNDS=10
-      - JWT_SECRET=dev_secret_key_roommate_2026
+      - JWT_SECRET=${JWT_SECRET:-dev_secret_key_roommate_2026}
       - JWT_EXPIRES_IN=1h
-      - JWT_REFRESH_SECRET=dev_refresh_secret_key_roommate_2026
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-dev_refresh_secret_key_roommate_2026}
       - JWT_REFRESH_EXPIRES_IN=7d
+      - CSRF_SECRET=${CSRF_SECRET:-roommate_csrf_super_secret_key_2026_at_least_32_characters}
       - USE_SECURE_COOKIE=false
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=100
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed && npm run dev:serve"
+    command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed:idempotent && npm run dev:serve"
 
   db:
     image: postgres:15
     restart: always
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: roommate
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-roommate}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d roommate"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-roommate}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5

@@ -12,7 +12,10 @@ export default async function ensureAuthenticated(
   const isBearerToken = authHeader?.startsWith("Bearer ");
 
   if (!authHeader || !isBearerToken) {
-    const { status, message } = ApiResponse.error("Token not found");
+    const { status, message } = ApiResponse.error(
+      "Token not found",
+      StatusCodes.UNAUTHORIZED,
+    );
 
     return response.status(status).json({
       message: message,
@@ -27,17 +30,15 @@ export default async function ensureAuthenticated(
     request.user = decoded; // NOTE - Binding the user propertry to the global express scope
     next();
   } catch (error) {
-    const { status, message, data } = ApiResponse.error(
+    const { status, message } = ApiResponse.error(
       "Invalid or Expired token",
       StatusCodes.UNAUTHORIZED,
-      error,
     );
 
-    console.error("error: Roommate App: Ensure auth failed : ", message, data);
+    console.error("error: Roommate App: Ensure auth failed : ", message, error);
 
     return response.status(status).json({
       message: message,
-      error: data,
     });
   }
 }

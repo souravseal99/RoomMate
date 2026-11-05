@@ -26,11 +26,14 @@ routes.get("/health", async (_request, response) => {
     });
   } catch (error) {
     console.error("Health check failed:", error);
+    const isProduction = process.env.NODE_ENV === "production";
     return response.status(503).json({
       status: "unhealthy",
       database: "disconnected",
       dateTime: new Date(),
-      error: error instanceof Error ? error.message : "Unknown error",
+      ...(isProduction
+        ? {}
+        : { error: error instanceof Error ? error.message : "Unknown error" }),
     });
   }
 });
@@ -43,20 +46,32 @@ routes.use("/household", householdRouter);
 
 routes.use("/household-member", hosueholdMemberRouter);
 
-if (process.env.NODE_ENV === "development") {
-  routes.post("/dev/seed", async (_req, response) => {
+if (
+  process.env.NODE_ENV === "development" &&
+  process.env.ENABLE_DEV_SEED === "true"
+) {
+  routes.post("/dev/seed", async (req, response) => {
+    const secret = req.headers["x-dev-seed-secret"];
+    const expectedSecret =
+      process.env.DEV_SEED_SECRET || "dev-seed-local-only-token";
+
+    if (!secret || secret !== expectedSecret) {
+      return response.status(403).json({
+        message: "Forbidden: Invalid or missing dev seed secret",
+      });
+    }
+
     const { exec } = await import("child_process");
-    exec("npm run db:seed", (error, stdout, stderr) => {
+    exec("npm run db:seed:idempotent", (error, stdout, stderr) => {
       if (error) {
+        console.error("Dev seed execution failed:", error, stderr);
         return response.status(500).json({
           message: "Seeding failed",
-          error: error.message,
-          stderr,
         });
       }
+      console.log("Dev seed output:", stdout);
       return response.status(200).json({
         message: "Database seeded successfully for development",
-        output: stdout,
       });
     });
   });

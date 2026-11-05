@@ -57,12 +57,12 @@ export const authorizeHousehold = (options: AuthorizeHouseholdOptions = {}) => {
       req.householdMember = membership;
       return next();
     } catch (error) {
-      const { status, message, data } = ApiResponse.error(
+      console.error("Failed to authorize household access:", error);
+      const { status, message } = ApiResponse.error(
         "Failed to authorize household access",
         StatusCodes.INTERNAL_SERVER_ERROR,
-        error,
       );
-      return res.status(status).json({ message, error: data });
+      return res.status(status).json({ message });
     }
   };
 };

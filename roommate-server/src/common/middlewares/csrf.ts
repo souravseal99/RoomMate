@@ -1,8 +1,8 @@
 import { doubleCsrf } from "csrf-csrf";
 import { Request } from "express";
+import { CSRF_SECRET, USE_SECURE_COOKIE } from "@src/common/config";
 
 const isProduction = process.env.NODE_ENV === "production";
-const useSecureCookie = process.env.USE_SECURE_COOKIE === "true";
 
 export const {
   invalidCsrfTokenError,
@@ -10,17 +10,14 @@ export const {
   validateRequest,
   doubleCsrfProtection,
 } = doubleCsrf({
-  getSecret: () =>
-    process.env.CSRF_SECRET ||
-    process.env.JWT_SECRET ||
-    "roommate_csrf_super_secret_key_2026_at_least_32_characters",
+  getSecret: () => CSRF_SECRET,
   getSessionIdentifier: (req: Request) =>
     (req.headers["x-session-id"] as string) || "",
   cookieName: "x-csrf-token",
   cookieOptions: {
-    sameSite: isProduction || useSecureCookie ? "none" : "lax",
+    sameSite: isProduction || USE_SECURE_COOKIE ? "none" : "lax",
     path: "/",
-    secure: isProduction || useSecureCookie,
+    secure: isProduction || USE_SECURE_COOKIE,
     httpOnly: true,
   },
   size: 32,
@@ -33,21 +30,16 @@ export const {
     code: "EBADCSRFTOKEN",
   },
   skipCsrfProtection: (req: Request) => {
-    const publicPaths = [
+    const publicPaths = new Set([
       "/auth/login",
       "/auth/register",
       "/auth/csrf-token",
       "/health",
       "/dev/seed",
-    ];
-    const cleanPath = (req.path || "").split("?")[0];
-    const cleanOriginalUrl = (req.originalUrl || "").split("?")[0];
-    return publicPaths.some(
-      (p) =>
-        cleanPath === p ||
-        cleanPath.endsWith(p) ||
-        cleanOriginalUrl === p ||
-        cleanOriginalUrl.endsWith(p),
-    );
+    ]);
+    const cleanPath = (req.path || "").split("?")[0].replace(/\/+$/, "") || "/";
+    const cleanOriginalUrl =
+      (req.originalUrl || "").split("?")[0].replace(/\/+$/, "") || "/";
+    return publicPaths.has(cleanPath) || publicPaths.has(cleanOriginalUrl);
   },
 });

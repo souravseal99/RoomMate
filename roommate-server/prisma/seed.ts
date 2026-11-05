@@ -86,9 +86,9 @@ export interface SeedOptions {
 }
 
 /**
- * Validates that seeding is safe to run against the current database.
+ * Validates that destructive wiping is safe to run against the current database.
  */
-function assertSafetyGuard(force = false) {
+function assertSafetyGuard(clean: boolean, force = false) {
   const dbUrl = process.env.DATABASE_URL || "";
   const isProdEnv = process.env.NODE_ENV === "production";
 
@@ -106,26 +106,56 @@ function assertSafetyGuard(force = false) {
     dbUrl.toLowerCase().includes(marker),
   );
 
-  if ((isProdEnv || pointsToRemoteProduction) && !force) {
-    console.error("\n❌ SAFETY ERROR: Refusing to seed database!");
-    console.error("---------------------------------------------------------");
+  const isRemoteOrProd = isProdEnv || pointsToRemoteProduction;
+
+  if (isRemoteOrProd && clean && !force) {
+    console.error(
+      "\n❌ SAFETY ERROR: Refusing to perform destructive clean wipe on production/remote database!",
+    );
+    console.error(
+      "--------------------------------------------------------------------------------",
+    );
     console.error(
       `Target DATABASE_URL appears to be a remote or production database.`,
     );
     console.error(`NODE_ENV: "${process.env.NODE_ENV}"`);
-    console.error(`To bypass this guard, pass --force explicitly.\n`);
-    throw new Error("Seeder aborted by Production Safety Guard");
+    console.error(`Destructive table truncation (deleteMany) is blocked.`);
+    console.error(
+      `To add seed data safely on top of existing data without wiping, run:`,
+    );
+    console.error(`  npm run db:seed:idempotent`);
+    console.error(
+      `To bypass this guard and wipe all data, pass --force-destructive-wipe explicitly.\n`,
+    );
+    throw new Error("Destructive wipe aborted by Production Safety Guard");
   }
 }
 
 export async function seedDatabase(options: SeedOptions = {}) {
-  const clean = options.clean ?? true;
-  const force = options.force ?? false;
+  const isProdEnv =
+    process.env.NODE_ENV === "production" ||
+    [
+      "render.com",
+      "supabase.co",
+      "aws.com",
+      "neon.tech",
+      "railway.app",
+      "elephantsql.com",
+      "planetscale.com",
+    ].some((marker) =>
+      (process.env.DATABASE_URL || "").toLowerCase().includes(marker),
+    );
 
-  assertSafetyGuard(force);
+  // In production, default clean to false (idempotent) unless explicitly forced
+  const force = options.force ?? false;
+  const clean = isProdEnv
+    ? force && options.clean === true
+    : (options.clean ?? true);
+
+  assertSafetyGuard(clean, force);
 
   console.log(
-    `\n🌱 Starting Database Seeding [Mode: ${clean ? "Clean Wipe & Re-seed" : "Idempotent Upsert"}]...`,
+    `\n🌱 Starting Database Seeding [Mode: ${clean ? "Clean Wipe & Re-seed" : "Idempotent Upsert (Preserves Existing Data)"}]...`,
   );
 
   // 1. Clean existing records if requested
@@ -377,11 +407,31 @@ export async function seedDatabase(options: SeedOptions = {}) {
   );
 }
 
+const isProductionEnv =
+  process.env.NODE_ENV === "production" ||
+  [
+    "render.com",
+    "supabase.co",
+    "aws.com",
+    "neon.tech",
+    "railway.app",
+    "elephantsql.com",
+    "planetscale.com",
+  ].some((marker) =>
+    (process.env.DATABASE_URL || "").toLowerCase().includes(marker),
+  );
+
+const hasIdempotentArg = process.argv.includes("--idempotent");
+const hasDestructiveWipeArg =
+  process.argv.includes("--force-destructive-wipe") ||
+  process.argv.includes("--force");
+
+// In production, always default to idempotent mode (clean: false) unless explicitly wiping
+const shouldClean = isProductionEnv ? hasDestructiveWipeArg : !hasIdempotentArg;
+
 seedDatabase({
-  clean: !process.argv.includes("--idempotent"),
-  force:
-    process.argv.includes("--force") ||
-    process.argv.includes("--force-production-seed"),
+  clean: shouldClean,
+  force: hasDestructiveWipeArg,
 })
   .catch((e) => {
     console.error("❌ Seeding execution failed:", e.message);

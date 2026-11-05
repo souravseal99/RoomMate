@@ -29,11 +29,16 @@ function errorHandler(
     });
   }
 
-  console.error("Error: Roommate-server: Unexpected Error:", error.message);
+  console.error("Error: Roommate-server: Unexpected Error:", error);
+
+  const isProduction = process.env.NODE_ENV === "production";
+  const errorMessage = isProduction
+    ? INTERNAL_SERVER_ERROR
+    : error.message || INTERNAL_SERVER_ERROR;
 
   return resp.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     success: false,
-    errorMessage: error.message || INTERNAL_SERVER_ERROR,
+    errorMessage,
   });
 }
 

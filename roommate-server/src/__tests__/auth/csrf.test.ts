@@ -138,4 +138,43 @@ describe("CSRF Protection Middleware", () => {
 
     expect(next).toHaveBeenCalledWith();
   });
+
+  it("should NOT bypass CSRF for spoofed paths ending with public route names (VULN-15 fix)", () => {
+    const reqSpoofed = {
+      method: "POST",
+      path: "/expense/create/auth/login",
+      originalUrl: "/expense/create/auth/login",
+      headers: {},
+      cookies: {},
+    } as unknown as Request;
+
+    const res = {} as unknown as Response;
+    const next = vi.fn() as NextFunction;
+
+    doubleCsrfProtection(reqSpoofed, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statusCode: 403,
+        code: "EBADCSRFTOKEN",
+      }),
+    );
+  });
+
+  it("should allow public auth routes even with query params or trailing slashes", () => {
+    const reqWithSlash = {
+      method: "POST",
+      path: "/auth/login/",
+      originalUrl: "/auth/login?redirect=dashboard",
+      headers: {},
+      cookies: {},
+    } as unknown as Request;
+
+    const res = {} as unknown as Response;
+    const next = vi.fn() as NextFunction;
+
+    doubleCsrfProtection(reqWithSlash, res, next);
+
+    expect(next).toHaveBeenCalledWith();
+  });
 });

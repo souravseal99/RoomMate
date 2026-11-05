@@ -19,6 +19,17 @@ export class SessionRepo {
     });
   }
 
+  static async updateSession(
+    sessionId: string,
+    refreshToken: string,
+    expiresAt: Date,
+  ) {
+    return await prisma.session.update({
+      where: { sessionId },
+      data: { refreshToken, expiresAt },
+    });
+  }
+
   static async deleteSession(sessionId: string) {
     return await prisma.session.delete({
       where: { sessionId },

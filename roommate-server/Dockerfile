@@ -13,7 +13,7 @@ COPY . .
 # Expose backend port
 EXPOSE 5000
 
-# Start server app with database migrations & seed sequence
-CMD ["sh", "-c", "npx prisma db push && npm run db:seed && npm run dev:serve"]
+# Run database migrations and start server (if SEED_ON_BOOT=true, runs non-destructive idempotent seed)
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ \"$SEED_ON_BOOT\" = \"true\" ]; then npm run db:seed:idempotent; fi && vite-node src/server.ts"]
 
 
