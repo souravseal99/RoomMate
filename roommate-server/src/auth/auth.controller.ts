@@ -1,7 +1,11 @@
 import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { StatusCodes } from "http-status-codes";
-import { SessionRepo } from "./session.repo";
+import {
+  clearRefreshTokenCookie,
+  REFRESH_TOKEN_COOKIE_NAME,
+  refreshTokenSetter,
+} from "./refreshTokenSetter";
 
 export class AuthController {
   static async register(request: Request, response: Response) {
@@ -21,9 +25,23 @@ export class AuthController {
       sessionId,
     );
 
+    const authData = data as {
+      refreshToken?: string;
+      [key: string]: any;
+    } | null;
+
+    if (authData?.refreshToken) {
+      refreshTokenSetter(response, authData.refreshToken);
+      const { refreshToken: _rt, ...clientData } = authData;
+      return response.status(status).json({
+        message,
+        data: clientData,
+      });
+    }
+
     return response.status(status).json({
-      message: message,
-      data: data,
+      message,
+      data,
     });
   }
 
@@ -43,57 +61,72 @@ export class AuthController {
       sessionId,
     );
 
+    const authData = data as {
+      refreshToken?: string;
+      [key: string]: any;
+    } | null;
+
+    if (authData?.refreshToken) {
+      refreshTokenSetter(response, authData.refreshToken);
+      const { refreshToken: _rt, ...clientData } = authData;
+      return response.status(status).json({
+        message,
+        data: clientData,
+      });
+    }
+
     return response.status(status).json({
-      message: message,
-      data: data,
+      message,
+      data,
     });
   }
 
   static async refresh(request: Request, response: Response) {
     const sessionId = request.headers["x-session-id"] as string;
+    const refreshToken = request.cookies?.[REFRESH_TOKEN_COOKIE_NAME];
 
     if (!sessionId) {
-      return response.status(StatusCodes.UNAUTHORIZED).json({
-        message: "No session ID provided",
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "Session ID required",
       });
     }
 
-    const session = await SessionRepo.getSession(sessionId);
-
-    if (!session) {
+    if (!refreshToken) {
       return response.status(StatusCodes.UNAUTHORIZED).json({
-        message: "Invalid session",
-      });
-    }
-
-    if (new Date() > session.expiresAt) {
-      await SessionRepo.deleteSession(sessionId);
-      return response.status(StatusCodes.UNAUTHORIZED).json({
-        message: "Session expired",
+        message: "Refresh token cookie missing",
       });
     }
 
     const { status, data, message } = await AuthService.refresh(
-      session.refreshToken,
-      session.userId,
+      refreshToken,
+      sessionId,
     );
 
+    const authData = data as {
+      refreshToken?: string;
+      [key: string]: any;
+    } | null;
+
+    if (authData?.refreshToken) {
+      refreshTokenSetter(response, authData.refreshToken);
+      const { refreshToken: _rt, ...clientData } = authData;
+      return response.status(status).json({
+        message,
+        data: clientData,
+      });
+    }
+
     return response.status(status).json({
-      message: message,
-      data: data,
+      message,
+      data,
     });
   }
 
   static async logout(request: Request, response: Response) {
     const sessionId = request.headers["x-session-id"] as string;
 
-    if (sessionId) {
-      try {
-        await SessionRepo.deleteSession(sessionId);
-      } catch (e) {
-        // Session might not exist
-      }
-    }
+    await AuthService.logout(sessionId);
+    clearRefreshTokenCookie(response);
 
     return response.status(StatusCodes.OK).json({
       message: "Logged out successfully",

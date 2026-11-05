@@ -1,26 +1,25 @@
 import { Outlet } from 'react-router-dom';
-import { AppSidebar } from '@/components/app/AppSidebar';
-import { AppBar } from '@/components/app/sidebar/AppBar';
+import { AppHeader } from '@/components/app/AppHeader';
+import { AppFooter } from '@/components/app/AppFooter';
 import { MobileBottomNav } from '@/components/app/sidebar/MobileBottomNav';
 
 function AuthenticatedLayout() {
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
-      {/* Desktop Sidebar (visible on md and above) */}
-      <AppSidebar />
+    <div className="min-h-screen w-full flex flex-col bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
+      {/* Stitch Fixed Top Navigation Header */}
+      <AppHeader />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        {/* Mobile Top App Bar (visible only on mobile) */}
-        <AppBar />
-
-        {/* Scrollable Page Content */}
-        <main className="flex-1 overflow-y-auto w-full pb-24 md:pb-6 px-4 md:px-8 pt-4 md:pt-6">
+      {/* Main Canvas Area */}
+      <main className="flex-1 w-full pt-20 pb-24 md:pb-6 lg:pb-8 flex flex-col">
+        <div className="w-full max-w-[1520px] mx-auto px-4 md:px-8 py-6 flex-1 flex flex-col">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
 
-      {/* Mobile Bottom Navigation Bar (visible only on mobile) */}
+      {/* Stitch House OS Footer */}
+      <AppFooter />
+
+      {/* Mobile Bottom Navigation Bar (visible on mobile / < lg viewports) */}
       <MobileBottomNav />
     </div>
   );

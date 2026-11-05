@@ -1,15 +1,23 @@
 import { Router } from "express";
 import { ExpenseController } from "@src/expenses/expense.controller";
 import ensureAuthenticated from "@src/auth/middlewares/ensureAuthenticated";
+import authorizeHousehold from "@src/auth/middlewares/authorizeHousehold";
+import { settlementValidator } from "@src/expenses/settlementValidator";
+import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 
 const expenseRouter = Router();
 
-// expenseRouter.get("/");
-expenseRouter.post("/add", ensureAuthenticated, ExpenseController.create);
+expenseRouter.post(
+  "/add",
+  ensureAuthenticated,
+  authorizeHousehold(),
+  ExpenseController.create,
+);
 
 expenseRouter.get(
   "/for/:householdId",
   ensureAuthenticated,
+  authorizeHousehold(),
   ExpenseController.getExpensesByHousehold,
 );
 
@@ -22,6 +30,7 @@ expenseRouter.delete(
 expenseRouter.get(
   "/for/:householdId/balances",
   ensureAuthenticated,
+  authorizeHousehold(),
   ExpenseController.getBalances,
 );
 
@@ -29,12 +38,16 @@ expenseRouter.get(
 expenseRouter.post(
   "/settlement",
   ensureAuthenticated,
+  authorizeHousehold(),
+  ...settlementValidator,
+  validationErrorHandler,
   ExpenseController.createSettlement,
 );
 
 expenseRouter.get(
   "/settlement/for/:householdId",
   ensureAuthenticated,
+  authorizeHousehold(),
   ExpenseController.getSettlements,
 );
 

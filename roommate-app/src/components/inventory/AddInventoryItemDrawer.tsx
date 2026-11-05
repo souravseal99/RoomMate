@@ -1,12 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -133,17 +128,18 @@ export default function AddInventoryItemDrawer({
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {PRESETS.map((preset) => (
-                  <button
+                  <Button
                     key={preset}
                     type="button"
+                    variant="outline"
                     onClick={() => {
                       const cleanName = preset.split(' ')[0];
                       form.setValue('name', cleanName);
                     }}
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-surface-container hover:bg-surface-container-high border border-border text-foreground transition-all cursor-pointer active:scale-95"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/40 hover:bg-muted border border-border text-foreground transition-all"
                   >
                     {preset}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -156,13 +152,13 @@ export default function AddInventoryItemDrawer({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                       Item Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g. Whole Milk"
-                        className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                        className="bg-card border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary min-h-[44px]"
                         disabled={isPending}
                         {...field}
                       />
@@ -178,14 +174,14 @@ export default function AddInventoryItemDrawer({
                   name="quantity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                         Current Qty
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                          className="bg-card border-border text-foreground text-sm font-semibold font-mono rounded-xl focus:border-primary min-h-[44px]"
                           disabled={isPending}
                           {...field}
                         />
@@ -200,14 +196,14 @@ export default function AddInventoryItemDrawer({
                   name="lowThreshold"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      <FormLabel className="text-xs font-bold uppercase tracking-wider text-muted-foreground font-mono">
                         Min Threshold
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          className="bg-surface border-border text-foreground text-sm font-semibold rounded-xl focus:border-primary"
+                          className="bg-card border-border text-foreground text-sm font-semibold font-mono rounded-xl focus:border-primary min-h-[44px]"
                           disabled={isPending}
                           {...field}
                         />
@@ -224,14 +220,14 @@ export default function AddInventoryItemDrawer({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={isPending}
-                  className="flex-1 border-border font-bold rounded-xl cursor-pointer"
+                  className="flex-1 min-h-[44px] border-border font-bold rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs cursor-pointer"
+                  className="flex-1 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-extrabold rounded-xl shadow-xs active:scale-95"
                 >
                   {isPending ? (
                     <>

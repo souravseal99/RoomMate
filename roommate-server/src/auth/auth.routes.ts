@@ -3,8 +3,17 @@ import { AuthController } from "@src/auth/auth.controller";
 import { registerUserValidator } from "@src/auth/registerUserValidatior";
 import { loginUserValidator } from "@src/auth/loginUserValidator";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
+import { generateCsrfToken } from "@common/middlewares/csrf";
+import { StatusCodes } from "http-status-codes";
 
 const authRoutes = Router();
+
+authRoutes.get("/csrf-token", (request, response) => {
+  const csrfToken = generateCsrfToken(request, response);
+  return response.status(StatusCodes.OK).json({
+    csrfToken,
+  });
+});
 
 authRoutes.post(
   "/register",

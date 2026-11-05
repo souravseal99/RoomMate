@@ -123,8 +123,8 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
                   className="flex items-center justify-between text-sm bg-background border border-border/60 rounded-md p-2.5"
                 >
                   <div className="text-foreground">
-                    <span className="font-semibold text-foreground">{settlement.fromName}</span> owes{' '}
-                    <span className="font-semibold text-foreground">{settlement.toName}</span>{' '}
+                    <span className="font-semibold text-foreground">{settlement.fromName}</span>{' '}
+                    owes <span className="font-semibold text-foreground">{settlement.toName}</span>{' '}
                     <span className="font-bold text-primary-container ml-1">
                       {formatCurrency(settlement.amount)}
                     </span>

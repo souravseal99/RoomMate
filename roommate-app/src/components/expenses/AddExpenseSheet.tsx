@@ -47,7 +47,10 @@ export default function AddExpenseSheet({
             </SheetTitle>
             <SheetDescription className="text-xs text-muted-foreground">
               Record a new shared expense for{' '}
-              <span className="font-semibold text-foreground">{selectedHousehold?.value ?? 'your household'}</span>.
+              <span className="font-semibold text-foreground">
+                {selectedHousehold?.value ?? 'your household'}
+              </span>
+              .
             </SheetDescription>
           </SheetHeader>
 

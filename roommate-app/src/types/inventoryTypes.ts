@@ -3,6 +3,9 @@ export interface InventoryItem {
   name: string;
   quantity: number;
   lowThreshold: number;
+  threshold?: number;
+  unit?: string;
+  category?: string;
   householdId?: string;
   createdAt?: string;
   updatedAt?: string;

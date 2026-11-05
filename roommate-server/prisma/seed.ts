@@ -1,14 +1,14 @@
-import { PrismaClient, Role } from '@generated/prisma';
-import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
+import { PrismaClient, Role } from "@generated/prisma";
+import bcrypt from "bcrypt";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
 // Helper function to read JSON seed files
 function loadSeedData<T>(fileName: string): T {
-  const filePath = path.join(__dirname, 'seeds', fileName);
-  const rawData = fs.readFileSync(filePath, 'utf-8');
+  const filePath = path.join(__dirname, "seeds", fileName);
+  const rawData = fs.readFileSync(filePath, "utf-8");
   return JSON.parse(rawData) as T;
 }
 
@@ -21,7 +21,7 @@ interface UserSeed {
 
 interface HouseholdMemberSeed {
   userId: string;
-  role: 'ADMIN' | 'MEMBER';
+  role: "ADMIN" | "MEMBER";
 }
 
 interface HouseholdSeed {
@@ -80,37 +80,120 @@ interface SettlementSeed {
   householdId: string;
 }
 
-async function main() {
-  console.log('🌱 Starting JSON-driven database seeding...');
+export interface SeedOptions {
+  clean?: boolean;
+  force?: boolean;
+}
 
-  // 1. Clean existing records (in reverse dependency order)
-  console.log('🧹 Cleaning existing database records...');
-  await prisma.settlement.deleteMany({});
-  await prisma.shoppingCart.deleteMany({});
-  await prisma.inventoryItem.deleteMany({});
-  await prisma.chore.deleteMany({});
-  await prisma.expenseSplit.deleteMany({});
-  await prisma.expense.deleteMany({});
-  await prisma.householdMember.deleteMany({});
-  await prisma.session.deleteMany({});
-  await prisma.household.deleteMany({});
-  await prisma.user.deleteMany({});
+/**
+ * Validates that destructive wiping is safe to run against the current database.
+ */
+function assertSafetyGuard(clean: boolean, force = false) {
+  const dbUrl = process.env.DATABASE_URL || "";
+  const isProdEnv = process.env.NODE_ENV === "production";
+
+  const dangerousHostMarkers = [
+    "render.com",
+    "supabase.co",
+    "aws.com",
+    "neon.tech",
+    "railway.app",
+    "elephantsql.com",
+    "planetscale.com",
+  ];
+
+  const pointsToRemoteProduction = dangerousHostMarkers.some((marker) =>
+    dbUrl.toLowerCase().includes(marker),
+  );
+
+  const isRemoteOrProd = isProdEnv || pointsToRemoteProduction;
+
+  if (isRemoteOrProd && clean && !force) {
+    console.error(
+      "\n❌ SAFETY ERROR: Refusing to perform destructive clean wipe on production/remote database!",
+    );
+    console.error(
+      "--------------------------------------------------------------------------------",
+    );
+    console.error(
+      `Target DATABASE_URL appears to be a remote or production database.`,
+    );
+    console.error(`NODE_ENV: "${process.env.NODE_ENV}"`);
+    console.error(`Destructive table truncation (deleteMany) is blocked.`);
+    console.error(
+      `To add seed data safely on top of existing data without wiping, run:`,
+    );
+    console.error(`  npm run db:seed:idempotent`);
+    console.error(
+      `To bypass this guard and wipe all data, pass --force-destructive-wipe explicitly.\n`,
+    );
+    throw new Error("Destructive wipe aborted by Production Safety Guard");
+  }
+}
+
+export async function seedDatabase(options: SeedOptions = {}) {
+  const isProdEnv =
+    process.env.NODE_ENV === "production" ||
+    [
+      "render.com",
+      "supabase.co",
+      "aws.com",
+      "neon.tech",
+      "railway.app",
+      "elephantsql.com",
+      "planetscale.com",
+    ].some((marker) =>
+      (process.env.DATABASE_URL || "").toLowerCase().includes(marker),
+    );
+
+  // In production, default clean to false (idempotent) unless explicitly forced
+  const force = options.force ?? false;
+  const clean = isProdEnv
+    ? force && options.clean === true
+    : (options.clean ?? true);
+
+  assertSafetyGuard(clean, force);
+
+  console.log(
+    `\n🌱 Starting Database Seeding [Mode: ${clean ? "Clean Wipe & Re-seed" : "Idempotent Upsert (Preserves Existing Data)"}]...`,
+  );
+
+  // 1. Clean existing records if requested
+  if (clean) {
+    console.log("🧹 Cleaning existing database records...");
+    await prisma.settlement.deleteMany({});
+    await prisma.shoppingCart.deleteMany({});
+    await prisma.inventoryItem.deleteMany({});
+    await prisma.chore.deleteMany({});
+    await prisma.expenseSplit.deleteMany({});
+    await prisma.expense.deleteMany({});
+    await prisma.householdMember.deleteMany({});
+    await prisma.session.deleteMany({});
+    await prisma.household.deleteMany({});
+    await prisma.user.deleteMany({});
+  }
 
   // 2. Load JSON files from prisma/seeds/
-  const users = loadSeedData<UserSeed[]>('users.json');
-  const households = loadSeedData<HouseholdSeed[]>('households.json');
-  const expenses = loadSeedData<ExpenseSeed[]>('expenses.json');
-  const chores = loadSeedData<ChoreSeed[]>('chores.json');
-  const inventoryItems = loadSeedData<InventoryItemSeed[]>('inventory.json');
-  const shoppingCarts = loadSeedData<ShoppingCartSeed[]>('shoppingCarts.json');
-  const settlements = loadSeedData<SettlementSeed[]>('settlements.json');
+  const users = loadSeedData<UserSeed[]>("users.json");
+  const households = loadSeedData<HouseholdSeed[]>("households.json");
+  const expenses = loadSeedData<ExpenseSeed[]>("expenses.json");
+  const chores = loadSeedData<ChoreSeed[]>("chores.json");
+  const inventoryItems = loadSeedData<InventoryItemSeed[]>("inventory.json");
+  const shoppingCarts = loadSeedData<ShoppingCartSeed[]>("shoppingCarts.json");
+  const settlements = loadSeedData<SettlementSeed[]>("settlements.json");
 
   // 3. Seed Users
-  console.log(`👤 Seeding ${users.length} users from users.json...`);
+  console.log(`👤 Processing ${users.length} users from users.json...`);
   for (const user of users) {
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    await prisma.user.create({
-      data: {
+    await prisma.user.upsert({
+      where: { userId: user.userId },
+      update: {
+        name: user.name,
+        email: user.email,
+        password: hashedPassword,
+      },
+      create: {
         userId: user.userId,
         name: user.name,
         email: user.email,
@@ -120,28 +203,57 @@ async function main() {
   }
 
   // 4. Seed Households & Memberships
-  console.log(`🏡 Seeding ${households.length} households from households.json...`);
+  console.log(
+    `🏡 Processing ${households.length} households from households.json...`,
+  );
   for (const household of households) {
-    await prisma.household.create({
-      data: {
+    await prisma.household.upsert({
+      where: { householdId: household.householdId },
+      update: {
+        name: household.name,
+        inviteCode: household.inviteCode,
+      },
+      create: {
         householdId: household.householdId,
         name: household.name,
         inviteCode: household.inviteCode,
-        members: {
-          create: household.members.map((m) => ({
-            userId: m.userId,
-            role: m.role as Role,
-          })),
-        },
       },
     });
+
+    for (const member of household.members) {
+      await prisma.householdMember.upsert({
+        where: {
+          userId_householdId: {
+            userId: member.userId,
+            householdId: household.householdId,
+          },
+        },
+        update: {
+          role: member.role as Role,
+        },
+        create: {
+          userId: member.userId,
+          householdId: household.householdId,
+          role: member.role as Role,
+        },
+      });
+    }
   }
 
   // 5. Seed Expenses & Splits
-  console.log(`💰 Seeding ${expenses.length} expenses from expenses.json...`);
+  console.log(
+    `💰 Processing ${expenses.length} expenses from expenses.json...`,
+  );
   for (const expense of expenses) {
-    await prisma.expense.create({
-      data: {
+    await prisma.expense.upsert({
+      where: { expenseId: expense.expenseId },
+      update: {
+        description: expense.description,
+        amount: expense.amount,
+        householdId: expense.householdId,
+        paidById: expense.paidById,
+      },
+      create: {
         expenseId: expense.expenseId,
         description: expense.description,
         amount: expense.amount,
@@ -158,12 +270,25 @@ async function main() {
   }
 
   // 6. Seed Chores
-  console.log(`🧹 Seeding ${chores.length} chores from chores.json...`);
+  console.log(`🧹 Processing ${chores.length} chores from chores.json...`);
   const now = new Date();
   for (const chore of chores) {
-    const nextDue = new Date(now.getTime() + chore.daysFromNow * 24 * 60 * 60 * 1000);
-    await prisma.chore.create({
-      data: {
+    const nextDue = new Date(
+      now.getTime() + chore.daysFromNow * 24 * 60 * 60 * 1000,
+    );
+    await prisma.chore.upsert({
+      where: { choreId: chore.choreId },
+      update: {
+        description: chore.description,
+        frequency: chore.frequency,
+        nextDue,
+        completed: chore.completed,
+        priority: chore.priority,
+        notes: chore.notes,
+        householdId: chore.householdId,
+        assignedToId: chore.assignedToId,
+      },
+      create: {
         choreId: chore.choreId,
         description: chore.description,
         frequency: chore.frequency,
@@ -178,10 +303,19 @@ async function main() {
   }
 
   // 7. Seed Inventory Items
-  console.log(`📦 Seeding ${inventoryItems.length} inventory items from inventory.json...`);
+  console.log(
+    `📦 Processing ${inventoryItems.length} inventory items from inventory.json...`,
+  );
   for (const item of inventoryItems) {
-    await prisma.inventoryItem.create({
-      data: {
+    await prisma.inventoryItem.upsert({
+      where: { inventoryItemId: item.inventoryItemId },
+      update: {
+        name: item.name,
+        quantity: item.quantity,
+        lowThreshold: item.lowThreshold,
+        householdId: item.householdId,
+      },
+      create: {
         inventoryItemId: item.inventoryItemId,
         name: item.name,
         quantity: item.quantity,
@@ -192,10 +326,18 @@ async function main() {
   }
 
   // 8. Seed Shopping Cart Items
-  console.log(`🛒 Seeding ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`);
+  console.log(
+    `🛒 Processing ${shoppingCarts.length} shopping cart items from shoppingCarts.json...`,
+  );
   for (const cartItem of shoppingCarts) {
-    await prisma.shoppingCart.create({
-      data: {
+    await prisma.shoppingCart.upsert({
+      where: { shoppingCartId: cartItem.shoppingCartId },
+      update: {
+        itemName: cartItem.itemName,
+        quantity: cartItem.quantity,
+        householdId: cartItem.householdId,
+      },
+      create: {
         shoppingCartId: cartItem.shoppingCartId,
         itemName: cartItem.itemName,
         quantity: cartItem.quantity,
@@ -205,10 +347,19 @@ async function main() {
   }
 
   // 9. Seed Settlements
-  console.log(`💳 Seeding ${settlements.length} settlements from settlements.json...`);
+  console.log(
+    `💳 Processing ${settlements.length} settlements from settlements.json...`,
+  );
   for (const settlement of settlements) {
-    await prisma.settlement.create({
-      data: {
+    await prisma.settlement.upsert({
+      where: { settlementId: settlement.settlementId },
+      update: {
+        amount: settlement.amount,
+        fromUserId: settlement.fromUserId,
+        toUserId: settlement.toUserId,
+        householdId: settlement.householdId,
+      },
+      create: {
         settlementId: settlement.settlementId,
         amount: settlement.amount,
         fromUserId: settlement.fromUserId,
@@ -218,19 +369,72 @@ async function main() {
     });
   }
 
-  console.log('✅ JSON-driven database seeding completed successfully!');
-  console.log('\n🔐 Pre-configured Test Accounts (from prisma/seeds/users.json):');
-  console.log('----------------------------------------------------');
+  console.log(
+    "\n================================================================================",
+  );
+  console.log("🏡 ROOMMATE DEV DATABASE SEEDED SUCCESSFULLY");
+  console.log(
+    "================================================================================",
+  );
+  console.log(
+    "Role    | Name            | Email                 | Password      | Household",
+  );
+  console.log(
+    "--------+-----------------+-----------------------+---------------+-----------------",
+  );
   for (const user of users) {
-    console.log(`• ${user.name.padEnd(16)} : ${user.email.padEnd(20)} / ${user.password}`);
+    const memberHousehold = households.find((h) =>
+      h.members.some((m) => m.userId === user.userId),
+    );
+    const membership = memberHousehold?.members.find(
+      (m) => m.userId === user.userId,
+    );
+    const roleStr = membership?.role || "MEMBER";
+    const houseName = memberHousehold?.name || "None";
+    console.log(
+      `${roleStr.padEnd(7)} | ${user.name.padEnd(15)} | ${user.email.padEnd(21)} | ${user.password.padEnd(13)} | ${houseName}`,
+    );
   }
-  console.log('----------------------------------------------------');
-  console.log('💡 Dev Tip: Edit any JSON file in `prisma/seeds/` to customize test data!\n');
+  console.log(
+    "--------------------------------------------------------------------------------",
+  );
+  console.log("Household Invite Codes:");
+  for (const h of households) {
+    console.log(` • ${h.name.padEnd(20)} : ${h.inviteCode}`);
+  }
+  console.log(
+    "================================================================================\n",
+  );
 }
 
-main()
+const isProductionEnv =
+  process.env.NODE_ENV === "production" ||
+  [
+    "render.com",
+    "supabase.co",
+    "aws.com",
+    "neon.tech",
+    "railway.app",
+    "elephantsql.com",
+    "planetscale.com",
+  ].some((marker) =>
+    (process.env.DATABASE_URL || "").toLowerCase().includes(marker),
+  );
+
+const hasIdempotentArg = process.argv.includes("--idempotent");
+const hasDestructiveWipeArg =
+  process.argv.includes("--force-destructive-wipe") ||
+  process.argv.includes("--force");
+
+// In production, always default to idempotent mode (clean: false) unless explicitly wiping
+const shouldClean = isProductionEnv ? hasDestructiveWipeArg : !hasIdempotentArg;
+
+seedDatabase({
+  clean: shouldClean,
+  force: hasDestructiveWipeArg,
+})
   .catch((e) => {
-    console.error('❌ Error during seeding:', e);
+    console.error("❌ Seeding execution failed:", e.message);
     process.exit(1);
   })
   .finally(async () => {

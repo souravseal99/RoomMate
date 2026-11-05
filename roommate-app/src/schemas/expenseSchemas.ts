@@ -22,9 +22,7 @@ export const createExpenseSchema = z.object({
     .positive('Amount must be greater than $0')
     .max(1000000, 'Amount exceeds maximum permitted limit'),
   paidById: z.string().min(1, 'Please select who paid for this expense'),
-  sharedWith: z
-    .array(z.string())
-    .min(1, 'Please select at least 1 roommate to split with'),
+  sharedWith: z.array(z.string()).min(1, 'Please select at least 1 roommate to split with'),
   category: z.string().optional(),
 });
 

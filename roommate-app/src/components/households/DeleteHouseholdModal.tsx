@@ -41,19 +41,19 @@ export default function DeleteHouseholdModal({ household, open, onOpenChange }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-surface border-2 border-border max-w-md p-0 overflow-hidden shadow-tactile rounded-lg">
-        <DialogHeader className="p-content-padding bg-destructive/10 border-b border-border">
+      <DialogContent className="bg-card text-foreground border border-border max-w-md p-0 overflow-hidden shadow-xl rounded-2xl select-none">
+        <DialogHeader className="p-6 bg-destructive/10 border-b border-border/60">
           <DialogTitle className="text-xl font-bold text-destructive flex items-center gap-2">
             <AlertOctagon className="w-5 h-5" />
-            Delete Household?
+            <span>Delete Household?</span>
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground pt-1">
             This action is permanent and cannot be reversed.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="p-content-padding space-y-4">
-          <div className="bg-surface-container border border-border p-3.5 rounded-lg space-y-2">
+        <div className="p-6 space-y-4">
+          <div className="bg-surface-container border border-border p-4 rounded-xl space-y-2">
             <p className="text-xs font-bold text-foreground">
               Are you sure you want to permanently delete <strong>{household.name}</strong>?
             </p>
@@ -69,13 +69,13 @@ export default function DeleteHouseholdModal({ household, open, onOpenChange }: 
           </div>
         </div>
 
-        <DialogFooter className="p-content-padding bg-surface-container-high/30 border-t border-border flex items-center justify-end gap-2">
+        <DialogFooter className="p-6 bg-surface-container-high/30 border-t border-border/60 flex items-center justify-end gap-2.5">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={deleteMutation.isPending}
-            className="bg-surface border-border hover:bg-surface-container text-foreground cursor-pointer"
+            className="min-h-[44px] bg-surface border-border hover:bg-surface-container text-foreground cursor-pointer rounded-xl"
           >
             Cancel
           </Button>
@@ -84,17 +84,17 @@ export default function DeleteHouseholdModal({ household, open, onOpenChange }: 
             variant="destructive"
             onClick={handleDelete}
             disabled={deleteMutation.isPending}
-            className="bg-destructive hover:opacity-90 text-white font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5"
+            className="min-h-[44px] bg-destructive hover:opacity-90 text-white font-bold active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 rounded-xl"
           >
             {deleteMutation.isPending ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Deleting...
+                <span>Deleting...</span>
               </>
             ) : (
               <>
                 <Trash2 className="w-4 h-4" />
-                Permanently Delete
+                <span>Permanently Delete</span>
               </>
             )}
           </Button>

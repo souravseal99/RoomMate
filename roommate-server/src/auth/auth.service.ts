@@ -57,9 +57,11 @@ export class AuthService {
 
       return ApiResponse.success(
         {
+          userId: createdUser.userId,
           name: createdUser.name,
           email: createdUser.email,
           accessToken: accessToken,
+          refreshToken: refreshToken,
         },
         "User successfully created",
       );
@@ -106,7 +108,9 @@ export class AuthService {
 
       return ApiResponse.success(
         {
+          userId: user.userId,
           accessToken: accessToken,
+          refreshToken: refreshToken,
           name: user.name,
           email: user.email,
         },
@@ -117,44 +121,85 @@ export class AuthService {
     }
   }
 
-  static async refresh(refreshToken: string, expectedUserId: string) {
+  static async refresh(refreshToken: string, sessionId: string) {
     try {
       const decodedRefreshToken = await validateRefreshToken(refreshToken);
 
-      if (!decodedRefreshToken) ApiResponse.error("Refresh token invalid");
+      if (!decodedRefreshToken) {
+        return ApiResponse.error(
+          "Refresh token invalid",
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
 
       const { userId } = decodedRefreshToken;
 
-      if (!userId || userId === "")
-        ApiResponse.error("Unable to get the user id from the token");
-
-      // Validate session belongs to the user
-      if (userId !== expectedUserId) {
+      if (!userId || userId === "") {
         return ApiResponse.error(
-          "Session mismatch - please log in again",
+          "Unable to get the user id from the token",
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
+      const session = await SessionRepo.getSession(sessionId);
+
+      if (!session) {
+        return ApiResponse.error("Invalid session", StatusCodes.UNAUTHORIZED);
+      }
+
+      if (new Date() > session.expiresAt) {
+        try {
+          await SessionRepo.deleteSession(sessionId);
+        } catch (_e) {
+          // Ignore
+        }
+        return ApiResponse.error("Session expired", StatusCodes.UNAUTHORIZED);
+      }
+
+      // Validate session belongs to the user and the presented token matches DB
+      if (session.userId !== userId || session.refreshToken !== refreshToken) {
+        return ApiResponse.error(
+          "Session mismatch or invalid token - please log in again",
           StatusCodes.UNAUTHORIZED,
         );
       }
 
       const user = await UserRepo.getUserById(userId);
-      if (!user)
+      if (!user) {
         return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+      }
 
-      const accessToken = await getNewAccessToken({ userId: userId });
+      // Rotate tokens
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+        generateTokens({ userId: user.userId });
+
+      const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+      await SessionRepo.updateSession(sessionId, newRefreshToken, newExpiresAt);
 
       return ApiResponse.success({
-        userId: userId,
+        userId: user.userId,
         name: user.name,
         email: user.email,
-        accessToken: accessToken,
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
       });
     } catch (error) {
-      console.error(error);
+      console.error("AuthService.refresh error:", error);
       return ApiResponse.error(
-        `Unable to refresh the token: ${error}`,
+        "Unable to refresh token",
         StatusCodes.UNAUTHORIZED,
-        { refreshToken: refreshToken },
       );
     }
+  }
+
+  static async logout(sessionId?: string) {
+    if (sessionId) {
+      try {
+        await SessionRepo.deleteSession(sessionId);
+      } catch (_e) {
+        // Session might not exist
+      }
+    }
+    return ApiResponse.success(null, "Logged out successfully");
   }
 }

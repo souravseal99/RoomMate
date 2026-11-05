@@ -30,7 +30,13 @@ interface ExpenseActivityItemProps {
 function resolveCategoryIcon(description: string, category?: string) {
   const text = (category || description).toLowerCase();
 
-  if (text.includes('pizza') || text.includes('food') || text.includes('dinner') || text.includes('lunch') || text.includes('takeout')) {
+  if (
+    text.includes('pizza') ||
+    text.includes('food') ||
+    text.includes('dinner') ||
+    text.includes('lunch') ||
+    text.includes('takeout')
+  ) {
     return <Utensils className="w-4 h-4 text-primary" />;
   }
   if (text.includes('grocery') || text.includes('groceries') || text.includes('market')) {
@@ -42,7 +48,12 @@ function resolveCategoryIcon(description: string, category?: string) {
   if (text.includes('wifi') || text.includes('internet')) {
     return <Wifi className="w-4 h-4 text-primary-container" />;
   }
-  if (text.includes('electric') || text.includes('utility') || text.includes('power') || text.includes('bill')) {
+  if (
+    text.includes('electric') ||
+    text.includes('utility') ||
+    text.includes('power') ||
+    text.includes('bill')
+  ) {
     return <Zap className="w-4 h-4 text-primary-container" />;
   }
   if (text.includes('rent') || text.includes('house') || text.includes('apartment')) {
@@ -83,24 +94,24 @@ export function ExpenseActivityItem({
           <p className="text-sm font-semibold text-foreground truncate tracking-tight">
             {expense.description}
           </p>
-          <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-            {splitSummary}
-          </p>
+          <p className="text-[11px] text-muted-foreground truncate mt-0.5">{splitSummary}</p>
         </div>
       </div>
 
       {/* Amount & Actions */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="text-right flex flex-col justify-center">
           <p
-            className={`text-sm font-bold tracking-tight ${
+            className={`text-sm font-bold tracking-tight font-mono tabular-nums ${
               isPaidByCurrentUser ? 'text-primary' : 'text-foreground'
             }`}
           >
-            {isPaidByCurrentUser ? `+${formatCurrency(expense.amount)}` : formatCurrency(expense.amount)}
+            {isPaidByCurrentUser
+              ? `+${formatCurrency(expense.amount)}`
+              : formatCurrency(expense.amount)}
           </p>
           <p
-            className="text-[10px] text-muted-foreground mt-0.5"
+            className="text-[10px] text-muted-foreground mt-0.5 font-mono"
             title={dateFormatterUtc(expense.createdAt)}
           >
             {formatTimeAgo(expense.createdAt)}
@@ -109,7 +120,7 @@ export function ExpenseActivityItem({
 
         {/* Dropdown Menu */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-surface-container cursor-pointer transition-colors">
+          <DropdownMenuTrigger className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-container cursor-pointer transition-colors active:scale-95">
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-card border-border shadow-md">

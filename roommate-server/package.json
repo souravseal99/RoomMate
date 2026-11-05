@@ -10,7 +10,7 @@
     "test:ui": "vitest --ui",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
-    "format:check": "npx prettier --check \"src/**/*.{ts,js,json}\"",
+    "format:check": "prettier --write \"src/**/*.{ts,js,json}\"",
     "start": "ts-node src/server.ts",
     "dev": "nodemon",
     "dev:serve": "nodemon --legacy-watch --watch /app/src --ext ts,js,json --exec \"vite-node src/server.ts\"",
@@ -20,6 +20,7 @@
     "prisma:format": "npx prisma format",
     "prisma:generate": "npx prisma generate",
     "db:seed": "vite-node prisma/seed.ts",
+    "db:seed:idempotent": "vite-node prisma/seed.ts --idempotent",
     "docker:up": "docker-compose up --build"
   },
   "prisma": {
@@ -34,6 +35,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "csrf-csrf": "^4.0.3",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
     "eslint": "^10.7.0",

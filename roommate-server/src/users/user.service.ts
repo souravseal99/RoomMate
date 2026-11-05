@@ -3,7 +3,6 @@ import { User } from "@generated/prisma";
 import { ApiResponse } from "@common/utils/ApiResponse";
 import sanitizeUser from "@common/utils/sanitizeUser";
 import { UserRepo } from "@src/users/user.repo";
-import UserDto from "@src/common/dtos/UserDto";
 
 export class UserService {
   static async profile(userId: string) {

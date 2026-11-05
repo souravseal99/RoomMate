@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { ShoppingCartService } from "@src/shopping-cart/shoppingCart.service";
 import CreateCartItemRequest from "@src/shopping-cart/types/CreateCartItemRequest";
 import UpdateCartItemRequest from "@src/shopping-cart/types/UpdateCartItemRequest";
+import { getUserFromRequestBody } from "@common/utils/utils";
 
 export class ShoppingCartController {
   static async create(request: Request, response: Response) {
@@ -36,6 +37,7 @@ export class ShoppingCartController {
   }
 
   static async update(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { cartItemId } = request.params as { cartItemId: string };
     const { quantity } = request.body;
 
@@ -44,6 +46,7 @@ export class ShoppingCartController {
     const { status, message, data } = await ShoppingCartService.update(
       cartItemId,
       updateCartItemRequest,
+      userId,
     );
 
     return response.status(status).json({
@@ -53,10 +56,13 @@ export class ShoppingCartController {
   }
 
   static async delete(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
     const { cartItemId } = request.params as { cartItemId: string };
 
-    const { status, message, data } =
-      await ShoppingCartService.delete(cartItemId);
+    const { status, message, data } = await ShoppingCartService.delete(
+      cartItemId,
+      userId,
+    );
 
     return response.status(status).json({
       message,

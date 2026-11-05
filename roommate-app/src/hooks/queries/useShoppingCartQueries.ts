@@ -144,9 +144,7 @@ export function useCheckoutCartMutation() {
       purchasedItemIds: string[];
     }) => {
       // Delete purchased items from cart
-      await Promise.all(
-        purchasedItemIds.map((id) => shoppingCartApi().deleteItem(id))
-      );
+      await Promise.all(purchasedItemIds.map((id) => shoppingCartApi().deleteItem(id)));
       return { success: true };
     },
     onSuccess: (_, variables) => {

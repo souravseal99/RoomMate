@@ -13,6 +13,12 @@ export class ShoppingCartRepo {
     });
   }
 
+  static async getById(cartItemId: string) {
+    return await prisma.shoppingCart.findUnique({
+      where: { shoppingCartId: cartItemId },
+    });
+  }
+
   static async getCartItemsByHouseholdId(householdId: string) {
     return await prisma.shoppingCart.findMany({
       where: { householdId },

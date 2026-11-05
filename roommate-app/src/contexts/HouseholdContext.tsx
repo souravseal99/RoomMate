@@ -1,9 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import type {
-  HouseholdMember,
-  HouseholdOptions,
-  HouseholdResponse,
-} from '@/types/householdTypes';
+import type { HouseholdMember, HouseholdOptions, HouseholdResponse } from '@/types/householdTypes';
 import { useHouseholdsQuery, useHouseholdMembersQuery } from '@/hooks/queries/useHouseholdQueries';
 import { useToast } from '@/hooks/use-toast';
 import { eventBus } from '@/lib/eventBus';
@@ -28,9 +24,7 @@ export type HouseholdContextType = {
 
 export const HouseholdContext = createContext<HouseholdContextType | undefined>(undefined);
 
-export default function HouseholdProvider({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function HouseholdProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const { data: households = [], isLoading, isError, refetch } = useHouseholdsQuery();
   const { toast } = useToast();
 
@@ -82,19 +76,16 @@ export default function HouseholdProvider({
     return fetchedMembers.length > 0 ? fetchedMembers : activeHousehold?.members || legacyMembers;
   }, [fetchedMembers, activeHousehold, legacyMembers]);
 
-  const setSelectedHousehold = useCallback(
-    (option: HouseholdOptions | string | null) => {
-      if (!option) {
-        setSelectedHouseholdId(null);
-        localStorage.removeItem(ACTIVE_HOUSEHOLD_STORAGE_KEY);
-        return;
-      }
-      const id = typeof option === 'string' ? option : option.key;
-      setSelectedHouseholdId(id);
-      localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, id);
-    },
-    []
-  );
+  const setSelectedHousehold = useCallback((option: HouseholdOptions | string | null) => {
+    if (!option) {
+      setSelectedHouseholdId(null);
+      localStorage.removeItem(ACTIVE_HOUSEHOLD_STORAGE_KEY);
+      return;
+    }
+    const id = typeof option === 'string' ? option : option.key;
+    setSelectedHouseholdId(id);
+    localStorage.setItem(ACTIVE_HOUSEHOLD_STORAGE_KEY, id);
+  }, []);
 
   const switchActiveHousehold = useCallback(
     (householdId: string) => {
@@ -116,10 +107,13 @@ export default function HouseholdProvider({
     refetch();
   }, [refetch]);
 
-  const setHouseholds = useCallback((_newHouseholds: HouseholdResponse[]) => {
-    // Managed reactively by TanStack query; no-op or trigger refetch
-    refetch();
-  }, [refetch]);
+  const setHouseholds = useCallback(
+    (_newHouseholds: HouseholdResponse[]) => {
+      // Managed reactively by TanStack query; no-op or trigger refetch
+      refetch();
+    },
+    [refetch]
+  );
 
   const providerValues = useMemo(
     () => ({
@@ -151,9 +145,5 @@ export default function HouseholdProvider({
     ]
   );
 
-  return (
-    <HouseholdContext.Provider value={providerValues}>
-      {children}
-    </HouseholdContext.Provider>
-  );
+  return <HouseholdContext.Provider value={providerValues}>{children}</HouseholdContext.Provider>;
 }

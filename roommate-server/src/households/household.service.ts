@@ -9,7 +9,7 @@ import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo
 import { HouseholdDto } from "@src/common/dtos/HouseholdDto";
 
 export class HouseholdService {
-  static async create(userId: string, name: string) {
+  static async create(userId: string, name: string, settings?: any) {
     const user: UserDto | null = await UserRepo.getUserById(userId);
 
     if (!user)
@@ -38,11 +38,15 @@ export class HouseholdService {
       }
     }
 
-    const createdHouseholdRecord: Household = await HouseholdRepository.create(
-      finalName,
-      userId,
-      Role.ADMIN,
-    );
+    const createdHouseholdRecord: Household =
+      settings !== undefined
+        ? await HouseholdRepository.create(
+            finalName,
+            userId,
+            Role.ADMIN,
+            settings,
+          )
+        : await HouseholdRepository.create(finalName, userId, Role.ADMIN);
 
     if (!createdHouseholdRecord)
       return ApiResponse.error(
@@ -54,6 +58,51 @@ export class HouseholdService {
       { household: createdHouseholdRecord },
       "Household created",
       StatusCodes.CREATED,
+    );
+  }
+
+  static async update(
+    userId: string,
+    householdId: string,
+    updateData: { name?: string; settings?: any },
+  ) {
+    if (!householdId) {
+      return ApiResponse.error(
+        "Household ID is required",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    const membership = await HouseholdMemberRepo.isExistingUser(
+      userId,
+      householdId,
+    );
+    if (!membership) {
+      return ApiResponse.error(
+        "You are not a member of this household",
+        StatusCodes.FORBIDDEN,
+      );
+    }
+
+    if (membership.role !== Role.ADMIN) {
+      return ApiResponse.error(
+        "Only space administrators can modify household settings",
+        StatusCodes.FORBIDDEN,
+      );
+    }
+
+    const updated = await HouseholdRepository.update(householdId, updateData);
+    if (!updated) {
+      return ApiResponse.error(
+        "Failed to update household",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    return ApiResponse.success(
+      { household: updated },
+      "Household settings updated successfully",
+      StatusCodes.OK,
     );
   }
 
@@ -78,7 +127,28 @@ export class HouseholdService {
     );
   }
 
-  static async delete(householdId: string) {
+  static async delete(householdId: string, userId?: string) {
+    if (userId) {
+      const membership = await HouseholdMemberRepo.isExistingUser(
+        userId,
+        householdId,
+      );
+
+      if (!membership) {
+        return ApiResponse.error(
+          "You do not belong to this household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+
+      if (membership.role !== Role.ADMIN) {
+        return ApiResponse.error(
+          "Only space administrators can delete a household",
+          StatusCodes.FORBIDDEN,
+        );
+      }
+    }
+
     const household: HouseholdDto | null =
       await HouseholdRepository.getHouseholdById(householdId);
 

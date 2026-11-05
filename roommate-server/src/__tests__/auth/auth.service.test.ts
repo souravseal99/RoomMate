@@ -294,7 +294,7 @@ describe("AuthService", () => {
   });
 
   describe("refresh", () => {
-    it("should successfully refresh token with valid refresh token", async () => {
+    it("should successfully refresh and rotate token with valid cookie and matching session", async () => {
       const mockUser: User = {
         userId: "user-123",
         name: "Alice",
@@ -303,42 +303,185 @@ describe("AuthService", () => {
         createdAt: new Date("2025-11-05"),
       };
 
+      const futureDate = new Date(Date.now() + 100000);
+      const mockSession = {
+        sessionId: "session-123",
+        userId: "user-123",
+        refreshToken: "valid_refresh_token",
+        expiresAt: futureDate,
+        createdAt: new Date(),
+        user: mockUser,
+      };
+
       vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(mockSession as any);
       vi.mocked(UserRepo.getUserById).mockResolvedValue(mockUser);
-      vi.mocked(getNewAccessToken).mockResolvedValue("new_access_token");
+      vi.mocked(generateTokens).mockReturnValue({
+        accessToken: "rotated_access_token",
+        refreshToken: "rotated_refresh_token",
+      });
+      vi.mocked(SessionRepo.updateSession).mockResolvedValue({} as any);
 
       const result = await AuthService.refresh(
         "valid_refresh_token",
-        "user-123",
+        "session-123",
       );
 
       expect(validateRefreshToken).toHaveBeenCalledWith("valid_refresh_token");
+      expect(SessionRepo.getSession).toHaveBeenCalledWith("session-123");
       expect(UserRepo.getUserById).toHaveBeenCalledWith("user-123");
-      expect(getNewAccessToken).toHaveBeenCalledWith({ userId: "user-123" });
+      expect(generateTokens).toHaveBeenCalledWith({ userId: "user-123" });
+      expect(SessionRepo.updateSession).toHaveBeenCalledWith(
+        "session-123",
+        "rotated_refresh_token",
+        expect.any(Date),
+      );
       expect(result).toMatchObject({
         status: StatusCodes.OK,
         data: {
           userId: "user-123",
           name: "Alice",
           email: "alice@example.com",
-          accessToken: "new_access_token",
+          accessToken: "rotated_access_token",
+          refreshToken: "rotated_refresh_token",
         },
       });
     });
 
-    it("should reject refresh when userId mismatch (session hijacking prevention)", async () => {
+    it("should reject refresh and return 401 when refresh token is invalid (VULN-07 fix)", async () => {
+      vi.mocked(validateRefreshToken).mockResolvedValue(null as any);
+
+      const result = await AuthService.refresh("invalid_token", "session-123");
+
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Refresh token invalid",
+      });
+      expect(SessionRepo.getSession).not.toHaveBeenCalled();
+    });
+
+    it("should reject refresh when session not found in database", async () => {
       vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(null);
 
       const result = await AuthService.refresh(
         "valid_refresh_token",
-        "user-456",
+        "session-unknown",
       );
 
-      expect(validateRefreshToken).toHaveBeenCalledWith("valid_refresh_token");
-      expect(UserRepo.getUserById).not.toHaveBeenCalled();
       expect(result).toMatchObject({
         status: StatusCodes.UNAUTHORIZED,
-        message: "Session mismatch - please log in again",
+        message: "Invalid session",
+      });
+    });
+
+    it("should reject refresh and delete session when session is expired", async () => {
+      const expiredSession = {
+        sessionId: "session-123",
+        userId: "user-123",
+        refreshToken: "valid_refresh_token",
+        expiresAt: new Date(Date.now() - 5000),
+        createdAt: new Date(),
+      };
+
+      vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(
+        expiredSession as any,
+      );
+      vi.mocked(SessionRepo.deleteSession).mockResolvedValue({} as any);
+
+      const result = await AuthService.refresh(
+        "valid_refresh_token",
+        "session-123",
+      );
+
+      expect(SessionRepo.deleteSession).toHaveBeenCalledWith("session-123");
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Session expired",
+      });
+    });
+
+    it("should reject refresh when presented cookie token differs from database session (token theft prevention)", async () => {
+      const mockSession = {
+        sessionId: "session-123",
+        userId: "user-123",
+        refreshToken: "token_stored_in_db",
+        expiresAt: new Date(Date.now() + 100000),
+        createdAt: new Date(),
+      };
+
+      vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(mockSession as any);
+
+      const result = await AuthService.refresh(
+        "different_cookie_token",
+        "session-123",
+      );
+
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Session mismatch or invalid token - please log in again",
+      });
+    });
+
+    it("should reject refresh when userId in token does not match session userId", async () => {
+      const mockSession = {
+        sessionId: "session-123",
+        userId: "user-attacker",
+        refreshToken: "valid_token",
+        expiresAt: new Date(Date.now() + 100000),
+        createdAt: new Date(),
+      };
+
+      vi.mocked(validateRefreshToken).mockResolvedValue({
+        userId: "user-victim",
+      });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(mockSession as any);
+
+      const result = await AuthService.refresh("valid_token", "session-123");
+
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Session mismatch or invalid token - please log in again",
+      });
+    });
+
+    it("should handle unexpected errors in refresh gracefully without reflecting error strings (VULN-08)", async () => {
+      vi.mocked(validateRefreshToken).mockImplementation(() => {
+        throw new Error("Internal crypto failure with sensitive driver trace");
+      });
+
+      const result = await AuthService.refresh("valid_token", "session-123");
+
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Unable to refresh token",
+      });
+      expect((result as any).message).not.toContain("Internal crypto failure");
+    });
+  });
+
+  describe("logout", () => {
+    it("should delete session when sessionId is provided", async () => {
+      vi.mocked(SessionRepo.deleteSession).mockResolvedValue({} as any);
+
+      const result = await AuthService.logout("session-123");
+
+      expect(SessionRepo.deleteSession).toHaveBeenCalledWith("session-123");
+      expect(result).toMatchObject({
+        status: StatusCodes.OK,
+        message: "Logged out successfully",
+      });
+    });
+
+    it("should succeed gracefully when sessionId is undefined", async () => {
+      const result = await AuthService.logout(undefined);
+
+      expect(SessionRepo.deleteSession).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.OK,
+        message: "Logged out successfully",
       });
     });
   });

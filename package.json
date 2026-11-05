@@ -14,6 +14,7 @@
     "eslint-plugin-react-hooks": "^6.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "prettier": "^3.5.3",
     "typescript-eslint": "^8.62.0"
   },
   "scripts": {
@@ -22,16 +23,20 @@
     "dev:app": "npm run dev --workspace=roommate-app",
     "dev:server": "npm run dev --workspace=roommate-server",
     "db:seed": "npm run db:seed --workspace=roommate-server",
+    "db:seed:idempotent": "npm run db:seed:idempotent --workspace=roommate-server",
     "db:studio": "npm run db:studio --workspace=roommate-server",
     "lint": "eslint .",
     "lint:app": "eslint roommate-app",
     "lint:server": "eslint roommate-server",
     "lint:fix": "eslint . --fix",
-    "format:check": "npm run format:check --workspace=roommate-app",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "type-check:app": "npm run type-check --workspace=roommate-app",
     "type-check:server": "npm run type-check --workspace=roommate-server",
     "type-check": "npm run type-check:app && npm run type-check:server",
+    "build": "npm run build --workspace=roommate-app && cp -r roommate-app/dist ./dist",
     "build:app": "npm run build --workspace=roommate-app",
-    "test": "npm test --workspace=roommate-server"
+    "test": "npm test --workspace=roommate-server",
+    "prepare": "git config core.hooksPath .githooks || true"
   }
 }

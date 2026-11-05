@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ExpenseService } from "@src/expenses/expense.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
+import { SettlementRepo } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import calculateBalance, {
@@ -11,6 +12,7 @@ import { Expense } from "@generated/prisma";
 import { StatusCodes } from "http-status-codes";
 
 vi.mock("@src/expenses/expense.repo");
+vi.mock("@src/expenses/settlement.repo");
 vi.mock("@src/household-members/householdMember.repo");
 vi.mock("@src/expense-split/expenseSplit.service");
 vi.mock("@src/expenses/calculateBalance");
@@ -218,6 +220,34 @@ describe("ExpenseService", () => {
         message: "Unable to add Expense",
       });
     });
+
+    it("should reject when any split user in sharedWith is not a member of the household", async () => {
+      const expenseDto: ExpenseDto = {
+        householdId: "household-123",
+        paidById: "user-1",
+        amount: 100.0,
+        description: "Party",
+      };
+
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockImplementation(
+        async (userId: string, _householdId: string) => {
+          if (userId === "user-1") return { householdMemberId: "hm-1" } as any;
+          if (userId === "user-2") return { householdMemberId: "hm-2" } as any;
+          return null; // user-not-in-house
+        },
+      );
+
+      const result = await ExpenseService.create(expenseDto, [
+        "user-2",
+        "user-not-in-house",
+      ]);
+
+      expect(ExpenseRepo.create).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "One or more split users do not belong to this household",
+      });
+    });
   });
 
   describe("getExpensesByHousehold", () => {
@@ -259,7 +289,56 @@ describe("ExpenseService", () => {
   });
 
   describe("delete", () => {
-    it("should successfully delete expense", async () => {
+    it("should reject when caller is not the payer of the expense", async () => {
+      const mockExpense: Expense = {
+        expenseId: "expense-123",
+        description: "To Delete",
+        amount: 50.0,
+        householdId: "household-123",
+        paidById: "user-owner",
+        createdAt: new Date("2025-11-05"),
+      };
+
+      vi.mocked(ExpenseRepo.getExpenseByExpenseId).mockResolvedValue(
+        mockExpense as any,
+      );
+
+      const result = await ExpenseService.delete("expense-123", "user-other");
+
+      expect(ExpenseRepo.getExpenseByExpenseId).toHaveBeenCalledWith(
+        "expense-123",
+      );
+      expect(ExpenseRepo.delete).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.FORBIDDEN,
+        message: "You can only modify or delete your own expenses",
+      });
+    });
+
+    it("should reject when caller is an admin of the household but not the payer", async () => {
+      const mockExpense: Expense = {
+        expenseId: "expense-123",
+        description: "To Delete",
+        amount: 50.0,
+        householdId: "household-123",
+        paidById: "user-member",
+        createdAt: new Date("2025-11-05"),
+      };
+
+      vi.mocked(ExpenseRepo.getExpenseByExpenseId).mockResolvedValue(
+        mockExpense as any,
+      );
+
+      const result = await ExpenseService.delete("expense-123", "user-admin");
+
+      expect(ExpenseRepo.delete).not.toHaveBeenCalled();
+      expect(result).toMatchObject({
+        status: StatusCodes.FORBIDDEN,
+        message: "You can only modify or delete your own expenses",
+      });
+    });
+
+    it("should successfully delete expense when caller is the payer", async () => {
       const mockExpense: Expense = {
         expenseId: "expense-123",
         description: "To Delete",
@@ -274,7 +353,7 @@ describe("ExpenseService", () => {
       );
       vi.mocked(ExpenseRepo.delete).mockResolvedValue(mockExpense);
 
-      const result = await ExpenseService.delete("expense-123");
+      const result = await ExpenseService.delete("expense-123", "user-123");
 
       expect(ExpenseRepo.getExpenseByExpenseId).toHaveBeenCalledWith(
         "expense-123",
@@ -290,7 +369,10 @@ describe("ExpenseService", () => {
     it("should reject when expense not found", async () => {
       vi.mocked(ExpenseRepo.getExpenseByExpenseId).mockResolvedValue(null);
 
-      const result = await ExpenseService.delete("expense-nonexistent");
+      const result = await ExpenseService.delete(
+        "expense-nonexistent",
+        "user-123",
+      );
 
       expect(ExpenseRepo.getExpenseByExpenseId).toHaveBeenCalledWith(
         "expense-nonexistent",
@@ -346,6 +428,7 @@ describe("ExpenseService", () => {
       vi.mocked(HouseholdMemberRepo.getByHouseholdId).mockResolvedValue(
         mockHouseholdMembers as any,
       );
+      vi.mocked(SettlementRepo.getByHouseholdId).mockResolvedValue([]);
 
       const result = await ExpenseService.getBalances("household-123");
 

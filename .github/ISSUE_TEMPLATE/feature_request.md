@@ -38,5 +38,5 @@ Add any mockups, references, or related ideas here.
 
 ## ✅ Checklist
 
-- [ ] I have checked existing issues for similar feature requests.  
-- [ ] I have clearly explained the benefit of this feature.  
+- [ ] I have checked existing issues for similar feature requests.
+- [ ] I have clearly explained the benefit of this feature.

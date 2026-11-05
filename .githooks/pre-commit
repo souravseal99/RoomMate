@@ -1,0 +1,4 @@
+#!/bin/sh
+# Run Prettier code formatting script on pre-commit
+npm run format
+git add -u

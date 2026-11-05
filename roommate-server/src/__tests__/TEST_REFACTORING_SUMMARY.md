@@ -1,20 +1,24 @@
 # Test Refactoring Summary
 
 ## ✅ COMPLETED: ApiResponse.test.ts
+
 **Before:** 23 tests  
 **After:** 5 tests  
 **Reduced by:** 18 tests (-78%)
 
 ### What Was Kept:
+
 - ✅ Success response with data
 - ✅ Custom status code handling
 - ✅ Null data handling
 - ✅ Error response with default status
- # Test Refactoring & Coverage Summary
+
+# Test Refactoring & Coverage Summary
 
 This document summarizes the test suites we created and refactored for the RoomMate backend. It lists the production modules we covered, the exact tests implemented, totals, and a few notes about how the tests are structured and how to run them.
 
 Summary snapshot
+
 - Total test files: 12
 - Total tests: 90 (all passing locally)
 - Test framework: Vitest (v4), globals enabled, Node environment
@@ -137,6 +141,3 @@ npm run test:watch
 # type-check
 npm run test:ui
 ```
-
-
-

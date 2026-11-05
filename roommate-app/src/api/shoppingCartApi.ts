@@ -6,9 +6,7 @@ import type {
 } from '@/types/inventoryTypes';
 
 export const shoppingCartApi = () => {
-  const getCartItemsByHousehold = async (
-    householdId: string
-  ): Promise<ShoppingCartItem[]> => {
+  const getCartItemsByHousehold = async (householdId: string): Promise<ShoppingCartItem[]> => {
     if (!householdId) return [];
     const res = await api.get(`/shopping-cart/${householdId}`);
     return Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
@@ -19,9 +17,7 @@ export const shoppingCartApi = () => {
     return res?.data || res;
   };
 
-  const addLowStockItems = async (
-    householdId: string
-  ): Promise<{ count: number }> => {
+  const addLowStockItems = async (householdId: string): Promise<{ count: number }> => {
     const res = await api.post(`/shopping-cart/add-low-stock/${householdId}`, {});
     return res?.data || res;
   };

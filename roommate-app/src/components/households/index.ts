@@ -2,10 +2,7 @@ export { CurrentSpaceHeroCard } from './CurrentSpaceHeroCard';
 export { OtherSpaceCard } from './OtherSpaceCard';
 export { InviteRoommatesModal } from './InviteRoommatesModal';
 export { MemberRosterView } from './MemberRosterView';
-export {
-  CurrentSpaceHeroSkeleton,
-  OtherSpacesGridSkeleton,
-} from './HouseholdHubSkeletons';
+export { CurrentSpaceHeroSkeleton, OtherSpacesGridSkeleton } from './HouseholdHubSkeletons';
 export { default as HouseholdCard } from './HouseholdCard';
 export { default as HouseholdCardSkeleton } from './HouseholdCardSkeleton';
 export { default as HouseholdEmptyState } from './HouseholdEmptyState';
@@ -14,3 +11,11 @@ export { default as MemberRosterDrawer } from './MemberRosterDrawer';
 export { default as HouseholdSettingsModal } from './HouseholdSettingsModal';
 export { default as LeaveHouseholdModal } from './LeaveHouseholdModal';
 export { default as DeleteHouseholdModal } from './DeleteHouseholdModal';
+export { HouseholdTabBar } from './HouseholdTabBar';
+export type { HouseholdTabId } from './HouseholdTabBar';
+export { HouseholdFooterDock } from './HouseholdFooterDock';
+export { OverviewVitalsTab } from './tabs/OverviewVitalsTab';
+export { FairnessLedgerTab } from './tabs/FairnessLedgerTab';
+export { RosterGovernanceTab } from './tabs/RosterGovernanceTab';
+export { InvitesNetworksTab } from './tabs/InvitesNetworksTab';
+export { DepartureAuditTab } from './tabs/DepartureAuditTab';

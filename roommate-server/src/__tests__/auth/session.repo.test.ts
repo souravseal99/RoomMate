@@ -7,6 +7,7 @@ vi.mock("@common/utils/prisma", () => ({
     session: {
       create: vi.fn(),
       findUnique: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       deleteMany: vi.fn(),
     },
@@ -84,6 +85,36 @@ describe("SessionRepo", () => {
       const result = await SessionRepo.getSession("non-existent");
 
       expect(result).toBeNull();
+    });
+  });
+
+  describe("updateSession", () => {
+    it("should update session refreshToken and expiresAt", async () => {
+      const sessionId = "session-123";
+      const newRefreshToken = "new-refresh-token";
+      const newExpiresAt = new Date("2026-01-01T00:00:00Z");
+
+      const updatedSession = {
+        sessionId,
+        userId: "user-456",
+        refreshToken: newRefreshToken,
+        createdAt: new Date("2025-11-05T10:00:00Z"),
+        expiresAt: newExpiresAt,
+      };
+
+      vi.mocked(prisma.session.update).mockResolvedValue(updatedSession);
+
+      const result = await SessionRepo.updateSession(
+        sessionId,
+        newRefreshToken,
+        newExpiresAt,
+      );
+
+      expect(prisma.session.update).toHaveBeenCalledWith({
+        where: { sessionId },
+        data: { refreshToken: newRefreshToken, expiresAt: newExpiresAt },
+      });
+      expect(result).toEqual(updatedSession);
     });
   });
 

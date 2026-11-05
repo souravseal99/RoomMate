@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { useCreateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
+import { Button } from '@/components/ui/button';
 
 const QUICK_ITEMS = [
   { name: 'Whole Milk', emoji: '🥛', defaultThreshold: 1 },
@@ -45,17 +46,18 @@ export default function QuickAddCarousel({ householdId }: Props) {
 
       <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none no-scrollbar -mx-1 px-1">
         {QUICK_ITEMS.map((item) => (
-          <button
+          <Button
             key={item.name}
             type="button"
+            variant="outline"
             onClick={() => handleQuickAdd(item)}
             disabled={createMutation.isPending}
-            className="flex shrink-0 items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-border px-3.5 py-2 rounded-full shadow-2xs text-xs sm:text-sm font-bold text-foreground active:scale-95 transition-all cursor-pointer group disabled:opacity-50"
+            className="flex shrink-0 items-center gap-2 bg-muted/40 hover:bg-muted border-border min-h-[44px] px-3.5 py-2 rounded-full shadow-2xs text-xs sm:text-sm font-bold text-foreground active:scale-95 transition-all group disabled:opacity-50"
           >
             <span className="text-base">{item.emoji}</span>
             <span>{item.name}</span>
             <Plus className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-          </button>
+          </Button>
         ))}
       </div>
     </div>

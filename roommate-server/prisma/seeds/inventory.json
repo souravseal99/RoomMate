@@ -2,26 +2,40 @@
   {
     "inventoryItemId": "inv_papertowels_01",
     "name": "Paper Towels (Pack of 12)",
-    "quantity": 2,
-    "lowThreshold": 4,
+    "quantity": 1,
+    "lowThreshold": 3,
     "householdId": "hh_beachside_01"
   },
   {
-    "inventoryItemId": "inv_pods_02",
-    "name": "Dishwasher Pods",
-    "quantity": 35,
-    "lowThreshold": 10,
-    "householdId": "hh_beachside_01"
-  },
-  {
-    "inventoryItemId": "inv_coffee_03",
+    "inventoryItemId": "inv_coffee_02",
     "name": "Whole Bean Coffee (1kg)",
+    "quantity": 0,
+    "lowThreshold": 2,
+    "householdId": "hh_beachside_01"
+  },
+  {
+    "inventoryItemId": "inv_oliveoil_03",
+    "name": "Extra Virgin Olive Oil",
     "quantity": 1,
     "lowThreshold": 2,
     "householdId": "hh_beachside_01"
   },
   {
-    "inventoryItemId": "inv_bags_04",
+    "inventoryItemId": "inv_pods_04",
+    "name": "Dishwasher Pods",
+    "quantity": 40,
+    "lowThreshold": 10,
+    "householdId": "hh_beachside_01"
+  },
+  {
+    "inventoryItemId": "inv_milk_05",
+    "name": "Whole Milk (Gallon)",
+    "quantity": 2,
+    "lowThreshold": 1,
+    "householdId": "hh_beachside_01"
+  },
+  {
+    "inventoryItemId": "inv_bags_06",
     "name": "Trash Bags (13 Gallon)",
     "quantity": 15,
     "lowThreshold": 5,

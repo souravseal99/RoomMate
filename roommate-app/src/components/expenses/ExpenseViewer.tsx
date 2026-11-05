@@ -72,23 +72,40 @@ function ExpenseViewer({ handleDeleteExpense }: ExpenseViewerProps) {
             </TableCaption>
             <TableHeader className="bg-background/80 border-b border-border">
               <TableRow className="border-border hover:bg-transparent">
-                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">Date</TableHead>
-                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">Description</TableHead>
-                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">Paid By</TableHead>
-                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider text-right">Amount</TableHead>
-                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">Status</TableHead>
+                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">
+                  Date
+                </TableHead>
+                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">
+                  Description
+                </TableHead>
+                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">
+                  Paid By
+                </TableHead>
+                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider text-right">
+                  Amount
+                </TableHead>
+                <TableHead className="font-bold text-foreground text-xs uppercase tracking-wider">
+                  Status
+                </TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {expenses &&
                 expenses.map((expense) => (
-                  <TableRow key={expense.expenseId} className="border-border hover:bg-background/50 transition-colors">
+                  <TableRow
+                    key={expense.expenseId}
+                    className="border-border hover:bg-background/50 transition-colors"
+                  >
                     <TableCell className="font-medium text-xs text-muted-foreground whitespace-nowrap">
                       {dateFormatterUtc(expense.createdAt)}
                     </TableCell>
-                    <TableCell className="font-semibold text-foreground">{expense.description}</TableCell>
-                    <TableCell className="text-foreground text-sm">{expense.paidBy?.name}</TableCell>
+                    <TableCell className="font-semibold text-foreground">
+                      {expense.description}
+                    </TableCell>
+                    <TableCell className="text-foreground text-sm">
+                      {expense.paidBy?.name}
+                    </TableCell>
                     <TableCell className="text-right font-bold text-foreground">
                       {formatCurrency(expense.amount)}
                     </TableCell>

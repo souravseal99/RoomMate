@@ -131,6 +131,7 @@ export function useActiveHousehold() {
   return {
     households,
     activeHousehold,
+    activeHouseholdId: activeHousehold?.householdId,
     selectedHousehold,
     householdMembers,
     hasActiveHousehold,
@@ -139,8 +140,8 @@ export function useActiveHousehold() {
     isError,
     refetch,
     switchActiveHousehold,
-    setHouseholds: () => { },
-    setHouseholdMembers: () => { },
+    setHouseholds: () => {},
+    setHouseholdMembers: () => {},
     setSelectedHousehold: (opt: any) => {
       const id = typeof opt === 'string' ? opt : opt?.key;
       if (id) switchActiveHousehold(id);
@@ -153,7 +154,7 @@ export function useCreateHouseholdMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { name: string }) => {
+    mutationFn: async (payload: { name: string; settings?: any }) => {
       const res = await householdApi().create(payload);
       return res.data;
     },
@@ -219,8 +220,16 @@ export function useUpdateHouseholdMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ householdId, name }: { householdId: string; name: string }) => {
-      const res = await householdApi().update(householdId, { name });
+    mutationFn: async ({
+      householdId,
+      name,
+      settings,
+    }: {
+      householdId: string;
+      name?: string;
+      settings?: any;
+    }) => {
+      const res = await householdApi().update(householdId, { name, settings });
       return res.data;
     },
     onSuccess: (_, variables) => {

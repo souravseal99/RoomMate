@@ -7,7 +7,7 @@ const householdApi = () => {
     return res?.data?.household || res?.household || [];
   };
 
-  const create = async (createHouseholdData: { name: string }) => {
+  const create = async (createHouseholdData: { name: string; settings?: any }) => {
     const data = await api.post('/household/create', createHouseholdData);
     return { data, status: 201 };
   };
@@ -19,7 +19,7 @@ const householdApi = () => {
     return { data, status: 200 };
   };
 
-  const update = async (householdId: string, updateData: { name: string }) => {
+  const update = async (householdId: string, updateData: { name?: string; settings?: any }) => {
     const data = await api.post('/household/update', {
       householdId,
       ...updateData,

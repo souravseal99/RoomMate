@@ -74,4 +74,3 @@ export function formatTimeAgo(dateString?: string): string {
     return 'Recently';
   }
 }
-

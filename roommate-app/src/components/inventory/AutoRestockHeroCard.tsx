@@ -1,4 +1,5 @@
 import { ShoppingCart, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAddLowStockToCartMutation } from '@/hooks/queries/useShoppingCartQueries';
 
@@ -27,7 +28,7 @@ export default function AutoRestockHeroCard({
   const isAllStocked = lowStockCount === 0;
 
   return (
-    <div className="bg-primary text-primary-foreground rounded-2xl p-5 shadow-md border border-primary/20 flex flex-col justify-between space-y-4">
+    <Card className="bg-primary text-primary-foreground rounded-2xl p-5 shadow-md border-primary/20 flex flex-col justify-between space-y-4 select-none">
       {/* Top Header */}
       <div className="flex items-center gap-3">
         <div className="bg-primary-foreground/20 p-2.5 rounded-2xl backdrop-blur-xs flex items-center justify-center shrink-0">
@@ -65,7 +66,7 @@ export default function AutoRestockHeroCard({
         <Button
           onClick={handleSyncToCart}
           disabled={addLowStockMutation.isPending || isAllStocked}
-          className="bg-card hover:bg-card/90 text-foreground font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 disabled:opacity-50"
+          className="bg-card hover:bg-card/90 text-foreground font-extrabold text-xs sm:text-sm px-5 min-h-[44px] rounded-xl shadow-xs active:scale-95 transition-all cursor-pointer shrink-0 disabled:opacity-50"
         >
           {addLowStockMutation.isPending ? (
             <>
@@ -79,6 +80,6 @@ export default function AutoRestockHeroCard({
           )}
         </Button>
       </div>
-    </div>
+    </Card>
   );
 }
