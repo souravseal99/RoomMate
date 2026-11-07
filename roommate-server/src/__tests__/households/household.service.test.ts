@@ -465,4 +465,292 @@ describe("HouseholdService", () => {
       });
     });
   });
+
+  describe("kitchenTable methods", () => {
+    describe("getKitchenTable", () => {
+      it("should reject if user is not a member of the household", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue(null);
+
+        const result = await HouseholdService.getKitchenTable(
+          "household-123",
+          "user-outsider",
+        );
+
+        expect(result.status).toBe(StatusCodes.FORBIDDEN);
+        expect(result.message).toBe("You do not belong to this household");
+      });
+
+      it("should return kitchen table data for members", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(HouseholdRepository.getKitchenTable).mockResolvedValue({
+          dishName: "Thai Green Curry",
+          servingTime: "8:00 PM",
+          extraPlates: 3,
+        } as any);
+
+        const result = await HouseholdService.getKitchenTable(
+          "household-123",
+          "user-123",
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.meal).toMatchObject({
+          dishName: "Thai Green Curry",
+          servingTime: "8:00 PM",
+          extraPlates: 3,
+        });
+      });
+    });
+
+    describe("broadcastKitchenTable", () => {
+      it("should reject if dish name is missing", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+
+        const result = await HouseholdService.broadcastKitchenTable(
+          "household-123",
+          "user-123",
+          { dishName: "   " },
+        );
+
+        expect(result.status).toBe(StatusCodes.BAD_REQUEST);
+        expect(result.message).toBe("Dish name is required");
+      });
+
+      it("should successfully broadcast dinner with chef details and rsvp", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-123",
+          name: "Chef Mario",
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.broadcastKitchenTable(
+          "household-123",
+          "user-123",
+          {
+            dishName: "Sourdough & Pasta",
+            servingTime: "8:30 PM",
+            extraPlates: 2,
+          },
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.dishName).toBe("Sourdough & Pasta");
+        expect(result.data.kitchenTable.chefName).toBe("Chef Mario");
+        expect(result.data.kitchenTable.servingTime).toBe("8:30 PM");
+        expect(result.data.kitchenTable.extraPlates).toBe(2);
+        expect(result.data.kitchenTable.rsvps).toHaveLength(1);
+        expect(result.data.kitchenTable.rsvps[0]).toMatchObject({
+          userId: "user-123",
+          userName: "Chef Mario",
+          attending: true,
+        });
+      });
+    });
+
+    describe("toggleKitchenTableRsvp", () => {
+      it("should reject if no active dinner broadcast exists", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(HouseholdRepository.getKitchenTable).mockResolvedValue(null);
+
+        const result = await HouseholdService.toggleKitchenTableRsvp(
+          "household-123",
+          "user-123",
+          true,
+        );
+
+        expect(result.status).toBe(StatusCodes.NOT_FOUND);
+        expect(result.message).toBe("No active dinner broadcast found");
+      });
+
+      it("should successfully record or update roommate RSVP", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-456",
+          name: "Luigi",
+        } as any);
+        vi.mocked(HouseholdRepository.getKitchenTable).mockResolvedValue({
+          dishName: "Pizza Margherita",
+          status: "ACTIVE",
+          rsvps: [
+            {
+              userId: "user-123",
+              userName: "Mario",
+              attending: true,
+              updatedAt: "2026-11-07T12:00:00Z",
+            },
+          ],
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.toggleKitchenTableRsvp(
+          "household-123",
+          "user-456",
+          true,
+          "Bringing wine!",
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.rsvps).toHaveLength(2);
+        expect(result.data.kitchenTable.rsvps[1]).toMatchObject({
+          userId: "user-456",
+          userName: "Luigi",
+          attending: true,
+          note: "Bringing wine!",
+        });
+      });
+    });
+
+    describe("notice and qna features", () => {
+      it("should successfully broadcast a house notice", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-123",
+          name: "Alex",
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.broadcastKitchenTable(
+          "household-123",
+          "user-123",
+          {
+            mode: "NOTICE",
+            payload: {
+              title: "Landlord AC Maintenance today at 2 PM",
+              urgency: "URGENT",
+            },
+          },
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.activeMode).toBe("NOTICE");
+        expect(result.data.kitchenTable.notice.title).toBe(
+          "Landlord AC Maintenance today at 2 PM",
+        );
+        expect(result.data.kitchenTable.notice.urgency).toBe("URGENT");
+        expect(result.data.kitchenTable.notice.authorName).toBe("Alex");
+        expect(result.data.kitchenTable.notice.acknowledgments).toHaveLength(1);
+      });
+
+      it("should successfully broadcast a Q&A question", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-123",
+          name: "Alex",
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.broadcastKitchenTable(
+          "household-123",
+          "user-123",
+          {
+            mode: "QNA",
+            payload: {
+              question: "Anyone have a spare HDMI adapter?",
+              category: "Borrow Item",
+            },
+          },
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.activeMode).toBe("QNA");
+        expect(result.data.kitchenTable.qna.question).toBe(
+          "Anyone have a spare HDMI adapter?",
+        );
+        expect(result.data.kitchenTable.qna.category).toBe("Borrow Item");
+      });
+
+      it("should acknowledge an active notice", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-456",
+          name: "Jordan",
+        } as any);
+        vi.mocked(HouseholdRepository.getKitchenTable).mockResolvedValue({
+          activeMode: "NOTICE",
+          notice: {
+            title: "Water shutoff",
+            urgency: "MAINTENANCE",
+            acknowledgments: [
+              {
+                userId: "user-123",
+                userName: "Alex",
+                acknowledgedAt: "2026-11-07T12:00:00Z",
+              },
+            ],
+          },
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.acknowledgeNotice(
+          "household-123",
+          "user-456",
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.notice.acknowledgments).toHaveLength(2);
+        expect(
+          result.data.kitchenTable.notice.acknowledgments[1].userName,
+        ).toBe("Jordan");
+      });
+
+      it("should post a reply to an active question", async () => {
+        vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+          id: "member-1",
+        } as any);
+        vi.mocked(UserRepo.getUserById).mockResolvedValue({
+          userId: "user-456",
+          name: "Jordan",
+        } as any);
+        vi.mocked(HouseholdRepository.getKitchenTable).mockResolvedValue({
+          activeMode: "QNA",
+          qna: {
+            question: "Who has the iron?",
+            replies: [],
+          },
+        } as any);
+        vi.mocked(HouseholdRepository.updateKitchenTable).mockImplementation(
+          async (_id: any, data: any) => data,
+        );
+
+        const result = await HouseholdService.replyQna(
+          "household-123",
+          "user-456",
+          "It is in the laundry cupboard!",
+        );
+
+        expect(result.status).toBe(StatusCodes.OK);
+        expect(result.data.kitchenTable.qna.replies).toHaveLength(1);
+        expect(result.data.kitchenTable.qna.replies[0].text).toBe(
+          "It is in the laundry cupboard!",
+        );
+      });
+    });
+  });
 });

@@ -19,10 +19,11 @@ export default function LoginPage() {
       TokenStore.getSessionId();
       const res = await loginUser(values);
 
-      const token = res.data?.accessToken;
+      const authData = res?.data?.data ?? res?.data;
+      const token = authData?.accessToken;
       console.log('Login response:', token, '\nisAuthenticated: ', isAuthenticated);
       if (token) {
-        login(token, res.data?.email ?? null, res.data?.name ?? null);
+        login(token, authData?.email ?? null, authData?.name ?? null);
       }
     } catch (e: any) {
       console.error('Login failed: ', e);

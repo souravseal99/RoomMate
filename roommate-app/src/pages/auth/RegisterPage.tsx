@@ -18,9 +18,10 @@ export default function RegisterPage() {
       // Ensure session ID exists before register
       TokenStore.getSessionId();
       const res = await registerUser(values);
-      const token = res.data?.accessToken;
+      const authData = res?.data?.data ?? res?.data;
+      const token = authData?.accessToken;
       if (token) {
-        login(token, res.data?.email ?? null, res.data?.name ?? null);
+        login(token, authData?.email ?? null, authData?.name ?? null);
         nav('/dashboard');
       }
     } catch (e: any) {

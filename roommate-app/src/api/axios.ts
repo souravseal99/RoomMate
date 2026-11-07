@@ -49,6 +49,30 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Dedicated client for auth rotation/refresh to prevent recursive interceptor loops
+const authClient = axios.create({
+  baseURL: SERVER_BASE_URL,
+  withCredentials: true,
+  timeout: 30000,
+});
+
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -81,30 +105,118 @@ api.interceptors.response.use(
       }
     }
 
-    console.log('Trying to auto-refresh token... ', error.response?.status);
-
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !originalRequest.url?.includes('/auth/refresh') &&
+      !originalRequest.url?.includes('/auth/login')
     ) {
+      if (isRefreshing) {
+        // Refresh is already in progress: queue this request until it finishes
+        return new Promise<any>((resolve, reject) => {
+          failedQueue.push({
+            resolve: (token: string) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              originalRequest.headers['X-Session-Id'] = TokenStore.getSessionId();
+              resolve(api(originalRequest));
+            },
+            reject: (err: any) => {
+              reject(err);
+            },
+          });
+        });
+      }
+
       originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
-        const res = await Api.get('/auth/refresh');
-        TokenStore.setToken(res.data.accessToken);
+        const { accessToken } = await refreshSession();
+        processQueue(null, accessToken);
 
-        originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         originalRequest.headers['X-Session-Id'] = TokenStore.getSessionId();
 
         return api(originalRequest);
       } catch (e) {
+        processQueue(e, null);
         return Promise.reject(e);
+      } finally {
+        isRefreshing = false;
       }
     }
     return Promise.reject(error);
   }
 );
+
+let refreshPromise: Promise<{
+  accessToken: string;
+  email: string | null;
+  name: string | null;
+  userId?: string | null;
+}> | null = null;
+
+export const broadcastAuthEvent = (event: any) => {
+  if (typeof BroadcastChannel !== 'undefined') {
+    try {
+      const channel = new BroadcastChannel('roommate_auth_channel');
+      channel.postMessage(event);
+      channel.close();
+    } catch {
+      // Ignore
+    }
+  }
+};
+
+export const refreshSession = async (): Promise<{
+  accessToken: string;
+  email: string | null;
+  name: string | null;
+  userId?: string | null;
+}> => {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  const sessionId = TokenStore.getSessionId();
+
+  refreshPromise = (async () => {
+    try {
+      const res = await authClient.get('/auth/refresh', {
+        headers: {
+          'X-Session-Id': sessionId,
+        },
+      });
+      const authData = res?.data?.data ?? res?.data;
+      const accessToken = authData?.accessToken;
+      const email = authData?.email ?? null;
+      const name = authData?.name ?? null;
+      const userId = authData?.userId ?? null;
+
+      if (!accessToken) {
+        throw new Error('Refresh token response missing access token');
+      }
+
+      TokenStore.setAuthInfo({ accessToken, email, name, userId });
+      broadcastAuthEvent({
+        type: 'TOKEN_REFRESHED',
+        accessToken,
+        email,
+        name,
+        userId,
+      });
+
+      return { accessToken, email, name, userId };
+    } catch (err) {
+      TokenStore.setAuthInfo({ accessToken: null });
+      throw err;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+};
 
 export default class Api {
   static async initCsrfToken(): Promise<string | null> {

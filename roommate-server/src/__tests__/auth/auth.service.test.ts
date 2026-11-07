@@ -335,6 +335,8 @@ describe("AuthService", () => {
         "session-123",
         "rotated_refresh_token",
         expect.any(Date),
+        "valid_refresh_token",
+        expect.any(Date),
       );
       expect(result).toMatchObject({
         status: StatusCodes.OK,
@@ -345,6 +347,78 @@ describe("AuthService", () => {
           accessToken: "rotated_access_token",
           refreshToken: "rotated_refresh_token",
         },
+      });
+    });
+
+    it("should successfully refresh and return fresh access token during rotation grace period (RFC 6819)", async () => {
+      const mockGraceUser: User = {
+        userId: "user-123",
+        name: "Alice",
+        email: "alice@example.com",
+        password: "hashed_password",
+        createdAt: new Date("2025-11-05"),
+      };
+      const futureDate = new Date(Date.now() + 100000);
+      const mockSession = {
+        sessionId: "session-123",
+        userId: "user-123",
+        refreshToken: "current_active_token",
+        prevRefreshToken: "recent_previous_token",
+        rotatedAt: new Date(Date.now() - 5000), // rotated 5s ago (< 30s grace window)
+        expiresAt: futureDate,
+        createdAt: new Date(),
+        user: mockGraceUser,
+      };
+
+      vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(mockSession as any);
+      vi.mocked(UserRepo.getUserById).mockResolvedValue(mockGraceUser);
+      vi.mocked(generateTokens).mockReturnValue({
+        accessToken: "grace_access_token",
+        refreshToken: "ignored_token",
+      });
+
+      const result = await AuthService.refresh(
+        "recent_previous_token",
+        "session-123",
+      );
+
+      expect(result).toMatchObject({
+        status: StatusCodes.OK,
+        data: {
+          userId: "user-123",
+          name: "Alice",
+          email: "alice@example.com",
+          accessToken: "grace_access_token",
+          refreshToken: "current_active_token",
+        },
+      });
+      expect(SessionRepo.updateSession).not.toHaveBeenCalled();
+    });
+
+    it("should reject refresh when previous refresh token is presented after grace period has expired", async () => {
+      const futureDate = new Date(Date.now() + 100000);
+      const mockSession = {
+        sessionId: "session-123",
+        userId: "user-123",
+        refreshToken: "current_active_token",
+        prevRefreshToken: "old_previous_token",
+        rotatedAt: new Date(Date.now() - 40000), // rotated 40s ago (> 30s grace window)
+        expiresAt: futureDate,
+        createdAt: new Date(),
+      };
+
+      vi.mocked(validateRefreshToken).mockResolvedValue({ userId: "user-123" });
+      vi.mocked(SessionRepo.getSession).mockResolvedValue(mockSession as any);
+
+      const result = await AuthService.refresh(
+        "old_previous_token",
+        "session-123",
+      );
+
+      expect(result).toMatchObject({
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Session mismatch or invalid token - please log in again",
       });
     });
 

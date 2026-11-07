@@ -156,8 +156,29 @@ export class AuthService {
         return ApiResponse.error("Session expired", StatusCodes.UNAUTHORIZED);
       }
 
-      // Validate session belongs to the user and the presented token matches DB
-      if (session.userId !== userId || session.refreshToken !== refreshToken) {
+      // Validate session belongs to the user
+      if (session.userId !== userId) {
+        return ApiResponse.error(
+          "Session mismatch or invalid token - please log in again",
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
+      // Check token rotation & grace period (RFC 6819 Section 5.2.2.3)
+      const GRACE_PERIOD_MS = 30 * 1000; // 30 seconds
+      let isGracePeriodMatch = false;
+
+      if (session.refreshToken === refreshToken) {
+        // Active refresh token matches
+        isGracePeriodMatch = false;
+      } else if (
+        session.prevRefreshToken === refreshToken &&
+        session.rotatedAt &&
+        Date.now() - new Date(session.rotatedAt).getTime() <= GRACE_PERIOD_MS
+      ) {
+        // Valid concurrent request during rotation grace window
+        isGracePeriodMatch = true;
+      } else {
         return ApiResponse.error(
           "Session mismatch or invalid token - please log in again",
           StatusCodes.UNAUTHORIZED,
@@ -169,12 +190,33 @@ export class AuthService {
         return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
       }
 
-      // Rotate tokens
+      if (isGracePeriodMatch) {
+        // Concurrent in-flight request during grace window: issue fresh access token
+        const { accessToken: newAccessToken } = generateTokens({
+          userId: user.userId,
+        });
+
+        return ApiResponse.success({
+          userId: user.userId,
+          name: user.name,
+          email: user.email,
+          accessToken: newAccessToken,
+          refreshToken: session.refreshToken,
+        });
+      }
+
+      // Normal rotation: Rotate tokens
       const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
         generateTokens({ userId: user.userId });
 
       const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-      await SessionRepo.updateSession(sessionId, newRefreshToken, newExpiresAt);
+      await SessionRepo.updateSession(
+        sessionId,
+        newRefreshToken,
+        newExpiresAt,
+        session.refreshToken,
+        new Date(),
+      );
 
       return ApiResponse.success({
         userId: user.userId,

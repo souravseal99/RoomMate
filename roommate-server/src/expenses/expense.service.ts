@@ -11,6 +11,9 @@ import calculateBalance, {
   calculateSettlements,
   BalanceEntry,
 } from "@src/expenses/calculateBalance";
+import { HouseholdRepository } from "@src/households/household.repo";
+import { ActivityService } from "@src/activities/activity.service";
+import { ActivityType } from "@generated/prisma";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith: string[]) {
@@ -38,17 +41,28 @@ export class ExpenseService {
     }
 
     try {
-      if (!sharedWith || !sharedWith?.length) {
-        const createdExpense: Expense = await ExpenseRepo.create(expense);
+      const createdExpense: Expense = await ExpenseRepo.create(expense);
 
+      void ActivityService.logActivity({
+        householdId: expense.householdId,
+        userId: expense.paidById,
+        type: ActivityType.EXPENSE,
+        title: `logged $${createdExpense.amount.toFixed(2)} ${createdExpense.description}`,
+        description: `${createdExpense.description}`,
+        metadata: {
+          amount: createdExpense.amount,
+          expenseId: createdExpense.expenseId,
+          description: createdExpense.description,
+        },
+      });
+
+      if (!sharedWith || !sharedWith?.length) {
         return ApiResponse.success(
           createdExpense,
           "Expense added",
           StatusCodes.CREATED,
         );
       } else {
-        const createdExpense: Expense = await ExpenseRepo.create(expense);
-
         const shareAmount = createdExpense.amount / sharedWith.length;
 
         const splits: ExpenseSplitDto[] = sharedWith.map((userId) => ({
@@ -110,15 +124,71 @@ export class ExpenseService {
 
     const balances = calculateBalance(expenses as unknown as ExpenseDto[]);
 
-    // Get all household members to include those with $0 balance
-    const householdMembers =
-      await HouseholdMemberRepo.getByHouseholdId(householdId);
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+
+    // Fetch household members, settlements, settings, spend, and recent bills in parallel
+    const [
+      householdMembers,
+      settlements,
+      household,
+      monthlySpend,
+      recentBillsRaw,
+    ] = await Promise.all([
+      HouseholdMemberRepo.getByHouseholdId(householdId),
+      SettlementRepo.getByHouseholdId(householdId),
+      HouseholdRepository.getHouseholdById(householdId),
+      ExpenseRepo.getMonthlyHouseholdSpend(
+        householdId,
+        startOfMonth,
+        endOfMonth,
+      ),
+      ExpenseRepo.getRecentSharedBills(householdId, 2),
+    ]);
+
+    const recentBills = (recentBillsRaw || []).map((b) => {
+      const splitCount = b.splits && b.splits.length > 0 ? b.splits.length : 1;
+      const userShare = Math.round((b.amount / splitCount) * 100) / 100;
+      return {
+        id: b.expenseId,
+        description: b.description,
+        payerName: b.paidBy?.name || "Roommate",
+        payerInitial: (b.paidBy?.name || "R").charAt(0).toUpperCase(),
+        totalAmount: b.amount,
+        userShare,
+        splitCount,
+        createdAt: b.createdAt,
+      };
+    });
+
+    const settings = (household?.settings as Record<string, any>) || {};
+    const monthlyBudget = Number(settings.monthlyCommunalBudget) || 1800;
+    const budgetPercent = Math.min(
+      Math.round(((monthlySpend || 0) / (monthlyBudget || 1)) * 100),
+      100,
+    );
+    const budget = {
+      spent: Math.round((monthlySpend || 0) * 100) / 100,
+      total: monthlyBudget,
+      percent: budgetPercent,
+    };
 
     // If no household members found, return the calculated balances
     if (!householdMembers || householdMembers.length === 0) {
       return ApiResponse.success({
         balances: balances,
         settlements: [],
+        recentBills,
+        budget,
       });
     }
 
@@ -136,8 +206,6 @@ export class ExpenseService {
     });
 
     // Get settlements and subtract them from balances
-    const settlements = await SettlementRepo.getByHouseholdId(householdId);
-
     if (settlements && settlements.length > 0) {
       // Create a mutable copy of balances
       const balanceAdjustmentMap = new Map<string, number>();
@@ -176,6 +244,8 @@ export class ExpenseService {
     return ApiResponse.success({
       balances: allBalances,
       settlements: adjustedSettlements,
+      recentBills,
+      budget,
     });
   }
 }

@@ -1,5 +1,10 @@
 import api from '@/api/axios';
-import type { HouseholdResponse } from '@/types/householdTypes';
+import type {
+  HouseholdResponse,
+  KitchenTableData,
+  BroadcastKitchenTableDto,
+  ToggleKitchenTableRsvpDto,
+} from '@/types/householdTypes';
 
 const householdApi = () => {
   const fetchAll = async (): Promise<HouseholdResponse[]> => {
@@ -32,12 +37,51 @@ const householdApi = () => {
     return { data, status: 200 };
   };
 
+  const getKitchenTable = async (householdId: string): Promise<KitchenTableData | null> => {
+    const res = await api.get(`/household/${householdId}/kitchen-table`);
+    return res?.data?.kitchenTable ?? null;
+  };
+
+  const broadcastKitchenTable = async (
+    householdId: string,
+    payload: BroadcastKitchenTableDto
+  ): Promise<KitchenTableData> => {
+    const res = await api.post(`/household/${householdId}/kitchen-table/broadcast`, payload);
+    return res?.data?.kitchenTable;
+  };
+
+  const toggleKitchenTableRsvp = async (
+    householdId: string,
+    payload: ToggleKitchenTableRsvpDto
+  ): Promise<KitchenTableData> => {
+    const res = await api.post(`/household/${householdId}/kitchen-table/rsvp`, payload);
+    return res?.data?.kitchenTable;
+  };
+
+  const acknowledgeNotice = async (householdId: string): Promise<KitchenTableData> => {
+    const res = await api.post(`/household/${householdId}/kitchen-table/notice/ack`, {});
+    return res?.data?.kitchenTable;
+  };
+
+  const replyQna = async (
+    householdId: string,
+    payload: { text: string }
+  ): Promise<KitchenTableData> => {
+    const res = await api.post(`/household/${householdId}/kitchen-table/qna/reply`, payload);
+    return res?.data?.kitchenTable;
+  };
+
   return {
     fetchAll,
     create,
     deleteCascated,
     update,
     join,
+    getKitchenTable,
+    broadcastKitchenTable,
+    toggleKitchenTableRsvp,
+    acknowledgeNotice,
+    replyQna,
   };
 };
 

@@ -51,7 +51,7 @@ export function PantryFuelGauges() {
           <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
             <Refrigerator className="w-4 h-4 stroke-[2.2]" />
           </div>
-          <CardTitle className="text-xs font-semibold tracking-wider uppercase text-foreground font-mono">
+          <CardTitle className="text-xl tracking-widest font-semibold tracking-wider uppercase text-foreground font-mono">
             Shared Pantry Inventory
           </CardTitle>
         </div>

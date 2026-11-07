@@ -392,7 +392,7 @@ export async function seedDatabase(options: SeedOptions = {}) {
     const roleStr = membership?.role || "MEMBER";
     const houseName = memberHousehold?.name || "None";
     console.log(
-      `${roleStr.padEnd(7)} | ${user.name.padEnd(15)} | ${user.email.padEnd(21)} | ${user.password.padEnd(13)} | ${houseName}`,
+      `${roleStr.padEnd(7)} | ${user.name.padEnd(15)} | ${user.email.padEnd(21)} | ${houseName}`,
     );
   }
   console.log(

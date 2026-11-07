@@ -2,6 +2,8 @@ import { StatusCodes } from "http-status-codes";
 import { SettlementRepo, SettlementDto } from "@src/expenses/settlement.repo";
 import { ApiResponse } from "@src/common/utils/ApiResponse";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
+import { ActivityService } from "@src/activities/activity.service";
+import { ActivityType } from "@generated/prisma";
 
 export class SettlementService {
   static async createSettlement(settlement: SettlementDto) {
@@ -42,6 +44,19 @@ export class SettlementService {
 
     try {
       const createdSettlement = await SettlementRepo.create(settlement);
+
+      void ActivityService.logActivity({
+        householdId: settlement.householdId,
+        userId: settlement.fromUserId,
+        type: ActivityType.SETTLEMENT,
+        title: `settled $${settlement.amount.toFixed(2)} with flatmate`,
+        description: "Payment settled",
+        metadata: {
+          amount: settlement.amount,
+          toUserId: settlement.toUserId,
+          settlementId: createdSettlement.settlementId,
+        },
+      });
 
       return ApiResponse.success(
         createdSettlement,

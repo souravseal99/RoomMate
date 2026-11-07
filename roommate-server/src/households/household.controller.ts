@@ -76,4 +76,96 @@ export class HouseholdController {
       data: data,
     });
   }
+
+  static async getKitchenTable(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId ||
+      request.query.householdId) as string;
+
+    const { status, data, message } = await HouseholdService.getKitchenTable(
+      householdId,
+      userId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async broadcastKitchenTable(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId) as string;
+    const { mode, payload, dishName, servingTime, extraPlates } = request.body;
+
+    const { status, data, message } =
+      await HouseholdService.broadcastKitchenTable(householdId, userId, {
+        mode,
+        payload,
+        dishName,
+        servingTime,
+        extraPlates,
+      });
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async toggleKitchenTableRsvp(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId) as string;
+    const { attending, note } = request.body;
+
+    const { status, data, message } =
+      await HouseholdService.toggleKitchenTableRsvp(
+        householdId,
+        userId,
+        attending,
+        note,
+      );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async acknowledgeNotice(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId) as string;
+
+    const { status, data, message } = await HouseholdService.acknowledgeNotice(
+      householdId,
+      userId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async replyQna(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId) as string;
+    const { text } = request.body;
+
+    const { status, data, message } = await HouseholdService.replyQna(
+      householdId,
+      userId,
+      text,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
 }

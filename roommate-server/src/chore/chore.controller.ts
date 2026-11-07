@@ -84,6 +84,36 @@ export class ChoreController {
     });
   }
 
+  static async getPunchcardMetrics(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { householdId } = request.params as { householdId: string };
+
+    const { status, message, data } = await ChoreService.getPunchcardMetrics(
+      householdId,
+      userId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async nudge(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { choreId } = request.params as { choreId: string };
+
+    const { status, message, data } = await ChoreService.nudgeChore(
+      choreId,
+      userId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
   static async delete(request: Request, response: Response) {
     const { userId } = getUserFromRequestBody(request);
     const { choreId } = request.params as { choreId: string };

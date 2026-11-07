@@ -17,11 +17,18 @@ choreRouter.post(
   ChoreController.completeChore,
 );
 choreRouter.get(
+  "/household/:householdId/punchcard",
+  ensureAuthenticated,
+  authorizeHousehold(),
+  ChoreController.getPunchcardMetrics,
+);
+choreRouter.get(
   "/household/:householdId",
   ensureAuthenticated,
   authorizeHousehold(),
   ChoreController.getByHousehold,
 );
+choreRouter.post("/:choreId/nudge", ensureAuthenticated, ChoreController.nudge);
 choreRouter.delete("/:choreId", ensureAuthenticated, ChoreController.delete);
 
 export default choreRouter;

@@ -71,7 +71,7 @@ export function QuickActionsBar({
               <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
                 Shopping Cart
               </p>
-              <p className="text-[11px] text-destructive dark:text-terracotta font-mono font-medium leading-tight mt-0.5 truncate">
+              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate">
                 {lowStockCount} {lowStockCount === 1 ? 'item' : 'items'} low
               </p>
             </div>
@@ -84,14 +84,14 @@ export function QuickActionsBar({
           className="group cursor-pointer bg-card hover:bg-surface-container border-border/80 hover:border-border rounded-2xl shadow-xs transition-all active:scale-[0.98] select-none"
         >
           <CardContent className="p-3.5 sm:p-4 flex items-center gap-3 min-h-[56px]">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-tertiary text-tertiary-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
-              <Banknote className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-surface-container border border-border text-foreground flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+              <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-primary stroke-[2.2]" />
             </div>
             <div className="min-w-0">
               <p className="font-bold text-xs sm:text-sm text-foreground tracking-tight leading-tight font-display">
                 Settle Balance
               </p>
-              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate tabular-nums">
+              <p className="text-[11px] text-muted-foreground font-mono leading-tight mt-0.5 truncate">
                 ${debtAmount.toFixed(2)} owed
               </p>
             </div>

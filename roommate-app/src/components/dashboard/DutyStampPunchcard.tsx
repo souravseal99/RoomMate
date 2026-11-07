@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   CheckCircle2,
   Flame,
@@ -14,81 +14,254 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import useHousehold from '@/hooks/useHousehold';
-import { useHouseholdChoresQuery, useToggleChoreMutation } from '@/hooks/queries/useChoreQueries';
-import type { ChoreItem } from '@/types/choreTypes';
+import useAuth from '@/hooks/useAuth';
+import { getCurrentUserId } from '@/utils/jwt';
+import {
+  useHouseholdChoresQuery,
+  useDutyPunchcardQuery,
+  useToggleChoreMutation,
+  useNudgeChoreMutation,
+} from '@/hooks/queries/useChoreQueries';
+import type { ChoreItem, WeekDayDutyMetric } from '@/types/choreTypes';
+import { cn } from '@/utils/utils';
 
 interface DutyStampPunchcardProps {
   urgentChore?: ChoreItem;
 }
 
+function formatChoreDue(dueStr?: string): string {
+  if (!dueStr) return 'Due today';
+  try {
+    const date = new Date(dueStr);
+    if (isNaN(date.getTime())) return dueStr;
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const isTomorrow = date.toDateString() === tomorrow.toDateString();
+
+    const timeStr = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    if (isToday) return `Due Today · ${timeStr}`;
+    if (isTomorrow) return `Due Tomorrow · ${timeStr}`;
+    return `Due ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  } catch {
+    return dueStr;
+  }
+}
+
+function formatCompletedTime(dateStr?: string | null): string {
+  if (!dateStr) return 'Earlier today';
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    const timeStr = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    if (isToday) return `Today at ${timeStr}`;
+    return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${timeStr}`;
+  } catch {
+    return 'Earlier today';
+  }
+}
+
+function getChoreKarma(chore?: ChoreItem | null): number {
+  if (!chore) return 15;
+  if (chore.karma) return chore.karma;
+  const base = chore.priority === 'HIGH' ? 25 : chore.priority === 'LOW' ? 10 : 15;
+  const mult = chore.frequency === 'monthly' ? 1.5 : chore.frequency === 'weekly' ? 1.2 : 1.0;
+  return Math.round(base * mult);
+}
+
+const DEFAULT_WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+
 export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
   const { activeHouseholdId } = useHousehold();
-  const { data: chores = [] } = useHouseholdChoresQuery(activeHouseholdId);
+  const { name: currentUserName } = useAuth();
+  const currentUserId = useMemo(() => getCurrentUserId(), []);
+
+  // Fetch full punchcard metrics from backend
+  const { data: punchcardData } = useDutyPunchcardQuery(activeHouseholdId);
+  const { data: fallbackChores = [] } = useHouseholdChoresQuery(activeHouseholdId);
+
   const toggleChoreMutation = useToggleChoreMutation();
-  const [localStamped, setLocalStamped] = useState(false);
+  const nudgeChoreMutation = useNudgeChoreMutation();
+  const [stampedIds, setStampedIds] = useState<Set<string>>(new Set());
 
-  // Incomplete chores sorted by priority
-  const incompleteChores = chores.filter((c) => !c.completed);
-  const completedChores = chores.filter((c) => c.completed);
+  // Fallback partition if punchcard data is pending
+  const incompleteChores = useMemo(() => {
+    return fallbackChores
+      .filter((c) => !c.completed)
+      .sort((a, b) => {
+        if (a.priority === 'HIGH' && b.priority !== 'HIGH') return -1;
+        if (b.priority === 'HIGH' && a.priority !== 'HIGH') return 1;
+        return new Date(a.nextDue).getTime() - new Date(b.nextDue).getTime();
+      });
+  }, [fallbackChores]);
 
-  const activeChore = urgentChore || incompleteChores[0];
-  const isStamped = localStamped || (activeChore ? activeChore.completed : false);
+  const completedChores = useMemo(
+    () => fallbackChores.filter((c) => c.completed),
+    [fallbackChores]
+  );
 
-  const handleStampDuty = () => {
-    if (isStamped) {
-      toast.info('Duty already certified for today.');
+  // Active chore (Card 1): priority urgentChore > punchcard active > fallback incomplete
+  const activeChore = urgentChore || punchcardData?.activeChore || incompleteChores[0] || null;
+
+  // Next chore (Card 2)
+  const nextChore =
+    punchcardData?.nextChore ||
+    incompleteChores.find((c) => c.choreId !== activeChore?.choreId) ||
+    null;
+
+  // Recently completed chore (Card 3)
+  const recentCompletedChore = punchcardData?.recentCompletedChore || completedChores[0] || null;
+
+  const isCard1Stamped = activeChore
+    ? stampedIds.has(activeChore.choreId) || activeChore.completed
+    : false;
+
+  const activeKarma = getChoreKarma(activeChore);
+  const nextKarma = getChoreKarma(nextChore);
+
+  const handleStampDuty = (choreToStamp?: ChoreItem | null) => {
+    const target = choreToStamp || activeChore;
+    console.log('---->> stamped ');
+    if (!target) return;
+
+    if (target.completed || stampedIds.has(target.choreId)) {
+      toast.info('Duty already certified.');
       return;
     }
 
-    setLocalStamped(true);
-    if (activeChore && activeHouseholdId) {
+    const karmaEarned = getChoreKarma(target);
+    setStampedIds((prev) => new Set(prev).add(target.choreId));
+
+    if (activeHouseholdId) {
       toggleChoreMutation.mutate(
         {
-          choreId: activeChore.choreId,
+          choreId: target.choreId,
           householdId: activeHouseholdId,
           updates: { completed: true },
         },
         {
           onSuccess: () => {
-            toast.success('+15 House Karma earned! Duty verified.', {
+            toast.success(`+${karmaEarned} House Karma earned! Duty verified.`, {
               icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
             });
           },
           onError: () => {
-            setLocalStamped(false);
+            setStampedIds((prev) => {
+              const next = new Set(prev);
+              next.delete(target.choreId);
+              return next;
+            });
             toast.error('Failed to stamp chore.');
           },
         }
       );
     } else {
-      toast.success('+15 House Karma earned! Duty verified.', {
+      toast.success(`+${karmaEarned} House Karma earned! Duty verified.`, {
         icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
       });
     }
   };
 
-  const handleNudge = (name: string) => {
-    toast.success(`Gentle chore nudge sent to ${name}!`, {
-      icon: <Bell className="w-4 h-4 text-primary" />,
-    });
+  const handleNudge = (targetChore: ChoreItem) => {
+    if (nudgeChoreMutation.isPending) return;
+
+    nudgeChoreMutation.mutate(
+      {
+        choreId: targetChore.choreId,
+        householdId: activeHouseholdId || undefined,
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Gentle chore nudge sent to ${targetChore.assignedToName || 'flatmate'}!`, {
+            icon: <Bell className="w-4 h-4 text-primary" />,
+          });
+        },
+        onError: (err: any) => {
+          const msg =
+            err?.response?.data?.message ||
+            `Gentle chore nudge sent to ${targetChore.assignedToName || 'flatmate'}!`;
+          toast.success(msg, {
+            icon: <Bell className="w-4 h-4 text-primary" />,
+          });
+        },
+      }
+    );
   };
 
-  const totalChoresCount = chores.length || 10;
-  const completedCount = completedChores.length || 8;
-  const rhythmPercent = Math.min(Math.round((completedCount / totalChoresCount) * 100), 100);
+  // Dynamic rhythm calculations from backend
+  const rhythmTotal = punchcardData?.rhythm.totalCount ?? (fallbackChores.length || 1);
+  const rhythmCompleted = punchcardData?.rhythm.completedCount ?? completedChores.length;
+  const rhythmPercent =
+    punchcardData?.rhythm.rhythmPercent ??
+    Math.min(Math.round((rhythmCompleted / rhythmTotal) * 100), 100);
+
+  // Dynamic streak from backend
+  const streakLabel =
+    punchcardData?.streak.streakLabel ||
+    (rhythmCompleted > 0 ? `${rhythmCompleted}-Duty Streak` : 'House Streak');
+
+  // Dynamic 7-day week metrics from backend
+  const todayIndex = (new Date().getDay() + 6) % 7;
+  const weekDays: WeekDayDutyMetric[] = useMemo(() => {
+    if (punchcardData?.rhythm.weekDays && punchcardData.rhythm.weekDays.length === 7) {
+      return punchcardData.rhythm.weekDays;
+    }
+    return DEFAULT_WEEK_DAYS.map((day, idx) => ({
+      day,
+      date: `fallback-${idx}`,
+      isToday: idx === todayIndex,
+      status: idx < todayIndex ? 'completed' : idx === todayIndex ? 'pending' : 'rest',
+      completedCount: idx < todayIndex ? 1 : 0,
+      totalCount: 1,
+    }));
+  }, [punchcardData?.rhythm.weekDays, todayIndex]);
+
+  // Active chore assignee calculation
+  const isActiveAssignedToMe = activeChore
+    ? activeChore.assignedToId === currentUserId ||
+      (currentUserName &&
+        activeChore.assignedToName?.toLowerCase().includes(currentUserName.toLowerCase()))
+    : true;
+
+  const activeAssigneeLabel = isActiveAssignedToMe
+    ? `${activeChore?.assignedToName || currentUserName || 'You'} (You)`
+    : activeChore?.assignedToName || 'Flatmate';
+
+  // Next chore assignee calculation
+  const isNextAssignedToMe = nextChore
+    ? nextChore.assignedToId === currentUserId ||
+      (currentUserName &&
+        nextChore.assignedToName?.toLowerCase().includes(currentUserName.toLowerCase()))
+    : false;
+
+  const nextRotationNote = punchcardData?.nextRotationNote;
+
+  const hasNoChores =
+    !activeChore && !nextChore && !recentCompletedChore && fallbackChores.length === 0;
 
   return (
     <Card
       aria-label="Duty Stamp Card & Rotation"
-      className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-xs space-y-4 select-none"
+      className="bg-card rounded-2xl p-5 sm:p-6 border border-border shadow-xs select-none flex flex-col gap-3"
     >
       {/* Header */}
-      <CardHeader className="p-0 flex flex-row items-center justify-between border-b border-border/60 pb-3 space-y-0">
+      <CardHeader className="p-0 flex flex-row items-center justify-between border-b border-border/60 pb-2.5 !pb-2.5 space-y-0">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
             <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
           </div>
-          <CardTitle className="text-xs font-semibold tracking-wider uppercase text-foreground font-mono">
+          <CardTitle className="text-xl font-semibold tracking-wider uppercase text-foreground font-mono">
             Duty Stamp Card
           </CardTitle>
         </div>
@@ -97,193 +270,309 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
           className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-primary/10 border border-primary/20 text-primary text-xs font-bold font-mono"
         >
           <Flame className="w-3.5 h-3.5 fill-current" />
-          <span>10-Day Streak</span>
+          <span>{streakLabel}</span>
         </Badge>
       </CardHeader>
 
-      <CardContent className="p-0 space-y-4">
+      <CardContent className="p-0 space-y-3">
         <p className="text-muted-foreground text-xs leading-relaxed font-body">
           Rotational duties. Stamp complete to claim House Karma &amp; log verification.
         </p>
 
-        {/* Chores List */}
-        <div className="space-y-3">
-          {/* Interactive Active Stamp Card 1 (Sourav / Urgent) */}
-          <div
-            id="duty-card-urgent"
-            className={`p-3.5 rounded-xl border transition-all ${
-              isStamped
-                ? 'bg-surface-container/60 border-border opacity-85'
-                : 'bg-primary/5 border-2 border-primary/40 shadow-xs'
-            }`}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 min-w-0">
-                <Button
-                  type="button"
-                  onClick={handleStampDuty}
-                  disabled={toggleChoreMutation.isPending}
-                  aria-label="Stamp chore completed"
-                  className={`w-11 h-11 min-h-[44px] min-w-[44px] p-0 rounded-xl flex items-center justify-center transition-all mt-0.5 group shrink-0 active:scale-95 cursor-pointer border-b-2 border-primary-fixed-dim ${
-                    isStamped
-                      ? 'bg-emerald-600 text-white shadow-none hover:bg-emerald-700'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
-                  }`}
-                >
-                  {toggleChoreMutation.isPending ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Check className="w-5 h-5 group-hover:scale-110 transition-transform stroke-[2.8]" />
-                  )}
-                </Button>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <Badge
-                      variant="default"
-                      className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-primary text-primary-foreground shadow-xs font-mono border-0"
+        {hasNoChores ? (
+          <div className="p-5 rounded-xl border border-dashed border-border bg-muted/20 text-center space-y-2">
+            <CheckCircle2 className="w-7 h-7 text-muted-foreground/60 mx-auto" />
+            <p className="text-xs font-semibold text-foreground">No rotational duties scheduled</p>
+            <p className="text-[11px] text-muted-foreground">
+              Add chores in the Chores tab to start tracking flat duties and house karma.
+            </p>
+          </div>
+        ) : (
+          /* Chores List */
+          <div className="space-y-3">
+            {/* Interactive Active Stamp Card 1 (Current / Urgent) */}
+            {activeChore ? (
+              <div
+                id="duty-card-urgent"
+                className={cn(
+                  'p-3 sm:p-3.5 rounded-xl border transition-all',
+                  isCard1Stamped
+                    ? 'bg-muted/30 border-border'
+                    : 'bg-primary/5 border border-primary/40 shadow-xs'
+                )}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <Button
+                      type="button"
+                      onClick={() => handleStampDuty(activeChore)}
+                      disabled={toggleChoreMutation.isPending || isCard1Stamped}
+                      aria-label="Stamp chore completed"
+                      className={cn(
+                        'w-10 h-10 sm:w-11 sm:h-11 min-h-[40px] min-w-[40px] p-0 rounded-xl flex items-center justify-center transition-all mt-0.5 group shrink-0 active:scale-95 cursor-pointer border border-primary/30',
+                        isCard1Stamped
+                          ? 'bg-emerald-600 text-white shadow-none hover:bg-emerald-700'
+                          : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                      )}
                     >
-                      {activeChore?.assignedToName || 'Sourav (You)'}
-                    </Badge>
-                    {!isStamped && (
-                      <Badge
-                        variant="destructive"
-                        className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-destructive text-white animate-pulse font-mono border-0"
+                      {toggleChoreMutation.isPending ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Check className="w-5 h-5 group-hover:scale-110 transition-transform stroke-[2.8]" />
+                      )}
+                    </Button>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <Badge
+                          variant="default"
+                          className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded bg-primary text-primary-foreground shadow-xs font-mono border-0"
+                        >
+                          {activeAssigneeLabel}
+                        </Badge>
+                        {!isCard1Stamped && (
+                          <Badge
+                            variant={activeChore.priority === 'HIGH' ? 'destructive' : 'secondary'}
+                            className={cn(
+                              'text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded font-mono border-0',
+                              activeChore.priority === 'HIGH'
+                                ? 'bg-destructive text-white animate-pulse'
+                                : 'bg-muted text-muted-foreground'
+                            )}
+                          >
+                            {activeChore.priority === 'HIGH' ? '⚡ URGENT' : 'ROTATION'}
+                          </Badge>
+                        )}
+                      </div>
+                      <h3
+                        className={cn(
+                          'font-bold text-xs sm:text-sm text-foreground mt-1 leading-tight tracking-tight',
+                          isCard1Stamped && 'line-through text-muted-foreground'
+                        )}
                       >
-                        ⚡ URGENT
-                      </Badge>
-                    )}
+                        {activeChore.description}
+                      </h3>
+                      <p className="text-muted-foreground text-[11px] mt-0.5 font-medium flex items-center gap-1 font-mono">
+                        {formatChoreDue(activeChore.nextDue)}
+                        {activeChore.notes ? ` · ${activeChore.notes}` : ''}
+                      </p>
+                    </div>
                   </div>
-                  <h3
-                    className={`font-bold text-xs sm:text-sm text-foreground mt-1 leading-tight tracking-tight ${
-                      isStamped ? 'line-through text-muted-foreground' : ''
-                    }`}
-                  >
-                    {activeChore?.description || 'Wipe Kitchen Quartz & Degrease Stove'}
-                  </h3>
-                  <p className="text-muted-foreground text-[11px] mt-0.5 font-medium flex items-center gap-1 font-mono">
-                    <span className="text-destructive">●</span>
-                    Due 7:00 PM · Main Kitchen
-                  </p>
+
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <Badge
+                      variant={isCard1Stamped ? 'secondary' : 'default'}
+                      className={cn(
+                        'font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0',
+                        isCard1Stamped
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-primary text-primary-foreground'
+                      )}
+                    >
+                      {isCard1Stamped ? `STAMPED ✓ (+${activeKarma})` : `+${activeKarma} Karma`}
+                    </Badge>
+                    <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono">
+                      {isCard1Stamped ? 'Certified' : 'Click to Stamp'}
+                    </span>
+                  </div>
                 </div>
               </div>
+            ) : null}
 
-              <div className="flex flex-col items-end gap-1 shrink-0">
+            {/* Stamp Card 2 (Next Upcoming Chore) */}
+            {nextChore ? (
+              <div className="p-3 sm:p-3.5 rounded-xl bg-card border border-border flex items-start justify-between gap-3 shadow-xs">
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-muted/40 border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-xs text-foreground tracking-tight">
+                        {isNextAssignedToMe
+                          ? `${nextChore.assignedToName || 'You'} (You)`
+                          : nextChore.assignedToName || 'Flatmate'}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-medium font-mono">
+                        {formatChoreDue(nextChore.nextDue)}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-xs text-foreground mt-0.5 tracking-tight truncate">
+                      {nextChore.description}
+                    </h3>
+                    <p className="text-muted-foreground text-[10px]">
+                      {nextChore.notes ||
+                        (nextChore.priority === 'HIGH'
+                          ? 'High priority chore'
+                          : 'Common area duty')}
+                    </p>
+                  </div>
+                </div>
+                {isNextAssignedToMe ? (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => handleStampDuty(nextChore)}
+                    disabled={
+                      stampedIds.has(nextChore.choreId) ||
+                      nextChore.completed ||
+                      toggleChoreMutation.isPending
+                    }
+                    className="h-7 px-2.5 rounded-md text-[11px] font-semibold shrink-0 cursor-pointer shadow-xs"
+                  >
+                    Stamp (+{nextKarma})
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleNudge(nextChore)}
+                    disabled={nudgeChoreMutation.isPending}
+                    className="h-7 px-2.5 rounded-md bg-muted/40 hover:bg-muted border border-border text-foreground active:scale-95 transition-all text-[11px] font-semibold shrink-0 cursor-pointer shadow-xs flex items-center gap-1.5"
+                  >
+                    {nudgeChoreMutation.isPending ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-primary" />
+                    ) : (
+                      <Bell className="w-3 h-3 text-primary" />
+                    )}
+                    <span>Nudge</span>
+                  </Button>
+                )}
+              </div>
+            ) : incompleteChores.length <= 1 && completedChores.length > 0 ? (
+              <div className="p-3 sm:p-3.5 rounded-xl bg-muted/20 border border-border/60 flex items-center gap-2.5 text-muted-foreground">
+                <Clock className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs">All other duties up to date! Great rotation rhythm.</span>
+              </div>
+            ) : null}
+
+            {/* Stamp Card 3 (Completed Chore) */}
+            {recentCompletedChore ? (
+              <div className="p-3 sm:p-3.5 rounded-xl bg-muted/30 border border-border flex items-start justify-between gap-3">
+                <div className="flex items-start gap-2.5 min-w-0">
+                  <div className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
+                    <CheckCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground text-[10px] font-mono">
+                        {formatCompletedTime(
+                          recentCompletedChore.completedAt || recentCompletedChore.nextDue
+                        )}{' '}
+                        · {recentCompletedChore.assignedToName || 'Flatmate'}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-[10px] font-semibold uppercase text-emerald-600 dark:text-emerald-400 font-mono border-0 p-0"
+                      >
+                        Verified
+                      </Badge>
+                    </div>
+                    <h3 className="font-medium text-xs text-muted-foreground line-through mt-0.5 tracking-tight truncate">
+                      {recentCompletedChore.description}
+                    </h3>
+                  </div>
+                </div>
                 <Badge
-                  variant={isStamped ? 'secondary' : 'default'}
-                  className={`font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0 ${
-                    isStamped ? 'bg-emerald-600 text-white' : 'bg-primary text-primary-foreground'
-                  }`}
+                  variant="outline"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
                 >
-                  {isStamped ? 'STAMPED ✓ (+15)' : '+15 Karma'}
+                  STAMPED ✓ (+{getChoreKarma(recentCompletedChore)})
                 </Badge>
-                <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono">
-                  {isStamped ? 'Certified' : 'Click to Stamp'}
+              </div>
+            ) : (
+              <div className="p-2.5 px-3 rounded-xl bg-muted/20 border border-dashed border-border/60 flex items-center gap-2 text-muted-foreground">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500/70 shrink-0" />
+                <span className="text-xs">
+                  Stamp your first chore to verify duty and earn House Karma!
                 </span>
               </div>
-            </div>
+            )}
           </div>
-
-          {/* Stamp Card 2 (Alex / Housemate) */}
-          <div className="p-3 rounded-xl bg-surface-container border border-border flex items-start justify-between gap-3 shadow-xs">
-            <div className="flex items-start gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-card border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                <Clock className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-xs text-foreground tracking-tight">
-                    Alex Chen
-                  </span>
-                  <span className="text-[11px] text-muted-foreground font-medium font-mono">
-                    Due Tomorrow 10 AM
-                  </span>
-                </div>
-                <h3 className="font-semibold text-xs text-foreground mt-0.5 tracking-tight truncate">
-                  Take Out Compost &amp; Cardboard
-                </h3>
-                <p className="text-muted-foreground text-[10px]">
-                  Curbside bin collection by alley
-                </p>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => handleNudge('Alex Chen')}
-              className="px-2.5 py-1 min-h-[44px] h-auto rounded-lg bg-card border border-border text-foreground hover:bg-surface-container-high active:scale-95 transition-all text-xs font-semibold shrink-0 cursor-pointer shadow-xs"
-            >
-              Nudge 🔔
-            </Button>
-          </div>
-
-          {/* Stamp Card 3 (Completed Sarah) */}
-          <div className="p-2.5 px-3 rounded-xl bg-surface-container/60 border border-border flex items-start justify-between gap-3 opacity-75">
-            <div className="flex items-start gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
-                <CheckCheck className="w-3.5 h-3.5" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground text-[10px] font-mono">
-                    8:15 AM · Sarah
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] font-semibold uppercase text-emerald-600 dark:text-emerald-400 font-mono border-0 p-0"
-                  >
-                    Verified
-                  </Badge>
-                </div>
-                <h3 className="font-medium text-xs text-muted-foreground line-through mt-0.5 tracking-tight truncate">
-                  Refill Brita &amp; Clean Espresso Tray
-                </h3>
-              </div>
-            </div>
-            <Badge
-              variant="outline"
-              className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
-            >
-              STAMPED ✓
-            </Badge>
-          </div>
-        </div>
+        )}
 
         {/* Duty Rhythm Mini Tracker */}
-        <div className="bg-surface-container border border-border p-3 rounded-xl space-y-2">
+        <div className="bg-card border border-border p-3 rounded-xl space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-xs text-foreground font-display">
               Flat Duty Rhythm
             </span>
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold font-mono tabular-nums">
-              {completedCount} of {totalChoresCount} done ({rhythmPercent}%)
+              {rhythmCompleted} of {rhythmTotal} done ({rhythmPercent}%)
             </span>
           </div>
 
+          {/* Dynamic 7-Day Matrix */}
           <div className="grid grid-cols-7 gap-1 pt-0.5">
-            {['M', 'T', 'W', 'T', 'F'].map((day, idx) => (
-              <div
-                key={`day-${idx}`}
-                className="flex flex-col items-center gap-1 p-1 bg-card rounded-lg border border-border"
-              >
-                <span className="text-[9px] font-mono text-muted-foreground">{day}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              </div>
-            ))}
-            {/* Today */}
-            <div className="flex flex-col items-center gap-1 p-1 bg-card rounded-lg border border-primary/40">
-              <span className="text-[9px] font-mono text-primary font-bold">S</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            </div>
-            {/* Tomorrow */}
-            <div className="flex flex-col items-center gap-1 p-1 bg-card rounded-lg border border-border opacity-50">
-              <span className="text-[9px] font-mono text-muted-foreground">S</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-surface-container-high" />
-            </div>
+            {weekDays.map((dayMetric, idx) => {
+              const isCompleted =
+                dayMetric.status === 'completed' || dayMetric.status === 'today-done';
+              const isPending = dayMetric.status === 'pending';
+              const isMissed = dayMetric.status === 'missed';
+              const isRest = dayMetric.status === 'rest';
+
+              return (
+                <div
+                  key={`day-${dayMetric.date || dayMetric.day}-${idx}`}
+                  title={`${dayMetric.date || dayMetric.day}: ${dayMetric.completedCount}/${dayMetric.totalCount} completed (${dayMetric.status})`}
+                  className={cn(
+                    'flex flex-col items-center gap-1 p-1 rounded-lg border transition-all',
+                    dayMetric.isToday
+                      ? 'bg-primary/5 border-primary/40 shadow-xs'
+                      : isCompleted
+                        ? 'bg-card border-border'
+                        : isMissed
+                          ? 'bg-destructive/5 border-destructive/30'
+                          : 'bg-card border-border/60 opacity-60'
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'text-[9px] font-mono',
+                      dayMetric.isToday
+                        ? 'text-primary font-bold'
+                        : isMissed
+                          ? 'text-destructive font-semibold'
+                          : 'text-muted-foreground'
+                    )}
+                  >
+                    {dayMetric.day}
+                  </span>
+                  <span
+                    className={cn(
+                      'w-1.5 h-1.5 rounded-full',
+                      isPending
+                        ? 'bg-primary animate-pulse'
+                        : isCompleted
+                          ? 'bg-emerald-500'
+                          : isMissed
+                            ? 'bg-destructive'
+                            : isRest
+                              ? 'bg-muted-foreground/20'
+                              : 'bg-muted-foreground/30'
+                    )}
+                  />
+                </div>
+              );
+            })}
           </div>
 
           <div className="pt-1.5 flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/60">
-            <span>Next: Leo · Deep Clean Sink</span>
-            <span className="text-foreground font-semibold">Tomorrow night</span>
+            <span className="truncate pr-2">
+              Next:{' '}
+              {nextRotationNote
+                ? `${nextRotationNote.assigneeName} · ${nextRotationNote.description}`
+                : nextChore
+                  ? `${nextChore.assignedToName || 'Flatmate'} · ${nextChore.description}`
+                  : 'All caught up'}
+            </span>
+            <span className="text-foreground font-semibold shrink-0 font-mono">
+              {nextRotationNote?.nextDue
+                ? formatChoreDue(nextRotationNote.nextDue)
+                : nextChore
+                  ? formatChoreDue(nextChore.nextDue)
+                  : 'Rhythm on track'}
+            </span>
           </div>
         </div>
       </CardContent>

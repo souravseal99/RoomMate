@@ -72,4 +72,50 @@ export class ExpenseRepo {
       },
     });
   }
+
+  static async getMonthlyHouseholdSpend(
+    householdId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<number> {
+    const res = await prisma.expense.aggregate({
+      where: {
+        householdId,
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    });
+    return res._sum.amount || 0;
+  }
+
+  static async getRecentSharedBills(householdId: string, limit = 2) {
+    return await prisma.expense.findMany({
+      where: { householdId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        paidBy: {
+          select: {
+            userId: true,
+            name: true,
+          },
+        },
+        splits: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 }

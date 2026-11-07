@@ -30,3 +30,52 @@ export function getNextDueDate(currentDueDate: Date, frequency: string) {
   }
   return nextDueDate;
 }
+
+export function calculateChoreKarma(
+  priority?: string | null,
+  frequency?: string | null,
+): number {
+  const basePoints: Record<string, number> = {
+    HIGH: 25,
+    MEDIUM: 15,
+    LOW: 10,
+  };
+
+  const frequencyMultiplier: Record<string, number> = {
+    daily: 1.0,
+    "twice-weekly": 1.1,
+    weekly: 1.2,
+    "bi-weekly": 1.3,
+    monthly: 1.5,
+  };
+
+  const base = basePoints[(priority || "MEDIUM").toUpperCase()] || 15;
+  const mult =
+    frequencyMultiplier[(frequency || "weekly").toLowerCase()] || 1.0;
+  return Math.round(base * mult);
+}
+
+export interface WeekDayMetric {
+  day: string;
+  date: string;
+  isToday: boolean;
+  status:
+    "completed" | "today-done" | "pending" | "missed" | "rest" | "upcoming";
+  completedCount: number;
+  totalCount: number;
+}
+
+export function getStartAndEndOfWeek(refDate: Date = new Date()) {
+  const date = new Date(refDate);
+  const day = (date.getDay() + 6) % 7; // Monday = 0, Sunday = 6
+
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - day);
+  monday.setHours(0, 0, 0, 0);
+
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  sunday.setHours(23, 59, 59, 999);
+
+  return { monday, sunday };
+}

@@ -3,6 +3,7 @@ import { ExpenseService } from "@src/expenses/expense.service";
 import { ExpenseRepo } from "@src/expenses/expense.repo";
 import { SettlementRepo } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
+import { HouseholdRepository } from "@src/households/household.repo";
 import { ExpenseSplitService } from "@src/expense-split/expenseSplit.service";
 import calculateBalance, {
   calculateSettlements,
@@ -14,6 +15,7 @@ import { StatusCodes } from "http-status-codes";
 vi.mock("@src/expenses/expense.repo");
 vi.mock("@src/expenses/settlement.repo");
 vi.mock("@src/household-members/householdMember.repo");
+vi.mock("@src/households/household.repo");
 vi.mock("@src/expense-split/expenseSplit.service");
 vi.mock("@src/expenses/calculateBalance");
 
@@ -429,6 +431,12 @@ describe("ExpenseService", () => {
         mockHouseholdMembers as any,
       );
       vi.mocked(SettlementRepo.getByHouseholdId).mockResolvedValue([]);
+      vi.mocked(HouseholdRepository.getHouseholdById).mockResolvedValue({
+        householdId: "household-123",
+        settings: { monthlyCommunalBudget: 1800 },
+      } as any);
+      vi.mocked(ExpenseRepo.getMonthlyHouseholdSpend).mockResolvedValue(250.0);
+      vi.mocked(ExpenseRepo.getRecentSharedBills).mockResolvedValue([]);
 
       const result = await ExpenseService.getBalances("household-123");
 

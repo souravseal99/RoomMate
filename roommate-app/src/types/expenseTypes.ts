@@ -63,9 +63,28 @@ export interface OptimizedSettlement {
   amount: number;
 }
 
+export interface RecentBill {
+  id: string;
+  description: string;
+  payerName: string;
+  payerInitial: string;
+  totalAmount: number;
+  userShare: number;
+  splitCount: number;
+  createdAt?: string;
+}
+
+export interface HouseholdBudgetOverview {
+  spent: number;
+  total: number;
+  percent: number;
+}
+
 export interface BalancesData {
   balances: BalanceEntry[];
   settlements: OptimizedSettlement[];
+  recentBills?: RecentBill[];
+  budget?: HouseholdBudgetOverview;
 }
 
 export interface ExpenseContextType {

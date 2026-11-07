@@ -103,4 +103,29 @@ export class HouseholdRepository {
       prisma.household.delete({ where: { householdId } }),
     ]);
   }
+
+  static async getKitchenTable(householdId: string) {
+    const household = await prisma.household.findUnique({
+      where: { householdId },
+      select: { settings: true },
+    });
+    return (household?.settings as any)?.kitchenTable || null;
+  }
+
+  static async updateKitchenTable(householdId: string, kitchenTableData: any) {
+    const household = await prisma.household.findUnique({
+      where: { householdId },
+      select: { settings: true },
+    });
+    const currentSettings = (household?.settings as Record<string, any>) || {};
+    const updatedSettings = {
+      ...currentSettings,
+      kitchenTable: kitchenTableData,
+    };
+    await prisma.household.update({
+      where: { householdId },
+      data: { settings: updatedSettings },
+    });
+    return kitchenTableData;
+  }
 }

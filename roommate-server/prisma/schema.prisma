@@ -28,17 +28,21 @@ model User {
   chores          Chore[]             @relation("UserChoresAssigned")
   splits          ExpenseSplit[]
   sessions        Session[]
-  settlementsFrom Settlement[]        @relation("SettlementsFrom")
-  settlementsTo   Settlement[]        @relation("SettlementsTo")
+  settlementsFrom   Settlement[]        @relation("SettlementsFrom")
+  settlementsTo     Settlement[]        @relation("SettlementsTo")
+  activities        Activity[]          @relation("UserActivities")
+  activityReactions ActivityReaction[]  @relation("UserActivityReactions")
 }
 
 /// User sessions for multi-tab authentication
 model Session {
-  sessionId    String   @id @map("session_id")
-  userId       String   @map("user_id")
-  refreshToken String   @map("refresh_token")
-  createdAt    DateTime @default(now())
-  expiresAt    DateTime @map("expires_at")
+  sessionId        String    @id @map("session_id")
+  userId           String    @map("user_id")
+  refreshToken     String    @map("refresh_token")
+  prevRefreshToken String?   @map("prev_refresh_token")
+  rotatedAt        DateTime? @map("rotated_at")
+  createdAt        DateTime  @default(now())
+  expiresAt        DateTime  @map("expires_at")
 
   // Relations
   user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
@@ -59,6 +63,7 @@ model Household {
   inventory     InventoryItem[]
   shoppingCarts ShoppingCart[]
   settlements   Settlement[]
+  activities    Activity[]
 }
 
 /// Many-to-many relation between users & households
@@ -116,8 +121,9 @@ model Chore {
   description String
   frequency   String
   nextDue     DateTime
-  completed   Boolean  @default(false)
-  priority    String?  @default("MEDIUM")
+  completed   Boolean   @default(false)
+  completedAt DateTime? @map("completed_at")
+  priority    String?   @default("MEDIUM")
   notes       String?
 
   householdId  String  @map("household_id")
@@ -170,3 +176,48 @@ model Settlement {
   toUser    User      @relation("SettlementsTo", fields: [toUserId], references: [userId])
   household Household @relation(fields: [householdId], references: [householdId])
 }
+
+enum ActivityType {
+  EXPENSE
+  CHORE_COMPLETED
+  SETTLEMENT
+  NUDGE
+}
+
+/// Household Activity Pulse events
+model Activity {
+  activityId   String       @id @default(uuid()) @map("activity_id")
+  householdId  String       @map("household_id")
+  userId       String       @map("user_id")
+  targetUserId String?      @map("target_user_id")
+  type         ActivityType
+  title        String
+  description  String?
+  metadata     Json?        @default("{}")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  household Household          @relation(fields: [householdId], references: [householdId], onDelete: Cascade)
+  user      User               @relation("UserActivities", fields: [userId], references: [userId], onDelete: Cascade)
+  reactions ActivityReaction[]
+
+  @@index([householdId, createdAt(sort: Desc)])
+  @@index([targetUserId])
+}
+
+/// User emoji reactions to activities (strictly 1 emoji per user per activity)
+model ActivityReaction {
+  reactionId String   @id @default(uuid()) @map("reaction_id")
+  activityId String   @map("activity_id")
+  userId     String   @map("user_id")
+  emoji      String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  activity Activity @relation(fields: [activityId], references: [activityId], onDelete: Cascade)
+  user     User     @relation("UserActivityReactions", fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([activityId, userId])
+  @@index([activityId])
+}
+

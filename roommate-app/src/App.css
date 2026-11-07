@@ -168,6 +168,11 @@
   --sidebar-border: #2d353d;
   --sidebar-ring: #d04a1b;
   --sidebar-muted: #8e887e;
+
+  --hero-cockpit-bg: radial-gradient(135% 100% at 0% 0%, #b84217 0%, #8c2e0c 45%, #4a1604 100%);
+  --hero-cockpit-shadow:
+    0 4px 20px -2px rgba(140, 46, 12, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --hero-cockpit-border: rgba(255, 255, 255, 0.12);
 }
 
 .theme-bento-teal {
@@ -231,6 +236,11 @@
   --sidebar-border: #2c3836;
   --sidebar-ring: #0f766e;
   --sidebar-muted: #8a9692;
+
+  --hero-cockpit-bg: radial-gradient(135% 100% at 0% 0%, #0d9488 0%, #0f766e 45%, #042f2e 100%);
+  --hero-cockpit-shadow:
+    0 4px 20px -2px rgba(15, 118, 110, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --hero-cockpit-border: rgba(255, 255, 255, 0.12);
 }
 
 .theme-bento-obsidian {
@@ -294,6 +304,11 @@
   --sidebar-border: #252e36;
   --sidebar-ring: #e2622f;
   --sidebar-muted: #7e7971;
+
+  --hero-cockpit-bg: radial-gradient(135% 100% at 0% 0%, #2e1d15 0%, #171c20 50%, #0e1113 100%);
+  --hero-cockpit-shadow:
+    0 4px 24px -2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --hero-cockpit-border: rgba(255, 255, 255, 0.08);
 }
 
 .dark {
@@ -309,5 +324,13 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--theme-font);
+  }
+}
+
+@layer utilities {
+  .bg-cockpit-gradient {
+    background: var(--hero-cockpit-bg);
+    box-shadow: var(--hero-cockpit-shadow);
+    border-color: var(--hero-cockpit-border);
   }
 }

@@ -62,3 +62,90 @@ export interface CascadeDeleteReport {
     }>;
   };
 }
+
+export type KitchenTableMode = 'CHEF' | 'QNA' | 'NOTICE';
+
+export interface KitchenTableRsvp {
+  userId: string;
+  userName: string;
+  attending: boolean;
+  note?: string;
+  updatedAt: string;
+}
+
+export interface KitchenTableMeal {
+  dishName: string;
+  servingTime: string;
+  extraPlates: number;
+  chefId: string;
+  chefName: string;
+  broadcastAt: string;
+  status: 'ACTIVE' | 'ARCHIVED';
+  rsvps: KitchenTableRsvp[];
+}
+
+export interface KitchenTableNotice {
+  noticeId: string;
+  title: string;
+  urgency: 'URGENT' | 'MAINTENANCE' | 'GENERAL' | 'SOCIAL';
+  authorId: string;
+  authorName: string;
+  broadcastAt: string;
+  acknowledgments: Array<{
+    userId: string;
+    userName: string;
+    acknowledgedAt: string;
+  }>;
+}
+
+export interface KitchenTableQnaReply {
+  replyId: string;
+  userId: string;
+  userName: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface KitchenTableQna {
+  qnaId: string;
+  question: string;
+  category: string;
+  authorId: string;
+  authorName: string;
+  broadcastAt: string;
+  replies: KitchenTableQnaReply[];
+}
+
+export interface KitchenTableData {
+  activeMode: KitchenTableMode;
+  meal?: KitchenTableMeal;
+  notice?: KitchenTableNotice;
+  qna?: KitchenTableQna;
+  // Backward compatibility fields
+  dishName?: string;
+  servingTime?: string;
+  extraPlates?: number;
+  chefId?: string;
+  chefName?: string;
+  broadcastAt?: string;
+  status?: 'ACTIVE' | 'ARCHIVED';
+  rsvps?: KitchenTableRsvp[];
+  updatedAt?: string;
+}
+
+export interface BroadcastKitchenTableDto {
+  mode?: KitchenTableMode;
+  payload?: any;
+  dishName?: string;
+  servingTime?: string;
+  extraPlates?: number;
+}
+
+export interface ToggleKitchenTableRsvpDto {
+  attending: boolean;
+  note?: string;
+}
+
+export interface ReplyKitchenTableQnaDto {
+  text: string;
+}

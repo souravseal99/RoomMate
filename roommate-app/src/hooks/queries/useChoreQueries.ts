@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { choreApi } from '@/api/choreApi';
 import { eventBus } from '@/lib/eventBus';
 import { APP_EVENTS } from '@/types/eventTypes';
-import type { ChoreItem } from '@/types/choreTypes';
+import type { ChoreItem, DutyPunchcardData } from '@/types/choreTypes';
 
 export function useHouseholdChoresQuery(householdId?: string | null) {
   const queryClient = useQueryClient();
@@ -15,6 +15,7 @@ export function useHouseholdChoresQuery(householdId?: string | null) {
         event.type === APP_EVENTS.HOUSEHOLD_SWITCHED
       ) {
         queryClient.invalidateQueries({ queryKey: ['chores', householdId] });
+        queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', householdId] });
       }
     });
     return () => unsubscribe();
@@ -37,6 +38,46 @@ export function useHouseholdChoresQuery(householdId?: string | null) {
   });
 }
 
+export function useDutyPunchcardQuery(householdId?: string | null) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const unsubscribe = eventBus.subscribe((event) => {
+      if (
+        event.type === APP_EVENTS.HOUSEHOLD_MUTATED ||
+        event.type === APP_EVENTS.HOUSEHOLD_SWITCHED
+      ) {
+        queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', householdId] });
+      }
+    });
+    return () => unsubscribe();
+  }, [householdId, queryClient]);
+
+  return useQuery<DutyPunchcardData>({
+    queryKey: ['chores', 'punchcard', householdId],
+    queryFn: async () => {
+      if (!householdId) throw new Error('No active household ID');
+      return await choreApi.getPunchcardMetrics(householdId);
+    },
+    enabled: !!householdId,
+    staleTime: 1000 * 30, // 30s
+  });
+}
+
+export function useNudgeChoreMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ choreId }: { choreId: string; householdId?: string }) =>
+      choreApi.nudgeChore(choreId),
+    onSuccess: (_, variables) => {
+      if (variables.householdId) {
+        queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
+      }
+    },
+  });
+}
+
 export function useCreateChoreMutation() {
   const queryClient = useQueryClient();
 
@@ -44,6 +85,7 @@ export function useCreateChoreMutation() {
     mutationFn: (newChore: Partial<ChoreItem>) => choreApi.createChore(newChore),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['chores', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
@@ -67,6 +109,7 @@ export function useToggleChoreMutation() {
     }) => choreApi.updateChore(choreId, updates),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['chores', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
@@ -84,6 +127,7 @@ export function useDeleteChoreMutation() {
       choreApi.deleteChore(choreId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['chores', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,

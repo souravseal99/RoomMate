@@ -1,5 +1,7 @@
-import api from '@/api/axios';
+import api, { refreshSession } from '@/api/axios';
 import type { LoginPayload, RegisterPayload } from '@/types/authTypes';
+
+export { refreshSession };
 
 export const registerUser = async (payload: RegisterPayload) =>
   await api.post('/auth/register', payload);

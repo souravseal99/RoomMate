@@ -9,6 +9,9 @@ import type {
   HouseholdResponse,
   HouseholdOptions,
   SuggestedMember,
+  KitchenTableData,
+  BroadcastKitchenTableDto,
+  ToggleKitchenTableRsvpDto,
 } from '@/types/householdTypes';
 import { toast } from 'sonner';
 
@@ -18,6 +21,7 @@ export const householdKeys = {
   all: ['households'] as const,
   members: (householdId?: string) => ['household-members', householdId] as const,
   suggested: ['household-members', 'suggested'] as const,
+  kitchenTable: (householdId?: string) => ['kitchen-table', householdId] as const,
 };
 
 export function useHouseholdsQuery() {
@@ -278,6 +282,128 @@ export function useDeleteHouseholdMutation() {
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId },
       });
+    },
+  });
+}
+
+export function useKitchenTableQuery(householdId?: string) {
+  return useQuery<KitchenTableData | null>({
+    queryKey: householdKeys.kitchenTable(householdId),
+    queryFn: async () => {
+      if (!householdId) return null;
+      return await householdApi().getKitchenTable(householdId);
+    },
+    enabled: !!householdId,
+    staleTime: 1000 * 15,
+  });
+}
+
+export function useBroadcastKitchenTableMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      householdId,
+      dto,
+    }: {
+      householdId: string;
+      dto: BroadcastKitchenTableDto;
+    }) => {
+      return await householdApi().broadcastKitchenTable(householdId, dto);
+    },
+    onSuccess: (data, { householdId, dto }) => {
+      queryClient.setQueryData(householdKeys.kitchenTable(householdId), data);
+      queryClient.invalidateQueries({ queryKey: householdKeys.kitchenTable(householdId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', householdId] });
+      eventBus.publish({
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
+        payload: { householdId },
+      });
+      const msg =
+        dto.mode === 'NOTICE'
+          ? 'House notice broadcasted!'
+          : dto.mode === 'QNA'
+            ? 'Question posted to forum!'
+            : 'Dinner broadcast sent to housemates!';
+      toast.success(msg);
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to broadcast update');
+    },
+  });
+}
+
+export function useToggleKitchenTableRsvpMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      householdId,
+      dto,
+    }: {
+      householdId: string;
+      dto: ToggleKitchenTableRsvpDto;
+    }) => {
+      return await householdApi().toggleKitchenTableRsvp(householdId, dto);
+    },
+    onSuccess: (data, { householdId }) => {
+      queryClient.setQueryData(householdKeys.kitchenTable(householdId), data);
+      queryClient.invalidateQueries({ queryKey: householdKeys.kitchenTable(householdId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', householdId] });
+      eventBus.publish({
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
+        payload: { householdId },
+      });
+      toast.success('RSVP updated successfully!');
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to update RSVP');
+    },
+  });
+}
+
+export function useAcknowledgeNoticeMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ householdId }: { householdId: string }) => {
+      return await householdApi().acknowledgeNotice(householdId);
+    },
+    onSuccess: (data, { householdId }) => {
+      queryClient.setQueryData(householdKeys.kitchenTable(householdId), data);
+      queryClient.invalidateQueries({ queryKey: householdKeys.kitchenTable(householdId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', householdId] });
+      eventBus.publish({
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
+        payload: { householdId },
+      });
+      toast.success('Notice acknowledged!');
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to acknowledge notice');
+    },
+  });
+}
+
+export function useReplyQnaMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ householdId, text }: { householdId: string; text: string }) => {
+      return await householdApi().replyQna(householdId, { text });
+    },
+    onSuccess: (data, { householdId }) => {
+      queryClient.setQueryData(householdKeys.kitchenTable(householdId), data);
+      queryClient.invalidateQueries({ queryKey: householdKeys.kitchenTable(householdId) });
+      queryClient.invalidateQueries({ queryKey: ['dashboard', householdId] });
+      eventBus.publish({
+        type: APP_EVENTS.HOUSEHOLD_MUTATED,
+        payload: { householdId },
+      });
+      toast.success('Reply posted!');
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || 'Failed to post reply');
     },
   });
 }

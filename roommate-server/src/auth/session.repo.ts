@@ -23,10 +23,17 @@ export class SessionRepo {
     sessionId: string,
     refreshToken: string,
     expiresAt: Date,
+    prevRefreshToken?: string,
+    rotatedAt?: Date,
   ) {
     return await prisma.session.update({
       where: { sessionId },
-      data: { refreshToken, expiresAt },
+      data: {
+        refreshToken,
+        expiresAt,
+        ...(prevRefreshToken !== undefined && { prevRefreshToken }),
+        ...(rotatedAt !== undefined && { rotatedAt }),
+      },
     });
   }
 
