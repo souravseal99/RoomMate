@@ -6,6 +6,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma/
 RUN npm install
+RUN npm install @rollup/rollup-linux-x64-musl || true
 RUN DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy" npx prisma generate
 
 COPY . .
