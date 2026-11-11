@@ -14,7 +14,7 @@
     "start": "ts-node src/server.ts",
     "dev": "nodemon",
     "dev:serve": "nodemon --legacy-watch --watch /app/src --ext ts,js,json --exec \"vite-node src/server.ts\"",
-    "prod:serve": "npx prisma migrate deploy && vite-node src/server.ts",
+    "prod:serve": "(npx prisma migrate deploy || npx prisma db push) && vite-node src/server.ts",
     "db:migrate": "npx prisma migrate dev",
     "db:studio": "docker compose exec server npx prisma studio",
     "prisma:format": "npx prisma format",
@@ -43,7 +43,8 @@
     "express-validator": "^7.2.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
-    "nanoid": "^5.1.5"
+    "nanoid": "^5.1.5",
+    "vite-node": "^3.2.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
