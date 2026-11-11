@@ -24,6 +24,9 @@ export function useHouseholdEventSync() {
             queryClient.invalidateQueries({
               queryKey: expenseKeys.balances(event.payload.householdId),
             });
+            queryClient.invalidateQueries({
+              queryKey: ['activities', event.payload.householdId],
+            });
           }
           break;
         case APP_EVENTS.ROSTER_UPDATED:

@@ -2,10 +2,17 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ChoreService } from "@src/chore/chore.service";
 import { ChoreRepo } from "@src/chore/chore.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
+import { ActivityService } from "@src/activities/activity.service";
 import { StatusCodes } from "http-status-codes";
 
 vi.mock("@src/chore/chore.repo");
 vi.mock("@src/household-members/householdMember.repo");
+vi.mock("@src/activities/activity.service", () => ({
+  ActivityService: {
+    logActivity: vi.fn().mockResolvedValue({}),
+    removeChoreActivity: vi.fn().mockResolvedValue({ count: 1 }),
+  },
+}));
 
 describe("ChoreService Authorization & Boundary", () => {
   beforeEach(() => {
@@ -152,6 +159,11 @@ describe("ChoreService Authorization & Boundary", () => {
           choreId: "chore-1",
           completed: false,
         }),
+      );
+      expect(ActivityService.removeChoreActivity).toHaveBeenCalledWith(
+        "household-123",
+        "chore-1",
+        undefined,
       );
       expect(result).toMatchObject({
         status: StatusCodes.ACCEPTED,

@@ -111,6 +111,7 @@ export function useToggleChoreMutation() {
       queryClient.invalidateQueries({ queryKey: ['chores', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['activities', variables.householdId] });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId: variables.householdId },
@@ -129,6 +130,7 @@ export function useDeleteChoreMutation() {
       queryClient.invalidateQueries({ queryKey: ['chores', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['chores', 'punchcard', variables.householdId] });
       queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['activities', variables.householdId] });
       eventBus.publish({
         type: APP_EVENTS.HOUSEHOLD_MUTATED,
         payload: { householdId: variables.householdId },

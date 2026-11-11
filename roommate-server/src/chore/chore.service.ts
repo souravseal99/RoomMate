@@ -78,19 +78,39 @@ export class ChoreService {
       updatedChore.frequency,
     );
 
-    if (updateChoreRequest.completed && updatedChore.assignedToId) {
+    const targetHouseholdId = updatedChore.householdId || chore.householdId;
+    const targetDescription = updatedChore.description || chore.description;
+
+    if (
+      updateChoreRequest.completed &&
+      (updatedChore.assignedToId || chore.assignedToId)
+    ) {
+      // Remove any prior completion activity for this chore to prevent duplicates
+      await ActivityService.removeChoreActivity(
+        targetHouseholdId,
+        updatedChore.choreId,
+        targetDescription,
+      );
+
       void ActivityService.logActivity({
-        householdId: updatedChore.householdId,
-        userId: updatedChore.assignedToId,
+        householdId: targetHouseholdId,
+        userId: (updatedChore.assignedToId || chore.assignedToId)!,
         type: ActivityType.CHORE_COMPLETED,
-        title: `stamped ${updatedChore.description}`,
+        title: `stamped ${targetDescription}`,
         description: `+${karmaEarned} House Karma awarded`,
         metadata: {
           karma: karmaEarned,
           choreId: updatedChore.choreId,
-          choreDescription: updatedChore.description,
+          choreDescription: targetDescription,
         },
       });
+    } else if (updateChoreRequest.completed === false) {
+      // Remove completion activities when chore is unstamped
+      await ActivityService.removeChoreActivity(
+        targetHouseholdId,
+        updatedChore.choreId,
+        targetDescription,
+      );
     }
 
     return ApiResponse.success(
@@ -445,6 +465,11 @@ export class ChoreService {
       }
     }
 
+    await ActivityService.removeChoreActivity(
+      chore.householdId,
+      choreId,
+      chore.description,
+    );
     await ChoreRepo.delete(choreId);
 
     return ApiResponse.success(null, "Chore Deleted", StatusCodes.OK);

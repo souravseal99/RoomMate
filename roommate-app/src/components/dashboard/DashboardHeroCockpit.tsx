@@ -1,6 +1,5 @@
 import {
   Home,
-  Calendar,
   Wallet,
   ClipboardList,
   Utensils,
@@ -129,11 +128,6 @@ export function DashboardHeroCockpit({
     );
 
   const hasPeerDebt = peerDebtAmount > 0 && !!peerDebtName;
-
-  // Auto-draft calculation from household budget settings
-  const autoDraftAmount = activeHousehold?.settings?.monthlyCommunalBudget
-    ? Math.round(activeHousehold.settings.monthlyCommunalBudget / 4)
-    : 800;
 
   return (
     <Card

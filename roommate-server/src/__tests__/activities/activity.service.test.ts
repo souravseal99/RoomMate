@@ -100,6 +100,79 @@ describe("ActivityService", () => {
         { emoji: "👏", count: 1 },
       ]);
     });
+
+    it("should de-duplicate multiple completion activities for the same chore in the feed", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-1",
+        householdId: "h-1",
+        userId: "u-1",
+        role: "MEMBER" as any,
+      });
+      vi.mocked(ActivityRepo.countByHousehold).mockResolvedValue(3);
+
+      const mockActivitiesWithDuplicates = [
+        {
+          activityId: "act-new",
+          householdId: "h-1",
+          userId: "u-1",
+          type: ActivityType.CHORE_COMPLETED,
+          title: "stamped Clean Kitchen Countertops & Sink",
+          metadata: { choreId: "chr_kitchen_02" },
+          reactions: [],
+          createdAt: new Date(),
+          user: {
+            userId: "u-1",
+            name: "Alex Johnson",
+            email: "alex@roommate.dev",
+          },
+        },
+        {
+          activityId: "act-old-duplicate",
+          householdId: "h-1",
+          userId: "u-1",
+          type: ActivityType.CHORE_COMPLETED,
+          title: "stamped Clean Kitchen Countertops & Sink",
+          metadata: { choreId: "chr_kitchen_02" },
+          reactions: [],
+          createdAt: new Date(Date.now() - 60000),
+          user: {
+            userId: "u-1",
+            name: "Alex Johnson",
+            email: "alex@roommate.dev",
+          },
+        },
+      ];
+
+      vi.mocked(ActivityRepo.findFeed).mockResolvedValue(
+        mockActivitiesWithDuplicates as any,
+      );
+
+      const result = await ActivityService.getFeed("h-1", "u-1");
+      expect(result.status).toBe(StatusCodes.OK);
+      expect(result.data.activities).toHaveLength(1);
+      expect(result.data.activities[0].id).toBe("act-new");
+    });
+  });
+
+  describe("removeChoreActivity", () => {
+    it("should call ActivityRepo.deleteByChore", async () => {
+      vi.mocked(ActivityRepo.deleteByChore).mockResolvedValue({
+        count: 2,
+      } as any);
+
+      const result = await ActivityService.removeChoreActivity(
+        "h-1",
+        "chr_kitchen_02",
+        "Clean Kitchen Countertops & Sink",
+      );
+
+      expect(ActivityRepo.deleteByChore).toHaveBeenCalledWith(
+        "h-1",
+        "chr_kitchen_02",
+        "Clean Kitchen Countertops & Sink",
+      );
+      expect(result).toEqual({ count: 2 });
+    });
   });
 
   describe("toggleReaction", () => {

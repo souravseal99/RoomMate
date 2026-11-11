@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Trash2, Loader2, LucideTrash2 } from 'lucide-react';
+import { Search, Trash2, Loader2 } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

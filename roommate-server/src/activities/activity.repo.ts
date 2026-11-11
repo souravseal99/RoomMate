@@ -164,4 +164,58 @@ export class ActivityRepo {
       where: { activityId },
     });
   }
+
+  /**
+   * Delete an activity by its ID.
+   */
+  static async deleteById(activityId: string) {
+    return await prisma.activity.delete({
+      where: { activityId },
+    });
+  }
+
+  /**
+   * Delete activity events related to a chore (e.g. when unstamped or deleted).
+   */
+  static async deleteByChore(
+    householdId: string,
+    choreId: string,
+    choreDescription?: string,
+  ) {
+    const activities = await prisma.activity.findMany({
+      where: {
+        householdId,
+        type: ActivityType.CHORE_COMPLETED,
+      },
+      select: {
+        activityId: true,
+        title: true,
+        metadata: true,
+      },
+    });
+
+    const idsToDelete = activities
+      .filter((a) => {
+        const meta = a.metadata as Record<string, any> | null;
+        if (meta?.choreId && meta.choreId === choreId) return true;
+        if (
+          choreDescription &&
+          a.title.toLowerCase().includes(choreDescription.toLowerCase())
+        ) {
+          return true;
+        }
+        return false;
+      })
+      .map((a) => a.activityId);
+
+    if (idsToDelete.length > 0) {
+      return await prisma.activity.deleteMany({
+        where: {
+          activityId: { in: idsToDelete },
+        },
+      });
+    }
+
+    return { count: 0 };
+  }
 }

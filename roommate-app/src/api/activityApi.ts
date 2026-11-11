@@ -7,7 +7,7 @@ export const activityApi = {
     const res = await api.get(`/household/${householdId}/activities`, {
       params,
     });
-    return res.data?.activities || [];
+    return res?.activities || res?.data?.activities || [];
   },
 
   toggleReaction: async (

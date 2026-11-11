@@ -1,5 +1,8 @@
+import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { activityApi } from '@/api/activityApi';
+import { eventBus } from '@/lib/eventBus';
+import { APP_EVENTS } from '@/types/eventTypes';
 import type { ActivityItem, ToggleReactionResponse } from '@/types/activityTypes';
 
 export const activityKeys = {
@@ -9,6 +12,23 @@ export const activityKeys = {
 };
 
 export function useActivityFeedQuery(householdId?: string, filter = 'all') {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!householdId) return;
+    const unsub = eventBus.subscribe((event) => {
+      if (
+        (event.type === APP_EVENTS.HOUSEHOLD_MUTATED ||
+          event.type === APP_EVENTS.EXPENSE_MUTATED ||
+          event.type === APP_EVENTS.SETTLEMENT_RECORDED) &&
+        (!event.payload?.householdId || event.payload.householdId === householdId)
+      ) {
+        queryClient.invalidateQueries({ queryKey: ['activities', householdId] });
+      }
+    });
+    return unsub;
+  }, [householdId, queryClient]);
+
   return useQuery<ActivityItem[]>({
     queryKey: activityKeys.feed(householdId, filter),
     queryFn: async () => {
