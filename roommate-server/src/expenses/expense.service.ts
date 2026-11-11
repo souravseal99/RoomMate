@@ -16,7 +16,7 @@ import { ActivityService } from "@src/activities/activity.service";
 import { ActivityType } from "@generated/prisma";
 
 export class ExpenseService {
-  static async create(expense: ExpenseDto, sharedWith: string[]) {
+  static async create(expense: ExpenseDto, sharedWith?: string[]) {
     const isHouseholdMember = await HouseholdMemberRepo.isExistingUser(
       expense.paidById,
       expense.householdId,
@@ -25,8 +25,17 @@ export class ExpenseService {
     if (!isHouseholdMember)
       return ApiResponse.error("User is not a member of the household");
 
-    if (sharedWith && sharedWith.length > 0) {
-      for (const splitUserId of sharedWith) {
+    // If sharedWith is undefined, default to splitting equally across all active household members
+    let resolvedSharedWith = sharedWith;
+    if (resolvedSharedWith === undefined) {
+      const householdMembers = await HouseholdMemberRepo.getByHouseholdId(
+        expense.householdId,
+      );
+      resolvedSharedWith = (householdMembers || []).map((m) => m.userId);
+    }
+
+    if (resolvedSharedWith && resolvedSharedWith.length > 0) {
+      for (const splitUserId of resolvedSharedWith) {
         const isMember = await HouseholdMemberRepo.isExistingUser(
           splitUserId,
           expense.householdId,
@@ -56,16 +65,16 @@ export class ExpenseService {
         },
       });
 
-      if (!sharedWith || !sharedWith?.length) {
+      if (!resolvedSharedWith || !resolvedSharedWith?.length) {
         return ApiResponse.success(
           createdExpense,
           "Expense added",
           StatusCodes.CREATED,
         );
       } else {
-        const shareAmount = createdExpense.amount / sharedWith.length;
+        const shareAmount = createdExpense.amount / resolvedSharedWith.length;
 
-        const splits: ExpenseSplitDto[] = sharedWith.map((userId) => ({
+        const splits: ExpenseSplitDto[] = resolvedSharedWith.map((userId) => ({
           expenseId: createdExpense.expenseId,
           userId: userId,
           shareAmount: shareAmount,

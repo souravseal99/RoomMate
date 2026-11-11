@@ -29,11 +29,11 @@ export function useExpensesQuery(householdId?: string | null) {
         event.type === APP_EVENTS.HOUSEHOLD_MUTATED ||
         event.type === APP_EVENTS.HOUSEHOLD_SWITCHED
       ) {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.byHousehold(householdId) });
+        queryClient.invalidateQueries({ queryKey: ['expenses'] });
       }
     });
     return () => unsubscribe();
-  }, [householdId, queryClient]);
+  }, [queryClient]);
 
   return useQuery<ExpenseResponse[]>({
     queryKey: expenseKeys.byHousehold(householdId),
@@ -59,11 +59,11 @@ export function useExpenseBalancesQuery(householdId?: string | null) {
         event.type === APP_EVENTS.HOUSEHOLD_MUTATED ||
         event.type === APP_EVENTS.HOUSEHOLD_SWITCHED
       ) {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.balances(householdId) });
+        queryClient.invalidateQueries({ queryKey: ['expense-balances'] });
       }
     });
     return () => unsubscribe();
-  }, [householdId, queryClient]);
+  }, [queryClient]);
 
   return useQuery<BalancesData>({
     queryKey: expenseKeys.balances(householdId),
@@ -88,11 +88,11 @@ export function useExpenseSettlementsQuery(householdId?: string | null) {
         event.type === APP_EVENTS.EXPENSE_MUTATED ||
         event.type === APP_EVENTS.HOUSEHOLD_MUTATED
       ) {
-        queryClient.invalidateQueries({ queryKey: expenseKeys.settlements(householdId) });
+        queryClient.invalidateQueries({ queryKey: ['expense-settlements'] });
       }
     });
     return () => unsubscribe();
-  }, [householdId, queryClient]);
+  }, [queryClient]);
 
   return useQuery<SettlementResponse[]>({
     queryKey: expenseKeys.settlements(householdId),
@@ -113,9 +113,11 @@ export function useCreateExpenseMutation() {
   return useMutation({
     mutationFn: (data: CreateExpenseRequestType) => expenseApi().create(data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: expenseKeys.byHousehold(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: expenseKeys.balances(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-balances'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-settlements'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
       eventBus.publish({
         type: APP_EVENTS.EXPENSE_MUTATED,
         payload: { householdId: variables.householdId },
@@ -131,9 +133,11 @@ export function useDeleteExpenseMutation() {
     mutationFn: ({ expenseId }: { expenseId: string; householdId: string }) =>
       expenseApi().deleteByExpenseId(expenseId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: expenseKeys.byHousehold(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: expenseKeys.balances(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-balances'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-settlements'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
       eventBus.publish({
         type: APP_EVENTS.EXPENSE_MUTATED,
         payload: { householdId: variables.householdId },
@@ -148,10 +152,11 @@ export function useCreateSettlementMutation() {
   return useMutation({
     mutationFn: (data: SettlementRequest) => expenseApi().createSettlement(data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: expenseKeys.balances(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: expenseKeys.settlements(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: expenseKeys.byHousehold(variables.householdId) });
-      queryClient.invalidateQueries({ queryKey: ['dashboard', variables.householdId] });
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-balances'] });
+      queryClient.invalidateQueries({ queryKey: ['expense-settlements'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['activities'] });
       eventBus.publish({
         type: APP_EVENTS.SETTLEMENT_RECORDED,
         payload: { householdId: variables.householdId },

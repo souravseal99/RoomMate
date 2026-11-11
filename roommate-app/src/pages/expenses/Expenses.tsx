@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Plus, AlertCircle } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
 import {
   useExpensesQuery,
@@ -25,10 +26,11 @@ import {
 import { toast } from 'sonner';
 
 export default function Expenses() {
-  const { selectedHousehold, householdMembers } = useHousehold();
-  const currentUserId = useMemo(() => getCurrentUserId() || '', []);
+  const { selectedHousehold, householdMembers, activeHouseholdId } = useHousehold();
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId() || '';
 
-  const householdId = selectedHousehold?.key || '';
+  const householdId = selectedHousehold?.key || activeHouseholdId || '';
   const householdName = selectedHousehold?.value || 'Household';
 
   // Tab State (4-tab contextual disclosure)
@@ -164,6 +166,7 @@ export default function Expenses() {
               currentUserId={currentUserId}
               expenses={expenses}
               balances={balances}
+              settlements={settlements}
               onDeleteExpense={handleDeleteExpense}
               deletingExpenseId={deleteExpenseMutation.isPending ? 'deleting' : null}
               onOpenSettleModal={handleOpenSettle}

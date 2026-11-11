@@ -37,8 +37,14 @@ const expenseApi = () => {
     householdId: string | undefined
   ): Promise<BalancesData | undefined> => {
     if (!householdId) return { balances: [], settlements: [] };
-    const { data } = await api.get(`/expense/for/${householdId}/balances`);
-    return data?.data || { balances: [], settlements: [] };
+    const res = await api.get(`/expense/for/${householdId}/balances`);
+    const payload = res?.data?.data || res?.data || res;
+    return {
+      balances: Array.isArray(payload?.balances) ? payload.balances : [],
+      settlements: Array.isArray(payload?.settlements) ? payload.settlements : [],
+      recentBills: Array.isArray(payload?.recentBills) ? payload.recentBills : [],
+      budget: payload?.budget || { spent: 0, total: 1800, percent: 0 },
+    };
   };
 
   const createSettlement = async (requestBody: SettlementRequest) => {

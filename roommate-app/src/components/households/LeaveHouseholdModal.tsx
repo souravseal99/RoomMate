@@ -13,6 +13,7 @@ import {
 import { useLeaveHouseholdMutation } from '@/hooks/queries/useHouseholdQueries';
 import { useExpenseBalancesQuery } from '@/hooks/queries/useExpenseQueries';
 import { useHouseholdChoresQuery } from '@/hooks/queries/useChoreQueries';
+import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
 import { useToast } from '@/hooks/use-toast';
 import type { HouseholdResponse } from '@/types/householdTypes';
@@ -30,7 +31,8 @@ export default function LeaveHouseholdModal({ household, open, onOpenChange }: P
   const [acknowledged, setAcknowledged] = useState(false);
 
   // Pre-departure audit
-  const currentUserId = getCurrentUserId();
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId();
   const { data: balancesData } = useExpenseBalancesQuery(household.householdId);
   const { data: chores = [] } = useHouseholdChoresQuery(household.householdId);
 

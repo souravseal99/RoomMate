@@ -7,9 +7,11 @@ const householdMemberApi = () => {
       if (!householdId) return [];
       const res = await api.get(`/household-member/all/${householdId}`);
       if (Array.isArray(res)) return res;
+      if (Array.isArray(res?.data?.data)) return res.data.data;
       if (Array.isArray(res?.data)) return res.data;
+      if (Array.isArray(res?.data?.members)) return res.data.members;
       if (Array.isArray(res?.members)) return res.members;
-      return res?.data?.members || [];
+      return [];
     } catch (error) {
       console.error('Error fetching household members:', error);
       return [];
@@ -19,7 +21,12 @@ const householdMemberApi = () => {
   const getSuggestedMembers = async (): Promise<SuggestedMember[]> => {
     try {
       const res = await api.get('/household-member/suggested');
-      return res?.data?.suggestedMembers || res?.suggestedMembers || [];
+      return (
+        res?.data?.data?.suggestedMembers ||
+        res?.data?.suggestedMembers ||
+        res?.suggestedMembers ||
+        []
+      );
     } catch (error) {
       console.error('Error fetching suggested members:', error);
       return [];

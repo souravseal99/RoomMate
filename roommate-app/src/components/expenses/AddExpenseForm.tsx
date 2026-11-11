@@ -2,6 +2,7 @@ import { useMemo, useState, type FormEvent, type ChangeEvent } from 'react';
 import { DollarSign, FileText, UserCheck, Users, Calculator, Check } from 'lucide-react';
 import expenseApi from '@/api/expenseApi';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -31,7 +32,8 @@ export default function AddExpenseForm({
   onSuccess,
 }: Props) {
   const { selectedHousehold } = useHousehold();
-  const currentUserId = useMemo(() => getCurrentUserId(), []);
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId();
   const ExpenseApi = useMemo(expenseApi, []);
 
   // Default payer to current user if found in options

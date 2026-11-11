@@ -13,8 +13,10 @@ import {
   Users,
   Megaphone,
   MessageSquare,
+  Bell,
 } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
 import { useAddLowStockToCartMutation } from '@/hooks/queries/useShoppingCartQueries';
 import {
   useKitchenTableQuery,
@@ -25,6 +27,7 @@ import type { InventoryItem } from '@/types/inventoryTypes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface DashboardHeroCockpitProps {
   netBalance?: number;
@@ -50,7 +53,8 @@ export function DashboardHeroCockpit({
   onOpenSettleModal,
 }: DashboardHeroCockpitProps) {
   const { activeHousehold, activeHouseholdId, hasActiveHousehold } = useHousehold();
-  const currentUserId = getCurrentUserId();
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId();
   const addLowStockMutation = useAddLowStockToCartMutation();
   const acknowledgeNoticeMutation = useAcknowledgeNoticeMutation();
   const { data: kitchenTable } = useKitchenTableQuery(activeHouseholdId);
@@ -149,11 +153,6 @@ export function DashboardHeroCockpit({
             Today at {householdDisplayName}
           </h1>
         </div>
-
-        <div className="flex items-center gap-1.5 text-[11px] font-mono text-white/80 bg-black/30 border border-white/10 px-2.5 py-1 rounded-lg shrink-0">
-          <Calendar className="w-3.5 h-3.5 text-primary-fixed" />
-          <span>Auto-draft: Nov 1 (${autoDraftAmount}) Chase</span>
-        </div>
       </div>
 
       {/* VITALS GRID (UNIFIED 3-PART GRID) */}
@@ -212,16 +211,32 @@ export function DashboardHeroCockpit({
 
             <Button
               type="button"
-              onClick={hasPeerDebt && isUserDebtor ? onOpenSettleModal : undefined}
-              disabled={!hasPeerDebt || !isUserDebtor}
+              onClick={() => {
+                if (!hasPeerDebt) return;
+                if (isUserDebtor) {
+                  onOpenSettleModal?.();
+                } else {
+                  toast.success(
+                    `Payment reminder sent to ${peerDebtName} ($${peerDebtAmount.toFixed(2)})!`,
+                    {
+                      icon: <Bell className="w-4 h-4 text-primary" />,
+                    }
+                  );
+                }
+              }}
+              disabled={!hasPeerDebt}
               className="w-full min-h-[40px] py-2 px-3 rounded-lg bg-primary hover:bg-primary/90 active:scale-95 text-primary-foreground font-semibold text-xs tracking-tight transition-all flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border-b-2 border-primary-fixed-dim disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Zap className="w-3.5 h-3.5 fill-current" />
+              {isUserDebtor ? (
+                <Zap className="w-3.5 h-3.5 fill-current" />
+              ) : (
+                <Bell className="w-3.5 h-3.5" />
+              )}
               <span>
                 {hasPeerDebt
                   ? isUserDebtor
                     ? `Settle $${peerDebtAmount.toFixed(2)} with ${peerDebtName}`
-                    : `${peerDebtName} Owes $${peerDebtAmount.toFixed(2)}`
+                    : `Nudge ${peerDebtName} ($${peerDebtAmount.toFixed(2)})`
                   : 'All Settled Up ✨'}
               </span>
             </Button>

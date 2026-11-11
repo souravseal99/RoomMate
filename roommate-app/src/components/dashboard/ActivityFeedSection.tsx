@@ -192,7 +192,7 @@ export function ActivityFeedSection() {
             <Rss className="w-4 h-4 stroke-[2.2]" />
           </div>
           <CardTitle className="text-xl tracking-widest font-semibold tracking-wider uppercase text-foreground font-mono">
-            Activity Pulse
+            Pulse Activity
           </CardTitle>
         </div>
 
@@ -216,7 +216,7 @@ export function ActivityFeedSection() {
       </CardHeader>
 
       {/* Feed List */}
-      <CardContent className="p-0">
+      <CardContent className="p-0 max-h-80 overflow-scroll">
         <div className="flex flex-col">
           {isLoading && filteredItems.length === 0 ? (
             <div className="py-8 text-center text-xs text-muted-foreground font-mono">

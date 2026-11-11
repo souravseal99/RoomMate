@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ArrowRight, Check } from 'lucide-react';
 import type { BalanceEntry } from '@/types/expenseTypes';
 import type { HouseholdMember } from '@/types/householdTypes';
@@ -26,16 +27,33 @@ export function PairwiseBalanceMatrixTable({
   currentUserId,
   onSettle,
 }: PairwiseBalanceMatrixTableProps) {
-  // Build pairwise relationship list
-  const pairwiseRows = householdMembers
-    .filter((m) => m.userId !== currentUserId)
-    .map((member) => {
-      const entry = balances.find((b) => b.userId === member.userId);
+  // Build pairwise relationship list with robust member and balance resolution
+  const pairwiseRows = useMemo(() => {
+    const userEntry = balances.find((b) => b.userId === currentUserId);
+    const userBalance = userEntry ? userEntry.balance : 0;
+
+    const peers =
+      householdMembers.length > 0
+        ? householdMembers.filter(
+            (m) => (m.userId || m.user?.userId || m.householdMemberId) !== currentUserId
+          )
+        : balances
+            .filter((b) => b.userId !== currentUserId)
+            .map((b) => ({
+              householdMemberId: b.userId,
+              userId: b.userId,
+              householdId: '',
+              role: 'MEMBER' as const,
+              user: { userId: b.userId, name: b.name, email: '' },
+            }));
+
+    return peers.map((member) => {
+      const memberUserId = member.userId || member.user?.userId || member.householdMemberId;
+      const entry = balances.find(
+        (b) =>
+          b.userId === memberUserId || b.name?.toLowerCase() === member.user?.name?.toLowerCase()
+      );
       const rawBalance = entry ? entry.balance : 0;
-      // If rawBalance is positive, they are owed money; if negative, they owe money
-      // As an estimate between current user and this peer:
-      const userEntry = balances.find((b) => b.userId === currentUserId);
-      const userBalance = userEntry ? userEntry.balance : 0;
 
       let netAmount = 0;
       let owesYou = false;
@@ -57,6 +75,7 @@ export function PairwiseBalanceMatrixTable({
         isSettled: netAmount < 0.01,
       };
     });
+  }, [householdMembers, balances, currentUserId]);
 
   return (
     <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border space-y-4 select-none">

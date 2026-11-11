@@ -127,6 +127,40 @@ describe("ChoreService Authorization & Boundary", () => {
         status: StatusCodes.ACCEPTED,
       });
     });
+
+    it("should succeed and unstamp chore when completed is false", async () => {
+      vi.mocked(ChoreRepo.getChoreWithUser).mockResolvedValue({
+        choreId: "chore-1",
+        householdId: "household-123",
+      } as any);
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-1",
+      } as any);
+      vi.mocked(ChoreRepo.update).mockResolvedValue({
+        choreId: "chore-1",
+        completed: false,
+        completedAt: null,
+      } as any);
+
+      const result = await ChoreService.completeChore(
+        { choreId: "chore-1", completed: false },
+        "user-member",
+      );
+
+      expect(ChoreRepo.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          choreId: "chore-1",
+          completed: false,
+        }),
+      );
+      expect(result).toMatchObject({
+        status: StatusCodes.ACCEPTED,
+      });
+      expect(result.data).toMatchObject({
+        completed: false,
+        completedAt: null,
+      });
+    });
   });
 
   describe("delete", () => {

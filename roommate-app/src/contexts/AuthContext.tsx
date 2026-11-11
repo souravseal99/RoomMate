@@ -1,12 +1,13 @@
 import TokenStore from '@/lib/TokenStore';
 import { logoutUser, refreshSession } from '@/api/authApi';
 import { broadcastAuthEvent } from '@/api/axios';
-import { getTokenExpTimestampMs } from '@/utils/jwt';
+import { getTokenExpTimestampMs, parseTokenPayload } from '@/utils/jwt';
 import { createContext, type ReactNode, useEffect, useMemo, useState } from 'react';
 
 type AuthContextType = {
   isAuthenticated: boolean;
   accessToken: string | null;
+  userId: string | null;
   setAccessToken?: (token: string | null) => void;
   email: string | null;
   name: string | null;
@@ -188,6 +189,11 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     }
   };
 
+  const userId = useMemo(() => {
+    if (!accessToken) return null;
+    return parseTokenPayload(accessToken)?.userId || null;
+  }, [accessToken]);
+
   const providerValues = useMemo(
     () =>
       ({
@@ -196,11 +202,12 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
         setAccessToken,
         email,
         name,
+        userId,
         login,
         logout,
         ready,
       }) as AuthContextType,
-    [isAuthenticated, accessToken, email, name, ready, login, logout, setAccessToken]
+    [isAuthenticated, accessToken, email, name, userId, ready, login, logout, setAccessToken]
   );
 
   return <AuthContext.Provider value={providerValues}>{children}</AuthContext.Provider>;

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import expenseApi, { type BalanceEntry, type Settlement } from '@/api/expenseApi';
 import { formatCurrency } from '@/utils/utils';
+import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -20,7 +21,8 @@ export default function BalanceSummary({ householdId, refreshKey }: BalanceSumma
   const [isSettling, setIsSettling] = useState<string | null>(null);
 
   const ExpenseApi = useMemo(expenseApi, []);
-  const currentUserId = useMemo(() => getCurrentUserId(), []);
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId();
 
   const fetchBalances = async () => {
     if (!householdId) {

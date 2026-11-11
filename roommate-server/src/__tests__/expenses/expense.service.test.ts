@@ -62,6 +62,50 @@ describe("ExpenseService", () => {
       });
     });
 
+    it("should auto-split across all household members when sharedWith is undefined", async () => {
+      const expenseDto: ExpenseDto = {
+        householdId: "household-123",
+        paidById: "user-1",
+        amount: 90.0,
+        description: "Utilities",
+      };
+
+      const mockExpense: Expense = {
+        expenseId: "expense-789",
+        description: "Utilities",
+        amount: 90.0,
+        householdId: "household-123",
+        paidById: "user-1",
+        createdAt: new Date("2025-11-05"),
+      };
+
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue(
+        {} as any,
+      );
+      vi.mocked(HouseholdMemberRepo.getByHouseholdId).mockResolvedValue([
+        { userId: "user-1" },
+        { userId: "user-2" },
+        { userId: "user-3" },
+      ] as any);
+      vi.mocked(ExpenseRepo.create).mockResolvedValue(mockExpense);
+      vi.mocked(ExpenseSplitService.bulkCreate).mockResolvedValue({} as any);
+
+      const result = await ExpenseService.create(expenseDto, undefined);
+
+      expect(HouseholdMemberRepo.getByHouseholdId).toHaveBeenCalledWith(
+        "household-123",
+      );
+      expect(ExpenseSplitService.bulkCreate).toHaveBeenCalledWith([
+        { expenseId: "expense-789", userId: "user-1", shareAmount: 30.0 },
+        { expenseId: "expense-789", userId: "user-2", shareAmount: 30.0 },
+        { expenseId: "expense-789", userId: "user-3", shareAmount: 30.0 },
+      ]);
+      expect(result).toMatchObject({
+        status: StatusCodes.CREATED,
+        message: "Added Expense with Expense split",
+      });
+    });
+
     it("should create expense with splits (shared expense)", async () => {
       const expenseDto: ExpenseDto = {
         householdId: "household-123",

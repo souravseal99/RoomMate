@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Trash2, Loader2 } from 'lucide-react';
+import { Search, Trash2, Loader2, LucideTrash2 } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -197,7 +197,7 @@ export function SharedActivityLedger({
                     </div>
 
                     {/* Delete action button */}
-                    {isPayer && (
+                    {isPayer ? (
                       <Button
                         type="button"
                         variant="ghost"
@@ -212,6 +212,17 @@ export function SharedActivityLedger({
                         ) : (
                           <Trash2 className="w-4 h-4" />
                         )}
+                      </Button>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Remove expense"
+                        disabled
+                        className="min-h-[44px] min-w-[44px] rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors flex items-center justify-center cursor-pointer active:scale-95 disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     )}
                   </div>

@@ -2,7 +2,7 @@ import { QuickSplitDock } from './QuickSplitDock';
 import { FlatmateStandingsCard } from './FlatmateStandingsCard';
 import { MonthlySharedCeilingCard } from './MonthlySharedCeilingCard';
 import { SharedActivityLedger } from './SharedActivityLedger';
-import type { ExpenseResponse, BalanceEntry } from '@/types/expenseTypes';
+import type { ExpenseResponse, BalanceEntry, OptimizedSettlement } from '@/types/expenseTypes';
 import type { HouseholdMember } from '@/types/householdTypes';
 
 interface ActiveLedgerTabProps {
@@ -11,6 +11,7 @@ interface ActiveLedgerTabProps {
   currentUserId: string;
   expenses: ExpenseResponse[];
   balances: BalanceEntry[];
+  settlements?: OptimizedSettlement[];
   onDeleteExpense: (expenseId: string) => void;
   deletingExpenseId?: string | null;
   onOpenSettleModal?: (target?: any) => void;
@@ -22,6 +23,7 @@ export function ActiveLedgerTab({
   currentUserId,
   expenses,
   balances,
+  settlements = [],
   onDeleteExpense,
   deletingExpenseId,
   onOpenSettleModal,
@@ -42,6 +44,7 @@ export function ActiveLedgerTab({
             balances={balances}
             householdMembers={householdMembers}
             currentUserId={currentUserId}
+            settlements={settlements}
             onOpenSettleModal={onOpenSettleModal}
           />
         </div>

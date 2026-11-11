@@ -4,6 +4,7 @@ import { useHouseholdChoresQuery } from '@/hooks/queries/useChoreQueries';
 import { useInventoryQuery } from '@/hooks/queries/useInventoryQueries';
 import { useExpenseBalancesQuery, useExpensesQuery } from '@/hooks/queries/useExpenseQueries';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
 import {
   DashboardHeroCockpit,
@@ -18,7 +19,8 @@ import {
 } from '@/components/dashboard';
 
 export function Dashboard() {
-  const currentUserId = useMemo(() => getCurrentUserId() || '', []);
+  const { userId: authUserId } = useAuth();
+  const currentUserId = authUserId || getCurrentUserId() || '';
   const [isSettleModalOpen, setIsSettleModalOpen] = useState(false);
   const [settleRecipient, setSettleRecipient] = useState<{
     name: string;
@@ -204,6 +206,7 @@ export function Dashboard() {
             recentBills={balancesData?.recentBills || []}
             budgetSpent={balancesData?.budget?.spent ?? budgetSpent}
             budgetTotal={balancesData?.budget?.total ?? budgetTotal}
+            currentUserId={currentUserId}
             onOpenSettleModal={(target) => handleOpenSettle(target)}
           />
 

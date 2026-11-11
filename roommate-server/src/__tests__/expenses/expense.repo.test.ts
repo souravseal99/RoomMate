@@ -84,11 +84,23 @@ describe("ExpenseRepo", () => {
         await ExpenseRepo.getExpensesByHouseholdId("household-123");
       expect(prisma.expense.findMany).toHaveBeenCalledWith({
         where: { householdId: "household-123" },
+        orderBy: { createdAt: "desc" },
         include: {
           paidBy: {
             select: {
               name: true,
               userId: true,
+            },
+          },
+          splits: {
+            include: {
+              user: {
+                select: {
+                  userId: true,
+                  name: true,
+                  email: true,
+                },
+              },
             },
           },
         },

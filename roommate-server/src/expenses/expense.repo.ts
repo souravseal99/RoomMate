@@ -12,11 +12,23 @@ export class ExpenseRepo {
   static async getExpensesByHouseholdId(householdId: string) {
     return await prisma.expense.findMany({
       where: { householdId: householdId },
+      orderBy: { createdAt: "desc" },
       include: {
         paidBy: {
           select: {
             name: true,
             userId: true,
+          },
+        },
+        splits: {
+          include: {
+            user: {
+              select: {
+                userId: true,
+                name: true,
+                email: true,
+              },
+            },
           },
         },
       },

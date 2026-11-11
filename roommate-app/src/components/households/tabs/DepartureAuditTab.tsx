@@ -16,7 +16,7 @@ interface DepartureAuditTabProps {
 
 export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: DepartureAuditTabProps) {
   const { activeHousehold, activeHouseholdId, householdMembers } = useHousehold();
-  const { email, name } = useAuth();
+  const { email, name, userId: authUserId } = useAuth();
 
   const { data: balancesData } = useExpenseBalancesQuery(activeHouseholdId);
   const { data: chores = [] } = useHouseholdChoresQuery(activeHouseholdId);
@@ -26,13 +26,14 @@ export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: Depar
     return (
       householdMembers.find(
         (m) =>
+          (authUserId && m.userId === authUserId) ||
           (email && m.user?.email?.toLowerCase() === email.toLowerCase()) ||
           (name && m.user?.name?.toLowerCase() === name.toLowerCase())
       ) || null
     );
-  }, [householdMembers, email, name]);
+  }, [householdMembers, authUserId, email, name]);
 
-  const currentUserId = currentMember?.userId;
+  const currentUserId = currentMember?.userId || authUserId;
   const isAdmin = currentMember?.role === 'ADMIN';
 
   // 1. Balance verification

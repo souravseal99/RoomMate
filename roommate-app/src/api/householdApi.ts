@@ -9,7 +9,13 @@ import type {
 const householdApi = () => {
   const fetchAll = async (): Promise<HouseholdResponse[]> => {
     const res = await api.get('/household/all');
-    return res?.data?.household || res?.household || [];
+    return (
+      res?.data?.data?.household ||
+      res?.data?.household ||
+      (Array.isArray(res?.data) ? res.data : []) ||
+      res?.household ||
+      []
+    );
   };
 
   const create = async (createHouseholdData: { name: string; settings?: any }) => {
@@ -39,7 +45,7 @@ const householdApi = () => {
 
   const getKitchenTable = async (householdId: string): Promise<KitchenTableData | null> => {
     const res = await api.get(`/household/${householdId}/kitchen-table`);
-    return res?.data?.kitchenTable ?? null;
+    return res?.data?.data?.kitchenTable ?? res?.data?.kitchenTable ?? null;
   };
 
   const broadcastKitchenTable = async (
@@ -47,7 +53,7 @@ const householdApi = () => {
     payload: BroadcastKitchenTableDto
   ): Promise<KitchenTableData> => {
     const res = await api.post(`/household/${householdId}/kitchen-table/broadcast`, payload);
-    return res?.data?.kitchenTable;
+    return res?.data?.data?.kitchenTable ?? res?.data?.kitchenTable;
   };
 
   const toggleKitchenTableRsvp = async (
@@ -55,12 +61,12 @@ const householdApi = () => {
     payload: ToggleKitchenTableRsvpDto
   ): Promise<KitchenTableData> => {
     const res = await api.post(`/household/${householdId}/kitchen-table/rsvp`, payload);
-    return res?.data?.kitchenTable;
+    return res?.data?.data?.kitchenTable ?? res?.data?.kitchenTable;
   };
 
   const acknowledgeNotice = async (householdId: string): Promise<KitchenTableData> => {
     const res = await api.post(`/household/${householdId}/kitchen-table/notice/ack`, {});
-    return res?.data?.kitchenTable;
+    return res?.data?.data?.kitchenTable ?? res?.data?.kitchenTable;
   };
 
   const replyQna = async (
@@ -68,7 +74,7 @@ const householdApi = () => {
     payload: { text: string }
   ): Promise<KitchenTableData> => {
     const res = await api.post(`/household/${householdId}/kitchen-table/qna/reply`, payload);
-    return res?.data?.kitchenTable;
+    return res?.data?.data?.kitchenTable ?? res?.data?.kitchenTable;
   };
 
   return {

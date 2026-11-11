@@ -83,8 +83,8 @@ const BOARD_MODES: Array<{
 
 export function KitchenTableCard() {
   const { activeHouseholdId } = useHousehold();
-  const { name: currentUserName } = useAuth();
-  const userId = getCurrentUserId();
+  const { name: currentUserName, userId: authUserId } = useAuth();
+  const userId = authUserId || getCurrentUserId();
 
   const { data: kitchenTable } = useKitchenTableQuery(activeHouseholdId);
   const broadcastMutation = useBroadcastKitchenTableMutation();

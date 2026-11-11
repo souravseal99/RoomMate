@@ -1,7 +1,6 @@
 import { SunMedium } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface MonthlySharedCeilingCardProps {
   expenses: ExpenseResponse[];
@@ -52,17 +51,11 @@ export function MonthlySharedCeilingCard({ expenses }: MonthlySharedCeilingCardP
   const suppWidth = Math.min(20, Math.round((suppliesTotal / budgetCap) * 100));
 
   return (
-    <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border flex flex-col justify-between gap-4 select-none">
+    <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border flex flex-col justify-evenly gap-4 select-none">
       <CardHeader className="p-0 space-y-0 flex flex-row items-center justify-between pb-1 border-b border-border/40">
         <CardTitle className="font-display font-extrabold text-lg text-foreground">
           Monthly Shared Ceiling
         </CardTitle>
-        <Badge
-          variant="outline"
-          className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-primary/10 text-primary border-primary/20"
-        >
-          OCTOBER
-        </Badge>
       </CardHeader>
 
       <CardContent className="p-0 flex flex-col gap-4">
