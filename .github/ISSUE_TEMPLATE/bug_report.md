@@ -1,55 +1,31 @@
 ---
-name: 🐛 Bug Report
-about: Report a bug or unexpected behavior in the project
-title: "[BUG] <short description>"
-labels: bug
+name: "🐛 Bug Report"
+about: Report a bug, broken flow, or unexpected error in RoomMate
+title: "fix: <brief issue summary>"
+labels: ["bug"]
 ---
 
-## 🐞 Description
+### 💥 What happened?
 
-A clear and concise description of the bug.
+<!-- Describe the problem clearly. What were you doing when it occurred? -->
 
----
-
-## 🔁 Steps to Reproduce
-
-Steps to reproduce the behavior:
+### 👣 Steps to Reproduce
 
 1. Go to '...'
 2. Click on '...'
-3. Scroll down to '...'
-4. See error
+3. See error:
 
----
+### 🎯 Expected Behavior
 
-## 💻 Expected Behavior
+<!-- What should have happened instead? -->
 
-What should have happened instead?
+### 📸 Proof / Logs (Optional)
 
----
+<!-- Attach screenshots, a short screen recording, or server error traces -->
 
-## 🧠 Actual Behavior
+### 🏷️ Scope
 
-What actually happened?
-
----
-
-## 🖼️ Screenshots / Logs (if applicable)
-
-Add screenshots, console logs, or error messages here.
-
----
-
-## 🧩 Environment
-
-- OS:
-- Browser:
-- Node.js version:
-- Framework/Library version:
-
----
-
-## ✅ Checklist
-
-- [ ] I have searched for existing issues before creating this one.
-- [ ] I have included all relevant details and reproduction steps.
+- [ ] 🎨 Frontend (`roommate-app`)
+- [ ] ⚙️ Backend (`roommate-server`)
+- [ ] 🐳 Database / Docker / Redis
+- [ ] 🌐 API / Authentication / CSRF

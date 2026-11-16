@@ -1,55 +1,37 @@
-## 📄 Description
+## 🚀 Summary
 
-Provide a clear and concise description of what this pull request does.  
-Include any background context and the motivation behind this change.
+<!-- 1-2 concise sentences summarizing what this PR accomplishes and why -->
 
-> Example:  
-> This PR adds a new feature that allows users to upload profile images.  
-> It also refactors the user controller for better maintainability.
+Closes #<!-- Link issue, e.g. Closes #42 -->
 
 ---
 
-## 🔗 Related Issues
+### 📂 Scope of Change
 
-Link any related issues using the format below.  
-This will **auto-close** the issue when merged:
+<!-- Check the primary area(s) this PR touches -->
 
-> Fixes #<issue_number>
-
----
-
-## 🖼️ Screenshots (if applicable)
-
-If your changes include UI updates or visual changes, add screenshots or GIFs here.
+- [ ] 🎨 **Frontend** (`roommate-app`)
+- [ ] ⚙️ **Backend** (`roommate-server`)
+- [ ] 🐳 **Docker / CI / Environment**
+- [ ] 📝 **Documentation**
 
 ---
 
-## 🧩 Type of Change
+### 📸 Visual Changes (if applicable)
 
-Select the type of change your PR introduces (check all that apply):
+<!-- Add before/after screenshots or a short GIF for any UI/UX changes -->
 
-- [ ] 🐛 Bug Fix
-- [ ] ✨ New Feature
-- [ ] ⚡ Enhancement / Optimization
-- [ ] 🧰 Refactoring
-- [ ] 🧾 Documentation Update
-- [ ] 🔧 Other (please specify): ****\_\_\_\_****
+|       Before       |       After        |
+| :----------------: | :----------------: |
+| _Screenshot / N/A_ | _Screenshot / N/A_ |
 
 ---
 
-## ✅ Checklist
+### 🧪 Verification & Quality Checks
 
-Before submitting your PR, please confirm the following:
+<!-- Confirm local checks have passed before requesting review -->
 
-- [ ] I have performed a self-review of my code.
-- [ ] I have commented my code, particularly in hard-to-understand areas.
-- [ ] I have added or updated relevant documentation.
-- [ ] My changes do not break any existing functionality.
-- [ ] I have tested my changes locally and they work as expected.
-- [ ] I have linked all relevant issues (if any).
-
----
-
-## 💬 Additional Notes (Optional)
-
-Add any other information, context, or comments that reviewers might find useful.
+- [ ] Target branch is set to **`develop`** (not `main`)
+- [ ] PR title & commit messages follow the project convention: `<keyword>: (<branch-name>) <description>`
+- [ ] All pre-commit quality checks pass (`npm run lint`, `npm run type-check`, `npm test`)
+- [ ] Tested locally on browser / Postman

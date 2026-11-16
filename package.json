@@ -37,6 +37,7 @@
     "type-check": "npm run type-check:app && npm run type-check:server",
     "build": "npm run build --workspace=roommate-app && cp -r roommate-app/dist ./dist",
     "build:app": "npm run build --workspace=roommate-app",
+    "build:server": "npm run build --workspace=roommate-server",
     "test": "npm test --workspace=roommate-server",
     "prepare": "git config core.hooksPath .githooks || true"
   }

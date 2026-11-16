@@ -4,6 +4,7 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
+    "build": "npx prisma generate",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

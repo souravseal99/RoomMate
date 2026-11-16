@@ -1,42 +1,22 @@
 ---
-name: ✨ Feature Request
-about: Suggest a new feature or enhancement for this project
-title: "[FEATURE] <short description>"
-labels: enhancement
+name: "💡 Feature or Enhancement"
+about: Propose a new feature, UX improvement, or capability for shared living
+title: "feat: <brief idea summary>"
+labels: ["enhancement"]
 ---
 
-## 💡 Summary
+### 🌟 The Idea
 
-Describe the feature you’d like to see added.
+<!-- What feature or improvement would you like to see? Describe the user story (e.g., "As a roommate, I want to...") -->
 
----
+### 🎯 Motivation & Value
 
-## 🔍 Problem Statement
+<!-- What problem does this solve? Why is this helpful for roommates sharing living space? -->
 
-What problem does this feature solve?  
-Why is it important?
+### 🛠️ Proposed Solution (Optional)
 
----
+<!-- How do you envision this working? Any UI layout, component ideas, or API endpoints? -->
 
-## 🧩 Proposed Solution
+### 🎨 Visual References / Wireframes (Optional)
 
-Explain your idea or approach clearly.
-
----
-
-## 🧠 Alternatives Considered
-
-Mention any other solutions or workarounds you’ve thought of.
-
----
-
-## 🎨 Additional Context (Optional)
-
-Add any mockups, references, or related ideas here.
-
----
-
-## ✅ Checklist
-
-- [ ] I have checked existing issues for similar feature requests.
-- [ ] I have clearly explained the benefit of this feature.
+<!-- Any sketches, UI mockups, or inspiration from other apps? -->

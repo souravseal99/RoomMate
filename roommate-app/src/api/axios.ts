@@ -230,8 +230,8 @@ export default class Api {
     }
   }
 
-  static async get<T = any>(route: string): Promise<T> {
-    return (await api.get(route)).data;
+  static async get<T = any>(route: string, config?: any): Promise<T> {
+    return (await api.get(route, config)).data;
   }
 
   static async post<T = any>(route: string, data?: any): Promise<T> {

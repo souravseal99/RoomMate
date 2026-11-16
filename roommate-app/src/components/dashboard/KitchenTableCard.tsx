@@ -6,17 +6,9 @@ import {
   Minus,
   Check,
   ChevronDown,
-  ChefHat,
   Loader2,
-  Users,
   Megaphone,
   MessageSquare,
-  Clock,
-  Send,
-  AlertTriangle,
-  Wrench,
-  Info,
-  PartyPopper,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -83,7 +75,7 @@ const BOARD_MODES: Array<{
 
 export function KitchenTableCard() {
   const { activeHouseholdId } = useHousehold();
-  const { name: currentUserName, userId: authUserId } = useAuth();
+  const { userId: authUserId } = useAuth();
   const userId = authUserId || getCurrentUserId();
 
   const { data: kitchenTable } = useKitchenTableQuery(activeHouseholdId);

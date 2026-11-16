@@ -1,1 +1,8 @@
 blank_issues_enabled: true
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/souravseal99/RoomMate/discussions
+    about: Ask questions, share ideas, or get feedback from the community before opening an issue.
+  - name: 🛡️ Security Vulnerability Report
+    url: https://github.com/souravseal99/RoomMate/security/advisories/new
+    about: Please report sensitive security vulnerabilities privately here.
