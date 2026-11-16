@@ -206,7 +206,6 @@ export function Dashboard() {
             recentBills={balancesData?.recentBills || []}
             budgetSpent={balancesData?.budget?.spent ?? budgetSpent}
             budgetTotal={balancesData?.budget?.total ?? budgetTotal}
-            currentUserId={currentUserId}
             onOpenSettleModal={(target) => handleOpenSettle(target)}
           />
 

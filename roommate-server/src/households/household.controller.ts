@@ -50,6 +50,22 @@ export class HouseholdController {
     });
   }
 
+  static async rotateInviteCode(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const householdId = (request.params.householdId ||
+      request.body.householdId) as string;
+
+    const { status, data, message } = await HouseholdService.rotateInviteCode(
+      householdId,
+      userId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
   static async delete(request: Request, response: Response) {
     const { userId } = getUserFromRequestBody(request);
     const { householdId } = request.body;

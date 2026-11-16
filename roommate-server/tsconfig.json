@@ -24,7 +24,7 @@
     "emitDecoratorMetadata": true
   },
   "include": ["src", "tests", "prisma"],
-  "exclude": ["node_modules", "build", "dist", "cfn", "**/*.test.ts"],
+  "exclude": ["node_modules", "build", "dist", "cfn"],
   "ts-node": {
     // Do not forget to `npm i -D tsconfig-paths`
     "require": ["tsconfig-paths/register"]

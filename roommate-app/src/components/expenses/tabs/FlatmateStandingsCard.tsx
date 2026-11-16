@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Bell, Zap, Users } from 'lucide-react';
-import type { BalanceEntry, OptimizedSettlement } from '@/types/expenseTypes';
+import type { BalanceEntry } from '@/types/expenseTypes';
 import type { HouseholdMember } from '@/types/householdTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,21 +12,13 @@ interface FlatmateStandingsCardProps {
   balances: BalanceEntry[];
   householdMembers: HouseholdMember[];
   currentUserId: string;
-  settlements?: OptimizedSettlement[];
-  onOpenSettleModal?: (target?: {
-    fromUserId: string;
-    fromName: string;
-    toUserId: string;
-    toName: string;
-    amount: number;
-  }) => void;
+  onOpenSettleModal?: (target?: any) => void;
 }
 
 export function FlatmateStandingsCard({
   balances,
   householdMembers,
   currentUserId,
-  settlements = [],
   onOpenSettleModal,
 }: FlatmateStandingsCardProps) {
   // Map balances to members using balances as the primary source of truth
@@ -88,9 +80,20 @@ export function FlatmateStandingsCard({
   return (
     <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border flex flex-col gap-4 select-none">
       <CardHeader className="p-0 flex flex-row items-center justify-between pb-1 border-b border-border/40 space-y-0">
-        <CardTitle className="font-display font-extrabold text-lg text-foreground">
-          Flatmate Standings
-        </CardTitle>
+        <div>
+          <CardTitle className="font-display font-extrabold text-lg text-foreground">
+            Flatmate Standings
+          </CardTitle>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Net domestic balances across all open tabs
+          </p>
+        </div>
+        <Badge
+          variant="outline"
+          className="px-2.5 py-1 bg-surface-container text-foreground font-mono text-[10px] font-bold uppercase rounded-lg border-border/50"
+        >
+          Active Tab
+        </Badge>
       </CardHeader>
 
       {/* Roster Balance Rows */}
@@ -108,23 +111,6 @@ export function FlatmateStandingsCard({
             const isPositive = m.balance > 0.01;
             const isNegative = m.balance < -0.01;
             const initial = (m.name[0] || 'U').toUpperCase();
-
-            const isCurrentUser = m.isCurrentUser;
-
-            // Bilateral actions: The current user only settles with or nudges OTHER flatmates
-            const debtIOweThem = !isCurrentUser
-              ? settlements.find(
-                  (s) =>
-                    s.fromUserId === currentUserId && s.toUserId === m.userId && s.amount > 0.005
-                )
-              : null;
-
-            const debtTheyOweMe = !isCurrentUser
-              ? settlements.find(
-                  (s) =>
-                    s.fromUserId === m.userId && s.toUserId === currentUserId && s.amount > 0.005
-                )
-              : null;
 
             return (
               <div
@@ -166,38 +152,41 @@ export function FlatmateStandingsCard({
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  {/* Action Button: Pay creditor directly (only on other flatmates) */}
-                  {!isCurrentUser && debtIOweThem && (
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => {
-                        onOpenSettleModal?.({
-                          fromUserId: currentUserId,
-                          fromName: 'You',
-                          toUserId: m.userId,
-                          toName: m.name,
-                          amount: debtIOweThem.amount,
-                        });
-                      }}
-                      className="h-7 px-2.5 text-[11px] rounded-lg bg-primary text-primary-foreground font-semibold flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
-                    >
-                      <Zap className="w-3 h-3 fill-current" />
-                      <span>Pay ${debtIOweThem.amount.toFixed(2)}</span>
-                    </Button>
-                  )}
-
-                  {/* Action Button: Nudge debtor flatmate who owes me (only on other flatmates) */}
-                  {!isCurrentUser && !debtIOweThem && debtTheyOweMe && (
+                  {/* Action Button: Nudge / Settle for owing roommates */}
+                  {isNegative && !m.isCurrentUser && (
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => handleNudge(m.name, debtTheyOweMe.amount)}
+                      onClick={() => {
+                        if (onOpenSettleModal) {
+                          onOpenSettleModal({
+                            fromUserId: m.userId,
+                            fromName: m.name,
+                            toUserId: currentUserId,
+                            toName: 'You',
+                            amount: Math.abs(m.balance),
+                          });
+                        } else {
+                          handleNudge(m.name, m.balance);
+                        }
+                      }}
                       className="h-7 px-2 text-[11px] rounded-lg border-border/80 hover:bg-muted font-semibold flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
                     >
                       <Bell className="w-3 h-3 text-primary" />
-                      <span>Nudge (${debtTheyOweMe.amount.toFixed(2)})</span>
+                      <span>Nudge</span>
+                    </Button>
+                  )}
+
+                  {isNegative && m.isCurrentUser && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => onOpenSettleModal?.()}
+                      className="h-7 px-2.5 text-[11px] rounded-lg bg-primary text-primary-foreground font-semibold flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
+                    >
+                      <Zap className="w-3 h-3 fill-current" />
+                      <span>Settle</span>
                     </Button>
                   )}
 

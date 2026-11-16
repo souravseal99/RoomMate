@@ -64,81 +64,54 @@ export class ActivityService {
       25,
     );
 
-    // De-duplicate chore completed entries in feed, keeping only the latest event
-    const seenChoreKeys = new Set<string>();
-    const deduplicatedActivities = rawActivities.filter((item) => {
-      if (item.type !== ActivityType.CHORE_COMPLETED) return true;
-      const meta = item.metadata as Record<string, any> | null;
-      const choreKey = (
-        meta?.choreId ||
-        meta?.choreDescription ||
-        meta?.choreName ||
-        item.title
-      ).toLowerCase();
-      if (seenChoreKeys.has(choreKey)) {
-        void Promise.resolve(ActivityRepo.deleteById(item.activityId)).catch(
-          () => {},
+    const formatted: FormattedActivityItem[] = rawActivities.map((item) => {
+      // Aggregate reactions by emoji
+      const emojiCounts = new Map<string, number>();
+      let userEmoji: string | null = null;
+
+      for (const reaction of item.reactions) {
+        emojiCounts.set(
+          reaction.emoji,
+          (emojiCounts.get(reaction.emoji) || 0) + 1,
         );
-        return false;
+        if (reaction.userId === currentUserId) {
+          userEmoji = reaction.emoji;
+        }
       }
-      seenChoreKeys.add(choreKey);
-      return true;
+
+      const reactionsSummary: FormattedReactionSummary[] = Array.from(
+        emojiCounts.entries(),
+      ).map(([emoji, count]) => ({
+        emoji,
+        count,
+      }));
+
+      // Find dominant emoji (highest count) or fallback
+      let dominant = "❤️";
+      let maxCount = 0;
+      for (const [emoji, cnt] of emojiCounts.entries()) {
+        if (cnt > maxCount) {
+          maxCount = cnt;
+          dominant = emoji;
+        }
+      }
+
+      return {
+        id: item.activityId,
+        type: item.type,
+        title: item.title,
+        description: item.description,
+        metadata: item.metadata,
+        createdAt: item.createdAt.toISOString(),
+        user: item.user,
+        isPrivate: Boolean(item.targetUserId),
+        totalReactionCount: item.reactions.length,
+        dominantEmoji: dominant,
+        userReactedEmoji: userEmoji,
+        userReacted: Boolean(userEmoji),
+        reactions: reactionsSummary,
+      };
     });
-
-    const formatted: FormattedActivityItem[] = deduplicatedActivities.map(
-      (item) => {
-        // Aggregate reactions by emoji
-        const emojiCounts = new Map<string, number>();
-        let userEmoji: string | null = null;
-
-        for (const reaction of item.reactions) {
-          emojiCounts.set(
-            reaction.emoji,
-            (emojiCounts.get(reaction.emoji) || 0) + 1,
-          );
-          if (reaction.userId === currentUserId) {
-            userEmoji = reaction.emoji;
-          }
-        }
-
-        const reactionsSummary: FormattedReactionSummary[] = Array.from(
-          emojiCounts.entries(),
-        ).map(([emoji, count]) => ({
-          emoji,
-          count,
-        }));
-
-        // Find dominant emoji (highest count) or fallback
-        let dominant = "❤️";
-        let maxCount = 0;
-        for (const [emoji, cnt] of emojiCounts.entries()) {
-          if (cnt > maxCount) {
-            maxCount = cnt;
-            dominant = emoji;
-          }
-        }
-
-        return {
-          id: item.activityId,
-          type: item.type,
-          title: item.title,
-          description: item.description,
-          metadata: item.metadata,
-          createdAt: item.createdAt
-            ? typeof item.createdAt === "string"
-              ? item.createdAt
-              : item.createdAt.toISOString()
-            : new Date().toISOString(),
-          user: item.user,
-          isPrivate: Boolean(item.targetUserId),
-          totalReactionCount: item.reactions.length,
-          dominantEmoji: dominant,
-          userReactedEmoji: userEmoji,
-          userReacted: Boolean(userEmoji),
-          reactions: reactionsSummary,
-        };
-      },
-    );
 
     return ApiResponse.success(
       { activities: formatted },
@@ -246,23 +219,35 @@ export class ActivityService {
     }
   }
 
-  /**
-   * Remove chore completion activities when a chore is unstamped or deleted.
-   */
   static async removeChoreActivity(
     householdId: string,
     choreId: string,
     choreDescription?: string,
-  ) {
+  ): Promise<void> {
     try {
-      return await ActivityRepo.deleteByChore(
-        householdId,
-        choreId,
-        choreDescription,
-      );
+      await prisma.activity.deleteMany({
+        where: {
+          householdId,
+          type: ActivityType.CHORE_COMPLETED,
+          OR: [
+            {
+              metadata: {
+                path: ["choreId"],
+                equals: choreId,
+              },
+            },
+            ...(choreDescription
+              ? [
+                  {
+                    title: { contains: choreDescription },
+                  },
+                ]
+              : []),
+          ],
+        },
+      });
     } catch (err) {
-      console.error("Failed to remove chore activity:", err);
-      return null;
+      console.warn("[ActivityService] removeChoreActivity failed:", err);
     }
   }
 

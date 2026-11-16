@@ -11,27 +11,19 @@ import type { BalanceEntry, OptimizedSettlement, RecentBill } from '@/types/expe
 
 interface OdometerBalanceCardProps {
   expensesAmount?: number;
-  onOpenSettleModal?: (recipient?: {
-    name: string;
-    amount: number;
-    fromUserId?: string;
-    toUserId?: string;
-  }) => void;
+  onOpenSettleModal?: (recipient?: { name: string; amount: number; toUserId?: string }) => void;
   balances?: BalanceEntry[];
   settlements?: OptimizedSettlement[];
   recentBills?: RecentBill[];
   budgetSpent?: number;
   budgetTotal?: number;
-  currentUserId?: string;
 }
 
 export function OdometerBalanceCard({
   balances = [],
-  settlements = [],
   recentBills = [],
   budgetSpent = 0,
   budgetTotal = 1800,
-  currentUserId,
   onOpenSettleModal,
 }: OdometerBalanceCardProps) {
   const navigate = useNavigate();
@@ -172,34 +164,11 @@ export function OdometerBalanceCard({
                   ? '$0.00'
                   : `${isCredit ? '+' : '-'}$${Math.abs(entry.balance).toFixed(2)}`;
 
-                const isCurrentUser = Boolean(currentUserId && entry.userId === currentUserId);
-
-                // Bilateral actions: The current user only settles with or nudges OTHER flatmates
-                const debtIOweThem = !isCurrentUser
-                  ? settlements.find(
-                      (s) =>
-                        s.fromUserId === currentUserId &&
-                        s.toUserId === entry.userId &&
-                        s.amount > 0.005
-                    )
-                  : null;
-
-                const debtTheyOweMe = !isCurrentUser
-                  ? settlements.find(
-                      (s) =>
-                        s.fromUserId === entry.userId &&
-                        s.toUserId === currentUserId &&
-                        s.amount > 0.005
-                    )
-                  : null;
-
-                const hasAction = Boolean(!isCurrentUser && (debtIOweThem || debtTheyOweMe));
-
                 return (
                   <div
                     key={entry.userId || entry.name}
                     className={`p-2.5 rounded-lg bg-card border border-border/80 shadow-xs flex flex-col justify-between transition-all ${
-                      hasAction ? 'gap-2 border-primary/20' : 'justify-center min-h-[68px]'
+                      isOwes ? 'gap-2 border-destructive/20' : 'justify-center min-h-[68px]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-1 w-full">
@@ -218,19 +187,9 @@ export function OdometerBalanceCard({
                           </AvatarFallback>
                         </Avatar>
                         <div className="truncate">
-                          <div className="flex items-center gap-1">
-                            <p className="font-bold text-[11px] sm:text-xs text-foreground leading-tight truncate font-sans">
-                              {entry.name}
-                            </p>
-                            {isCurrentUser && (
-                              <Badge
-                                variant="secondary"
-                                className="text-[8px] font-mono font-bold text-primary px-1 py-0 h-3 leading-none rounded bg-primary/10 border-0"
-                              >
-                                YOU
-                              </Badge>
-                            )}
-                          </div>
+                          <p className="font-bold text-[11px] sm:text-xs text-foreground leading-tight truncate font-sans">
+                            {entry.name}
+                          </p>
                           <p
                             className={`text-[9px] font-bold leading-tight uppercase font-sans ${
                               isZero ? 'text-muted-foreground' : 'text-primary'
@@ -250,36 +209,26 @@ export function OdometerBalanceCard({
                       </span>
                     </div>
 
-                    {/* Bilateral Action Buttons: Only for other flatmates */}
-                    {!isCurrentUser && debtIOweThem && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => {
-                          onOpenSettleModal?.({
-                            name: entry.name,
-                            amount: debtIOweThem.amount,
-                            fromUserId: currentUserId,
-                            toUserId: entry.userId,
-                          });
-                        }}
-                        className="w-full min-h-[28px] h-7 py-1 px-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-[11px] flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer"
-                      >
-                        <Zap className="w-3 h-3 fill-current" />
-                        <span>Pay ${debtIOweThem.amount.toFixed(2)}</span>
-                      </Button>
-                    )}
-
-                    {!isCurrentUser && !debtIOweThem && debtTheyOweMe && (
+                    {isOwes && (
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => handleNudge(entry.name, debtTheyOweMe.amount)}
+                        onClick={() => {
+                          if (onOpenSettleModal) {
+                            onOpenSettleModal({
+                              name: entry.name,
+                              amount: Math.abs(entry.balance),
+                              toUserId: entry.userId,
+                            });
+                          } else {
+                            handleNudge(entry.name, entry.balance);
+                          }
+                        }}
                         className="w-full min-h-[28px] h-7 py-1 px-1.5 rounded-md bg-muted/20 hover:bg-muted border border-border text-foreground font-semibold text-[11px] flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer"
                       >
                         <Bell className="w-3 h-3 text-primary" />
-                        <span>Nudge (${debtTheyOweMe.amount.toFixed(2)})</span>
+                        <span>Settle / Nudge</span>
                       </Button>
                     )}
                   </div>

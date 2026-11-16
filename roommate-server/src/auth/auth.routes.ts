@@ -5,10 +5,17 @@ import { loginUserValidator } from "@src/auth/loginUserValidator";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import { generateCsrfToken } from "@common/middlewares/csrf";
 import { StatusCodes } from "http-status-codes";
+import {
+  authAccountLimiter,
+  authIpLimiter,
+  authRegisterLimiter,
+  csrfTokenLimiter,
+  authRefreshLimiter,
+} from "@common/middlewares/rateLimiter";
 
 const authRoutes = Router();
 
-authRoutes.get("/csrf-token", (request, response) => {
+authRoutes.get("/csrf-token", csrfTokenLimiter, (request, response) => {
   const csrfToken = generateCsrfToken(request, response);
   return response.status(StatusCodes.OK).json({
     csrfToken,
@@ -17,6 +24,7 @@ authRoutes.get("/csrf-token", (request, response) => {
 
 authRoutes.post(
   "/register",
+  authRegisterLimiter,
   ...registerUserValidator,
   validationErrorHandler,
   AuthController.register,
@@ -24,12 +32,14 @@ authRoutes.post(
 
 authRoutes.post(
   "/login",
+  authAccountLimiter,
+  authIpLimiter,
   ...loginUserValidator,
   validationErrorHandler,
   AuthController.login,
 );
 
-authRoutes.get("/refresh", AuthController.refresh);
+authRoutes.get("/refresh", authRefreshLimiter, AuthController.refresh);
 
 authRoutes.get("/logout", AuthController.logout);
 

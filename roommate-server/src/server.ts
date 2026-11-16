@@ -1,4 +1,5 @@
 import App from "@src/App";
+import { env } from "@src/common/utils/env";
 import cors from "cors";
 import express from "express";
 
@@ -20,11 +21,10 @@ async function start(): Promise<void> {
 
   if (appInitialized) {
     const server = await App.start();
-    const port = Number(process.env.PORT || process.env.APP_PORT || 5000);
 
-    server.listen(port, "0.0.0.0", () => {
+    server.listen(env("APP_PORT"), () => {
       console.log(
-        `info: Roommate App: Server started on port:${port} (0.0.0.0)`,
+        `info: Roommate App: Server started on port:${env("APP_PORT")}`,
       );
     });
   } else {

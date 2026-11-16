@@ -9,11 +9,22 @@ export class HouseholdRepository {
     role?: Role,
     settings?: any,
   ) {
+    const defaultExpiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const mergedSettings = {
+      ...(settings || {}),
+      inviteCodeExpiresAt:
+        (settings && settings.inviteCodeExpiresAt) || defaultExpiresAt,
+      inviteCodeCreatedAt: new Date().toISOString(),
+    };
+
     return await prisma.household.create({
       data: {
         name,
         inviteCode: nanoid(8),
-        settings: settings || {},
+        settings: mergedSettings,
 
         members: {
           create: {
@@ -127,5 +138,29 @@ export class HouseholdRepository {
       data: { settings: updatedSettings },
     });
     return kitchenTableData;
+  }
+
+  static async rotateInviteCode(
+    householdId: string,
+    newInviteCode: string,
+    expiresAt: Date,
+  ) {
+    const household = await prisma.household.findUnique({
+      where: { householdId },
+      select: { settings: true },
+    });
+    const currentSettings = (household?.settings as Record<string, any>) || {};
+    const updatedSettings = {
+      ...currentSettings,
+      inviteCodeExpiresAt: expiresAt.toISOString(),
+      inviteCodeRotatedAt: new Date().toISOString(),
+    };
+    return await prisma.household.update({
+      where: { householdId },
+      data: {
+        inviteCode: newInviteCode,
+        settings: updatedSettings,
+      },
+    });
   }
 }

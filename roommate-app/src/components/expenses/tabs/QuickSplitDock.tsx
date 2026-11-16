@@ -144,20 +144,8 @@ export function QuickSplitDock({
         sharedWith: finalSharedWith,
       });
 
-      const isCurrentUserIncluded = finalSharedWith.includes(currentUserId);
-      const otherMembersCount = isCurrentUserIncluded
-        ? Math.max(0, finalSharedWith.length - 1)
-        : finalSharedWith.length;
-      const perPersonNum = numAmount / Math.max(1, finalSharedWith.length);
-      const owedToYou = isCurrentUserIncluded ? numAmount - perPersonNum : numAmount;
-
-      const netCreditText =
-        otherMembersCount > 0
-          ? ` • You are owed +$${owedToYou.toFixed(2)} ($${perPersonAmount} each from ${otherMembersCount} flatmate${otherMembersCount > 1 ? 's' : ''})`
-          : '';
-
       toast.success(
-        `Logged $${numAmount.toFixed(2)} split ${splitCount}-ways ($${perPersonAmount} each)${netCreditText} 🎉`
+        `Logged $${numAmount.toFixed(2)} split ${splitCount}-ways ($${perPersonAmount} each) 🎉`
       );
       // Reset form
       setCustomDescription('');

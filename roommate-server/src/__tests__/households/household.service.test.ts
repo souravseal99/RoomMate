@@ -398,7 +398,7 @@ describe("HouseholdService", () => {
       });
     });
 
-    it("should reject when user already member of household", async () => {
+    it("should return idempotent success when user already member of household", async () => {
       const mockHousehold: Household = {
         householdId: "household-123",
         name: "Shared House",
@@ -426,7 +426,7 @@ describe("HouseholdService", () => {
       );
       vi.mocked(UserRepo.getUserById).mockResolvedValue(mockUser);
       vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue(
-        existingMember,
+        existingMember as any,
       );
 
       const result = await HouseholdService.join("INVITE12", "user-456");
@@ -437,17 +437,18 @@ describe("HouseholdService", () => {
       );
       expect(HouseholdMemberRepo.join).not.toHaveBeenCalled();
       expect(result).toMatchObject({
-        status: StatusCodes.CONFLICT,
-        message: "User already exists in this household: household-123",
+        status: StatusCodes.OK,
+        message: "You are already a member of this household",
         data: {
-          userId: "user-456",
-          householdId: "household-123",
-          householdName: "Shared House",
+          household: {
+            householdId: "household-123",
+            householdName: "Shared House",
+          },
         },
       });
     });
 
-    it("should reject when household not found by invite code", async () => {
+    it("should reject with uniform message when household not found by invite code", async () => {
       vi.mocked(HouseholdRepository.getHouseholdByInviteCode).mockResolvedValue(
         null,
       );
@@ -460,9 +461,73 @@ describe("HouseholdService", () => {
       expect(UserRepo.getUserById).not.toHaveBeenCalled();
       expect(HouseholdMemberRepo.join).not.toHaveBeenCalled();
       expect(result).toMatchObject({
-        status: StatusCodes.NOT_FOUND,
-        message: "Household not found",
+        status: StatusCodes.BAD_REQUEST,
+        message: "Invalid or expired invite code",
       });
+    });
+
+    it("should reject with uniform message when invite code has expired", async () => {
+      const expiredHousehold: any = {
+        householdId: "household-expired",
+        name: "Expired Space",
+        inviteCode: "EXPIRED1",
+        createdAt: new Date("2025-11-01"),
+        settings: {
+          inviteCodeExpiresAt: new Date(Date.now() - 100000).toISOString(),
+        },
+      };
+
+      vi.mocked(HouseholdRepository.getHouseholdByInviteCode).mockResolvedValue(
+        expiredHousehold,
+      );
+
+      const result = await HouseholdService.join("EXPIRED1", "user-456");
+
+      expect(result).toMatchObject({
+        status: StatusCodes.BAD_REQUEST,
+        message: "Invalid or expired invite code",
+      });
+      expect(HouseholdMemberRepo.join).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("rotateInviteCode", () => {
+    it("should allow household admin to rotate invite code", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-1",
+        userId: "admin-1",
+        householdId: "h-1",
+        role: Role.ADMIN,
+      } as any);
+
+      vi.mocked(HouseholdRepository.rotateInviteCode).mockResolvedValue({
+        householdId: "h-1",
+        inviteCode: "NEWCODE1",
+        name: "House",
+      } as any);
+
+      const result = await HouseholdService.rotateInviteCode("h-1", "admin-1");
+
+      expect(result.status).toBe(StatusCodes.OK);
+      expect(result.message).toBe("Invite code rotated successfully");
+      expect(result.data).toHaveProperty("inviteCode");
+      expect(result.data).toHaveProperty("expiresAt");
+    });
+
+    it("should reject non-admin from rotating invite code", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-2",
+        userId: "member-1",
+        householdId: "h-1",
+        role: Role.MEMBER,
+      } as any);
+
+      const result = await HouseholdService.rotateInviteCode("h-1", "member-1");
+
+      expect(result.status).toBe(StatusCodes.FORBIDDEN);
+      expect(result.message).toBe(
+        "Only household admins can rotate invite codes",
+      );
     });
   });
 

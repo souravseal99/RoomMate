@@ -2,6 +2,7 @@ import { ApiResponse } from "@common/utils/ApiResponse";
 import { validateAccessToken } from "@common/utils/jwtHandler";
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
+import { authenticatedLimiter } from "@common/middlewares/rateLimiter";
 
 export default async function ensureAuthenticated(
   request: Request,
@@ -28,7 +29,10 @@ export default async function ensureAuthenticated(
     const decoded = validateAccessToken(token);
 
     request.user = decoded; // NOTE - Binding the user propertry to the global express scope
-    next();
+    if (typeof response.setHeader === "function") {
+      return authenticatedLimiter(request, response, next);
+    }
+    return next();
   } catch (error) {
     const { status, message } = ApiResponse.error(
       "Invalid or Expired token",

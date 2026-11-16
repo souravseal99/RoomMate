@@ -33,12 +33,23 @@ services:
       - JWT_REFRESH_EXPIRES_IN=7d
       - CSRF_SECRET=${CSRF_SECRET:-roommate_csrf_super_secret_key_2026_at_least_32_characters}
       - USE_SECURE_COOKIE=false
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - CHOKIDAR_USEPOLLING=true
       - CHOKIDAR_INTERVAL=100
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed:idempotent && npm run dev:serve"
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redisdata:/data
 
   db:
     image: postgres:15
@@ -63,3 +74,4 @@ services:
 
 volumes:
   pgdata:
+  redisdata:

@@ -166,7 +166,6 @@ export default function Expenses() {
               currentUserId={currentUserId}
               expenses={expenses}
               balances={balances}
-              settlements={settlements}
               onDeleteExpense={handleDeleteExpense}
               deletingExpenseId={deleteExpenseMutation.isPending ? 'deleting' : null}
               onOpenSettleModal={handleOpenSettle}

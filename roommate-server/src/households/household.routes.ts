@@ -2,6 +2,7 @@ import { Router } from "express";
 import { HouseholdController } from "@src/households/household.controller";
 import ensureAuthenticated from "@src/auth/middlewares/ensureAuthenticated";
 import authorizeHousehold from "@src/auth/middlewares/authorizeHousehold";
+import { inviteLookupLimiter } from "@common/middlewares/rateLimiter";
 
 const householdRouter = Router();
 
@@ -14,7 +15,15 @@ householdRouter.post(
 householdRouter.post(
   "/join/:inviteCode",
   ensureAuthenticated,
+  inviteLookupLimiter,
   HouseholdController.join,
+);
+
+householdRouter.post(
+  "/:householdId/rotate-invite-code",
+  ensureAuthenticated,
+  authorizeHousehold({ requireAdmin: true }),
+  HouseholdController.rotateInviteCode,
 );
 
 householdRouter.get(

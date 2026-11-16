@@ -7,6 +7,7 @@ import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { doubleCsrfProtection } from "@common/middlewares/csrf";
+import { globalLimiter } from "@common/middlewares/rateLimiter";
 
 class App {
   app: Express;
@@ -71,6 +72,9 @@ class App {
   middlewares(): void {
     //NOTE - Logger middleware
     this.app.use(morgan("dev"));
+
+    //NOTE - Global Rate Limiter (Token Bucket, skips /health)
+    this.app.use(globalLimiter);
 
     //NOTE - req body parsers
     this.app.use(express.json());

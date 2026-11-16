@@ -7,6 +7,12 @@ import { UserRepo } from "@src/users/user.repo";
 import UserDto from "@src/common/dtos/UserDto";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import { HouseholdDto } from "@src/common/dtos/HouseholdDto";
+import { nanoid } from "nanoid";
+import {
+  checkJoinLockout,
+  recordJoinFailure,
+  resetJoinFailure,
+} from "@common/middlewares/rateLimiter";
 
 export class HouseholdService {
   static async create(userId: string, name: string, settings?: any) {
@@ -171,48 +177,115 @@ export class HouseholdService {
   }
 
   static async join(inviteCode: string, userId: string) {
+    // 1. Check join lockout
+    const lockout = await checkJoinLockout(userId);
+    if (lockout.isLocked) {
+      return ApiResponse.error(
+        "Too many failed join attempts. Please try again in 30 minutes.",
+        StatusCodes.TOO_MANY_REQUESTS,
+        { retryAfterSeconds: lockout.remainingSeconds },
+      );
+    }
+
+    // 2. Lookup household by invite code
     const household: Household | null =
       await HouseholdRepository.getHouseholdByInviteCode(inviteCode);
 
-    if (!household)
-      return ApiResponse.error("Household not found", StatusCodes.NOT_FOUND);
+    if (!household) {
+      await recordJoinFailure(userId);
+      return ApiResponse.error(
+        "Invalid or expired invite code",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    // 3. Expiration validation
+    const settings = (household.settings as Record<string, any>) || {};
+    if (settings.inviteCodeExpiresAt) {
+      const expiresAt = new Date(settings.inviteCodeExpiresAt).getTime();
+      if (!isNaN(expiresAt) && Date.now() > expiresAt) {
+        await recordJoinFailure(userId);
+        return ApiResponse.error(
+          "Invalid or expired invite code",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
+    }
 
     const user: UserDto | null = await UserRepo.getUserById(userId);
-
-    if (!user)
+    if (!user) {
       return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+    }
 
+    // 4. Idempotent check for already-joined user
     const isExistingUser = await HouseholdMemberRepo.isExistingUser(
       userId,
       household.householdId,
     );
 
-    if (isExistingUser)
-      return ApiResponse.error(
-        `User already exists in this household: ${household.householdId}`,
-        StatusCodes.CONFLICT,
+    if (isExistingUser) {
+      return ApiResponse.success(
         {
-          userId: userId,
-          householdId: household.householdId,
-          householdName: household.name,
+          household: {
+            householdId: household.householdId,
+            householdName: household.name,
+          },
         },
+        "You are already a member of this household",
+        StatusCodes.OK,
       );
+    }
 
     const joinedHousehold = await HouseholdMemberRepo.join(
       userId,
       household.householdId,
     );
 
-    if (!joinedHousehold)
+    if (!joinedHousehold) {
       return ApiResponse.error(
         "Unable to join the Household",
         StatusCodes.CONFLICT,
       );
+    }
+
+    // 5. Successful join clears previous failure counters
+    await resetJoinFailure(userId);
 
     return ApiResponse.success(
       { household: { ...joinedHousehold, householdName: household.name } },
       "Joined the Household",
       StatusCodes.CREATED,
+    );
+  }
+
+  static async rotateInviteCode(householdId: string, userId: string) {
+    const isMember = await HouseholdMemberRepo.isExistingUser(
+      userId,
+      householdId,
+    );
+    if (!isMember || isMember.role !== Role.ADMIN) {
+      return ApiResponse.error(
+        "Only household admins can rotate invite codes",
+        StatusCodes.FORBIDDEN,
+      );
+    }
+
+    const newCode = nanoid(8);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+    const updated = await HouseholdRepository.rotateInviteCode(
+      householdId,
+      newCode,
+      expiresAt,
+    );
+
+    return ApiResponse.success(
+      {
+        inviteCode: updated.inviteCode,
+        expiresAt: expiresAt.toISOString(),
+      },
+      "Invite code rotated successfully",
+      StatusCodes.OK,
     );
   }
 
