@@ -9,6 +9,7 @@ import shoppingCartRouter from "@src/shopping-cart/shoppingCart.routes";
 import hosueholdMemberRouter from "@src/household-members/householdMember.routes";
 import dashboardRouter from "@src/dashboard/dashboard.routes";
 import prisma from "@common/utils/prisma";
+import { devSeedLimiter } from "@common/middlewares/rateLimiter";
 
 //NOTE - common syntex for routes
 // routes.use('/path', middleware, specificActionsOnThePath);
@@ -50,7 +51,7 @@ if (
   process.env.NODE_ENV === "development" &&
   process.env.ENABLE_DEV_SEED === "true"
 ) {
-  routes.post("/dev/seed", async (req, response) => {
+  routes.post("/dev/seed", devSeedLimiter, async (req, response) => {
     const secret = req.headers["x-dev-seed-secret"];
     const expectedSecret =
       process.env.DEV_SEED_SECRET || "dev-seed-local-only-token";

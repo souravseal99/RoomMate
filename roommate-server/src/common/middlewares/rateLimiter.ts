@@ -478,6 +478,25 @@ export const authenticatedLimiter: RateLimitRequestHandler = rateLimit({
   ),
 });
 
+/**
+ * 9. Dev Seed Limiter: 2 requests/60s per IP (Prevents command execution fork bomb)
+ */
+export const devSeedLimiter: RateLimitRequestHandler = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 2,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  keyGenerator: (req: Request) => extractIp(req),
+  store: new TokenBucketStore({
+    capacity: 2,
+    windowMs: 60 * 1000,
+    prefix: "rl:dev_seed:",
+  }),
+  handler: standardLimitHandler(
+    "Too many database seed requests. Please wait a minute before retrying.",
+  ),
+});
+
 // ==============================================================================
 // 7. Join Failure Counter & 30-Minute Lockout Helpers
 // ==============================================================================
@@ -516,9 +535,7 @@ export async function checkJoinLockout(
   return { isLocked: false, remainingSeconds: 0 };
 }
 
-export async function recordJoinFailure(
-  userId: string,
-): Promise<{
+export async function recordJoinFailure(userId: string): Promise<{
   isLocked: boolean;
   remainingAttempts: number;
   lockoutSeconds: number;

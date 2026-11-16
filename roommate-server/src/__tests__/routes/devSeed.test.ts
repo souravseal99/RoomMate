@@ -7,12 +7,27 @@ vi.mock("child_process", () => ({
   exec: vi.fn(),
 }));
 
+interface RouteLayer {
+  route?: {
+    path: string;
+    stack: Array<{
+      handle: (req: Request, res: Response, ...args: unknown[]) => unknown;
+    }>;
+  };
+}
+
+type ExecCallback = (
+  error: Error | null,
+  stdout: string,
+  stderr: string,
+) => void;
+
 describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
   const originalEnv = { ...process.env };
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
   let statusCode = 200;
-  let responseData: any = null;
+  let responseData: Record<string, unknown> | null = null;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,7 +41,7 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
         statusCode = code;
         return mockResponse;
       }),
-      json: vi.fn().mockImplementation((data: any) => {
+      json: vi.fn().mockImplementation((data: Record<string, unknown>) => {
         responseData = data;
         return mockResponse;
       }),
@@ -44,8 +59,8 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
 
     const { default: routes } = await import("@src/routes");
 
-    const devSeedRoute = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedRoute = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
 
     expect(devSeedRoute).toBeUndefined();
@@ -57,8 +72,8 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
 
     const { default: routes } = await import("@src/routes");
 
-    const devSeedRoute = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedRoute = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
 
     expect(devSeedRoute).toBeUndefined();
@@ -70,12 +85,13 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
     process.env.DEV_SEED_SECRET = "super_secure_seed_token";
 
     const { default: routes } = await import("@src/routes");
-    const devSeedLayer = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedLayer = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
     expect(devSeedLayer).toBeDefined();
 
-    const handler = devSeedLayer.route.stack[0].handle;
+    const handler =
+      devSeedLayer!.route!.stack[devSeedLayer!.route!.stack.length - 1].handle;
     mockRequest = {
       headers: {},
     };
@@ -94,11 +110,12 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
     process.env.DEV_SEED_SECRET = "super_secure_seed_token";
 
     const { default: routes } = await import("@src/routes");
-    const devSeedLayer = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedLayer = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
 
-    const handler = devSeedLayer.route.stack[0].handle;
+    const handler =
+      devSeedLayer!.route!.stack[devSeedLayer!.route!.stack.length - 1].handle;
     mockRequest = {
       headers: {
         "x-dev-seed-secret": "wrong_token",
@@ -118,17 +135,19 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
     process.env.ENABLE_DEV_SEED = "true";
     process.env.DEV_SEED_SECRET = "super_secure_seed_token";
 
-    vi.mocked(childProcess.exec).mockImplementation((_cmd, callback: any) => {
-      callback(null, "Sensitive stdout path /var/internal/db", "");
-      return {} as any;
+    vi.mocked(childProcess.exec).mockImplementation((_cmd, callback) => {
+      const cb = callback as unknown as ExecCallback;
+      cb(null, "Sensitive stdout path /var/internal/db", "");
+      return {} as unknown as childProcess.ChildProcess;
     });
 
     const { default: routes } = await import("@src/routes");
-    const devSeedLayer = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedLayer = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
 
-    const handler = devSeedLayer.route.stack[0].handle;
+    const handler =
+      devSeedLayer!.route!.stack[devSeedLayer!.route!.stack.length - 1].handle;
     mockRequest = {
       headers: {
         "x-dev-seed-secret": "super_secure_seed_token",
@@ -147,7 +166,7 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
       message: "Database seeded successfully for development",
     });
     // Ensure sensitive stdout is NOT exposed to client
-    expect(responseData.output).toBeUndefined();
+    expect(responseData?.output).toBeUndefined();
   });
 
   it("should return sanitized 500 when seeding fails without leaking stderr or error message", async () => {
@@ -155,21 +174,23 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
     process.env.ENABLE_DEV_SEED = "true";
     process.env.DEV_SEED_SECRET = "super_secure_seed_token";
 
-    vi.mocked(childProcess.exec).mockImplementation((_cmd, callback: any) => {
-      callback(
+    vi.mocked(childProcess.exec).mockImplementation((_cmd, callback) => {
+      const cb = callback as unknown as ExecCallback;
+      cb(
         new Error("Internal Prisma DB connection failure"),
         "",
         "Sensitive stderr trace",
       );
-      return {} as any;
+      return {} as unknown as childProcess.ChildProcess;
     });
 
     const { default: routes } = await import("@src/routes");
-    const devSeedLayer = routes.stack.find(
-      (layer: any) => layer.route && layer.route.path === "/dev/seed",
+    const devSeedLayer = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
     );
 
-    const handler = devSeedLayer.route.stack[0].handle;
+    const handler =
+      devSeedLayer!.route!.stack[devSeedLayer!.route!.stack.length - 1].handle;
     mockRequest = {
       headers: {
         "x-dev-seed-secret": "super_secure_seed_token",
@@ -182,7 +203,20 @@ describe("POST /dev/seed Security & Path Protection (VULN-15)", () => {
     expect(responseData).toEqual({
       message: "Seeding failed",
     });
-    expect(responseData.error).toBeUndefined();
-    expect(responseData.stderr).toBeUndefined();
+    expect(responseData?.error).toBeUndefined();
+    expect(responseData?.stderr).toBeUndefined();
+  });
+
+  it("should have rate limiting middleware attached to /dev/seed route", async () => {
+    process.env.NODE_ENV = "development";
+    process.env.ENABLE_DEV_SEED = "true";
+
+    const { default: routes } = await import("@src/routes");
+    const devSeedLayer = (routes.stack as RouteLayer[]).find(
+      (layer: RouteLayer) => layer.route && layer.route.path === "/dev/seed",
+    );
+
+    expect(devSeedLayer).toBeDefined();
+    expect(devSeedLayer!.route!.stack.length).toBeGreaterThan(1);
   });
 });
