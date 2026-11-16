@@ -1,4 +1,37 @@
 #!/bin/sh
-# Run Prettier code formatting script on pre-commit
+# ==============================================================================
+# RoomMate Git Pre-Commit Quality Hook
+# Ensures code formatting, linting, type safety, and test passing before commit.
+# ==============================================================================
+
+set -e
+
+echo ""
+echo "🚀 [Pre-Commit] Running code quality and verification checks..."
+
+# Step 1: Prettier code formatting (auto-fix)
+echo "🎨 [1/5] Formatting code with Prettier..."
 npm run format
-git add -u
+
+# Step 2: ESLint code linting (auto-fix)
+echo "🧹 [2/5] Running ESLint with auto-fix..."
+npm run lint:fix
+
+# Step 3: Re-stage files updated by Prettier / ESLint (if any files were modified)
+echo "📦 [3/5] Checking for staged changes..."
+if ! git diff --quiet 2>/dev/null; then
+  echo "    Auto-fixed files detected. Staging changes..."
+  git add -u 2>/dev/null || true
+fi
+
+# Step 4: TypeScript type checking across all workspaces
+echo "📐 [4/5] Checking TypeScript types..."
+npm run type-check
+
+# Step 5: Unit & integration test execution
+echo "🧪 [5/5] Running test suites..."
+npm test
+
+echo ""
+echo "✅ [Pre-Commit] All quality checks and test suites passed successfully! Proceeding with commit."
+echo ""

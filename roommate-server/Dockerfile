@@ -3,6 +3,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache libc6-compat openssl
+
 COPY package*.json ./
 COPY prisma ./prisma/
 RUN npm install

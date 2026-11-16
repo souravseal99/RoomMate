@@ -65,18 +65,21 @@ RoomMate/
 
 The fastest and most reproducible way to get the entire ecosystem running:
 
-1. **Fork & Clone**:
+1. **Fork, Clone & Setup**:
 
    ```bash
    git clone https://github.com/<YOUR-USERNAME>/RoomMate.git
    cd RoomMate
    git remote add upstream https://github.com/souravseal99/RoomMate.git
+
+   # Automatic onboarding (configures .env files, git hooks & Prisma client)
+   npm run setup
    ```
 
 2. **Launch all services**:
 
    ```bash
-   docker compose up --build
+   npm run dev
    ```
 
 3. **Access Services**:

@@ -10,6 +10,7 @@ services:
     volumes:
       - ./roommate-app:/app
       - /app/node_modules
+    command: sh -c "if [ ! -f /app/node_modules/.pkg_hash ] || ! cmp -s /app/package.json /app/node_modules/.pkg_hash; then echo '📦 Syncing client dependencies...' && npm install && cp /app/package.json /app/node_modules/.pkg_hash; fi && npm run dev -- --host"
     depends_on:
       - server
 
@@ -41,7 +42,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-    command: sh -c "npx prisma generate && npx prisma db push && npm run db:seed:idempotent && npm run dev:serve"
+    command: sh -c "if [ ! -f /app/node_modules/.pkg_hash ] || ! cmp -s /app/package.json /app/node_modules/.pkg_hash; then echo '📦 Syncing server dependencies...' && npm install && cp /app/package.json /app/node_modules/.pkg_hash; fi && npx prisma generate && npx prisma db push && npm run db:seed:idempotent && npm run dev:serve"
 
   redis:
     image: redis:7-alpine

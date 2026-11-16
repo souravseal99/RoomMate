@@ -301,7 +301,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 )}
               >
                 <div
-                  className="flex items-start justify-between gap-3 border-2 border-blue-600"
+                  className="flex items-start justify-between gap-3"
                   onClick={() => handleStampDuty(activeChore)}
                 >
                   <div className="flex items-start gap-3 min-w-0">

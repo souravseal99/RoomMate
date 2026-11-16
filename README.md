@@ -122,17 +122,20 @@ roommate/
 
 ---
 
-### Option 1: Docker Compose (Recommended)
+### 🚀 Quickstart for Contributors (Recommended)
 
-Spins up the PostgreSQL database, backend server, and frontend client in isolated containers with automatic migration and database seeding:
+The fastest and most reproducible way to get the entire ecosystem running:
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/souravseal99/RoomMate.git
 cd RoomMate
 
-# Start all services with live reload
-docker compose up --build
+# 2. Run automated setup (provisions .env files, wires git hooks, boots DB, & seeds data)
+npm run setup
+
+# 3. Start all services with live reload
+npm run dev
 ```
 
 **Services & Ports:**
@@ -141,6 +144,7 @@ docker compose up --build
 - 🚀 **Backend API**: `http://localhost:5000`
 - 🗄️ **Prisma Studio**: `http://localhost:5555`
 - 🐘 **PostgreSQL**: `localhost:5432`
+- 🔴 **Redis**: `localhost:6379`
 
 ---
 

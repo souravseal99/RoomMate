@@ -4,6 +4,8 @@ FROM node:20-alpine
 # Set working directory inside container
 WORKDIR /app
 
+RUN apk add --no-cache libc6-compat
+
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install

@@ -48,10 +48,10 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
 
   // ----------------------------------------------------
-  // 3. Package: roommate-server (Node.js backend)
+  // 3. Package: roommate-server & root scripts (Node.js)
   // ----------------------------------------------------
   {
-    files: ["roommate-server/**/*.{ts,js}"],
+    files: ["roommate-server/**/*.{ts,js}", "scripts/**/*.{ts,js}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
