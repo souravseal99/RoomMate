@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,9 +21,10 @@ import { toast } from 'sonner';
 
 type Props = {
   onSuccess?: () => void;
+  initialCode?: string;
 };
 
-export default function JoinHouseholdForm({ onSuccess }: Props) {
+export default function JoinHouseholdForm({ onSuccess, initialCode = '' }: Props) {
   const navigate = useNavigate();
   const { switchActiveHousehold } = useHousehold();
   const joinMutation = useJoinHouseholdMutation();
@@ -30,9 +32,18 @@ export default function JoinHouseholdForm({ onSuccess }: Props) {
   const form = useForm<JoinHouseholdInput>({
     resolver: zodResolver(joinHouseholdSchema),
     defaultValues: {
-      inviteCode: '',
+      inviteCode: initialCode ? initialCode.trim().toUpperCase() : '',
     },
   });
+
+  useEffect(() => {
+    if (initialCode) {
+      form.setValue('inviteCode', initialCode.trim().toUpperCase(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [initialCode, form]);
 
   const onSubmit = async (values: JoinHouseholdInput) => {
     const formattedCode = values.inviteCode.trim().toUpperCase();

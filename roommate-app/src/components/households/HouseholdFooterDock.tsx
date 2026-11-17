@@ -23,11 +23,15 @@ export function HouseholdFooterDock({ onSelectTab }: HouseholdFooterDockProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const wifiName = activeHousehold?.settings?.wifiSsid || 'Loft_4B_5G';
+  const wifiName = activeHousehold?.settings?.wifiSsid;
   const wifiPass = activeHousehold?.settings?.wifiPassword;
   const trashNight = activeHousehold?.settings?.trashDay || 'Wednesday';
 
   const handleCopyWifi = () => {
+    if (!wifiName) {
+      toast.info('Wi-Fi is not configured for this household yet.');
+      return;
+    }
     if (wifiPass) {
       navigator.clipboard.writeText(wifiPass);
       toast.success(`Copied Wi-Fi password for "${wifiName}"!`);
@@ -74,9 +78,15 @@ export function HouseholdFooterDock({ onSelectTab }: HouseholdFooterDockProps) {
               type="button"
               onClick={handleCopyWifi}
               className="hover:text-foreground transition-colors cursor-pointer underline-offset-2 hover:underline"
-              title={wifiPass ? 'Click to copy Wi-Fi password' : 'Wi-Fi Network'}
+              title={
+                wifiName
+                  ? wifiPass
+                    ? 'Click to copy Wi-Fi password'
+                    : 'Wi-Fi Network'
+                  : 'Wi-Fi not configured'
+              }
             >
-              WiFi: {wifiName} {wifiPass ? '(Password saved)' : ''}
+              WiFi: {wifiName ? `${wifiName}${wifiPass ? ' (Password saved)' : ''}` : 'Not set'}
             </button>
             <span>•</span>
             <span>Trash Night: {trashNight} 8 PM</span>

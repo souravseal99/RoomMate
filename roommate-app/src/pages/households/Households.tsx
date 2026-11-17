@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Building2, ChevronDown, ChevronUp } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
 import type { HouseholdResponse } from '@/types/householdTypes';
@@ -29,10 +30,25 @@ export default function Households() {
   // Tab state (Stitch 5-tab contextual disclosure)
   const [activeTab, setActiveTab] = useState<HouseholdTabId>('tab-vitals');
 
+  const [searchParams] = useSearchParams();
+  const urlCode = (searchParams.get('code') || '').trim().toUpperCase();
+  const urlAction = searchParams.get('action');
+
   // Modal & Drawer controller states
   const [isCreateJoinOpen, setIsCreateJoinOpen] = useState(false);
   const [activeModalTab, setActiveModalTab] = useState<'create' | 'join'>('create');
+  const [prefilledCode, setPrefilledCode] = useState(urlCode);
   const [showOtherSpaces, setShowOtherSpaces] = useState(false);
+
+  useEffect(() => {
+    if (urlCode || urlAction === 'join') {
+      setActiveModalTab('join');
+      if (urlCode) {
+        setPrefilledCode(urlCode);
+      }
+      setIsCreateJoinOpen(true);
+    }
+  }, [urlCode, urlAction]);
 
   const [inviteHousehold, setInviteHousehold] = useState<HouseholdResponse | null>(null);
   const [editHousehold, setEditHousehold] = useState<HouseholdResponse | null>(null);
@@ -74,6 +90,7 @@ export default function Households() {
         <CreateJoinModal
           open={isCreateJoinOpen}
           defaultTab={activeModalTab}
+          initialCode={prefilledCode}
           onOpenChange={setIsCreateJoinOpen}
         />
       </div>
@@ -106,7 +123,9 @@ export default function Households() {
 
         {activeTab === 'tab-fairness' && <FairnessLedgerTab onRecordBill={() => {}} />}
 
-        {activeTab === 'tab-roster' && <RosterGovernanceTab />}
+        {activeTab === 'tab-roster' && (
+          <RosterGovernanceTab onOpenInvite={() => setInviteHousehold(currentHousehold)} />
+        )}
 
         {activeTab === 'tab-invites' && <InvitesNetworksTab />}
 
@@ -176,6 +195,7 @@ export default function Households() {
       <CreateJoinModal
         open={isCreateJoinOpen}
         defaultTab={activeModalTab}
+        initialCode={prefilledCode}
         onOpenChange={setIsCreateJoinOpen}
       />
 

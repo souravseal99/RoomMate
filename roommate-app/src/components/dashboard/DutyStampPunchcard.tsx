@@ -8,11 +8,22 @@ import {
   Bell,
   Sparkles,
   Loader2,
+  RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import useHousehold from '@/hooks/useHousehold';
 import useAuth from '@/hooks/useAuth';
 import { getCurrentUserId } from '@/utils/jwt';
@@ -94,6 +105,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
   const toggleChoreMutation = useToggleChoreMutation();
   const nudgeChoreMutation = useNudgeChoreMutation();
   const [stampedIds, setStampedIds] = useState<Set<string>>(new Set());
+  const [choreToUnstamp, setChoreToUnstamp] = useState<ChoreItem | null>(null);
 
   // Fallback partition if punchcard data is pending
   const incompleteChores = useMemo(() => {
@@ -135,7 +147,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
     if (!target) return;
 
     if (target.completed || stampedIds.has(target.choreId)) {
-      toast.info('Duty already certified.');
+      setChoreToUnstamp(target);
       return;
     }
 
@@ -169,6 +181,48 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
       toast.success(`+${karmaEarned} House Karma earned! Duty verified.`, {
         icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
       });
+    }
+  };
+
+  const handleConfirmUnstamp = () => {
+    if (!choreToUnstamp) return;
+    const choreId = choreToUnstamp.choreId;
+    const choreDesc = choreToUnstamp.description;
+
+    if (activeHouseholdId) {
+      toggleChoreMutation.mutate(
+        {
+          choreId,
+          householdId: activeHouseholdId,
+          updates: { completed: false },
+        },
+        {
+          onSuccess: () => {
+            setStampedIds((prev) => {
+              const next = new Set(prev);
+              next.delete(choreId);
+              return next;
+            });
+            toast.success(`Unstamped "${choreDesc}". Duty marked as pending.`, {
+              icon: <RotateCcw className="w-4 h-4 text-primary" />,
+            });
+            setChoreToUnstamp(null);
+          },
+          onError: () => {
+            toast.error('Failed to unstamp duty. Please try again.');
+          },
+        }
+      );
+    } else {
+      setStampedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(choreId);
+        return next;
+      });
+      toast.success(`Unstamped "${choreDesc}". Duty marked as pending.`, {
+        icon: <RotateCcw className="w-4 h-4 text-primary" />,
+      });
+      setChoreToUnstamp(null);
     }
   };
 
@@ -296,20 +350,35 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 className={cn(
                   'p-3 sm:p-3.5 rounded-xl border transition-all',
                   isCard1Stamped
-                    ? 'bg-muted/30 border-border'
+                    ? 'bg-muted/30 border-border hover:bg-muted/50 hover:border-primary/40 cursor-pointer group'
                     : 'bg-primary/5 border border-primary/40 shadow-xs'
                 )}
               >
                 <div
                   className="flex items-start justify-between gap-3"
-                  onClick={() => handleStampDuty(activeChore)}
+                  onClick={() => {
+                    if (isCard1Stamped) {
+                      setChoreToUnstamp(activeChore);
+                    } else {
+                      handleStampDuty(activeChore);
+                    }
+                  }}
                 >
                   <div className="flex items-start gap-3 min-w-0">
                     <Button
                       type="button"
-                      // onClick={() => handleStampDuty(activeChore)}
-                      disabled={toggleChoreMutation.isPending || isCard1Stamped}
-                      aria-label="Stamp chore completed"
+                      disabled={toggleChoreMutation.isPending}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isCard1Stamped) {
+                          setChoreToUnstamp(activeChore);
+                        } else {
+                          handleStampDuty(activeChore);
+                        }
+                      }}
+                      aria-label={
+                        isCard1Stamped ? 'Unstamp chore verification' : 'Stamp chore completed'
+                      }
                       className={cn(
                         'w-10 h-10 sm:w-11 sm:h-11 min-h-[40px] min-w-[40px] p-0 rounded-xl flex items-center justify-center transition-all mt-0.5 group shrink-0 active:scale-95 cursor-pointer border border-primary/30',
                         isCard1Stamped
@@ -372,8 +441,8 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                     >
                       {isCard1Stamped ? `STAMPED ✓ (+${activeKarma})` : `+${activeKarma} Karma`}
                     </Badge>
-                    <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono">
-                      {isCard1Stamped ? 'Certified' : 'Click to Stamp'}
+                    <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono group-hover:underline">
+                      {isCard1Stamped ? 'Click to unstamp ↩' : 'Click to Stamp'}
                     </span>
                   </div>
                 </div>
@@ -450,9 +519,21 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
 
             {/* Stamp Card 3 (Completed Chore) */}
             {recentCompletedChore ? (
-              <div className="p-3 sm:p-3.5 rounded-xl bg-muted/30 border border-border flex items-start justify-between gap-3">
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setChoreToUnstamp(recentCompletedChore)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setChoreToUnstamp(recentCompletedChore);
+                  }
+                }}
+                aria-label={`Unstamp completed duty: ${recentCompletedChore.description}`}
+                className="p-3 sm:p-3.5 rounded-xl bg-muted/30 border border-border flex items-start justify-between gap-3 cursor-pointer hover:bg-muted/50 hover:border-primary/40 active:scale-[0.99] transition-all group"
+              >
                 <div className="flex items-start gap-2.5 min-w-0">
-                  <div className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-card border border-border flex items-center justify-center text-muted-foreground mt-0.5 shrink-0 group-hover:border-primary/40 transition-colors">
                     <CheckCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div className="min-w-0">
@@ -475,12 +556,17 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                     </h3>
                   </div>
                 </div>
-                <Badge
-                  variant="outline"
-                  className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
-                >
-                  STAMPED ✓ (+{getChoreKarma(recentCompletedChore)})
-                </Badge>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
+                  >
+                    STAMPED ✓ (+{getChoreKarma(recentCompletedChore)})
+                  </Badge>
+                  <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground group-hover:text-primary transition-colors font-mono">
+                    Click to unstamp ↩
+                  </span>
+                </div>
               </div>
             ) : (
               <div className="p-2.5 px-3 rounded-xl bg-muted/20 border border-dashed border-border/60 flex items-center gap-2 text-muted-foreground">
@@ -578,6 +664,44 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
           </div>
         </div>
       </CardContent>
+
+      {/* Unstamp Confirmation Modal */}
+      <AlertDialog
+        open={!!choreToUnstamp}
+        onOpenChange={(open) => !open && setChoreToUnstamp(null)}
+      >
+        <AlertDialogContent className="bg-card text-foreground border-border max-w-md rounded-2xl shadow-2xl p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display font-bold text-base flex items-center gap-2">
+              <RotateCcw className="w-4 h-4 text-primary" />
+              Unstamp Duty Verification?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed pt-1">
+              Are you sure you want to mark{' '}
+              <strong className="text-foreground font-semibold">
+                "{choreToUnstamp?.description}"
+              </strong>{' '}
+              as incomplete? This will revert its verified status and return it to active flat
+              duties.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-2 pt-2">
+            <AlertDialogCancel className="rounded-xl text-xs font-semibold cursor-pointer">
+              Keep Stamped
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmUnstamp}
+              disabled={toggleChoreMutation.isPending}
+              className="rounded-xl text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer shadow-xs flex items-center gap-1.5"
+            >
+              {toggleChoreMutation.isPending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : null}
+              <span>Yes, Unstamp Duty</span>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

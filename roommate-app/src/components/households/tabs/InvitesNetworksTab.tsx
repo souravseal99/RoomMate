@@ -46,6 +46,13 @@ export function InvitesNetworksTab() {
     window.location.href = `mailto:${recipientEmail || ''}?subject=${subject}&body=${body}`;
   };
 
+  const handleCopyInviteForMember = (recipientName?: string) => {
+    const greeting = recipientName ? `Hey ${recipientName}!` : 'Hey!';
+    const text = `${greeting} Join our flat "${activeHousehold?.name || 'Our Space'}" on RoomMate using code: ${inviteCode}\nDirect link: ${joinUrl}`;
+    navigator.clipboard.writeText(text);
+    toast.success(`Copied invite message for ${recipientName || 'roommate'}! 📋`);
+  };
+
   return (
     <Card className="bg-card rounded-2xl p-5 sm:p-6 shadow-xs border-border flex flex-col gap-6 w-full animate-in fade-in duration-200 select-none">
       {/* Header */}
@@ -200,15 +207,28 @@ export function InvitesNetworksTab() {
                             </span>
                           </div>
                         </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEmailShare(sm.email, sm.name)}
-                          className="px-3.5 py-1.5 min-h-[44px] h-auto rounded-full bg-surface-container hover:bg-primary hover:text-primary-foreground font-semibold text-xs text-foreground transition-all shrink-0 cursor-pointer active:scale-95 border-border"
-                        >
-                          Invite
-                        </Button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleCopyInviteForMember(sm.name)}
+                            aria-label={`Copy invite message for ${sm.name || 'flatmate'}`}
+                            className="w-8 h-8 rounded-full text-muted-foreground hover:text-foreground cursor-pointer"
+                            title="Copy invite text"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEmailShare(sm.email, sm.name)}
+                            className="px-3 py-1.5 min-h-[36px] h-auto rounded-full bg-surface-container hover:bg-primary hover:text-primary-foreground font-semibold text-xs text-foreground transition-all shrink-0 cursor-pointer active:scale-95 border-border"
+                          >
+                            Email
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   );

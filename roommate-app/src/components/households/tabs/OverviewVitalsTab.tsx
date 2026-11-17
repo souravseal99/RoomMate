@@ -77,7 +77,10 @@ export function OverviewVitalsTab({ onNavigateTab, onOpenSettleModal }: Overview
   const handleRemindChore = () => {
     if (!upNextChore) return;
     const targetName = upNextChore.assignedToName || 'Roommate';
-    toast.success(`Gentle reminder sent to ${targetName} for "${upNextChore.description}"!`, {
+    const nudgeMsg = `Hey ${targetName}! Friendly reminder to knock out "${upNextChore.description}" for our flat 🏠`;
+    navigator.clipboard.writeText(nudgeMsg);
+    toast.success(`Copied reminder for ${targetName} to clipboard! 📋`, {
+      description: `"${upNextChore.description}"`,
       icon: <Send className="w-4 h-4 text-primary" />,
     });
   };

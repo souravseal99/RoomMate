@@ -1,5 +1,5 @@
 // src/features/auth/LoginPage.tsx
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthForm } from '../../components/auth/AuthForm';
 import { loginUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
@@ -11,8 +11,12 @@ import { toast } from 'sonner';
 
 export default function LoginPage() {
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login, isAuthenticated } = useAuth();
   const [isHealthChecking, setIsHealthChecking] = useState(true);
+
+  const inviteCode = (searchParams.get('code') || '').trim().toUpperCase();
+  const returnUrl = searchParams.get('returnUrl');
 
   const onSubmit = async (values: any) => {
     try {
@@ -34,9 +38,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      nav('/dashboard');
+      if (inviteCode) {
+        nav(`/households?code=${encodeURIComponent(inviteCode)}&action=join`);
+      } else if (returnUrl) {
+        nav(returnUrl);
+      } else {
+        nav('/dashboard');
+      }
     }
-  }, [isAuthenticated, nav]);
+  }, [isAuthenticated, inviteCode, returnUrl, nav]);
 
   useEffect(() => {
     let isMounted = true;

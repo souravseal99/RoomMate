@@ -13,10 +13,14 @@ import ErrorPage from '@/pages/ErrorPage';
 import { ExpenseProvider } from '@/contexts/ExpenseContext';
 import Inventory from '@/pages/inventory/Inventory';
 import { InventoryProvider } from '@/contexts/InventoryContext';
+import JoinRedirectPage from '@/pages/auth/JoinRedirectPage';
 
 function AppRouter() {
   return (
     <Routes>
+      {/* Deep-link invite landing route */}
+      <Route path="/join" element={<JoinRedirectPage />} />
+
       {/* Unauthenticated routes */}
       <Route element={<UnauthenticatedLayout />}>
         <Route path="/" element={<Navigate to="/login" replace />} />

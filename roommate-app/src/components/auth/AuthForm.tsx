@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { AuthFormInputData } from '@/types/authTypes';
 import { loginSchema, registerSchema, AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Home,
   Mail,
@@ -38,6 +38,12 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
   });
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const inviteCode = (searchParams.get('code') || '').trim().toUpperCase();
+  const targetLogin = inviteCode ? `/login?code=${encodeURIComponent(inviteCode)}` : '/login';
+  const targetRegister = inviteCode
+    ? `/register?code=${encodeURIComponent(inviteCode)}`
+    : '/register';
   const isPending = isLoading || form.formState.isSubmitting;
 
   const handlePasskeyAuth = () => {
@@ -150,7 +156,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
               <div className="flex items-center p-1 bg-surface-container-low rounded-xl self-start gap-1 border border-border/40">
                 <button
                   type="button"
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate(targetLogin)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
                     !isRegister
                       ? 'bg-foreground text-background shadow-xs'
@@ -161,7 +167,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                 </button>
                 <button
                   type="button"
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate(targetRegister)}
                   className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-200 cursor-pointer ${
                     isRegister
                       ? 'bg-foreground text-background shadow-xs'
@@ -360,7 +366,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
 
               {/* Got an Invite Code Card */}
               <div
-                onClick={() => navigate(isRegister ? '/login' : '/register')}
+                onClick={() => navigate(isRegister ? targetLogin : targetRegister)}
                 className="flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/20 shadow-xs cursor-pointer group hover:bg-primary/15 transition-colors"
               >
                 <div className="flex items-center gap-3">

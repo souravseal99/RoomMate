@@ -1,5 +1,5 @@
 // src/features/auth/RegisterPage.tsx
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthForm } from '../../components/auth/AuthForm';
 import { registerUser } from '../../api/authApi';
 import useAuth from '@/hooks/useAuth';
@@ -11,8 +11,11 @@ import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const nav = useNavigate();
+  const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const [isHealthChecking, setIsHealthChecking] = useState(true);
+
+  const inviteCode = (searchParams.get('code') || '').trim().toUpperCase();
 
   const onSubmit = async (values: any) => {
     try {
@@ -23,7 +26,11 @@ export default function RegisterPage() {
       const token = authData?.accessToken;
       if (token) {
         login(token, authData?.email ?? null, authData?.name ?? null);
-        nav('/dashboard');
+        if (inviteCode) {
+          nav(`/households?code=${encodeURIComponent(inviteCode)}&action=join`);
+        } else {
+          nav('/dashboard');
+        }
       }
     } catch (e: any) {
       toast.error(e.response?.data?.message ?? 'Registration failed. Please try again.');

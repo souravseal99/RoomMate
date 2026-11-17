@@ -1,5 +1,14 @@
 import { useState, useMemo } from 'react';
-import { AlertTriangle, CheckSquare, Square, LogOut, Trash2, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  AlertTriangle,
+  CheckSquare,
+  Square,
+  LogOut,
+  Trash2,
+  CheckCircle2,
+  ArrowRight,
+} from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
 import useAuth from '@/hooks/useAuth';
 import { useExpenseBalancesQuery } from '@/hooks/queries/useExpenseQueries';
@@ -15,6 +24,7 @@ interface DepartureAuditTabProps {
 }
 
 export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: DepartureAuditTabProps) {
+  const navigate = useNavigate();
   const { activeHousehold, activeHouseholdId, householdMembers } = useHousehold();
   const { email, name, userId: authUserId } = useAuth();
 
@@ -149,6 +159,18 @@ export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: Depar
                       ? `You are owed ${currencySymbol}${userBalance.toFixed(2)} by flatmates before leaving.`
                       : `You owe ${currencySymbol}${Math.abs(userBalance).toFixed(2)} to flatmates. Please settle up.`}
                 </span>
+                {!isFinancialSettled && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate('/expenses')}
+                    className="mt-2 self-start px-3 py-1 min-h-[36px] h-auto rounded-lg bg-surface-container hover:bg-surface-container-high text-primary border-primary/30 font-bold text-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Settle Balances Now</span>
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -180,6 +202,18 @@ export function DepartureAuditTab({ onOpenLeaveModal, onOpenDeleteModal }: Depar
                     ? 'You have 0 pending assigned chores in this space.'
                     : `Complete or reassign your ${myPendingChores.length} scheduled duty items.`}
                 </span>
+                {!areChoresCleared && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => navigate('/chores')}
+                    className="mt-2 self-start px-3 py-1 min-h-[36px] h-auto rounded-lg bg-surface-container hover:bg-surface-container-high text-primary border-primary/30 font-bold text-xs flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+                  >
+                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Reassign Chores</span>
+                  </Button>
+                )}
               </div>
             </div>
 

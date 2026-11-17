@@ -9,9 +9,15 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   defaultTab?: 'create' | 'join';
+  initialCode?: string;
 };
 
-export default function CreateJoinModal({ open, onOpenChange, defaultTab = 'create' }: Props) {
+export default function CreateJoinModal({
+  open,
+  onOpenChange,
+  defaultTab = 'create',
+  initialCode = '',
+}: Props) {
   const [activeTab, setActiveTab] = useState<'create' | 'join'>(defaultTab);
 
   // Sync activeTab whenever defaultTab or modal open changes
@@ -72,7 +78,7 @@ export default function CreateJoinModal({ open, onOpenChange, defaultTab = 'crea
               onSwitchToJoin={() => setActiveTab('join')}
             />
           ) : (
-            <JoinHouseholdForm onSuccess={handleSuccess} />
+            <JoinHouseholdForm onSuccess={handleSuccess} initialCode={initialCode} />
           )}
         </div>
       </DialogContent>
