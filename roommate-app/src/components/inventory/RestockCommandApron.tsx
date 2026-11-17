@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 interface RestockCommandApronProps {
   lowStockItems: InventoryItem[];
   isSyncing?: boolean;
+  shopperName?: string;
   onSyncAllToCart: () => void;
   onQuickAddStaple: (name: string, quantity: number, unit?: string) => void;
 }
@@ -23,6 +24,7 @@ const QUICK_PICK_STAPLES = [
 export function RestockCommandApron({
   lowStockItems,
   isSyncing = false,
+  shopperName = 'You',
   onSyncAllToCart,
   onQuickAddStaple,
 }: RestockCommandApronProps) {
@@ -83,8 +85,9 @@ export function RestockCommandApron({
             <div className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl bg-card border border-border/60 text-foreground text-xs font-medium shadow-2xs">
               <CalendarClock className="w-4 h-4 text-primary shrink-0" />
               <span>
-                Scheduled Run: <strong className="text-foreground font-semibold">Sarah Lin</strong>{' '}
-                (Tomorrow, 6:00 PM)
+                Scheduled Run:{' '}
+                <strong className="text-foreground font-semibold">{shopperName}</strong> (Tomorrow,
+                6:00 PM)
               </span>
             </div>
 

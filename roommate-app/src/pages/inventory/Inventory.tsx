@@ -1,6 +1,8 @@
 import { useState, useMemo, useRef } from 'react';
 import { Plus } from 'lucide-react';
 import useHousehold from '@/hooks/useHousehold';
+import useAuth from '@/hooks/useAuth';
+import { getInitials } from '@/utils/utils';
 import { useInventoryQuery, useUpdateInventoryMutation } from '@/hooks/queries/useInventoryQueries';
 import {
   useShoppingCartQuery,
@@ -21,10 +23,13 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 export default function Inventory() {
-  const { activeHousehold } = useHousehold();
+  const { activeHousehold, householdMembers = [] } = useHousehold();
+  const { name } = useAuth();
   const householdId = activeHousehold?.householdId || '';
   const householdName = activeHousehold?.name || 'My Household';
-  const memberCount = 4;
+  const memberCount = householdMembers.length || 1;
+  const shopperName = name || 'You';
+  const shopperInitials = getInitials(shopperName);
 
   const shoppingCardRef = useRef<HTMLDivElement>(null);
 
@@ -74,7 +79,11 @@ export default function Inventory() {
       toast.error('No active household selected');
       return;
     }
-    syncLowStockMutation.mutate(householdId);
+    syncLowStockMutation.mutate(householdId, {
+      onSuccess: () => {
+        handleScrollToCart();
+      },
+    });
   };
 
   // Quick-Pick Staple handler
@@ -152,6 +161,7 @@ export default function Inventory() {
       <RestockCommandApron
         lowStockItems={lowStockItems}
         isSyncing={syncLowStockMutation.isPending}
+        shopperName={shopperName}
         onSyncAllToCart={handleSyncAllToCart}
         onQuickAddStaple={handleQuickAddStaple}
       />
@@ -175,8 +185,8 @@ export default function Inventory() {
           <InStoreShoppingCard
             cartItems={cartItems}
             householdName={householdName}
-            shopperName="Sarah"
-            shopperInitials="SL"
+            shopperName={shopperName}
+            shopperInitials={shopperInitials}
             memberCount={memberCount}
             isLoading={isCartLoading}
             onDeleteItem={handleDeleteCartItem}

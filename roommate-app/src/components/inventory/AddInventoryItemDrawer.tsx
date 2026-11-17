@@ -31,14 +31,14 @@ type Props = {
 };
 
 const PRESETS = [
-  'Milk 🥛',
-  'Eggs 🥚',
-  'Bread 🍞',
-  'Coffee ☕',
-  'Dish Soap 🧼',
-  'Olive Oil 🫒',
-  'Paper Towels 🧻',
-  'Bananas 🍌',
+  { name: 'Milk', emoji: '🥛' },
+  { name: 'Eggs', emoji: '🥚' },
+  { name: 'Bread', emoji: '🍞' },
+  { name: 'Coffee', emoji: '☕' },
+  { name: 'Dish Soap', emoji: '🧼' },
+  { name: 'Olive Oil', emoji: '🫒' },
+  { name: 'Paper Towels', emoji: '🧻' },
+  { name: 'Bananas', emoji: '🍌' },
 ];
 
 export default function AddInventoryItemDrawer({
@@ -129,16 +129,16 @@ export default function AddInventoryItemDrawer({
               <div className="flex flex-wrap gap-1.5">
                 {PRESETS.map((preset) => (
                   <Button
-                    key={preset}
+                    key={preset.name}
                     type="button"
                     variant="outline"
                     onClick={() => {
-                      const cleanName = preset.split(' ')[0];
-                      form.setValue('name', cleanName);
+                      form.setValue('name', preset.name, { shouldValidate: true });
                     }}
-                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/40 hover:bg-muted border border-border text-foreground transition-all"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/40 hover:bg-muted border border-border text-foreground transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
                   >
-                    {preset}
+                    <span>{preset.emoji}</span>
+                    <span>{preset.name}</span>
                   </Button>
                 ))}
               </div>
