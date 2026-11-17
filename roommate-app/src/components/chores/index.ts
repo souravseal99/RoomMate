@@ -1,5 +1,6 @@
 export { ChoreTimelineCard } from './ChoreTimelineCard';
 export { AddChoreDialog } from './AddChoreDialog';
+export { ChoresEmptyState } from './ChoresEmptyState';
 
 // Stitch-aligned Chores & Duties Hub components
 export { ChoresSubHeader } from './ChoresSubHeader';

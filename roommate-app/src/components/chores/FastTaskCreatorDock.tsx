@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 
 interface FastTaskCreatorDockProps {
   currentUserName?: string;
+  currentUserId?: string | null;
   members?: Array<{ id: string; name: string }>;
   isSubmitting?: boolean;
   onPinTask: (task: {
@@ -32,6 +33,7 @@ const PRESET_CHORES = [
 
 export function FastTaskCreatorDock({
   currentUserName = 'Sourav',
+  currentUserId,
   members = [],
   isSubmitting = false,
   onPinTask,
@@ -63,6 +65,7 @@ export function FastTaskCreatorDock({
     let assignedName = 'Open (Any)';
 
     if (selectedAssignee === 'YOU') {
+      assignedId = currentUserId || null;
       assignedName = `${currentUserName} (You)`;
     } else if (selectedAssignee !== 'OPEN') {
       const found = defaultMembers.find((m) => m.id === selectedAssignee);

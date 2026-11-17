@@ -96,7 +96,7 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
         priority: data.priority as ChorePriority,
         assignedToId: selectedAssignee || undefined,
         notes: data.notes || '',
-        nextDue: new Date().toLocaleDateString('en-GB'),
+        nextDue: new Date().toISOString(),
       });
 
       toast({

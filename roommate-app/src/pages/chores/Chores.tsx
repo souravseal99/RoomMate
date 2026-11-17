@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import type { ChoreItem, ChoreFrequency, ChorePriority } from '@/types/choreTypes';
 
 export function Chores() {
-  const { name } = useAuth();
+  const { name, userId } = useAuth();
   const currentUserName = name || 'Sourav';
   const { activeHousehold, selectedHousehold, householdMembers = [] } = useHousehold();
   const activeHouseholdId = activeHousehold?.householdId || selectedHousehold?.key || '';
@@ -91,6 +91,7 @@ export function Chores() {
     };
 
     const isMe = (chore: ChoreItem) => {
+      if (userId && chore.assignedToId === userId) return true;
       if (!chore.assignedToName) return false;
       return (
         chore.assignedToName.toLowerCase() === currentUserName.toLowerCase() ||
@@ -149,7 +150,7 @@ export function Chores() {
       filteredUpcomingChores: upcomingList,
       filteredCompletedChores: completedList,
     };
-  }, [chores, filter, currentUserName]);
+  }, [chores, filter, currentUserName, userId]);
 
   // Actions
   const handleToggleChore = async (chore: ChoreItem) => {
@@ -230,7 +231,7 @@ export function Chores() {
         choreId: chore.choreId,
         householdId: activeHouseholdId,
         updates: {
-          assignedToId: null, // Assign to current user
+          assignedToId: userId || undefined, // Assign to current user
         },
       });
       toast.success(`You took over "${chore.description}"! (+10 Karma credited)`);
@@ -308,10 +309,12 @@ export function Chores() {
             upcomingChores={filteredUpcomingChores}
             completedChores={filteredCompletedChores}
             currentUserName={currentUserName}
+            currentUserId={userId}
             onToggleChore={handleToggleChore}
             onDeleteChore={handleDeleteChore}
             onRequestSwap={(chore) => setSwapModalChore(chore)}
             onTakeOverChore={handleTakeOverChore}
+            onOpenAddChore={() => setIsAddDialogOpen(true)}
           />
         </div>
 
@@ -319,6 +322,7 @@ export function Chores() {
         <div className="lg:col-span-4 flex flex-col gap-6">
           <FastTaskCreatorDock
             currentUserName={currentUserName}
+            currentUserId={userId}
             members={householdMembers.map((m) => ({
               id: m.userId || m.householdMemberId,
               name: m.user?.name || 'Flatmate',

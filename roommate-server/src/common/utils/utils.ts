@@ -12,7 +12,19 @@ export const getUserFromRequestBody = (request: Request) => {
 };
 
 export const parseDate = (input: string) => {
+  if (input.includes("-") || input.includes("T")) {
+    const directDate = new Date(input);
+    if (!isNaN(directDate.getTime())) {
+      return directDate;
+    }
+  }
   const parsedDate = parse(input, "dd/MM/yyyy", new Date());
+  if (isNaN(parsedDate.getTime())) {
+    const fallback = new Date(input);
+    if (!isNaN(fallback.getTime())) {
+      return fallback;
+    }
+  }
   return new Date(
     Date.UTC(
       parsedDate.getFullYear(),

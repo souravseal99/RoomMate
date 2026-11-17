@@ -3,16 +3,19 @@ import type { ChoreItem } from '@/types/choreTypes';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ChoresEmptyState } from './ChoresEmptyState';
 
 interface WhiteboardTimelineBoardProps {
   todayChores: ChoreItem[];
   upcomingChores: ChoreItem[];
   completedChores: ChoreItem[];
   currentUserName?: string;
+  currentUserId?: string | null;
   onToggleChore: (chore: ChoreItem) => void;
   onDeleteChore: (choreId: string) => void;
   onRequestSwap: (chore: ChoreItem) => void;
   onTakeOverChore: (chore: ChoreItem) => void;
+  onOpenAddChore?: () => void;
 }
 
 function getInitials(name?: string): string {
@@ -41,18 +44,31 @@ export function WhiteboardTimelineBoard({
   upcomingChores,
   completedChores,
   currentUserName = 'You',
+  currentUserId,
   onToggleChore,
   onDeleteChore,
   onRequestSwap,
   onTakeOverChore,
+  onOpenAddChore,
 }: WhiteboardTimelineBoardProps) {
   const isAssignedToMe = (chore: ChoreItem) => {
+    if (currentUserId && chore.assignedToId === currentUserId) return true;
     if (!chore.assignedToName) return false;
     return (
       chore.assignedToName.toLowerCase() === currentUserName.toLowerCase() ||
       chore.assignedToName.toLowerCase().includes('you')
     );
   };
+
+  const totalFiltered = todayChores.length + upcomingChores.length + completedChores.length;
+
+  if (totalFiltered === 0) {
+    return (
+      <div className="w-full">
+        <ChoresEmptyState onAddChore={onOpenAddChore} />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6 w-full">
