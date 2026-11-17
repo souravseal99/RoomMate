@@ -1,3 +1,4 @@
+import "dotenv/config"; // To explicitely load .env the moment this file is loaded
 import App from "@src/App";
 import { env } from "@src/common/utils/env";
 import cors from "cors";
