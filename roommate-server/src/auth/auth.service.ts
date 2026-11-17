@@ -244,4 +244,62 @@ export class AuthService {
     }
     return ApiResponse.success(null, "Logged out successfully");
   }
+
+  static async changePassword(
+    userId: string,
+    currentPassword?: string,
+    newPassword?: string,
+  ) {
+    if (!currentPassword || !newPassword) {
+      return ApiResponse.error(
+        "Both current password and new password are required",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    if (newPassword.length < 8) {
+      return ApiResponse.error(
+        "New password must be at least 8 characters long",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    const user = await UserRepo.getUserById(userId);
+    if (!user) {
+      return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return ApiResponse.error(
+        "Current password does not match",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
+    await UserRepo.updateUser(userId, { password: hashedPassword });
+
+    return ApiResponse.success(null, "Password changed successfully");
+  }
+
+  static async getSessions(userId: string) {
+    const sessions = await SessionRepo.getUserSessions(userId);
+    return ApiResponse.success(sessions, "Active sessions retrieved");
+  }
+
+  static async revokeSession(userId: string, sessionId: string) {
+    const session = await SessionRepo.getSession(sessionId);
+    if (!session || session.userId !== userId) {
+      return ApiResponse.error("Session not found", StatusCodes.NOT_FOUND);
+    }
+
+    await SessionRepo.deleteSession(sessionId);
+    return ApiResponse.success(null, "Session revoked");
+  }
+
+  static async revokeOtherSessions(userId: string, currentSessionId?: string) {
+    await SessionRepo.deleteOtherSessions(userId, currentSessionId);
+    return ApiResponse.success(null, "All other sessions revoked");
+  }
 }

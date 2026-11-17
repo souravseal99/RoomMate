@@ -48,4 +48,27 @@ export class SessionRepo {
       where: { userId },
     });
   }
+
+  static async getUserSessions(userId: string) {
+    return await prisma.session.findMany({
+      where: { userId, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: "desc" },
+      select: {
+        sessionId: true,
+        userId: true,
+        createdAt: true,
+        expiresAt: true,
+        rotatedAt: true,
+      },
+    });
+  }
+
+  static async deleteOtherSessions(userId: string, currentSessionId?: string) {
+    return await prisma.session.deleteMany({
+      where: {
+        userId,
+        ...(currentSessionId ? { sessionId: { not: currentSessionId } } : {}),
+      },
+    });
+  }
 }

@@ -132,4 +132,86 @@ export class AuthController {
       message: "Logged out successfully",
     });
   }
+
+  static async changePassword(request: Request, response: Response) {
+    const userId = request.user?.userId;
+    const { currentPassword, newPassword } = request.body;
+
+    if (!userId) {
+      return response.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const { status, data, message } = await AuthService.changePassword(
+      userId,
+      currentPassword,
+      newPassword,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async getSessions(request: Request, response: Response) {
+    const userId = request.user?.userId;
+
+    if (!userId) {
+      return response.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const { status, data, message } = await AuthService.getSessions(userId);
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async revokeSession(request: Request, response: Response) {
+    const userId = request.user?.userId;
+    const { sessionId } = request.params as { sessionId: string };
+
+    if (!userId) {
+      return response.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const { status, data, message } = await AuthService.revokeSession(
+      userId,
+      sessionId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async revokeOtherSessions(request: Request, response: Response) {
+    const userId = request.user?.userId;
+    const currentSessionId = request.headers["x-session-id"] as
+      string | undefined;
+
+    if (!userId) {
+      return response.status(StatusCodes.UNAUTHORIZED).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const { status, data, message } = await AuthService.revokeOtherSessions(
+      userId,
+      currentSessionId,
+    );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
 }

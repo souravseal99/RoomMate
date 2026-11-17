@@ -10,6 +10,7 @@ import {
   Bell,
   Thermometer,
   Plus,
+  User,
 } from 'lucide-react';
 import useAuth from '@/hooks/useAuth';
 import useHousehold from '@/hooks/useHousehold';
@@ -269,13 +270,25 @@ export function AppHeader() {
                   <button
                     type="button"
                     onClick={() => {
+                      navigate('/profile');
+                      setIsProfileMenuOpen(false);
+                    }}
+                    className="w-full min-h-[40px] px-2.5 py-1.5 rounded-xl hover:bg-surface-container flex items-center gap-2 text-xs font-semibold text-foreground transition-colors cursor-pointer text-left"
+                  >
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    <span>Profile &amp; Security</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
                       navigate('/households');
                       setIsProfileMenuOpen(false);
                     }}
                     className="w-full min-h-[40px] px-2.5 py-1.5 rounded-xl hover:bg-surface-container flex items-center gap-2 text-xs font-semibold text-foreground transition-colors cursor-pointer text-left"
                   >
                     <Building className="w-4 h-4 text-muted-foreground" />
-                    <span>My Spaces & Households</span>
+                    <span>My Spaces &amp; Households</span>
                   </button>
 
                   {/* Theme Selector Section */}

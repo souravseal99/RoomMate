@@ -13,4 +13,29 @@ export class UserController {
       data: data,
     });
   }
+
+  static async updateProfile(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { name } = request.body;
+
+    const { status, data, message } = await UserService.updateProfile(userId, {
+      name,
+    });
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async deleteAccount(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+
+    const { status, data, message } = await UserService.deleteAccount(userId);
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
 }

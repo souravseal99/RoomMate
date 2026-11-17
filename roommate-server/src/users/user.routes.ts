@@ -6,5 +6,11 @@ const userRouter = Router();
 
 //NOTE - Protected Routes
 userRouter.get("/profile", ensureAuthenticated, UserController.profile);
+userRouter.patch("/profile", ensureAuthenticated, UserController.updateProfile);
+userRouter.delete(
+  "/account",
+  ensureAuthenticated,
+  UserController.deleteAccount,
+);
 
 export default userRouter;

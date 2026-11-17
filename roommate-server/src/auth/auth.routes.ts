@@ -13,6 +13,8 @@ import {
   authRefreshLimiter,
 } from "@common/middlewares/rateLimiter";
 
+import ensureAuthenticated from "@src/auth/middlewares/ensureAuthenticated";
+
 const authRoutes = Router();
 
 authRoutes.get("/csrf-token", csrfTokenLimiter, (request, response) => {
@@ -42,5 +44,26 @@ authRoutes.post(
 authRoutes.get("/refresh", authRefreshLimiter, AuthController.refresh);
 
 authRoutes.get("/logout", AuthController.logout);
+
+// Protected account security routes
+authRoutes.post(
+  "/change-password",
+  ensureAuthenticated,
+  AuthController.changePassword,
+);
+
+authRoutes.get("/sessions", ensureAuthenticated, AuthController.getSessions);
+
+authRoutes.delete(
+  "/sessions/other",
+  ensureAuthenticated,
+  AuthController.revokeOtherSessions,
+);
+
+authRoutes.delete(
+  "/sessions/:sessionId",
+  ensureAuthenticated,
+  AuthController.revokeSession,
+);
 
 export default authRoutes;

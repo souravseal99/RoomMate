@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronUp, LogOut, Palette, User, Check } from 'lucide-react';
 import {
   DropdownMenu,
@@ -22,6 +23,7 @@ export function getInitials(name?: string | null): string {
 }
 
 export function SidebarUserProfile() {
+  const navigate = useNavigate();
   const { logout, email: userEmail, name: userName } = useAuth();
   const { themeName, setTheme, availableThemes } = useTheme();
 
@@ -76,7 +78,10 @@ export function SidebarUserProfile() {
         <DropdownMenuSeparator className="my-1 bg-border/20" />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer gap-2 py-2 min-h-[40px] text-xs">
+          <DropdownMenuItem
+            onClick={() => navigate('/profile')}
+            className="cursor-pointer gap-2 py-2 min-h-[40px] text-xs"
+          >
             <User className="w-4 h-4 text-muted-foreground" />
             <span>Profile Details</span>
           </DropdownMenuItem>

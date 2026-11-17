@@ -4,6 +4,7 @@ export const APP_EVENTS = {
   ROSTER_UPDATED: 'ROSTER_UPDATED',
   EXPENSE_MUTATED: 'EXPENSE_MUTATED',
   SETTLEMENT_RECORDED: 'SETTLEMENT_RECORDED',
+  USER_PROFILE_UPDATED: 'USER_PROFILE_UPDATED',
 } as const;
 
 export type AppEventType = (typeof APP_EVENTS)[keyof typeof APP_EVENTS];
@@ -13,6 +14,7 @@ export type AppEvent =
   | { type: typeof APP_EVENTS.HOUSEHOLD_SWITCHED; payload: { householdId: string } }
   | { type: typeof APP_EVENTS.ROSTER_UPDATED; payload: { householdId: string } }
   | { type: typeof APP_EVENTS.EXPENSE_MUTATED; payload?: { householdId?: string } }
-  | { type: typeof APP_EVENTS.SETTLEMENT_RECORDED; payload?: { householdId?: string } };
+  | { type: typeof APP_EVENTS.SETTLEMENT_RECORDED; payload?: { householdId?: string } }
+  | { type: typeof APP_EVENTS.USER_PROFILE_UPDATED; payload?: { name?: string } };
 
 export type AppEventHandler = (event: AppEvent) => void;
