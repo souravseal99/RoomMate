@@ -2,10 +2,17 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { SettlementService } from "@src/expenses/settlement.service";
 import { SettlementRepo, SettlementDto } from "@src/expenses/settlement.repo";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
+import { ActivityService } from "@src/activities/activity.service";
+import { ActivityType } from "@generated/prisma";
 import { StatusCodes } from "http-status-codes";
 
 vi.mock("@src/expenses/settlement.repo");
 vi.mock("@src/household-members/householdMember.repo");
+vi.mock("@src/activities/activity.service", () => ({
+  ActivityService: {
+    logActivity: vi.fn(),
+  },
+}));
 
 describe("SettlementService", () => {
   beforeEach(() => {
@@ -123,10 +130,83 @@ describe("SettlementService", () => {
       const result = await SettlementService.createSettlement(validSettlement);
 
       expect(SettlementRepo.create).toHaveBeenCalledWith(validSettlement);
+      expect(ActivityService.logActivity).toHaveBeenCalledWith(
+        expect.objectContaining({
+          householdId: validSettlement.householdId,
+          userId: validSettlement.fromUserId,
+          type: ActivityType.SETTLEMENT,
+          metadata: expect.objectContaining({
+            amount: validSettlement.amount,
+            toUserId: validSettlement.toUserId,
+            settlementId: "settlement-123",
+          }),
+        }),
+      );
       expect(result).toMatchObject({
         status: StatusCodes.CREATED,
         message: "Settlement recorded successfully",
         data: mockSavedSettlement,
+      });
+    });
+
+    it("should return CONFLICT error when repository throws an error", async () => {
+      vi.mocked(HouseholdMemberRepo.isExistingUser).mockResolvedValue({
+        householdMemberId: "hm-valid",
+      } as any);
+
+      vi.mocked(SettlementRepo.create).mockRejectedValue(
+        new Error("Database connection lost"),
+      );
+
+      const result = await SettlementService.createSettlement(validSettlement);
+
+      expect(result).toMatchObject({
+        status: StatusCodes.CONFLICT,
+        message: "Unable to create settlement",
+      });
+    });
+  });
+
+  describe("getSettlementsByHousehold", () => {
+    it("should return settlements for a given household", async () => {
+      const mockSettlements = [
+        {
+          settlementId: "s-1",
+          householdId: "household-123",
+          fromUserId: "u-1",
+          toUserId: "u-2",
+          amount: 25.0,
+          createdAt: new Date(),
+        },
+      ];
+
+      vi.mocked(SettlementRepo.getByHouseholdId).mockResolvedValue(
+        mockSettlements as any,
+      );
+
+      const result =
+        await SettlementService.getSettlementsByHousehold("household-123");
+
+      expect(SettlementRepo.getByHouseholdId).toHaveBeenCalledWith(
+        "household-123",
+      );
+      expect(result).toMatchObject({
+        status: StatusCodes.OK,
+        data: mockSettlements,
+      });
+    });
+
+    it("should return INTERNAL_SERVER_ERROR when repository throws an error", async () => {
+      vi.mocked(SettlementRepo.getByHouseholdId).mockRejectedValue(
+        new Error("Database failure"),
+      );
+
+      const result =
+        await SettlementService.getSettlementsByHousehold("household-123");
+
+      expect(result).toMatchObject({
+        status: StatusCodes.INTERNAL_SERVER_ERROR,
+        message: "Unable to fetch settlements",
       });
     });
   });
