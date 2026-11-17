@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Upload, FileText, Eye, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import type { ExpenseResponse } from '@/types/expenseTypes';
+import type { HouseholdMember } from '@/types/householdTypes';
 
 interface StoredReceipt {
   id: string;
@@ -22,53 +24,65 @@ interface StoredReceipt {
   splitInfo: string;
 }
 
-const DEMO_RECEIPTS: StoredReceipt[] = [
-  {
-    id: 'rc-1',
-    merchant: 'Costco Cleaning & Coffee',
-    amount: 60.0,
-    uploadedBy: 'Alex Chen',
-    date: 'Oct 20, 2024',
-    tag: 'Bulk run',
-    splitInfo: 'Split 4-ways ($15.00 ea)',
-  },
-  {
-    id: 'rc-2',
-    merchant: "Trader Joe's Communal Haul",
-    amount: 112.4,
-    uploadedBy: 'Sarah Lin',
-    date: 'Oct 18, 2024',
-    tag: 'Groceries',
-    splitInfo: 'Split 4-ways ($28.10 ea)',
-  },
-  {
-    id: 'rc-3',
-    merchant: 'ConEd Power & Gas',
-    amount: 184.2,
-    uploadedBy: 'Sourav Seal (You)',
-    date: 'Oct 15, 2024',
-    tag: 'Utilities',
-    splitInfo: 'Split 4-ways ($46.05 ea)',
-  },
-  {
-    id: 'rc-4',
-    merchant: 'Whole Foods Market Produce',
-    amount: 48.0,
-    uploadedBy: 'Sourav Seal (You)',
-    date: 'Oct 12, 2024',
-    tag: 'Pantry restock',
-    splitInfo: 'Split 4-ways ($12.00 ea)',
-  },
-];
+interface ReceiptVaultTabProps {
+  expenses?: ExpenseResponse[];
+  householdMembers?: HouseholdMember[];
+}
 
-export function ReceiptVaultTab() {
+export function ReceiptVaultTab({ expenses = [], householdMembers = [] }: ReceiptVaultTabProps) {
   const [selectedReceipt, setSelectedReceipt] = useState<StoredReceipt | null>(null);
+
+  const receipts: StoredReceipt[] = useMemo(() => {
+    if (expenses.length === 0) return [];
+    return expenses.map((e) => {
+      const splitCount = e.splits?.length || householdMembers.length || 1;
+      const perPerson = (e.amount / splitCount).toFixed(2);
+      const dateStr = new Date(e.createdAt).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+      return {
+        id: e.expenseId,
+        merchant: e.description,
+        amount: e.amount,
+        uploadedBy: e.paidBy?.name || 'Roommate',
+        date: dateStr,
+        tag: e.category || 'Shared',
+        splitInfo: `Split ${splitCount}-ways ($${perPerson} ea)`,
+      };
+    });
+  }, [expenses, householdMembers]);
 
   const handleUploadClick = () => {
     toast.info('OCR receipt parser ready! Select an image or PDF to scan.');
   };
 
   const handleDownload = (receipt: StoredReceipt) => {
+    const slipText = `==============================
+DIGITAL DOMESTIC RECEIPT
+==============================
+MERCHANT: ${receipt.merchant}
+DATE: ${receipt.date}
+BILLED BY: ${receipt.uploadedBy}
+CATEGORY: ${receipt.tag}
+ALLOCATION: ${receipt.splitInfo}
+TOTAL: $${receipt.amount.toFixed(2)}
+==============================
+RoomMate Domestic Ledger
+`;
+    const blob = new Blob([slipText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute(
+      'download',
+      `receipt-${receipt.merchant.toLowerCase().replace(/\s+/g, '-')}.txt`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
     toast.success(`Receipt for ${receipt.merchant} downloaded.`);
   };
 
@@ -104,7 +118,7 @@ export function ReceiptVaultTab() {
         <div className="flex items-center justify-between pb-1 border-b border-border/40">
           <div>
             <h3 className="font-display font-extrabold text-lg text-foreground">
-              Stored Domestic Receipts ({DEMO_RECEIPTS.length})
+              Stored Domestic Receipts ({receipts.length})
             </h3>
             <p className="text-xs text-muted-foreground">
               Archived digital slips verifying recent shared expenses
@@ -112,72 +126,83 @@ export function ReceiptVaultTab() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {DEMO_RECEIPTS.map((receipt) => (
-            <Card
-              key={receipt.id}
-              className="bg-card rounded-2xl p-5 border-border shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between gap-4"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0 border border-border/60">
-                    <FileText className="w-5 h-5 stroke-[2.2]" />
+        {receipts.length === 0 ? (
+          <div className="p-8 text-center flex flex-col items-center justify-center gap-2 rounded-2xl bg-surface-container border border-dashed border-border/80">
+            <FileText className="w-8 h-8 text-muted-foreground/60 mb-1" />
+            <p className="text-sm font-bold text-foreground">No digital receipts in vault yet</p>
+            <p className="text-xs text-muted-foreground max-w-sm">
+              Logged expenses and grocery slips will automatically be archived here as itemized
+              domestic receipts.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {receipts.map((receipt) => (
+              <Card
+                key={receipt.id}
+                className="bg-card rounded-2xl p-5 border-border shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between gap-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary shrink-0 border border-border/60">
+                      <FileText className="w-5 h-5 stroke-[2.2]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-foreground">{receipt.merchant}</h4>
+                      <p className="text-xs text-muted-foreground pt-0.5">
+                        Uploaded by <strong>{receipt.uploadedBy}</strong> • {receipt.date}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-foreground">{receipt.merchant}</h4>
-                    <p className="text-xs text-muted-foreground pt-0.5">
-                      Uploaded by <strong>{receipt.uploadedBy}</strong> • {receipt.date}
-                    </p>
+
+                  <div className="font-mono font-extrabold text-base text-foreground tabular-nums">
+                    ${receipt.amount.toFixed(2)}
                   </div>
                 </div>
 
-                <div className="font-mono font-extrabold text-base text-foreground tabular-nums">
-                  ${receipt.amount.toFixed(2)}
+                {/* Tag and Split info */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge
+                    variant="secondary"
+                    className="px-2.5 py-0.5 rounded-full bg-surface-container text-foreground text-[10px] font-mono font-bold"
+                  >
+                    {receipt.tag}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border-primary/20 text-[10px] font-mono font-bold"
+                  >
+                    {receipt.splitInfo}
+                  </Badge>
                 </div>
-              </div>
 
-              {/* Tag and Split info */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge
-                  variant="secondary"
-                  className="px-2.5 py-0.5 rounded-full bg-surface-container text-foreground text-[10px] font-mono font-bold"
-                >
-                  {receipt.tag}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border-primary/20 text-[10px] font-mono font-bold"
-                >
-                  {receipt.splitInfo}
-                </Badge>
-              </div>
+                {/* Actions */}
+                <div className="flex items-center justify-between pt-2 border-t border-border/40">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setSelectedReceipt(receipt)}
+                    className="text-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer min-h-[44px] p-0 h-auto"
+                  >
+                    <Eye className="w-4 h-4" />
+                    <span>View Slip</span>
+                  </Button>
 
-              {/* Actions */}
-              <div className="flex items-center justify-between pt-2 border-t border-border/40">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setSelectedReceipt(receipt)}
-                  className="text-xs text-primary font-bold hover:underline flex items-center gap-1 cursor-pointer min-h-[44px] p-0 h-auto"
-                >
-                  <Eye className="w-4 h-4" />
-                  <span>View Slip</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  aria-label="Download receipt"
-                  onClick={() => handleDownload(receipt)}
-                  className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg hover:bg-surface-container min-h-[44px] min-w-[44px] flex items-center justify-center"
-                >
-                  <Download className="w-4 h-4" />
-                </Button>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Download receipt"
+                    onClick={() => handleDownload(receipt)}
+                    className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer rounded-lg hover:bg-surface-container min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* View Slip Modal */}

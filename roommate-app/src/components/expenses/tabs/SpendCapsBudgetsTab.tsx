@@ -1,6 +1,6 @@
 import { AlertTriangle, SunMedium, ArrowUpRight } from 'lucide-react';
 import type { ExpenseResponse } from '@/types/expenseTypes';
-import type { HouseholdMember } from '@/types/householdTypes';
+import type { HouseholdMember, HouseholdSettings } from '@/types/householdTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,47 +8,104 @@ import { Button } from '@/components/ui/button';
 interface SpendCapsBudgetsTabProps {
   expenses: ExpenseResponse[];
   householdMembers: HouseholdMember[];
+  householdSettings?: HouseholdSettings;
   onOpenSundaySquareUp: () => void;
 }
 
 export function SpendCapsBudgetsTab({
   expenses,
   householdMembers,
+  householdSettings,
   onOpenSundaySquareUp,
 }: SpendCapsBudgetsTabProps) {
   const memberCount = Math.max(1, householdMembers.length);
 
   // Dynamic budget calculations
-  const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0) || 1420;
+  const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0);
   const perTenantShare = totalSpent / memberCount;
+
+  const configuredBudget = householdSettings?.monthlyCommunalBudget;
+  const totalBudgetCap =
+    configuredBudget && configuredBudget > 0 ? configuredBudget : memberCount * 400;
+  const utilizationPercentage =
+    totalBudgetCap > 0 ? Math.min(100, Math.round((totalSpent / totalBudgetCap) * 100)) : 0;
+  const bufferRemaining = Math.max(0, totalBudgetCap - totalSpent);
+
+  // Categorize real expenses
+  const groceriesSpent = expenses
+    .filter(
+      (e) =>
+        e.category === 'groceries' ||
+        (e.category || '').toLowerCase().includes('groc') ||
+        e.description.toLowerCase().includes('grocer') ||
+        e.description.toLowerCase().includes('food') ||
+        e.description.toLowerCase().includes('trader')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const utilitiesSpent = expenses
+    .filter(
+      (e) =>
+        e.category === 'utilities' ||
+        (e.category || '').toLowerCase().includes('util') ||
+        e.description.toLowerCase().includes('util') ||
+        e.description.toLowerCase().includes('wi-fi') ||
+        e.description.toLowerCase().includes('wifi') ||
+        e.description.toLowerCase().includes('electric') ||
+        e.description.toLowerCase().includes('gas')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const suppliesSpent = expenses
+    .filter(
+      (e) =>
+        e.category === 'supplies' ||
+        e.category === 'cleaning' ||
+        (e.category || '').toLowerCase().includes('suppl') ||
+        (e.category || '').toLowerCase().includes('clean') ||
+        e.description.toLowerCase().includes('supply') ||
+        e.description.toLowerCase().includes('clean')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
+
+  const takeoutSpent = expenses
+    .filter(
+      (e) =>
+        e.category === 'takeout' ||
+        (e.category || '').toLowerCase().includes('takeout') ||
+        e.description.toLowerCase().includes('takeout') ||
+        e.description.toLowerCase().includes('pizza') ||
+        e.description.toLowerCase().includes('burger')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
 
   const budgetCategories = [
     {
       category: 'Food & Groceries',
       emoji: '🛒',
-      spent: 680,
-      cap: 800,
+      spent: groceriesSpent,
+      cap: Math.round(totalBudgetCap * 0.45),
       color: 'bg-primary',
     },
     {
       category: 'Power, Gas & Wi-Fi',
       emoji: '⚡',
-      spent: 285,
-      cap: 400,
+      spent: utilitiesSpent,
+      cap: Math.round(totalBudgetCap * 0.25),
       color: 'bg-secondary',
     },
     {
       category: 'Communal Cleaning & Supplies',
       emoji: '🧻',
-      spent: 145,
-      cap: 250,
+      spent: suppliesSpent,
+      cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-amber-600',
     },
     {
-      category: 'Maintenance & Staples Fund',
-      emoji: '🛠️',
-      spent: 60,
-      cap: 150,
+      category: 'Takeout & Social Dining',
+      emoji: '🍕',
+      spent: takeoutSpent,
+      cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-emerald-600',
     },
   ];
@@ -86,9 +143,11 @@ export function SpendCapsBudgetsTab({
             Cap Health
           </span>
           <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
-            78% Utilized
+            {utilizationPercentage}% Utilized
           </div>
-          <span className="text-[11px] text-muted-foreground">$380 buffer remaining in cycle</span>
+          <span className="text-[11px] text-muted-foreground">
+            ${bufferRemaining.toFixed(2)} buffer remaining in cycle
+          </span>
         </Card>
       </div>
 
@@ -107,13 +166,14 @@ export function SpendCapsBudgetsTab({
             variant="outline"
             className="font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-surface-container border-border/50 text-foreground"
           >
-            Cycle Cap: $1,600.00
+            Cycle Cap: ${totalBudgetCap.toFixed(2)}
           </Badge>
         </CardHeader>
 
         <CardContent className="p-0 space-y-4">
           {budgetCategories.map((cat) => {
-            const percentage = Math.min(100, Math.round((cat.spent / cat.cap) * 100));
+            const percentage =
+              cat.cap > 0 ? Math.min(100, Math.round((cat.spent / cat.cap) * 100)) : 0;
             const isNearCap = percentage >= 85;
 
             return (
@@ -132,9 +192,9 @@ export function SpendCapsBudgetsTab({
                     )}
                   </div>
                   <div className="font-mono tabular-nums text-foreground font-bold">
-                    ${cat.spent}{' '}
+                    ${cat.spent.toFixed(2)}{' '}
                     <span className="text-muted-foreground font-normal">
-                      / ${cat.cap} ({percentage}%)
+                      / ${cat.cap.toFixed(2)} ({percentage}%)
                     </span>
                   </div>
                 </div>

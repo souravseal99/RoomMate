@@ -26,7 +26,8 @@ import {
 import { toast } from 'sonner';
 
 export default function Expenses() {
-  const { selectedHousehold, householdMembers, activeHouseholdId } = useHousehold();
+  const { selectedHousehold, householdMembers, activeHouseholdId, activeHousehold } =
+    useHousehold();
   const { userId: authUserId } = useAuth();
   const currentUserId = authUserId || getCurrentUserId() || '';
 
@@ -57,6 +58,32 @@ export default function Expenses() {
   const settlements = balancesData?.settlements || [];
 
   const isLoading = isExpensesLoading || isBalancesLoading;
+
+  const userBalanceEntry = balances.find((b) => b.userId === currentUserId);
+  const netBalance = userBalanceEntry?.balance || 0;
+  const hasPendingDebts = settlements.some(
+    (s) => s.fromUserId === currentUserId || s.toUserId === currentUserId
+  );
+
+  const handleBannerSettle = () => {
+    // If current user owes money, find the largest settlement they owe to pre-fill counterparty
+    const userDebts = settlements
+      .filter((s) => s.fromUserId === currentUserId)
+      .sort((a, b) => b.amount - a.amount);
+
+    if (userDebts.length > 0) {
+      const topDebt = userDebts[0];
+      handleOpenSettle({
+        fromUserId: topDebt.fromUserId,
+        fromName: topDebt.fromName,
+        toUserId: topDebt.toUserId,
+        toName: topDebt.toName,
+        amount: topDebt.amount,
+      });
+    } else {
+      handleOpenSettle();
+    }
+  };
 
   const handleDeleteExpense = async (expenseId: string) => {
     if (!householdId) return;
@@ -166,6 +193,9 @@ export default function Expenses() {
               currentUserId={currentUserId}
               expenses={expenses}
               balances={balances}
+              netBalance={netBalance}
+              hasPendingDebts={hasPendingDebts}
+              onQuickSettle={handleBannerSettle}
               onDeleteExpense={handleDeleteExpense}
               deletingExpenseId={deleteExpenseMutation.isPending ? 'deleting' : null}
               onOpenSettleModal={handleOpenSettle}
@@ -186,11 +216,14 @@ export default function Expenses() {
             <SpendCapsBudgetsTab
               expenses={expenses}
               householdMembers={householdMembers}
+              householdSettings={activeHousehold?.settings}
               onOpenSundaySquareUp={() => setIsSundaySquareUpOpen(true)}
             />
           )}
 
-          {activeTab === 'tab-receipts' && <ReceiptVaultTab />}
+          {activeTab === 'tab-receipts' && (
+            <ReceiptVaultTab expenses={expenses} householdMembers={householdMembers} />
+          )}
         </div>
       )}
 

@@ -4,51 +4,59 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface MonthlySharedCeilingCardProps {
   expenses: ExpenseResponse[];
+  monthlyCommunalBudget?: number;
 }
 
-export function MonthlySharedCeilingCard({ expenses }: MonthlySharedCeilingCardProps) {
-  // Derive category totals dynamically from expenses or fallback to Stitch demo baseline
+export function MonthlySharedCeilingCard({
+  expenses,
+  monthlyCommunalBudget,
+}: MonthlySharedCeilingCardProps) {
+  // Derive category totals dynamically from live expenses
   const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0);
-  const displayTotal = totalSpent > 0 ? totalSpent : 1420;
-  const budgetCap = 1800;
+  const displayTotal = totalSpent;
+  const budgetCap =
+    monthlyCommunalBudget && monthlyCommunalBudget > 0 ? monthlyCommunalBudget : 1800;
   const remaining = Math.max(0, budgetCap - displayTotal);
   const percentage = Math.min(100, Math.round((displayTotal / budgetCap) * 100));
 
   // Compute breakdown proportions
-  const groceriesTotal =
-    expenses
-      .filter(
-        (e) =>
-          e.description.toLowerCase().includes('grocer') ||
-          e.description.toLowerCase().includes('food') ||
-          e.description.toLowerCase().includes('trader')
-      )
-      .reduce((acc, curr) => acc + curr.amount, 0) || 680;
+  const groceriesTotal = expenses
+    .filter(
+      (e) =>
+        (e.category || '').toLowerCase().includes('groc') ||
+        e.description.toLowerCase().includes('grocer') ||
+        e.description.toLowerCase().includes('food') ||
+        e.description.toLowerCase().includes('trader')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const utilitiesTotal =
-    expenses
-      .filter(
-        (e) =>
-          e.description.toLowerCase().includes('util') ||
-          e.description.toLowerCase().includes('wi-fi') ||
-          e.description.toLowerCase().includes('coned') ||
-          e.description.toLowerCase().includes('electric')
-      )
-      .reduce((acc, curr) => acc + curr.amount, 0) || 285;
+  const utilitiesTotal = expenses
+    .filter(
+      (e) =>
+        (e.category || '').toLowerCase().includes('util') ||
+        e.description.toLowerCase().includes('util') ||
+        e.description.toLowerCase().includes('wi-fi') ||
+        e.description.toLowerCase().includes('coned') ||
+        e.description.toLowerCase().includes('electric')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const suppliesTotal =
-    expenses
-      .filter(
-        (e) =>
-          e.description.toLowerCase().includes('supply') ||
-          e.description.toLowerCase().includes('clean') ||
-          e.description.toLowerCase().includes('coffee')
-      )
-      .reduce((acc, curr) => acc + curr.amount, 0) || 145;
+  const suppliesTotal = expenses
+    .filter(
+      (e) =>
+        (e.category || '').toLowerCase().includes('suppl') ||
+        (e.category || '').toLowerCase().includes('clean') ||
+        e.description.toLowerCase().includes('supply') ||
+        e.description.toLowerCase().includes('clean') ||
+        e.description.toLowerCase().includes('coffee')
+    )
+    .reduce((acc, curr) => acc + curr.amount, 0);
 
-  const grocWidth = Math.min(60, Math.round((groceriesTotal / budgetCap) * 100));
-  const utilWidth = Math.min(30, Math.round((utilitiesTotal / budgetCap) * 100));
-  const suppWidth = Math.min(20, Math.round((suppliesTotal / budgetCap) * 100));
+  const grocWidth =
+    budgetCap > 0 ? Math.min(60, Math.round((groceriesTotal / budgetCap) * 100)) : 0;
+  const utilWidth =
+    budgetCap > 0 ? Math.min(30, Math.round((utilitiesTotal / budgetCap) * 100)) : 0;
+  const suppWidth = budgetCap > 0 ? Math.min(20, Math.round((suppliesTotal / budgetCap) * 100)) : 0;
 
   return (
     <Card className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border flex flex-col justify-evenly gap-4 select-none">
