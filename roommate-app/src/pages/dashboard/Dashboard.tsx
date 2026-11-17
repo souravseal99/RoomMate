@@ -42,11 +42,11 @@ export function Dashboard() {
   // Authenticated user's real net balance in the active household
   const currentMemberBalance = useMemo(() => {
     if (!balancesData?.balances || !currentUserId) {
-      return stats?.expenses ?? 0;
+      return 0;
     }
     const myEntry = balancesData.balances.find((b) => b.userId === currentUserId);
     return myEntry?.balance ?? 0;
-  }, [balancesData?.balances, currentUserId, stats?.expenses]);
+  }, [balancesData?.balances, currentUserId]);
 
   // Determine low stock items based on household inventory thresholds
   const lowStockItems = useMemo(() => {
@@ -231,7 +231,7 @@ export function Dashboard() {
         isOpen={isSettleModalOpen}
         onClose={() => setIsSettleModalOpen(false)}
         recipientName={settleRecipient.name}
-        recipientSubtext={activeHousehold?.name || 'NorthWing #4B'}
+        recipientSubtext={activeHousehold?.name || 'My Household'}
         amount={settleRecipient.amount}
         fromUserId={settleRecipient.fromUserId}
         toUserId={settleRecipient.toUserId}

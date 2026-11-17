@@ -340,7 +340,9 @@ export function OdometerBalanceCard({
           onClick={() => navigate('/expenses')}
           className="inline-flex items-center gap-1.5 font-bold text-primary hover:text-primary hover:bg-primary/5 text-xs p-0 h-auto min-h-[36px] cursor-pointer"
         >
-          <span>Full Expense History (18)</span>
+          <span>
+            Full Expense History{recentBills.length > 0 ? ` (${recentBills.length})` : ''}
+          </span>
           <ArrowRight className="w-3.5 h-3.5" />
         </Button>
       </div>

@@ -92,7 +92,7 @@ export function DashboardHeroCockpit({
       ? activeHousehold.settings?.unitOrApt
         ? `${activeHousehold.name} • ${activeHousehold.settings.unitOrApt}`
         : activeHousehold.name
-      : 'NorthWing #4B';
+      : 'My Household';
 
   const isNetPositive = netBalance >= 0;
   const formattedBalance = `${isNetPositive ? '+' : '-'}$${Math.abs(netBalance).toFixed(2)}`;

@@ -12,9 +12,6 @@ export class DashboardRepo {
       where: {
         assignedToId: userId,
         completed: false,
-        nextDue: {
-          gt: new Date(),
-        },
       },
     });
   }

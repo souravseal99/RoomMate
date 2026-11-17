@@ -15,22 +15,18 @@ export function PantryFuelGauges() {
 
   const lowStockItems = inventory.filter((item) => item.quantity <= (item.lowThreshold || 3));
 
-  const displayItems: Array<{ id: string; name: string; remainingText: string }> =
-    lowStockItems.length > 0
-      ? lowStockItems.slice(0, 3).map((item) => ({
-          id: item.inventoryItemId,
-          name: item.name,
-          remainingText: `${item.quantity} left`,
-        }))
-      : [
-          { id: '1', name: 'Barista Oat Milk (2 pk)', remainingText: '0.3L left' },
-          { id: '2', name: 'Extra Virgin Olive Oil', remainingText: '10% left' },
-        ];
+  const displayItems: Array<{ id: string; name: string; remainingText: string }> = lowStockItems
+    .slice(0, 3)
+    .map((item) => ({
+      id: item.inventoryItemId,
+      name: item.name,
+      remainingText: `${item.quantity} left`,
+    }));
 
-  const lowCount = lowStockItems.length > 0 ? lowStockItems.length : 2;
+  const lowCount = lowStockItems.length;
 
   const handleRestock = () => {
-    if (!activeHouseholdId) return;
+    if (!activeHouseholdId || lowCount === 0) return;
     addLowStockMutation.mutate(activeHouseholdId, {
       onSuccess: () => {
         toast.success(`${lowCount} pantry items added to shopping cart!`, {
@@ -59,45 +55,51 @@ export function PantryFuelGauges() {
           variant="outline"
           className="text-[10px] font-semibold tracking-wider uppercase text-primary bg-primary/10 border-primary/20 px-2 py-0.5 rounded-md font-mono"
         >
-          {lowCount} Need Restock
+          {lowCount > 0 ? `${lowCount} Need Restock` : 'Stocked'}
         </Badge>
       </CardHeader>
 
       <CardContent className="p-0 space-y-4">
-        {/* Item Rows */}
-        <div className="flex flex-col">
-          {displayItems.map((item, idx) => (
-            <div key={item.id}>
-              <div className="py-2.5 flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
-                  <span className="font-semibold text-xs text-foreground tracking-tight truncate">
-                    {item.name}
-                  </span>
+        {/* Item Rows or Clean Empty State */}
+        {displayItems.length === 0 ? (
+          <div className="py-6 text-center text-xs text-muted-foreground font-mono bg-muted/20 rounded-xl border border-dashed border-border/60">
+            All pantry essentials well stocked.
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            {displayItems.map((item, idx) => (
+              <div key={item.id}>
+                <div className="py-2.5 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <AlertTriangle className="w-4 h-4 text-warning shrink-0" />
+                    <span className="font-semibold text-xs text-foreground tracking-tight truncate">
+                      {item.name}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-mono font-bold text-primary text-xs tabular-nums">
+                      {item.remainingText}
+                    </span>
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 border-primary/20 px-1.5 py-0.5 rounded font-mono"
+                    >
+                      Low
+                    </Badge>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-mono font-bold text-primary text-xs tabular-nums">
-                    {item.remainingText}
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] font-bold uppercase tracking-wider text-primary bg-primary/10 border-primary/20 px-1.5 py-0.5 rounded font-mono"
-                  >
-                    Low
-                  </Badge>
-                </div>
+                {idx < displayItems.length - 1 && <Separator className="bg-border/60" />}
               </div>
-              {idx < displayItems.length - 1 && <Separator className="bg-border/60" />}
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Auto-Add Action Button */}
         <Button
           type="button"
           variant="outline"
           onClick={handleRestock}
-          disabled={addLowStockMutation.isPending}
+          disabled={addLowStockMutation.isPending || lowCount === 0}
           className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-surface-container border border-border hover:bg-surface-container-high text-foreground font-semibold text-xs active:scale-95 transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer disabled:opacity-50"
         >
           {addLowStockMutation.isPending ? (
@@ -105,7 +107,9 @@ export function PantryFuelGauges() {
           ) : (
             <ShoppingBag className="w-4 h-4 text-primary" />
           )}
-          <span>Added to Cart ✨ ({lowCount} items queued)</span>
+          <span>
+            {lowCount > 0 ? `Auto-Add to Cart (${lowCount} items queued)` : 'Pantry Stocked'}
+          </span>
         </Button>
       </CardContent>
     </Card>

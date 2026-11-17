@@ -70,6 +70,9 @@ export default class TokenStore {
 
   static clearSession() {
     sessionStorage.removeItem(this.SESSION_KEY);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('roommate_active_household_id');
+    }
     this.accessToken = null;
     this.csrfToken = null;
     this.notify({ accessToken: null, email: null, name: null, userId: null });

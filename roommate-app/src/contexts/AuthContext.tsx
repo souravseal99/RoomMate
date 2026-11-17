@@ -182,6 +182,9 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
     } finally {
       broadcastAuthEvent({ type: 'SESSION_LOGOUT' });
       TokenStore.clearSession();
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('roommate_active_household_id');
+      }
       setAccessToken(null);
       setEmail(null);
       setName(null);

@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_LOGIN } from '@/schemas/authSchemas';
 import { pingHealth } from '@/api/healthApi';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -27,7 +28,7 @@ export default function LoginPage() {
       }
     } catch (e: any) {
       console.error('Login failed: ', e);
-      alert(e.response?.data?.message ?? 'Login failed');
+      toast.error(e.response?.data?.message ?? 'Login failed. Please check your credentials.');
     }
   };
 

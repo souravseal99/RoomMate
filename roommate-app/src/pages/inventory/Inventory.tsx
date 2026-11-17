@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 export default function Inventory() {
   const { activeHousehold } = useHousehold();
   const householdId = activeHousehold?.householdId || '';
-  const householdName = activeHousehold?.name || 'NorthWing #4B';
+  const householdName = activeHousehold?.name || 'My Household';
   const memberCount = 4;
 
   const shoppingCardRef = useRef<HTMLDivElement>(null);

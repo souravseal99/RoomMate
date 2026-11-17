@@ -11,7 +11,7 @@ interface PantrySubHeaderProps {
 }
 
 export function PantrySubHeader({
-  householdName = 'NorthWing #4B',
+  householdName = 'My Household',
   memberCount = 4,
   cartItemCount,
   onAddCustomItem,

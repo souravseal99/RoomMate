@@ -90,18 +90,18 @@ export function KitchenTableCard() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Chef Form State
-  const [dishName, setDishName] = useState('Thai Curry with Jasmine Rice');
+  const [dishName, setDishName] = useState('');
   const [servingTime, setServingTime] = useState('8:00 PM');
-  const [extraPlates, setExtraPlates] = useState(3);
+  const [extraPlates, setExtraPlates] = useState(2);
 
   // Notice Form State
-  const [noticeTitle, setNoticeTitle] = useState('Landlord AC Inspection at 2:00 PM');
+  const [noticeTitle, setNoticeTitle] = useState('');
   const [noticeUrgency, setNoticeUrgency] = useState<
     'URGENT' | 'MAINTENANCE' | 'GENERAL' | 'SOCIAL'
   >('URGENT');
 
   // Q&A Form State
-  const [questionText, setQuestionText] = useState('Anyone have a spare HDMI cable I can borrow?');
+  const [questionText, setQuestionText] = useState('');
   const [qnaCategory, setQnaCategory] = useState('Borrow Item');
   const [replyInputText, setReplyInputText] = useState('');
 

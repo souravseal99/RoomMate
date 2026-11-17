@@ -7,6 +7,7 @@ import TokenStore from '@/lib/TokenStore';
 import { AUTH_MODE_REGISTER } from '@/schemas/authSchemas';
 import { useEffect, useState } from 'react';
 import { pingHealth } from '@/api/healthApi';
+import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -25,7 +26,7 @@ export default function RegisterPage() {
         nav('/dashboard');
       }
     } catch (e: any) {
-      alert(e.response?.data?.message ?? 'Registration failed');
+      toast.error(e.response?.data?.message ?? 'Registration failed. Please try again.');
     }
   };
 
