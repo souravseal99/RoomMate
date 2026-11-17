@@ -97,4 +97,11 @@ householdRouter.post(
   ActivityController.toggleReaction,
 );
 
+householdRouter.get(
+  "/export/:householdId",
+  ensureAuthenticated,
+  authorizeHousehold(),
+  HouseholdController.exportLedger,
+);
+
 export default householdRouter;

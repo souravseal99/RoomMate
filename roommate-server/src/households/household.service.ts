@@ -8,6 +8,7 @@ import UserDto from "@src/common/dtos/UserDto";
 import { HouseholdMemberRepo } from "@src/household-members/householdMember.repo";
 import { HouseholdDto } from "@src/common/dtos/HouseholdDto";
 import { nanoid } from "nanoid";
+import prisma from "@common/utils/prisma";
 import {
   checkJoinLockout,
   recordJoinFailure,
@@ -691,5 +692,105 @@ export class HouseholdService {
       "Reply posted successfully",
       StatusCodes.OK,
     );
+  }
+
+  static async exportLedger(householdId: string, format = "json") {
+    try {
+      const household = await HouseholdRepository.getHouseholdById(householdId);
+      if (!household) {
+        return ApiResponse.error("Household not found", StatusCodes.NOT_FOUND);
+      }
+
+      const expenses = await prisma.expense.findMany({
+        where: { householdId },
+        include: {
+          paidBy: { select: { name: true, email: true } },
+          splits: {
+            include: { user: { select: { name: true, email: true } } },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const settlements = await prisma.settlement.findMany({
+        where: { householdId },
+        include: {
+          fromUser: { select: { name: true, email: true } },
+          toUser: { select: { name: true, email: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+
+      const chores = await prisma.chore.findMany({
+        where: { householdId },
+        include: {
+          assignedTo: { select: { name: true, email: true } },
+        },
+        orderBy: { nextDue: "asc" },
+      });
+
+      if (format.toLowerCase() === "csv") {
+        const rows: string[] = [
+          "Type,ID,Description,Amount,Date,PaidBy_Assignee,Status_Recipient",
+        ];
+
+        expenses.forEach((e: any) => {
+          const desc = `"${e.description.replace(/"/g, '""')}"`;
+          const date = e.createdAt.toISOString();
+          const paidBy = `"${e.paidBy?.name || "Member"}"`;
+          rows.push(
+            `Expense,${e.expenseId},${desc},${e.amount},${date},${paidBy},Recorded`,
+          );
+        });
+
+        settlements.forEach((s: any) => {
+          const desc = `"Settlement: ${s.fromUser.name} to ${s.toUser.name}"`;
+          const date = s.createdAt.toISOString();
+          const from = `"${s.fromUser.name}"`;
+          const to = `"${s.toUser.name}"`;
+          rows.push(
+            `Settlement,${s.settlementId},${desc},${s.amount},${date},${from},${to}`,
+          );
+        });
+
+        chores.forEach((c: any) => {
+          const desc = `"${c.description.replace(/"/g, '""')}"`;
+          const date = c.nextDue.toISOString();
+          const assignee = `"${c.assignedTo?.name || "Unassigned"}"`;
+          const status = c.completed ? "Completed" : "Pending";
+          rows.push(
+            `Chore,${c.choreId},${desc},0,${date},${assignee},${status}`,
+          );
+        });
+
+        const csvContent = rows.join("\n");
+        return ApiResponse.success(
+          {
+            csv: csvContent,
+            filename: `ledger-${household.name.toLowerCase().replace(/\s+/g, "-")}.csv`,
+          },
+          "Ledger exported successfully as CSV",
+        );
+      }
+
+      return ApiResponse.success(
+        {
+          household: {
+            householdId: household.householdId,
+            name: household.name,
+          },
+          expenses,
+          settlements,
+          chores,
+          exportedAt: new Date().toISOString(),
+        },
+        "Ledger exported successfully",
+      );
+    } catch (error) {
+      return ApiResponse.error(
+        "Failed to export ledger",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

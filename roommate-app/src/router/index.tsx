@@ -15,6 +15,7 @@ import Inventory from '@/pages/inventory/Inventory';
 import { InventoryProvider } from '@/contexts/InventoryContext';
 import JoinRedirectPage from '@/pages/auth/JoinRedirectPage';
 import Profile from '@/pages/profile/Profile';
+import Settings from '@/pages/settings/Settings';
 
 function AppRouter() {
   return (
@@ -40,6 +41,7 @@ function AppRouter() {
         {/* Base accessible authenticated route (Onboarding & Workspace Management) */}
         <Route path="/households" element={<Households />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
 
         {/* Feature routes protected by HouseholdGuard (Enforces active household) */}
         <Route element={<HouseholdGuard />}>

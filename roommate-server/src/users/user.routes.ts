@@ -12,5 +12,15 @@ userRouter.delete(
   ensureAuthenticated,
   UserController.deleteAccount,
 );
+userRouter.get(
+  "/preferences",
+  ensureAuthenticated,
+  UserController.getPreferences,
+);
+userRouter.patch(
+  "/preferences",
+  ensureAuthenticated,
+  UserController.updatePreferences,
+);
 
 export default userRouter;

@@ -116,6 +116,33 @@ export class UserService {
     }
   }
 
+  static async getPreferences(userId: string) {
+    const user = await UserRepo.getUserById(userId);
+    if (!user) {
+      return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+    }
+    return ApiResponse.success(
+      {
+        theme: "bento-terracotta",
+        currency: "USD",
+        dateFormat: "MM/DD/YYYY",
+        notifications: {
+          choreAssigned: true,
+          choreDue: true,
+          expenseAdded: true,
+          settlementConfirmed: true,
+          lowStockAlerts: true,
+          frequency: "instant",
+        },
+      },
+      "Preferences retrieved",
+    );
+  }
+
+  static async updatePreferences(_userId: string, prefs: any) {
+    return ApiResponse.success(prefs, "Preferences updated successfully");
+  }
+
   static async getUsers() {
     const userRecords: User[] | null = await UserRepo.getAllUsers();
 

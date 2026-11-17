@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { getUserFromRequestBody } from "@common/utils/utils";
 import { HouseholdService } from "@src/households/household.service";
 
@@ -178,6 +179,35 @@ export class HouseholdController {
       userId,
       text,
     );
+
+    return response.status(status).json({
+      message,
+      data,
+    });
+  }
+
+  static async exportLedger(request: Request, response: Response) {
+    const householdId = (request.params.householdId ||
+      request.query.householdId) as string;
+    const format = (request.query.format as string) || "json";
+
+    const { status, data, message } = await HouseholdService.exportLedger(
+      householdId,
+      format,
+    );
+
+    if (
+      format.toLowerCase() === "csv" &&
+      status === StatusCodes.OK &&
+      (data as any)?.csv
+    ) {
+      response.setHeader("Content-Type", "text/csv");
+      response.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${(data as any).filename || "ledger.csv"}"`,
+      );
+      return response.status(status).send((data as any).csv);
+    }
 
     return response.status(status).json({
       message,

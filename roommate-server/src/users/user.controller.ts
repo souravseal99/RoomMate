@@ -38,4 +38,19 @@ export class UserController {
       data,
     });
   }
+
+  static async getPreferences(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { status, data, message } = await UserService.getPreferences(userId);
+    return response.status(status).json({ message, data });
+  }
+
+  static async updatePreferences(request: Request, response: Response) {
+    const { userId } = getUserFromRequestBody(request);
+    const { status, data, message } = await UserService.updatePreferences(
+      userId,
+      request.body,
+    );
+    return response.status(status).json({ message, data });
+  }
 }
