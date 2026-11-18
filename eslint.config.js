@@ -40,6 +40,8 @@ export default tseslint.config(
       "**/generated/**", // ignore prisma generated files
       "**/.ruflo/**",
       "**/.claude/**",
+      "**/.planning/**",
+      "**/.agents/**",
     ],
   },
 
@@ -53,7 +55,7 @@ export default tseslint.config(
   // 3. Package: roommate-server & root scripts (Node.js)
   // ----------------------------------------------------
   {
-    files: ["roommate-server/**/*.{ts,js}", "scripts/**/*.{ts,js}"],
+    files: ["roommate-server/**/*.{ts,js}", "scripts/**/*.{ts,js,mjs}"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
