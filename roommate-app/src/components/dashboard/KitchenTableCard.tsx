@@ -121,23 +121,23 @@ export function KitchenTableCard() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sync state when kitchenTable loads
-  useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    if (kitchenTable?.activeMode) {
+  // Sync form inputs when server data loads (React recommended pattern without useEffect)
+  const [prevTable, setPrevTable] = useState(kitchenTable);
+  if (kitchenTable && kitchenTable !== prevTable) {
+    setPrevTable(kitchenTable);
+    if (kitchenTable.activeMode) {
       setActiveMode(kitchenTable.activeMode);
     }
-    if (kitchenTable?.meal?.dishName) {
+    if (kitchenTable.meal?.dishName) {
       setDishName(kitchenTable.meal.dishName);
     }
-    if (kitchenTable?.meal?.servingTime) {
+    if (kitchenTable.meal?.servingTime) {
       setServingTime(kitchenTable.meal.servingTime);
     }
-    if (typeof kitchenTable?.meal?.extraPlates === 'number') {
+    if (typeof kitchenTable.meal?.extraPlates === 'number') {
       setExtraPlates(kitchenTable.meal.extraPlates);
     }
-    /* eslint-enable react-hooks/set-state-in-effect */
-  }, [kitchenTable]);
+  }
 
   // Active items
   const activeMeal = kitchenTable?.meal || (kitchenTable?.dishName ? kitchenTable : null);
