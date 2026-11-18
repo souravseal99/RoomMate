@@ -145,7 +145,7 @@ export function QuickSplitDock({
       });
 
       toast.success(
-        `Logged $${numAmount.toFixed(2)} split ${splitCount}-ways ($${perPersonAmount} each) 🎉`
+        `Logged $${numAmount.toFixed(2)} split ${splitCount}-ways ($${perPersonAmount} each)`
       );
       // Reset form
       setCustomDescription('');
@@ -161,7 +161,7 @@ export function QuickSplitDock({
       aria-label="1-Tap Instant Split Dock"
       className="bg-card rounded-2xl shadow-xs p-5 sm:p-6 border-border relative overflow-hidden flex flex-col gap-4 select-none"
     >
-      {/* Subtle warm domestic craft top border */}
+      {/* Split Bill Form */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-secondary" />
 
       {/* Header and Quick Picks */}

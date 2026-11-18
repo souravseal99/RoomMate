@@ -3,6 +3,7 @@ import type { ChoreItem } from '@/types/choreTypes';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getInitials } from '@/utils/utils';
 import { ChoresEmptyState } from './ChoresEmptyState';
 
 interface WhiteboardTimelineBoardProps {
@@ -16,15 +17,6 @@ interface WhiteboardTimelineBoardProps {
   onRequestSwap: (chore: ChoreItem) => void;
   onTakeOverChore: (chore: ChoreItem) => void;
   onOpenAddChore?: () => void;
-}
-
-function getInitials(name?: string): string {
-  if (!name) return '??';
-  const parts = name.trim().split(' ');
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
 }
 
 function formatChoreSchedule(dateStr: string): string {
@@ -154,14 +146,7 @@ export function WhiteboardTimelineBoard({
                         variant="secondary"
                         className="px-2 py-0.5 rounded-full bg-surface-container-low text-muted-foreground text-[10px] font-semibold uppercase tracking-wide border border-border/40"
                       >
-                        {chore.priority === 'HIGH' ? '🔥 HIGH PRIORITY' : 'ROTA DUTY'}
-                      </Badge>
-
-                      <Badge
-                        variant="outline"
-                        className="px-2 py-0.5 rounded-full bg-primary/10 text-primary border-primary/20 text-[10px] font-extrabold"
-                      >
-                        +15 KARMA
+                        {chore.priority === 'HIGH' ? 'HIGH PRIORITY' : 'ROTA DUTY'}
                       </Badge>
                     </div>
 
@@ -191,7 +176,7 @@ export function WhiteboardTimelineBoard({
                     className="px-3.5 min-h-[44px] rounded-full bg-surface-container hover:bg-surface-container-high text-foreground font-semibold text-xs border-border/60 transition-all cursor-pointer active:scale-95 flex items-center gap-1"
                   >
                     <ArrowLeftRight className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span>Request Swap ⇄</span>
+                    <span>Request Swap</span>
                   </Button>
 
                   <Button
@@ -205,7 +190,7 @@ export function WhiteboardTimelineBoard({
                     }`}
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>{chore.completed ? 'Undo' : 'Mark Done ✨'}</span>
+                    <span>{chore.completed ? 'Undo' : 'Mark Done'}</span>
                   </Button>
 
                   <Button
@@ -299,7 +284,7 @@ export function WhiteboardTimelineBoard({
                     onClick={() => onRequestSwap(chore)}
                     className="px-3.5 min-h-[44px] rounded-full bg-surface-container-low hover:bg-surface-container text-foreground font-semibold text-xs border-border/50 transition-colors cursor-pointer active:scale-95"
                   >
-                    Swap ⇄
+                    Swap
                   </Button>
 
                   {!isMe && (
@@ -309,7 +294,7 @@ export function WhiteboardTimelineBoard({
                       onClick={() => onTakeOverChore(chore)}
                       className="px-3.5 min-h-[44px] rounded-full bg-primary/10 hover:bg-primary/20 text-primary border-primary/20 font-bold text-xs transition-colors cursor-pointer active:scale-95"
                     >
-                      Take Over (+10)
+                      Take Over
                     </Button>
                   )}
                 </div>
@@ -360,8 +345,7 @@ export function WhiteboardTimelineBoard({
                     {chore.description}
                   </span>
                   <span className="text-[11px] text-muted-foreground">
-                    Stamped by {chore.assignedToName || 'Flatmate'} •{' '}
-                    <strong className="text-primary font-bold">+10 Karma</strong>
+                    Completed by {chore.assignedToName || 'Flatmate'}
                   </span>
                 </div>
               </div>

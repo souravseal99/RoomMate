@@ -40,12 +40,12 @@ const choreSchema = z.object({
 type ChoreFormData = z.infer<typeof choreSchema>;
 
 const PRESET_TASKS = [
-  { label: 'Take Out Trash', emoji: '🗑️' },
-  { label: 'Wash Dishes', emoji: '🍽️' },
-  { label: 'Clean Kitchen', emoji: '🧼' },
-  { label: 'Vacuum Living Room', emoji: '🧹' },
-  { label: 'Wipe Counters', emoji: '✨' },
-  { label: 'Mop Floors', emoji: '🪣' },
+  { label: 'Take Out Trash' },
+  { label: 'Wash Dishes' },
+  { label: 'Clean Kitchen' },
+  { label: 'Vacuum Living Room' },
+  { label: 'Wipe Counters' },
+  { label: 'Mop Floors' },
 ];
 
 interface AddChoreDialogProps {
@@ -100,7 +100,7 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
       });
 
       toast({
-        title: 'Chore Created! ✨',
+        title: 'Chore Created',
         description: `"${data.description}" added to the chore board.`,
       });
 
@@ -145,9 +145,8 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
                 type="button"
                 variant="outline"
                 onClick={() => handleSelectPreset(preset.label)}
-                className="min-h-[44px] px-3.5 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border-border/60 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 h-auto py-2"
+                className="min-h-[44px] px-3.5 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border-border/60 active:scale-95 transition-all cursor-pointer flex items-center justify-center h-auto py-2"
               >
-                <span>{preset.emoji}</span>
                 <span>{preset.label}</span>
               </Button>
             ))}
@@ -251,7 +250,7 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
                 <SelectContent className="bg-card border-border rounded-xl">
                   <SelectItem value="LOW">Low</SelectItem>
                   <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="HIGH">High 🔥</SelectItem>
+                  <SelectItem value="HIGH">High</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -79,7 +79,10 @@ export function ChoreTimelineCard({
           </div>
 
           <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground font-medium flex-wrap">
-            <span className="flex items-center gap-1 truncate">👤 {assigneeName}</span>
+            <span className="flex items-center gap-1 truncate">
+              <UserIcon className="w-3 h-3 text-muted-foreground" />
+              <span>{assigneeName}</span>
+            </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               <span>{chore.frequency}</span>

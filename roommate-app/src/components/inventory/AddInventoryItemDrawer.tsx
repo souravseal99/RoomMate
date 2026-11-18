@@ -31,14 +31,14 @@ type Props = {
 };
 
 const PRESETS = [
-  { name: 'Milk', emoji: '🥛' },
-  { name: 'Eggs', emoji: '🥚' },
-  { name: 'Bread', emoji: '🍞' },
-  { name: 'Coffee', emoji: '☕' },
-  { name: 'Dish Soap', emoji: '🧼' },
-  { name: 'Olive Oil', emoji: '🫒' },
-  { name: 'Paper Towels', emoji: '🧻' },
-  { name: 'Bananas', emoji: '🍌' },
+  { name: 'Milk' },
+  { name: 'Eggs' },
+  { name: 'Bread' },
+  { name: 'Coffee' },
+  { name: 'Dish Soap' },
+  { name: 'Olive Oil' },
+  { name: 'Paper Towels' },
+  { name: 'Bananas' },
 ];
 
 export default function AddInventoryItemDrawer({
@@ -135,9 +135,8 @@ export default function AddInventoryItemDrawer({
                     onClick={() => {
                       form.setValue('name', preset.name, { shouldValidate: true });
                     }}
-                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/40 hover:bg-muted border border-border text-foreground transition-all cursor-pointer active:scale-95 flex items-center gap-1.5"
+                    className="min-h-[44px] px-3.5 py-2 rounded-xl text-xs font-semibold bg-muted/40 hover:bg-muted border border-border text-foreground transition-all cursor-pointer active:scale-95 flex items-center justify-center"
                   >
-                    <span>{preset.emoji}</span>
                     <span>{preset.name}</span>
                   </Button>
                 ))}

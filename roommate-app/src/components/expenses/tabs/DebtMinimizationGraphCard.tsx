@@ -138,7 +138,7 @@ export function DebtMinimizationGraphCard({
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
-                  <span>{isDebtor ? '⚡ Settle Now' : 'Record Paid'}</span>
+                  <span>{isDebtor ? 'Settle Now' : 'Record Paid'}</span>
                 </Button>
               </div>
             </div>

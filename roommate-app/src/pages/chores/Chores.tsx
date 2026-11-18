@@ -163,7 +163,7 @@ export function Chores() {
         updates: { completed: nextCompleted },
       });
       if (nextCompleted) {
-        toast.success(`Chore completed! 🎉 (+15 Karma credited)`);
+        toast.success(`Chore completed!`);
       } else {
         toast.info(`Chore reopened`);
       }
@@ -209,7 +209,7 @@ export function Chores() {
         householdId: activeHouseholdId,
         notes: `Pinned to whiteboard by ${currentUserName}`,
       });
-      toast.success(`Pinned "${task.description}" to the household board! 📌`);
+      toast.success(`Added "${task.description}" to the household board`);
     } catch {
       toast.error('Failed to pin chore to the board');
     }
@@ -217,11 +217,11 @@ export function Chores() {
 
   const handleSendNudge = (chore: ChoreItem) => {
     const name = chore.assignedToName || 'Flatmate';
-    toast.success(`Friendly reminder sent to ${name} for "${chore.description}"! 🔔`);
+    toast.success(`Reminder sent to ${name} for "${chore.description}"`);
   };
 
   const handleConfirmSwap = (chore: ChoreItem, targetFlatmateName: string) => {
-    toast.success(`Swap request proposed to ${targetFlatmateName} for "${chore.description}"! ⇄`);
+    toast.success(`Swap request sent to ${targetFlatmateName} for "${chore.description}"`);
   };
 
   const handleTakeOverChore = async (chore: ChoreItem) => {
@@ -234,7 +234,7 @@ export function Chores() {
           assignedToId: userId || undefined, // Assign to current user
         },
       });
-      toast.success(`You took over "${chore.description}"! (+10 Karma credited)`);
+      toast.success(`You took over "${chore.description}"`);
     } catch {
       toast.error('Failed to take over chore');
     }

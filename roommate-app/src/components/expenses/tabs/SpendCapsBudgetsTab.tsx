@@ -82,28 +82,24 @@ export function SpendCapsBudgetsTab({
   const budgetCategories = [
     {
       category: 'Food & Groceries',
-      emoji: '🛒',
       spent: groceriesSpent,
       cap: Math.round(totalBudgetCap * 0.45),
       color: 'bg-primary',
     },
     {
       category: 'Power, Gas & Wi-Fi',
-      emoji: '⚡',
       spent: utilitiesSpent,
       cap: Math.round(totalBudgetCap * 0.25),
       color: 'bg-secondary',
     },
     {
       category: 'Communal Cleaning & Supplies',
-      emoji: '🧻',
       spent: suppliesSpent,
       cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-amber-600',
     },
     {
       category: 'Takeout & Social Dining',
-      emoji: '🍕',
       spent: takeoutSpent,
       cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-emerald-600',
@@ -180,7 +176,6 @@ export function SpendCapsBudgetsTab({
               <div key={cat.category} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">{cat.emoji}</span>
                     <span className="font-bold text-foreground">{cat.category}</span>
                     {isNearCap && (
                       <Badge

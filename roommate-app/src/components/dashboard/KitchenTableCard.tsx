@@ -36,40 +36,39 @@ const QUICK_QNA_CHIPS = ['+ Borrow Item', '+ Lost & Found', '+ Quick Poll', '+ W
 const NOTICE_URGENCIES: Array<{
   id: 'URGENT' | 'MAINTENANCE' | 'GENERAL' | 'SOCIAL';
   label: string;
-  icon: string;
 }> = [
-  { id: 'URGENT', label: 'Urgent', icon: '⚠️' },
-  { id: 'MAINTENANCE', label: 'Maintenance', icon: '🔧' },
-  { id: 'GENERAL', label: 'Info', icon: 'ℹ️' },
-  { id: 'SOCIAL', label: 'Social', icon: '🎉' },
+  { id: 'URGENT', label: 'Urgent' },
+  { id: 'MAINTENANCE', label: 'Maintenance' },
+  { id: 'GENERAL', label: 'Info' },
+  { id: 'SOCIAL', label: 'Social' },
 ];
 
 const BOARD_MODES: Array<{
   id: KitchenTableMode;
   label: string;
   subtitle: string;
-  icon: string;
+  icon: React.ReactNode;
   badgeClass: string;
 }> = [
   {
     id: 'CHEF',
     label: 'Chef Mode',
     subtitle: "Tonight's dish & extras",
-    icon: '♨️',
+    icon: <UtensilsCrossed className="w-4 h-4" />,
     badgeClass: 'bg-primary/10 text-primary border-primary/20',
   },
   {
     id: 'QNA',
     label: 'Q&A Mode',
     subtitle: 'Flatmate questions & forum',
-    icon: '💬',
+    icon: <MessageSquare className="w-4 h-4" />,
     badgeClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
   },
   {
     id: 'NOTICE',
     label: 'Notice Mode',
     subtitle: 'House bulletin announcements',
-    icon: '📢',
+    icon: <Megaphone className="w-4 h-4" />,
     badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
   },
 ];
@@ -471,7 +470,7 @@ export function KitchenTableCard() {
                     {isAttending ? (
                       <span className="flex items-center gap-1">
                         <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Attending! 🍲</span>
+                        <span>Attending</span>
                       </span>
                     ) : (
                       <span>RSVP</span>
@@ -534,13 +533,12 @@ export function KitchenTableCard() {
                       key={urg.id}
                       type="button"
                       onClick={() => setNoticeUrgency(urg.id)}
-                      className={`min-h-[38px] py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                      className={`min-h-[38px] py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                         isSelected
                           ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs'
                           : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      <span>{urg.icon}</span>
                       <span>{urg.label}</span>
                     </button>
                   );
@@ -586,7 +584,7 @@ export function KitchenTableCard() {
                       disabled={ackNoticeMutation.isPending}
                       className="min-h-[36px] h-8 text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30"
                     >
-                      {ackNoticeMutation.isPending ? 'Marking...' : 'Mark as Seen ✓'}
+                      {ackNoticeMutation.isPending ? 'Marking...' : 'Mark as Seen'}
                     </Button>
                   )}
                 </div>

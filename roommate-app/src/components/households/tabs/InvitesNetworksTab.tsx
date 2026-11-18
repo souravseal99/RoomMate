@@ -50,7 +50,7 @@ export function InvitesNetworksTab() {
     const greeting = recipientName ? `Hey ${recipientName}!` : 'Hey!';
     const text = `${greeting} Join our flat "${activeHousehold?.name || 'Our Space'}" on RoomMate using code: ${inviteCode}\nDirect link: ${joinUrl}`;
     navigator.clipboard.writeText(text);
-    toast.success(`Copied invite message for ${recipientName || 'roommate'}! 📋`);
+    toast.success(`Copied invite message for ${recipientName || 'roommate'}`);
   };
 
   return (

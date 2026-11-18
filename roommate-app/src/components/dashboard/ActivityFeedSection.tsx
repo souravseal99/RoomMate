@@ -137,11 +137,10 @@ export function ActivityFeedSection() {
     const timeStr = formatRelativeTime(item.createdAt);
 
     if (item.type === 'CHORE_COMPLETED') {
-      const karma = item.metadata?.karma || 10;
       return (
         <div className="flex items-center gap-1.5 text-[11px] mt-0.5 font-mono">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-            +{karma} House Karma awarded
+            Duty completed &amp; verified
           </span>
           <span className="text-muted-foreground">·</span>
           <span className="text-muted-foreground">{timeStr}</span>

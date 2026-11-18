@@ -10,7 +10,7 @@ interface FlatmateScore {
   initials: string;
   avatarBg: string;
   completedText: string;
-  karmaBadge: string;
+  dutyBadge: string;
   statusText: string;
   statusColor: string;
 }
@@ -41,7 +41,7 @@ export function FridgeMagnetStandings({
       initials: currentUserName.slice(0, 2).toUpperCase(),
       avatarBg: 'bg-primary text-primary-foreground',
       completedText: `${myCompletedCount > 0 ? myCompletedCount : 3} finished this cycle`,
-      karmaBadge: `+${(myCompletedCount > 0 ? myCompletedCount : 3) * 5} Karma`,
+      dutyBadge: 'Active',
       statusText: 'Completed',
       statusColor: 'text-primary font-bold',
     },
@@ -50,7 +50,7 @@ export function FridgeMagnetStandings({
       initials: 'SL',
       avatarBg: 'bg-secondary text-secondary-foreground',
       completedText: '2 covered • Coffee Station',
-      karmaBadge: '1 Turn Left',
+      dutyBadge: '1 Turn Left',
       statusText: 'On Track',
       statusColor: 'text-muted-foreground',
     },
@@ -59,7 +59,7 @@ export function FridgeMagnetStandings({
       initials: 'LK',
       avatarBg: 'bg-surface-container text-foreground',
       completedText: '2 covered • Entryway',
-      karmaBadge: 'All Set',
+      dutyBadge: 'All Set',
       statusText: 'Done',
       statusColor: 'text-emerald-600 dark:text-emerald-400 font-semibold',
     },
@@ -68,7 +68,7 @@ export function FridgeMagnetStandings({
       initials: 'AC',
       avatarBg: 'bg-secondary text-secondary-foreground',
       completedText: 'Compost & Boxes',
-      karmaBadge: 'Up Next',
+      dutyBadge: 'Up Next',
       statusText: 'Tomorrow 7 AM',
       statusColor: 'text-destructive font-bold',
     },
@@ -120,7 +120,7 @@ export function FridgeMagnetStandings({
               </div>
 
               <div className="flex flex-col items-end shrink-0 pl-2">
-                <span className={`text-xs ${flatmate.statusColor}`}>{flatmate.karmaBadge}</span>
+                <span className={`text-xs ${flatmate.statusColor}`}>{flatmate.dutyBadge}</span>
                 <span className="text-[10px] text-muted-foreground">{flatmate.statusText}</span>
               </div>
             </div>

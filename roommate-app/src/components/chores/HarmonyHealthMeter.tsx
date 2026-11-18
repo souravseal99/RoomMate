@@ -55,7 +55,7 @@ export function HarmonyHealthMeter({
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          My Duties Only 👤 ({mineCount})
+          My Duties ({mineCount})
         </Button>
 
         <Button
@@ -68,7 +68,7 @@ export function HarmonyHealthMeter({
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          Due Today ⏰ ({todayCount})
+          Due Today ({todayCount})
         </Button>
 
         <Button
@@ -81,11 +81,11 @@ export function HarmonyHealthMeter({
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          High Priority 🔥 ({urgentCount})
+          High Priority ({urgentCount})
         </Button>
       </Card>
 
-      {/* Apartment Harmony Ribbon (5 cols) */}
+      {/* Household Progress Ribbon (5 cols) */}
       <Card className="xl:col-span-5 bg-card px-4 py-3 rounded-2xl border-border/70 shadow-xs flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -95,18 +95,18 @@ export function HarmonyHealthMeter({
           <div className="flex flex-col min-w-0 gap-0.5 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-display font-bold text-xs sm:text-sm text-foreground whitespace-nowrap">
-                Apartment Harmony: {harmonyScore}%
+                Household Completion: {harmonyScore}%
               </span>
               <Badge
                 variant="outline"
                 className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary border-primary/20 text-[10px] font-extrabold uppercase tracking-wide whitespace-nowrap shrink-0"
               >
                 <Flame className="w-3 h-3 fill-primary text-primary" />
-                14-Day Streak
+                Active Streak
               </Badge>
             </div>
             <span className="text-[11px] text-muted-foreground truncate">
-              {completedCount} of {totalCount} done • Sunday auto-rota in 2 days
+              {completedCount} of {totalCount} completed this cycle
             </span>
           </div>
         </div>

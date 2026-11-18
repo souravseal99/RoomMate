@@ -24,7 +24,7 @@ export default function NetBalanceHeroCard({ expensesAmount, recentExpenses }: P
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-primary mt-1">
             {isZero ? (
-              'All Settled Up ✨'
+              'All Settled Up'
             ) : isOwed ? (
               <>
                 You're owed <br />

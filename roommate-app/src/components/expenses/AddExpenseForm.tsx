@@ -17,12 +17,12 @@ type Props = {
 };
 
 const CATEGORY_PRESETS = [
-  { label: 'Groceries', icon: '🛒' },
-  { label: 'Utilities', icon: '⚡' },
-  { label: 'Rent', icon: '🏠' },
-  { label: 'Takeout', icon: '🍕' },
-  { label: 'Supplies', icon: '🧻' },
-  { label: 'Cleaning', icon: '🧼' },
+  { label: 'Groceries' },
+  { label: 'Utilities' },
+  { label: 'Rent' },
+  { label: 'Takeout' },
+  { label: 'Supplies' },
+  { label: 'Cleaning' },
 ];
 
 export default function AddExpenseForm({
@@ -129,7 +129,7 @@ export default function AddExpenseForm({
       });
 
       if (resp && (resp.status === 201 || resp.status === 200)) {
-        toast.success('Expense recorded successfully! 🎉');
+        toast.success('Expense recorded successfully');
         getExpenses();
         onSuccess?.();
       } else {
@@ -161,13 +161,12 @@ export default function AddExpenseForm({
                     key={preset.label}
                     type="button"
                     onClick={() => handlePresetClick(preset.label)}
-                    className={`min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 border ${
+                    className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center justify-center transition-all cursor-pointer active:scale-95 border ${
                       isSelected
                         ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                         : 'bg-card hover:bg-surface-container border-border/80 text-foreground'
                     }`}
                   >
-                    <span>{preset.icon}</span>
                     <span>{preset.label}</span>
                   </button>
                 );

@@ -64,7 +64,7 @@ export function InviteRoommatesModal({ household, open, onOpenChange }: InviteRo
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      `Hey! Join our shared household "${household.name}" on RoomMate 🏠\n\nInvite Code: ${inviteCode}\nDirect Link: ${joinUrl}`
+      `Hey! Join our shared household "${household.name}" on RoomMate\n\nInvite Code: ${inviteCode}\nDirect Link: ${joinUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
   };

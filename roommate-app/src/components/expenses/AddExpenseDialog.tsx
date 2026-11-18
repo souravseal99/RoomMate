@@ -189,13 +189,12 @@ export function AddExpenseDialog({
                     key={cat.id}
                     type="button"
                     onClick={() => handleCategorySelect(cat)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-all cursor-pointer font-medium flex items-center gap-1 ${
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer font-medium flex items-center justify-center ${
                       isSelected
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-surface-container text-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
-                    <span>{cat.emoji}</span>
                     <span>{cat.label}</span>
                   </button>
                 );

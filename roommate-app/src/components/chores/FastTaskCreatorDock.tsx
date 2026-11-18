@@ -23,12 +23,12 @@ interface FastTaskCreatorDockProps {
 }
 
 const PRESET_CHORES = [
-  { label: '🗑️ Trash', text: 'Take out kitchen trash & replace liner' },
-  { label: '🍽️ Dishes', text: 'Unload & run dishwasher cycle' },
-  { label: '🧼 Kitchen', text: 'Deep scrub stovetop & sink' },
-  { label: '🧹 Vacuum', text: 'Vacuum living room rug & lounge' },
-  { label: '✨ Counters', text: 'Wipe quartz kitchen counter & table' },
-  { label: '🪣 Mop', text: 'Swiffer damp-mop hardwood floors' },
+  { label: 'Trash', text: 'Take out kitchen trash & replace liner' },
+  { label: 'Dishes', text: 'Unload & run dishwasher cycle' },
+  { label: 'Kitchen', text: 'Deep scrub stovetop & sink' },
+  { label: 'Vacuum', text: 'Vacuum living room rug & lounge' },
+  { label: 'Counters', text: 'Wipe quartz kitchen counter & table' },
+  { label: 'Mop', text: 'Swiffer damp-mop hardwood floors' },
 ];
 
 export function FastTaskCreatorDock({
@@ -298,7 +298,7 @@ export function FastTaskCreatorDock({
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  High 🔥
+                  High
                 </Button>
               </div>
             </div>
@@ -311,7 +311,7 @@ export function FastTaskCreatorDock({
             className="w-full py-3 min-h-[44px] rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
           >
             <Pin className="w-4 h-4 stroke-[2.2]" />
-            <span>Pin to Household Board 📌</span>
+            <span>Pin to Household Board</span>
           </Button>
         </form>
       </CardContent>

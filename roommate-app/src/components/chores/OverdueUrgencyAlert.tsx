@@ -52,7 +52,7 @@ export function OverdueUrgencyAlert({ overdueChores, onSendNudge }: OverdueUrgen
           className="inline-flex items-center gap-1.5 px-4 min-h-[44px] rounded-full bg-card hover:bg-surface-container text-foreground font-semibold text-xs border-border/70 transition-all shadow-xs cursor-pointer active:scale-95"
         >
           <Bell className="w-4 h-4 text-primary" />
-          <span>Friendly Nudge 🔔</span>
+          <span>Send Friendly Reminder</span>
         </Button>
       </div>
     </Card>

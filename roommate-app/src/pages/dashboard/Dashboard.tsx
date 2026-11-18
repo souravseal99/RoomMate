@@ -174,7 +174,7 @@ export function Dashboard() {
 
   return (
     <div className="w-full max-w-[1240px] mx-auto py-1 sm:py-2 space-y-4">
-      {/* 1. Recessed Dominant Glanceable Hero Cockpit */}
+      {/* 1. Dashboard Overview Hero */}
       <DashboardHeroCockpit
         netBalance={currentMemberBalance}
         urgentChoreName={nextChore?.description}

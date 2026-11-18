@@ -88,7 +88,7 @@ export function MemberRosterView({
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      `Hey! Join our shared living space "${household.name}" on RoomMate 🏠\n\nInvite Code: ${inviteCode}\nDirect Link: ${joinUrl}`
+      `Hey! Join our shared living space "${household.name}" on RoomMate\n\nInvite Code: ${inviteCode}\nDirect Link: ${joinUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank', 'noopener,noreferrer');
   };
@@ -345,7 +345,7 @@ export function MemberRosterView({
         </div>
       )}
 
-      {/* Tactile Sticky Note Invite Card (Stitch Design) */}
+      {/* Household Invite Card */}
       <Card className="bg-surface-container-low p-5 sm:p-6 rounded-2xl shadow-md border-border/60 relative overflow-hidden select-none">
         <CardContent className="p-0 flex flex-col items-center text-center space-y-3">
           {/* Subtle tape accent top indicator */}

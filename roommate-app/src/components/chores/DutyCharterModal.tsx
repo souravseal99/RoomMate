@@ -17,8 +17,8 @@ interface DutyCharterModalProps {
 
 const CHARTER_RULES = [
   {
-    title: 'Zero-Blame Automatic Rota',
-    desc: 'Duties rotate dynamically every Sunday at 10:00 AM. Unfinished tasks carry karma adjustments rather than resentment.',
+    title: 'Automatic Rota Schedule',
+    desc: 'Duties rotate dynamically every Sunday at 10:00 AM. Unfinished tasks automatically rollover to the next cycle schedule.',
   },
   {
     title: 'Clean-As-You-Cook Standard',
@@ -26,7 +26,7 @@ const CHARTER_RULES = [
   },
   {
     title: 'The 24-Hour Swap Window',
-    desc: 'Need to skip a shift? Tap "Request Swap" at least 24 hours prior so a roommate can take over and earn +10 karma.',
+    desc: 'Need to skip a shift? Tap "Request Swap" at least 24 hours prior so a roommate can take over the scheduled duty.',
   },
   {
     title: 'Communal Supply Restock',

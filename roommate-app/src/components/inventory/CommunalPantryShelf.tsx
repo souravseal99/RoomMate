@@ -5,6 +5,7 @@ import {
   Minus,
   Plus,
   ShoppingCart,
+  Package,
   PackageOpen,
   Edit2,
   Lightbulb,
@@ -26,86 +27,6 @@ interface CommunalPantryShelfProps {
 
 type FilterTab = 'all' | 'low' | 'out';
 type SortOption = 'urgency' | 'name' | 'recent';
-
-function getItemEmoji(name: string): string {
-  const lower = name.toLowerCase();
-  if (
-    lower.includes('milk') ||
-    lower.includes('oat') ||
-    lower.includes('barista') ||
-    lower.includes('dairy') ||
-    lower.includes('cream')
-  )
-    return '🥛';
-  if (lower.includes('egg')) return '🥚';
-  if (
-    lower.includes('bread') ||
-    lower.includes('sourdough') ||
-    lower.includes('toast') ||
-    lower.includes('bagel')
-  )
-    return '🍞';
-  if (
-    lower.includes('coffee') ||
-    lower.includes('espresso') ||
-    lower.includes('roast') ||
-    lower.includes('bean')
-  )
-    return '☕';
-  if (
-    lower.includes('oil') ||
-    lower.includes('olive') ||
-    lower.includes('sauce') ||
-    lower.includes('vinegar')
-  )
-    return '🫒';
-  if (
-    lower.includes('paper') ||
-    lower.includes('towel') ||
-    lower.includes('tissue') ||
-    lower.includes('roll')
-  )
-    return '🧻';
-  if (
-    lower.includes('soap') ||
-    lower.includes('dish') ||
-    lower.includes('pod') ||
-    lower.includes('detergent') ||
-    lower.includes('sponge')
-  )
-    return '🧼';
-  if (
-    lower.includes('apple') ||
-    lower.includes('banana') ||
-    lower.includes('fruit') ||
-    lower.includes('berry')
-  )
-    return '🍎';
-  if (
-    lower.includes('pasta') ||
-    lower.includes('noodle') ||
-    lower.includes('rice') ||
-    lower.includes('grain')
-  )
-    return '🍝';
-  if (
-    lower.includes('snack') ||
-    lower.includes('chip') ||
-    lower.includes('cookie') ||
-    lower.includes('cracker')
-  )
-    return '🍪';
-  if (
-    lower.includes('drink') ||
-    lower.includes('soda') ||
-    lower.includes('water') ||
-    lower.includes('tea') ||
-    lower.includes('juice')
-  )
-    return '🥤';
-  if (lower.includes('salt') || lower.includes('pepper') || lower.includes('spice')) return '🧂';
-  return '📦';
-}
 
 function formatRelativeTime(dateString?: string): string {
   if (!dateString) return 'recently';
@@ -282,7 +203,6 @@ export function CommunalPantryShelf({
           filteredAndSortedItems.map((item) => {
             const isOut = item.quantity === 0;
             const isLow = !isOut && item.quantity <= item.lowThreshold;
-            const emoji = getItemEmoji(item.name);
 
             // Stock percentage gauge calculation
             const maxRef = Math.max(item.lowThreshold * 2, item.quantity, 1);
@@ -297,10 +217,10 @@ export function CommunalPantryShelf({
                   isOut ? 'bg-destructive/5' : ''
                 }`}
               >
-                {/* Left: Item Emoji + Info + Gauge */}
+                {/* Left: Item Info + Gauge */}
                 <div className="flex items-start gap-3.5 min-w-0 flex-1">
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0 border ${
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
                       isOut
                         ? 'bg-destructive/10 text-destructive border-destructive/20'
                         : isLow
@@ -308,7 +228,7 @@ export function CommunalPantryShelf({
                           : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20'
                     }`}
                   >
-                    {emoji}
+                    <Package className="w-5 h-5 stroke-[2.2]" />
                   </div>
 
                   <div className="flex-1 min-w-0">

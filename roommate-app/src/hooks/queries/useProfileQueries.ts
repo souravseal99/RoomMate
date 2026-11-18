@@ -46,7 +46,7 @@ export function useUpdateProfileMutation() {
         payload: { name: data.name },
       });
 
-      toast.success('Profile updated successfully! ✨');
+      toast.success('Profile updated successfully');
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to update profile');
@@ -58,7 +58,7 @@ export function useChangePasswordMutation() {
   return useMutation({
     mutationFn: changePassword,
     onSuccess: () => {
-      toast.success('Password changed successfully. 🔒');
+      toast.success('Password changed successfully');
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to change password');

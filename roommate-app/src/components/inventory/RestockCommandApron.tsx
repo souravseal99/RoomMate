@@ -13,12 +13,12 @@ interface RestockCommandApronProps {
 }
 
 const QUICK_PICK_STAPLES = [
-  { name: 'Barista Oat Milk', emoji: '🥛', price: '$3.89', unit: 'carton' },
-  { name: 'Pasture Eggs', emoji: '🥚', price: '$4.50', unit: 'carton' },
-  { name: 'Sourdough Bread', emoji: '🍞', price: '$4.20', unit: 'loaf' },
-  { name: 'Coffee Beans', emoji: '☕', price: '$14.00', unit: 'bag' },
-  { name: 'Paper Towels', emoji: '🧻', price: '$18.00', unit: 'pack' },
-  { name: 'Dish Soap', emoji: '🧼', price: '$5.20', unit: 'bottle' },
+  { name: 'Barista Oat Milk', price: '$3.89', unit: 'carton' },
+  { name: 'Pasture Eggs', price: '$4.50', unit: 'carton' },
+  { name: 'Sourdough Bread', price: '$4.20', unit: 'loaf' },
+  { name: 'Coffee Beans', price: '$14.00', unit: 'bag' },
+  { name: 'Paper Towels', price: '$18.00', unit: 'pack' },
+  { name: 'Dish Soap', price: '$5.20', unit: 'bottle' },
 ];
 
 export function RestockCommandApron({
@@ -98,7 +98,7 @@ export function RestockCommandApron({
               className="min-h-[44px] px-4 rounded-xl text-xs sm:text-sm font-bold gap-2 justify-center"
             >
               <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              <span>1-Tap Sync to Cart</span>
+              <span>Sync to Cart</span>
             </Button>
           </div>
         </div>
@@ -117,9 +117,7 @@ export function RestockCommandApron({
               onClick={() => onQuickAddStaple(staple.name, 1, staple.unit)}
               className="shrink-0 min-h-[44px] px-3 rounded-xl bg-card hover:bg-muted/50 border-border/60 text-foreground font-medium text-xs gap-1.5 shadow-2xs"
             >
-              <span>
-                {staple.emoji} {staple.name}
-              </span>
+              <span>{staple.name}</span>
               <span className="text-muted-foreground font-normal">{staple.price}</span>
             </Button>
           ))}
