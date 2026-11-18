@@ -82,7 +82,7 @@ export function AddExpenseDialog({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       description: '',
-      amount: undefined as any,
+      amount: undefined as unknown as number,
       paidById: currentUserId || allMemberIds[0] || '',
       sharedWith: allMemberIds,
       category: '',
@@ -103,7 +103,7 @@ export function AddExpenseDialog({
       setSelectedCategory('');
       reset({
         description: '',
-        amount: undefined as any,
+        amount: undefined as unknown as number,
         paidById: defaultPayer,
         sharedWith: allMemberIds,
         category: '',
@@ -153,9 +153,10 @@ export function AddExpenseDialog({
         `Added ${formatCurrency(Number(data.amount))} ${data.description} (Split ${data.sharedWith.length} ways)`
       );
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { message?: string } } };
       console.error('Failed to log expense:', error);
-      toast.error(error?.response?.data?.message || 'Failed to log expense');
+      toast.error(axiosError?.response?.data?.message || 'Failed to log expense');
     }
   };
 
@@ -172,7 +173,12 @@ export function AddExpenseDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4 pt-1"
+        >
           {/* Amount Field (Large digits) */}
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">

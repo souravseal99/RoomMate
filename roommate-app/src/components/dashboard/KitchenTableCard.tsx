@@ -26,7 +26,12 @@ import {
   useAcknowledgeNoticeMutation,
   useReplyQnaMutation,
 } from '@/hooks/queries/useHouseholdQueries';
-import type { KitchenTableMode } from '@/types/householdTypes';
+import type {
+  KitchenTableMode,
+  KitchenTableRsvp,
+  KitchenTableNoticeAck,
+  KitchenTableQnaReply,
+} from '@/types/householdTypes';
 
 const QUICK_DISH_CHIPS = ['Thai Curry', '+ Sourdough', '+ Veggie Stirfry', '+ Pasta'];
 const SERVING_TIMES = ['7:30', '8:00', '8:30'];
@@ -118,6 +123,7 @@ export function KitchenTableCard() {
 
   // Sync state when kitchenTable loads
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     if (kitchenTable?.activeMode) {
       setActiveMode(kitchenTable.activeMode);
     }
@@ -130,6 +136,7 @@ export function KitchenTableCard() {
     if (typeof kitchenTable?.meal?.extraPlates === 'number') {
       setExtraPlates(kitchenTable.meal.extraPlates);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [kitchenTable]);
 
   // Active items
@@ -137,13 +144,16 @@ export function KitchenTableCard() {
   const activeNotice = kitchenTable?.notice;
   const activeQna = kitchenTable?.qna;
 
-  const attendingRsvps = activeMeal?.rsvps?.filter((rsvp: any) => rsvp.attending) || [];
-  const currentUserRsvp = activeMeal?.rsvps?.find((rsvp: any) => rsvp.userId === userId);
+  const attendingRsvps =
+    activeMeal?.rsvps?.filter((rsvp: KitchenTableRsvp) => rsvp.attending) || [];
+  const currentUserRsvp = activeMeal?.rsvps?.find(
+    (rsvp: KitchenTableRsvp) => rsvp.userId === userId
+  );
   const isAttending = currentUserRsvp ? currentUserRsvp.attending : false;
   const isChef = activeMeal?.chefId === userId;
 
   const noticeAcks = activeNotice?.acknowledgments || [];
-  const isUserAcked = noticeAcks.some((a: any) => a.userId === userId);
+  const isUserAcked = noticeAcks.some((a: KitchenTableNoticeAck) => a.userId === userId);
 
   const qnaReplies = activeQna?.replies || [];
 
@@ -484,7 +494,7 @@ export function KitchenTableCard() {
                   <span className="text-[10px] font-mono text-muted-foreground uppercase">
                     Attending ({attendingRsvps.length}):
                   </span>
-                  {attendingRsvps.map((rsvp: any) => (
+                  {attendingRsvps.map((rsvp: KitchenTableRsvp) => (
                     <Badge
                       key={rsvp.userId}
                       variant="outline"
@@ -665,7 +675,7 @@ export function KitchenTableCard() {
 
                 {qnaReplies.length > 0 && (
                   <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                    {qnaReplies.map((rep: any) => (
+                    {qnaReplies.map((rep: KitchenTableQnaReply) => (
                       <div
                         key={rep.replyId}
                         className="p-2 bg-card rounded-lg border border-border text-xs space-y-0.5"

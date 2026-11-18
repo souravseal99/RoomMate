@@ -228,9 +228,10 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
             icon: <Bell className="w-4 h-4 text-primary" />,
           });
         },
-        onError: (err: any) => {
+        onError: (err: unknown) => {
+          const axiosError = err as { response?: { data?: { message?: string } } };
           const msg =
-            err?.response?.data?.message ||
+            axiosError?.response?.data?.message ||
             `Gentle chore nudge sent to ${targetChore.assignedToName || 'flatmate'}!`;
           toast.success(msg, {
             icon: <Bell className="w-4 h-4 text-primary" />,

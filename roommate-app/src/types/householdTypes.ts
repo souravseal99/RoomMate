@@ -84,6 +84,12 @@ export interface KitchenTableMeal {
   rsvps: KitchenTableRsvp[];
 }
 
+export interface KitchenTableNoticeAck {
+  userId: string;
+  userName: string;
+  acknowledgedAt: string;
+}
+
 export interface KitchenTableNotice {
   noticeId: string;
   title: string;
@@ -91,11 +97,7 @@ export interface KitchenTableNotice {
   authorId: string;
   authorName: string;
   broadcastAt: string;
-  acknowledgments: Array<{
-    userId: string;
-    userName: string;
-    acknowledgedAt: string;
-  }>;
+  acknowledgments: KitchenTableNoticeAck[];
 }
 
 export interface KitchenTableQnaReply {
@@ -135,7 +137,7 @@ export interface KitchenTableData {
 
 export interface BroadcastKitchenTableDto {
   mode?: KitchenTableMode;
-  payload?: any;
+  payload?: Record<string, unknown>;
   dishName?: string;
   servingTime?: string;
   extraPlates?: number;

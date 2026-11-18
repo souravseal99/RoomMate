@@ -167,7 +167,12 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
           </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4 pt-2"
+        >
           {/* Task Title */}
           <div className="space-y-1.5">
             <Label htmlFor="description" className="text-xs font-bold text-foreground">
