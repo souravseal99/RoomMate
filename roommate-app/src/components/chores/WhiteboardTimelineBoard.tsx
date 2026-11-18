@@ -1,4 +1,13 @@
-import { CheckCircle2, Clock, Info, Check, Trash2, ArrowLeftRight, Sparkles } from 'lucide-react';
+import {
+  CheckCircle2,
+  Clock,
+  Info,
+  Check,
+  Trash2,
+  ArrowLeftRight,
+  Sparkles,
+  Flame,
+} from 'lucide-react';
 import type { ChoreItem } from '@/types/choreTypes';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -142,12 +151,22 @@ export function WhiteboardTimelineBoard({
                         </Badge>
                       )}
 
-                      <Badge
-                        variant="secondary"
-                        className="px-2 py-0.5 rounded-full bg-surface-container-low text-muted-foreground text-[10px] font-semibold uppercase tracking-wide border border-border/40"
-                      >
-                        {chore.priority === 'HIGH' ? 'HIGH PRIORITY' : 'ROTA DUTY'}
-                      </Badge>
+                      {chore.priority === 'HIGH' ? (
+                        <Badge
+                          variant="secondary"
+                          className="px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold uppercase tracking-wide inline-flex items-center gap-1"
+                        >
+                          <Flame className="w-3 h-3 text-primary fill-primary" />
+                          HIGH PRIORITY
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="secondary"
+                          className="px-2 py-0.5 rounded-full bg-surface-container-low text-muted-foreground text-[10px] font-semibold uppercase tracking-wide border border-border/40"
+                        >
+                          ROTA DUTY
+                        </Badge>
+                      )}
                     </div>
 
                     <h3
@@ -257,6 +276,15 @@ export function WhiteboardTimelineBoard({
                       >
                         {chore.assignedToName || 'OPEN'}
                       </Badge>
+                      {chore.priority === 'HIGH' && (
+                        <Badge
+                          variant="secondary"
+                          className="px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-bold uppercase tracking-wide inline-flex items-center gap-1"
+                        >
+                          <Flame className="w-3 h-3 text-primary fill-primary" />
+                          HIGH
+                        </Badge>
+                      )}
                       <span className="text-[11px] font-bold text-primary flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatChoreSchedule(chore.nextDue)}

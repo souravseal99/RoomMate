@@ -308,7 +308,9 @@ export function KitchenTableCard() {
                           <span className="font-bold text-xs sm:text-sm text-foreground">
                             {mode.label}
                           </span>
-                          {isSelected && <span className="text-primary font-bold text-xs">✓</span>}
+                          {isSelected && (
+                            <Check className="w-3.5 h-3.5 text-primary stroke-[2.5]" />
+                          )}
                         </div>
                         <p className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5">
                           {mode.subtitle}
@@ -486,9 +488,10 @@ export function KitchenTableCard() {
                     <Badge
                       key={rsvp.userId}
                       variant="outline"
-                      className="text-[10px] bg-card px-2 py-0.5 border-border text-foreground font-medium"
+                      className="text-[10px] bg-card px-2 py-0.5 border-border text-foreground font-medium inline-flex items-center gap-1"
                     >
-                      {rsvp.userName} ✓
+                      <span>{rsvp.userName}</span>
+                      <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
                     </Badge>
                   ))}
                 </div>

@@ -421,13 +421,20 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                     <Badge
                       variant={isCard1Stamped ? 'secondary' : 'default'}
                       className={cn(
-                        'font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0',
+                        'font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0 inline-flex items-center gap-1',
                         isCard1Stamped
                           ? 'bg-emerald-600 text-white'
                           : 'bg-primary text-primary-foreground'
                       )}
                     >
-                      {isCard1Stamped ? `STAMPED ✓` : `PENDING`}
+                      {isCard1Stamped ? (
+                        <>
+                          <span>STAMPED</span>
+                          <Check className="w-3 h-3 stroke-[2.5]" />
+                        </>
+                      ) : (
+                        'PENDING'
+                      )}
                     </Badge>
                     <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono group-hover:underline">
                       {isCard1Stamped ? 'Click to unstamp' : 'Click to Stamp'}
@@ -547,9 +554,10 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <Badge
                     variant="outline"
-                    className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
+                    className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono inline-flex items-center gap-1"
                   >
-                    VERIFIED ✓
+                    <span>VERIFIED</span>
+                    <Check className="w-3 h-3 stroke-[2.5]" />
                   </Badge>
                   <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground group-hover:text-primary transition-colors font-mono">
                     Click to unstamp

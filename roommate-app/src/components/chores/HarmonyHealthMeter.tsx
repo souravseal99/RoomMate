@@ -1,4 +1,4 @@
-import { Leaf, Flame } from 'lucide-react';
+import { Leaf, Flame, User, Clock, ListFilter } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -36,52 +36,58 @@ export function HarmonyHealthMeter({
           type="button"
           variant={activeFilter === 'all' ? 'default' : 'outline'}
           onClick={() => onFilterChange('all')}
-          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'all'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          All Chores ({allCount})
+          <ListFilter className="w-3.5 h-3.5 shrink-0" />
+          <span>All Chores ({allCount})</span>
         </Button>
 
         <Button
           type="button"
           variant={activeFilter === 'mine' ? 'default' : 'outline'}
           onClick={() => onFilterChange('mine')}
-          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'mine'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          My Duties ({mineCount})
+          <User className="w-3.5 h-3.5 shrink-0" />
+          <span>My Duties ({mineCount})</span>
         </Button>
 
         <Button
           type="button"
           variant={activeFilter === 'today' ? 'default' : 'outline'}
           onClick={() => onFilterChange('today')}
-          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'today'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          Due Today ({todayCount})
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+          <span>Due Today ({todayCount})</span>
         </Button>
 
         <Button
           type="button"
           variant={activeFilter === 'urgent' ? 'default' : 'outline'}
           onClick={() => onFilterChange('urgent')}
-          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
             activeFilter === 'urgent'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
           }`}
         >
-          High Priority ({urgentCount})
+          <Flame
+            className={`w-3.5 h-3.5 shrink-0 ${activeFilter === 'urgent' ? 'fill-primary-foreground' : 'text-primary'}`}
+          />
+          <span>High Priority ({urgentCount})</span>
         </Button>
       </Card>
 

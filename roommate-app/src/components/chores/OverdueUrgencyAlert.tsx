@@ -1,4 +1,4 @@
-import { Clock, Bell } from 'lucide-react';
+import { Clock, Bell, AlertTriangle } from 'lucide-react';
 import type { ChoreItem } from '@/types/choreTypes';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,8 +26,9 @@ export function OverdueUrgencyAlert({ overdueChores, onSendNudge }: OverdueUrgen
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant="destructive"
-              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wide"
+              className="text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wide inline-flex items-center gap-1"
             >
+              <AlertTriangle className="w-3 h-3 text-destructive-foreground shrink-0" />
               OVERDUE • ACTION NEEDED
             </Badge>
             <span className="font-display font-bold text-xs sm:text-sm text-foreground">

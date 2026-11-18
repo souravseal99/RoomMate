@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Pin, Users } from 'lucide-react';
+import {
+  Pin,
+  Users,
+  Trash2,
+  Utensils,
+  Sparkles,
+  Wind,
+  Layers,
+  Droplets,
+  Flame,
+} from 'lucide-react';
 import type { ChoreFrequency, ChorePriority } from '@/types/choreTypes';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,12 +33,32 @@ interface FastTaskCreatorDockProps {
 }
 
 const PRESET_CHORES = [
-  { label: 'Trash', text: 'Take out kitchen trash & replace liner' },
-  { label: 'Dishes', text: 'Unload & run dishwasher cycle' },
-  { label: 'Kitchen', text: 'Deep scrub stovetop & sink' },
-  { label: 'Vacuum', text: 'Vacuum living room rug & lounge' },
-  { label: 'Counters', text: 'Wipe quartz kitchen counter & table' },
-  { label: 'Mop', text: 'Swiffer damp-mop hardwood floors' },
+  {
+    label: 'Trash',
+    text: 'Take out kitchen trash & replace liner',
+    icon: Trash2,
+    color: 'text-amber-500',
+  },
+  { label: 'Dishes', text: 'Unload & run dishwasher cycle', icon: Utensils, color: 'text-sky-500' },
+  { label: 'Kitchen', text: 'Deep scrub stovetop & sink', icon: Sparkles, color: 'text-primary' },
+  {
+    label: 'Vacuum',
+    text: 'Vacuum living room rug & lounge',
+    icon: Wind,
+    color: 'text-indigo-500',
+  },
+  {
+    label: 'Counters',
+    text: 'Wipe quartz kitchen counter & table',
+    icon: Layers,
+    color: 'text-emerald-500',
+  },
+  {
+    label: 'Mop',
+    text: 'Swiffer damp-mop hardwood floors',
+    icon: Droplets,
+    color: 'text-blue-500',
+  },
 ];
 
 export function FastTaskCreatorDock({
@@ -118,17 +148,21 @@ export function FastTaskCreatorDock({
             Quick Presets
           </span>
           <div className="flex flex-wrap gap-1.5">
-            {PRESET_CHORES.map((preset) => (
-              <Button
-                key={preset.label}
-                type="button"
-                variant="outline"
-                onClick={() => handleSelectPreset(preset.text)}
-                className="px-3 min-h-[36px] rounded-full bg-surface-container-low hover:bg-surface-container text-foreground text-xs font-semibold border-border/50 transition-all cursor-pointer active:scale-95 shadow-2xs h-auto py-1.5"
-              >
-                {preset.label}
-              </Button>
-            ))}
+            {PRESET_CHORES.map((preset) => {
+              const Icon = preset.icon;
+              return (
+                <Button
+                  key={preset.label}
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSelectPreset(preset.text)}
+                  className="px-3 min-h-[36px] rounded-full bg-surface-container-low hover:bg-surface-container text-foreground text-xs font-semibold border-border/50 transition-all cursor-pointer active:scale-95 shadow-2xs h-auto py-1.5 flex items-center gap-1.5"
+                >
+                  <Icon className={`w-3.5 h-3.5 ${preset.color} shrink-0`} />
+                  <span>{preset.label}</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
 
@@ -292,12 +326,19 @@ export function FastTaskCreatorDock({
                   type="button"
                   variant={priority === 'HIGH' ? 'default' : 'ghost'}
                   onClick={() => setPriority('HIGH')}
-                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 ${
+                  className={`flex-1 min-h-[36px] text-center text-xs font-bold rounded-lg transition-all cursor-pointer h-auto py-1.5 flex items-center justify-center gap-1 ${
                     priority === 'HIGH'
                       ? 'bg-primary text-primary-foreground shadow-2xs'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
+                  <Flame
+                    className={`w-3.5 h-3.5 shrink-0 ${
+                      priority === 'HIGH'
+                        ? 'text-primary-foreground fill-primary-foreground'
+                        : 'text-primary'
+                    }`}
+                  />
                   High
                 </Button>
               </div>

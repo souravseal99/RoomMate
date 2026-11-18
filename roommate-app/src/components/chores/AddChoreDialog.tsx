@@ -2,7 +2,17 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Sparkles, Loader2, User } from 'lucide-react';
+import {
+  Sparkles,
+  Loader2,
+  User,
+  Trash2,
+  Utensils,
+  Wind,
+  Layers,
+  Droplets,
+  Flame,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -40,12 +50,12 @@ const choreSchema = z.object({
 type ChoreFormData = z.infer<typeof choreSchema>;
 
 const PRESET_TASKS = [
-  { label: 'Take Out Trash' },
-  { label: 'Wash Dishes' },
-  { label: 'Clean Kitchen' },
-  { label: 'Vacuum Living Room' },
-  { label: 'Wipe Counters' },
-  { label: 'Mop Floors' },
+  { label: 'Take Out Trash', icon: Trash2, color: 'text-amber-500' },
+  { label: 'Wash Dishes', icon: Utensils, color: 'text-sky-500' },
+  { label: 'Clean Kitchen', icon: Sparkles, color: 'text-primary' },
+  { label: 'Vacuum Living Room', icon: Wind, color: 'text-indigo-500' },
+  { label: 'Wipe Counters', icon: Layers, color: 'text-emerald-500' },
+  { label: 'Mop Floors', icon: Droplets, color: 'text-blue-500' },
 ];
 
 interface AddChoreDialogProps {
@@ -139,17 +149,21 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
             Quick Presets
           </Label>
           <div className="flex flex-wrap gap-1.5">
-            {PRESET_TASKS.map((preset) => (
-              <Button
-                key={preset.label}
-                type="button"
-                variant="outline"
-                onClick={() => handleSelectPreset(preset.label)}
-                className="min-h-[44px] px-3.5 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border-border/60 active:scale-95 transition-all cursor-pointer flex items-center justify-center h-auto py-2"
-              >
-                <span>{preset.label}</span>
-              </Button>
-            ))}
+            {PRESET_TASKS.map((preset) => {
+              const Icon = preset.icon;
+              return (
+                <Button
+                  key={preset.label}
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSelectPreset(preset.label)}
+                  className="min-h-[44px] px-3.5 text-xs font-semibold rounded-xl bg-surface-container hover:bg-surface-container-high text-foreground border-border/60 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 h-auto py-2"
+                >
+                  <Icon className={`w-3.5 h-3.5 ${preset.color} shrink-0`} />
+                  <span>{preset.label}</span>
+                </Button>
+              );
+            })}
           </div>
         </div>
 
@@ -250,7 +264,12 @@ export function AddChoreDialog({ open, onOpenChange, householdId }: AddChoreDial
                 <SelectContent className="bg-card border-border rounded-xl">
                   <SelectItem value="LOW">Low</SelectItem>
                   <SelectItem value="MEDIUM">Medium</SelectItem>
-                  <SelectItem value="HIGH">High</SelectItem>
+                  <SelectItem value="HIGH">
+                    <span className="flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5 text-primary shrink-0" />
+                      High
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

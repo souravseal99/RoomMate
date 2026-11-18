@@ -1,4 +1,15 @@
-import { AlertTriangle, CalendarClock, RefreshCw, Zap } from 'lucide-react';
+import {
+  AlertTriangle,
+  CalendarClock,
+  RefreshCw,
+  Zap,
+  Milk,
+  Egg,
+  Utensils,
+  Coffee,
+  Layers,
+  Sparkles,
+} from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,12 +24,18 @@ interface RestockCommandApronProps {
 }
 
 const QUICK_PICK_STAPLES = [
-  { name: 'Barista Oat Milk', price: '$3.89', unit: 'carton' },
-  { name: 'Pasture Eggs', price: '$4.50', unit: 'carton' },
-  { name: 'Sourdough Bread', price: '$4.20', unit: 'loaf' },
-  { name: 'Coffee Beans', price: '$14.00', unit: 'bag' },
-  { name: 'Paper Towels', price: '$18.00', unit: 'pack' },
-  { name: 'Dish Soap', price: '$5.20', unit: 'bottle' },
+  { name: 'Barista Oat Milk', price: '$3.89', unit: 'carton', icon: Milk, color: 'text-amber-500' },
+  { name: 'Pasture Eggs', price: '$4.50', unit: 'carton', icon: Egg, color: 'text-amber-400' },
+  {
+    name: 'Sourdough Bread',
+    price: '$4.20',
+    unit: 'loaf',
+    icon: Utensils,
+    color: 'text-orange-500',
+  },
+  { name: 'Coffee Beans', price: '$14.00', unit: 'bag', icon: Coffee, color: 'text-amber-600' },
+  { name: 'Paper Towels', price: '$18.00', unit: 'pack', icon: Layers, color: 'text-sky-500' },
+  { name: 'Dish Soap', price: '$5.20', unit: 'bottle', icon: Sparkles, color: 'text-emerald-500' },
 ];
 
 export function RestockCommandApron({
@@ -109,18 +126,22 @@ export function RestockCommandApron({
             <Zap className="w-3.5 h-3.5 text-primary fill-primary" /> Quick-Pick Staples:
           </span>
 
-          {QUICK_PICK_STAPLES.map((staple) => (
-            <Button
-              key={staple.name}
-              type="button"
-              variant="outline"
-              onClick={() => onQuickAddStaple(staple.name, 1, staple.unit)}
-              className="shrink-0 min-h-[44px] px-3 rounded-xl bg-card hover:bg-muted/50 border-border/60 text-foreground font-medium text-xs gap-1.5 shadow-2xs"
-            >
-              <span>{staple.name}</span>
-              <span className="text-muted-foreground font-normal">{staple.price}</span>
-            </Button>
-          ))}
+          {QUICK_PICK_STAPLES.map((staple) => {
+            const Icon = staple.icon;
+            return (
+              <Button
+                key={staple.name}
+                type="button"
+                variant="outline"
+                onClick={() => onQuickAddStaple(staple.name, 1, staple.unit)}
+                className="shrink-0 min-h-[44px] px-3 rounded-xl bg-card hover:bg-muted/50 border-border/60 text-foreground font-medium text-xs gap-1.5 shadow-2xs flex items-center"
+              >
+                <Icon className={`w-3.5 h-3.5 ${staple.color} shrink-0`} />
+                <span>{staple.name}</span>
+                <span className="text-muted-foreground font-normal">{staple.price}</span>
+              </Button>
+            );
+          })}
         </div>
       </Card>
     </section>

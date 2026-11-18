@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DollarSign, UserCheck, Users, Sparkles, Check } from 'lucide-react';
+import {
+  DollarSign,
+  UserCheck,
+  Users,
+  Sparkles,
+  Check,
+  ShoppingCart,
+  Zap,
+  Home,
+  Utensils,
+  Package,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +39,15 @@ import { useCreateExpenseMutation } from '@/hooks/queries/useExpenseQueries';
 import { formatCurrency, getInitials } from '@/utils/utils';
 import { toast } from 'sonner';
 import type { HouseholdMember } from '@/types/householdTypes';
+
+const CATEGORY_ICON_MAP: Record<string, { icon: typeof Sparkles; color: string }> = {
+  groceries: { icon: ShoppingCart, color: 'text-amber-500' },
+  utilities: { icon: Zap, color: 'text-sky-500' },
+  rent: { icon: Home, color: 'text-indigo-500' },
+  takeout: { icon: Utensils, color: 'text-orange-500' },
+  supplies: { icon: Package, color: 'text-purple-500' },
+  cleaning: { icon: Sparkles, color: 'text-emerald-500' },
+};
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -184,17 +204,25 @@ export function AddExpenseDialog({
             <div className="flex flex-wrap gap-1.5">
               {EXPENSE_CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
+                const iconConfig = CATEGORY_ICON_MAP[cat.id];
+                const Icon = iconConfig?.icon || Sparkles;
+                const color = iconConfig?.color || 'text-primary';
                 return (
                   <button
                     key={cat.id}
                     type="button"
                     onClick={() => handleCategorySelect(cat)}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all cursor-pointer font-medium flex items-center justify-center ${
+                    className={`min-h-[44px] text-xs px-3.5 py-1.5 rounded-full border transition-all cursor-pointer font-semibold flex items-center gap-1.5 justify-center ${
                       isSelected
-                        ? 'bg-primary text-primary-foreground border-primary'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                         : 'bg-surface-container text-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
+                    <Icon
+                      className={`w-3.5 h-3.5 shrink-0 ${
+                        isSelected ? 'text-primary-foreground' : color
+                      }`}
+                    />
                     <span>{cat.label}</span>
                   </button>
                 );

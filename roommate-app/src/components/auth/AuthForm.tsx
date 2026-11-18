@@ -12,6 +12,7 @@ import {
   User,
   Eye,
   EyeOff,
+  Fingerprint,
   Pin,
   ArrowRight,
   ChevronRight,
@@ -45,6 +46,12 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
     : '/register';
   const isPending = isLoading || form.formState.isSubmitting;
 
+  const handlePasskeyAuth = () => {
+    toast.info('Passkey authentication simulated for demo environment', {
+      description: 'Use your flatmate credentials below to complete standard sign in.',
+    });
+  };
+
   const handleSocialAuth = (provider: string) => {
     toast.info(`${provider} sign-in simulated`, {
       description: 'Please sign in with your email and passcode.',
@@ -67,6 +74,17 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
           </div>
 
           <div className="flex items-center gap-4 text-xs font-medium">
+            <button
+              type="button"
+              onClick={() =>
+                toast.info('Passkey Support', {
+                  description: 'Passkeys link your TouchID/FaceID directly to your flat.',
+                })
+              }
+              className="text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
+              Help with Passkey
+            </button>
             <button
               type="button"
               onClick={() =>
@@ -101,6 +119,31 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
                     ? 'Create your flatmate profile to manage rosters, splits, and supplies.'
                     : 'Sign in to check the chore roster, split grocery receipts, and manage your flat.'}
                 </p>
+              </div>
+
+              {/* 1-Tap Biometric / Keyholder Passkey Hero Button */}
+              <div className="p-4 rounded-xl bg-surface-container-low border border-border/60 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-inner">
+                    <Fingerprint className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-foreground">
+                      Household Quick Passkey
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Instant unlock via TouchID, FaceID or Keychain
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handlePasskeyAuth}
+                  className="px-4 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-xs active:translate-y-0.5 transition-all whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Unlock with Passkey</span>
+                </Button>
               </div>
 
               {/* Mode Switcher Tabs (Sign In / Register) */}
