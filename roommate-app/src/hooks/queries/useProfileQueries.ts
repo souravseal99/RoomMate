@@ -11,7 +11,7 @@ import {
   type UserSession,
 } from '@/api/userApi';
 import { toast } from 'sonner';
-import eventBus from '@/lib/eventBus';
+import { eventBus } from '@/lib/eventBus';
 import { APP_EVENTS } from '@/types/eventTypes';
 import TokenStore from '@/lib/TokenStore';
 

@@ -52,3 +52,4 @@ class EventBus {
 }
 
 export const eventBus = new EventBus();
+export default eventBus;
