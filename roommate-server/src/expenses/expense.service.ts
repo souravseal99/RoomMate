@@ -17,6 +17,25 @@ import { ActivityType } from "@generated/prisma";
 
 export class ExpenseService {
   static async create(expense: ExpenseDto, sharedWith?: string[]) {
+    if (
+      typeof expense.amount !== "number" ||
+      isNaN(expense.amount) ||
+      !isFinite(expense.amount) ||
+      expense.amount <= 0
+    ) {
+      return ApiResponse.error(
+        "Expense amount must be a positive number greater than 0",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    if (expense.amount > 1000000) {
+      return ApiResponse.error(
+        "Expense amount exceeds maximum allowable limit of $1,000,000",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
     const isHouseholdMember = await HouseholdMemberRepo.isExistingUser(
       expense.paidById,
       expense.householdId,

@@ -76,15 +76,20 @@ export class AuthService {
     sessionId: string,
   ): Promise<UserLoginResponse | ApiResponse> {
     try {
+      // Dummy hash used for constant-time comparison when user is not found to prevent timing-based user enumeration (CWE-204)
+      const DUMMY_HASH =
+        "$2b$10$abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJK";
       const user: User | null = await UserRepo.getUserByEmail(email);
 
-      if (!user)
-        return ApiResponse.error("User not found", StatusCodes.NOT_FOUND);
+      const passwordHash = user ? user.password : DUMMY_HASH;
+      const isPasswordMatched = await bcrypt.compare(password, passwordHash);
 
-      const isPasswordMatched = await bcrypt.compare(password, user.password);
-
-      if (!isPasswordMatched)
-        return ApiResponse.error("Password mismatch", StatusCodes.FORBIDDEN);
+      if (!user || !isPasswordMatched) {
+        return ApiResponse.error(
+          "Invalid email or password",
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
 
       const { accessToken, refreshToken } = generateTokens({
         userId: user.userId,

@@ -51,10 +51,39 @@ export class ExpenseController {
 
     const amountInNumber = parseFloat(amount);
 
+    if (
+      isNaN(amountInNumber) ||
+      !isFinite(amountInNumber) ||
+      amountInNumber <= 0
+    ) {
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "Expense amount must be a positive number greater than 0",
+        data: null,
+      });
+    }
+
+    if (amountInNumber > 1000000) {
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "Expense amount exceeds maximum allowable limit of $1,000,000",
+        data: null,
+      });
+    }
+
+    if (
+      !description ||
+      typeof description !== "string" ||
+      !description.trim()
+    ) {
+      return response.status(StatusCodes.BAD_REQUEST).json({
+        message: "Expense description is required",
+        data: null,
+      });
+    }
+
     const expense: ExpenseDto = {
       householdId,
       amount: amountInNumber,
-      description,
+      description: description.trim(),
       paidById: userId, // Enforce authenticated user as the payer
     };
 

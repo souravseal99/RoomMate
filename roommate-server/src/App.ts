@@ -6,6 +6,7 @@ import errorHandler from "@common/middlewares/errorHandlder";
 import validationErrorHandler from "@common/middlewares/validationErrorHandler";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
 import { doubleCsrfProtection } from "@common/middlewares/csrf";
 import { globalLimiter } from "@common/middlewares/rateLimiter";
 
@@ -70,6 +71,13 @@ class App {
   }
 
   middlewares(): void {
+    //NOTE - HTTP Security Headers (CWE-693)
+    this.app.use(
+      helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+      }),
+    );
+
     //NOTE - Logger middleware
     this.app.use(morgan("dev"));
 

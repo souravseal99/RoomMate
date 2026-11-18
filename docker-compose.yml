@@ -19,7 +19,7 @@ services:
     build: ./roommate-server
     ports:
       - "5000:5000"
-      - "5555:5555"
+      - "127.0.0.1:5555:5555"
     volumes:
       - ./roommate-server:/app
       - /app/node_modules

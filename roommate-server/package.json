@@ -43,6 +43,7 @@
     "express": "^5.1.0",
     "express-rate-limit": "^8.7.4",
     "express-validator": "^7.2.1",
+    "helmet": "^8.3.0",
     "http-status-codes": "^2.3.0",
     "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.2",

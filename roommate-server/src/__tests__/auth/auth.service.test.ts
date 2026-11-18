@@ -214,8 +214,9 @@ describe("AuthService", () => {
       });
     });
 
-    it("should reject login when user not found", async () => {
+    it("should reject login when user not found with uniform 401 (prevent user enumeration)", async () => {
       vi.mocked(UserRepo.getUserByEmail).mockResolvedValue(null);
+      vi.mocked(bcrypt.compare).mockResolvedValue(false as never);
 
       const result = await AuthService.login(
         "notfound@example.com",
@@ -226,14 +227,14 @@ describe("AuthService", () => {
       expect(UserRepo.getUserByEmail).toHaveBeenCalledWith(
         "notfound@example.com",
       );
-      expect(bcrypt.compare).not.toHaveBeenCalled();
+      expect(bcrypt.compare).toHaveBeenCalled();
       expect(result).toMatchObject({
-        status: StatusCodes.NOT_FOUND,
-        message: "User not found",
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Invalid email or password",
       });
     });
 
-    it("should reject login with incorrect password", async () => {
+    it("should reject login with incorrect password with uniform 401", async () => {
       const mockUser: User = {
         userId: "user-789",
         name: "Bob",
@@ -257,8 +258,8 @@ describe("AuthService", () => {
       );
       expect(generateTokens).not.toHaveBeenCalled();
       expect(result).toMatchObject({
-        status: StatusCodes.FORBIDDEN,
-        message: "Password mismatch",
+        status: StatusCodes.UNAUTHORIZED,
+        message: "Invalid email or password",
       });
     });
 

@@ -730,33 +730,45 @@ export class HouseholdService {
       });
 
       if (format.toLowerCase() === "csv") {
+        // Sanitize cell to prevent CSV / Formula Injection (CWE-1236)
+        const sanitizeCsvCell = (val: string | null | undefined): string => {
+          if (!val) return '""';
+          let str = String(val).replace(/"/g, '""');
+          if (/^[=+\-@\t\r]/.test(str)) {
+            str = `'${str}`;
+          }
+          return `"${str}"`;
+        };
+
         const rows: string[] = [
           "Type,ID,Description,Amount,Date,PaidBy_Assignee,Status_Recipient",
         ];
 
         expenses.forEach((e: any) => {
-          const desc = `"${e.description.replace(/"/g, '""')}"`;
+          const desc = sanitizeCsvCell(e.description);
           const date = e.createdAt.toISOString();
-          const paidBy = `"${e.paidBy?.name || "Member"}"`;
+          const paidBy = sanitizeCsvCell(e.paidBy?.name || "Member");
           rows.push(
             `Expense,${e.expenseId},${desc},${e.amount},${date},${paidBy},Recorded`,
           );
         });
 
         settlements.forEach((s: any) => {
-          const desc = `"Settlement: ${s.fromUser.name} to ${s.toUser.name}"`;
+          const desc = sanitizeCsvCell(
+            `Settlement: ${s.fromUser.name} to ${s.toUser.name}`,
+          );
           const date = s.createdAt.toISOString();
-          const from = `"${s.fromUser.name}"`;
-          const to = `"${s.toUser.name}"`;
+          const from = sanitizeCsvCell(s.fromUser.name);
+          const to = sanitizeCsvCell(s.toUser.name);
           rows.push(
             `Settlement,${s.settlementId},${desc},${s.amount},${date},${from},${to}`,
           );
         });
 
         chores.forEach((c: any) => {
-          const desc = `"${c.description.replace(/"/g, '""')}"`;
+          const desc = sanitizeCsvCell(c.description);
           const date = c.nextDue.toISOString();
-          const assignee = `"${c.assignedTo?.name || "Unassigned"}"`;
+          const assignee = sanitizeCsvCell(c.assignedTo?.name || "Unassigned");
           const status = c.completed ? "Completed" : "Pending";
           rows.push(
             `Chore,${c.choreId},${desc},0,${date},${assignee},${status}`,
