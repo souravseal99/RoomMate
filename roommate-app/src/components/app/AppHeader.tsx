@@ -23,13 +23,7 @@ export function AppHeader() {
   const currentPath = location.pathname;
 
   const { name, email, logout } = useAuth();
-  const {
-    households,
-    activeHousehold,
-    switchActiveHousehold,
-    hasActiveHousehold,
-    householdMembers,
-  } = useHousehold();
+  const { households, activeHousehold, switchActiveHousehold, hasActiveHousehold } = useHousehold();
   const { themeName, setTheme, availableThemes } = useTheme();
 
   const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
@@ -60,15 +54,14 @@ export function AppHeader() {
   const householdName = hasActiveHousehold
     ? activeHousehold?.name || 'My Household'
     : 'Select Household';
-  const memberCount = householdMembers?.length || activeHousehold?.members?.length || 1;
 
   // Stitch Top Navigation Items with responsive full and compact labels
   const navItems = [
-    { label: 'Overview', shortLabel: 'Overview', path: '/dashboard' },
-    { label: 'Household & Spaces', shortLabel: 'Spaces', path: '/households' },
-    { label: 'Expenses & Ledger', shortLabel: 'Expenses', path: '/expenses' },
-    { label: 'Chores & Duties', shortLabel: 'Chores', path: '/chores' },
-    { label: 'Pantry & Inventory', shortLabel: 'Pantry', path: '/inventory' },
+    { label: 'Overview', fullLabel: 'Overview', path: '/dashboard' },
+    { label: 'Spaces', fullLabel: 'Household & Spaces', path: '/households' },
+    { label: 'Expenses', fullLabel: 'Expenses & Ledger', path: '/expenses' },
+    { label: 'Chores', fullLabel: 'Chores & Duties', path: '/chores' },
+    { label: 'Pantry', fullLabel: 'Pantry & Inventory', path: '/inventory' },
   ];
 
   const isNavActive = (item: (typeof navItems)[0]) => {
@@ -111,14 +104,9 @@ export function AppHeader() {
               title="Active Space • Click to switch"
             >
               <Building className="w-4 h-4 text-primary shrink-0" />
-              <span className="text-xs font-bold truncate max-w-[90px] md:max-w-[120px] 2xl:max-w-[180px]">
+              <span className="text-xs font-bold truncate max-w-[100px] sm:max-w-[130px] 2xl:max-w-[180px]">
                 {householdName}
               </span>
-              {hasActiveHousehold && (
-                <span className="text-[10px] text-muted-foreground hidden 2xl:inline">
-                  · {memberCount} {memberCount === 1 ? 'Flatmate' : 'Flatmates'}
-                </span>
-              )}
               <ChevronDown
                 className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform ${
                   isSpaceMenuOpen ? 'rotate-180' : ''
@@ -177,8 +165,8 @@ export function AppHeader() {
             )}
           </div>
 
-          {/* Environmental Status Badges (Stitch Template - visible on xl+) */}
-          <div className="hidden xl:flex items-center gap-2 text-muted-foreground">
+          {/* Environmental Status Badges (Stitch Template - visible on 2xl+) */}
+          <div className="hidden 2xl:flex items-center gap-2 text-muted-foreground">
             <div className="flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1 rounded-full border border-border/40 text-[11px] font-bold uppercase tracking-wider">
               <Thermometer className="w-3.5 h-3.5 text-secondary" />
               <span>69°F</span>
@@ -203,8 +191,8 @@ export function AppHeader() {
                     : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
                 }`}
               >
-                <span className="hidden xl:inline">{item.label}</span>
-                <span className="xl:hidden">{item.shortLabel}</span>
+                <span className="hidden 2xl:inline">{item.fullLabel}</span>
+                <span className="2xl:hidden">{item.label}</span>
               </Link>
             );
           })}

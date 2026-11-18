@@ -1,4 +1,4 @@
-import { useState, useId, useEffect } from 'react';
+import { useState, useId } from 'react';
 import {
   Loader2,
   Plus,
@@ -59,21 +59,23 @@ export function QuickSplitDock({
         .filter(Boolean) as string[]
   );
 
-  // Synchronize member selections when household members load or change
-  useEffect(() => {
+  // Synchronize member selections during render when household members load or change
+  const [prevMembers, setPrevMembers] = useState(householdMembers);
+  if (householdMembers !== prevMembers) {
+    setPrevMembers(householdMembers);
     if (householdMembers.length > 0) {
-      setSelectedMemberIds((prev) => {
-        const validIds = prev.filter((id) =>
-          householdMembers.some((m) => (m.userId || m.user?.userId || m.householdMemberId) === id)
-        );
-        return validIds.length > 0
+      const validIds = selectedMemberIds.filter((id) =>
+        householdMembers.some((m) => (m.userId || m.user?.userId || m.householdMemberId) === id)
+      );
+      const nextIds =
+        validIds.length > 0
           ? validIds
           : (householdMembers
               .map((m) => m.userId || m.user?.userId || m.householdMemberId)
               .filter(Boolean) as string[]);
-      });
+      setSelectedMemberIds(nextIds);
     }
-  }, [householdMembers]);
+  }
 
   const amountInputId = useId();
   const createExpenseMutation = useCreateExpenseMutation();
@@ -150,9 +152,10 @@ export function QuickSplitDock({
       // Reset form
       setCustomDescription('');
       setAmount('48.00');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to log quick split:', err);
-      toast.error(err?.message || 'Failed to save expense');
+      const message = err instanceof Error ? err.message : 'Failed to save expense';
+      toast.error(message);
     }
   };
 
@@ -184,7 +187,7 @@ export function QuickSplitDock({
                 type="button"
                 variant={isSelected ? 'default' : 'outline'}
                 onClick={() => handleSelectQuickAmount(val)}
-                className={`px-3 min-h-[44px] rounded-lg text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 h-auto py-2 ${
+                className={`px-3 min-h-[44px] rounded-lg text-xs font-bold transition-all cursor-pointer active:scale-95 h-auto py-2 tabular-nums ${
                   isSelected
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'bg-surface-container hover:bg-surface-container-high text-foreground border-transparent'
@@ -214,7 +217,7 @@ export function QuickSplitDock({
               min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-transparent font-mono font-extrabold text-xl text-foreground focus:outline-none tabular-nums"
+              className="w-full bg-transparent font-extrabold text-xl text-foreground focus:outline-none tabular-nums"
               placeholder="0.00"
             />
           </div>
@@ -314,13 +317,11 @@ export function QuickSplitDock({
             <Calculator className="w-3.5 h-3.5 text-primary shrink-0" />
             <span>
               Split &nbsp;
-              <span className="font-mono font-bold text-primary tabular-nums">{splitCount}</span>
+              <span className="font-bold text-primary tabular-nums">{splitCount}</span>
               &nbsp; ways:
             </span>
           </div>
-          <span className="font-mono font-bold text-primary tabular-nums">
-            ${perPersonAmount} each
-          </span>
+          <span className="font-bold text-primary tabular-nums">${perPersonAmount} each</span>
         </div>
       </div>
 

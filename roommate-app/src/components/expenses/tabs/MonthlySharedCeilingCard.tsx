@@ -70,14 +70,14 @@ export function MonthlySharedCeilingCard({
         {/* Spend Metrics */}
         <div className="flex items-baseline justify-between pt-1">
           <div className="flex items-baseline gap-1.5">
-            <span className="font-display font-extrabold text-2xl text-foreground font-mono tabular-nums">
+            <span className="font-display font-extrabold text-2xl text-foreground tabular-nums">
               ${displayTotal.toFixed(0)}
             </span>
-            <span className="text-xs text-muted-foreground font-mono">
+            <span className="text-xs text-muted-foreground tabular-nums">
               / ${budgetCap.toFixed(0)} cap ({percentage}%)
             </span>
           </div>
-          <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
+          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
             ${remaining.toFixed(0)} left
           </span>
         </div>

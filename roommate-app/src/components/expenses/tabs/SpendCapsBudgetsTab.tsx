@@ -111,10 +111,10 @@ export function SpendCapsBudgetsTab({
       {/* 1. Header Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Monthly Shared Outlay
           </span>
-          <div className="font-display font-extrabold text-2xl text-foreground font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-foreground tabular-nums">
             ${totalSpent.toFixed(2)}
           </div>
           <span className="text-[11px] text-muted-foreground">
@@ -123,10 +123,10 @@ export function SpendCapsBudgetsTab({
         </Card>
 
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Fair Share Target
           </span>
-          <div className="font-display font-extrabold text-2xl text-primary font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-primary tabular-nums">
             ${perTenantShare.toFixed(2)}
           </div>
           <span className="text-[11px] text-muted-foreground">
@@ -135,10 +135,10 @@ export function SpendCapsBudgetsTab({
         </Card>
 
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Cap Health
           </span>
-          <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 tabular-nums">
             {utilizationPercentage}% Utilized
           </div>
           <span className="text-[11px] text-muted-foreground">
