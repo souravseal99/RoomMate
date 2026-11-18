@@ -173,7 +173,7 @@ export function Dashboard() {
   const budgetTotal = activeHousehold?.settings?.monthlyCommunalBudget || 1800;
 
   return (
-    <div className="max-w-[1240px] mx-auto py-1 space-y-4">
+    <div className="w-full max-w-[1240px] mx-auto py-1 sm:py-2 space-y-4">
       {/* 1. Recessed Dominant Glanceable Hero Cockpit */}
       <DashboardHeroCockpit
         netBalance={currentMemberBalance}

@@ -90,8 +90,8 @@ export function PairwiseBalanceMatrixTable({
         </div>
       </CardHeader>
 
-      <CardContent className="p-0 overflow-x-auto">
-        <Table className="w-full text-left text-xs">
+      <CardContent className="p-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <Table className="w-full min-w-[500px] text-left text-xs">
           <TableHeader>
             <TableRow className="border-b border-border/40 text-muted-foreground font-mono text-[11px] uppercase">
               <TableHead className="py-2.5 px-3 font-semibold">Flatmate</TableHead>

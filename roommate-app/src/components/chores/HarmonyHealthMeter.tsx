@@ -31,12 +31,12 @@ export function HarmonyHealthMeter({
   return (
     <section className="grid grid-cols-1 xl:grid-cols-12 gap-3 sm:gap-4 select-none">
       {/* Filter Chips Pill Bar (7 cols) */}
-      <Card className="xl:col-span-7 bg-card p-2 rounded-2xl border-border/70 shadow-xs flex flex-wrap items-center gap-1.5">
+      <Card className="xl:col-span-7 bg-card p-2 rounded-2xl border-border/70 shadow-xs flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <Button
           type="button"
           variant={activeFilter === 'all' ? 'default' : 'outline'}
           onClick={() => onFilterChange('all')}
-          className={`px-4 min-h-[44px] rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'all'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
@@ -49,7 +49,7 @@ export function HarmonyHealthMeter({
           type="button"
           variant={activeFilter === 'mine' ? 'default' : 'outline'}
           onClick={() => onFilterChange('mine')}
-          className={`px-4 min-h-[44px] rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'mine'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
@@ -62,7 +62,7 @@ export function HarmonyHealthMeter({
           type="button"
           variant={activeFilter === 'today' ? 'default' : 'outline'}
           onClick={() => onFilterChange('today')}
-          className={`px-4 min-h-[44px] rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'today'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'
@@ -75,7 +75,7 @@ export function HarmonyHealthMeter({
           type="button"
           variant={activeFilter === 'urgent' ? 'default' : 'outline'}
           onClick={() => onFilterChange('urgent')}
-          className={`px-4 min-h-[44px] rounded-full text-xs font-semibold transition-all cursor-pointer ${
+          className={`px-4 min-h-[44px] shrink-0 rounded-full text-xs font-semibold transition-all cursor-pointer ${
             activeFilter === 'urgent'
               ? 'bg-primary text-primary-foreground shadow-xs'
               : 'bg-surface-container text-muted-foreground hover:text-foreground hover:bg-surface-container-high border-transparent'

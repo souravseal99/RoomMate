@@ -17,7 +17,7 @@ export function QuickActionsBar({
 
   return (
     <nav aria-label="Quick Living Actions Ribbon" className="w-full">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full">
         {/* Action 1: Log Expense */}
         <Card
           onClick={() => navigate('/expenses')}

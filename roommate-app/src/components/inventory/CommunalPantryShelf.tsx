@@ -180,14 +180,14 @@ export function CommunalPantryShelf({
   return (
     <Card className="bg-card rounded-2xl border-border/80 shadow-xs overflow-hidden flex flex-col select-none">
       {/* View Controls Bar */}
-      <div className="p-4 border-b border-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-container-low/40">
+      <div className="p-4 border-b border-border/60 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-surface-container-low/40">
         {/* Segmented Filter Tabs */}
-        <div className="inline-flex p-1 rounded-xl bg-surface-container border border-border/50 text-xs">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-surface-container border border-border/50 text-xs overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden shrink-0">
           <Button
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('all')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+            className={`px-3 min-h-[44px] shrink-0 rounded-lg font-semibold transition-all cursor-pointer h-auto py-2 ${
               filterTab === 'all'
                 ? 'bg-card text-foreground shadow-2xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -199,7 +199,7 @@ export function CommunalPantryShelf({
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('low')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+            className={`px-3 min-h-[44px] shrink-0 rounded-lg font-semibold transition-all cursor-pointer h-auto py-2 ${
               filterTab === 'low'
                 ? 'bg-amber-500 text-white shadow-2xs hover:bg-amber-600'
                 : 'text-muted-foreground hover:text-foreground'
@@ -211,7 +211,7 @@ export function CommunalPantryShelf({
             type="button"
             variant="ghost"
             onClick={() => setFilterTab('out')}
-            className={`px-3 min-h-[36px] rounded-lg font-semibold transition-all cursor-pointer h-auto py-1.5 ${
+            className={`px-3 min-h-[44px] shrink-0 rounded-lg font-semibold transition-all cursor-pointer h-auto py-2 ${
               filterTab === 'out'
                 ? 'bg-destructive text-destructive-foreground shadow-2xs hover:bg-destructive/90'
                 : 'text-muted-foreground hover:text-foreground'
@@ -222,7 +222,7 @@ export function CommunalPantryShelf({
         </div>
 
         {/* Search & Sort Controls */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
           <div className="relative flex-1 sm:w-56">
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <Input

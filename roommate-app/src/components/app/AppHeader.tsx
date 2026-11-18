@@ -80,23 +80,23 @@ export function AppHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/40 shadow-xs transition-colors">
-      <div className="h-20 max-w-[1520px] mx-auto px-4 md:px-8 flex items-center justify-between gap-4">
+      <div className="h-20 max-w-[1520px] mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left Section: Brand Logo + Active Space Switcher + Vitals */}
-        <div className="flex items-center gap-4 lg:gap-6 min-w-0">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 min-w-0">
           {/* Logo & Tagline */}
           <Link
             to="/dashboard"
-            className="flex items-center gap-2.5 shrink-0 group focus:outline-none"
+            className="flex items-center gap-2 sm:gap-2.5 shrink-0 group focus:outline-none"
             aria-label="RoomMate Home"
           >
             <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shadow-xs group-hover:scale-105 active:scale-95 transition-all">
               <Home className="w-5 h-5 stroke-[2.4]" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="font-extrabold text-base tracking-tight text-foreground leading-none font-display">
+              <span className="font-extrabold text-sm sm:text-base tracking-tight text-foreground leading-none font-display">
                 RoomMate
               </span>
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
+              <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">
                 Household Hub
               </span>
             </div>
@@ -111,7 +111,7 @@ export function AppHeader() {
               title="Active Space • Click to switch"
             >
               <Building className="w-4 h-4 text-primary shrink-0" />
-              <span className="text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">
+              <span className="text-xs font-bold truncate max-w-[120px] sm:max-w-[180px]">
                 {householdName}
               </span>
               {hasActiveHousehold && (
@@ -197,9 +197,9 @@ export function AppHeader() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[36px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[38px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
                   active
-                    ? 'bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 font-bold shadow-xs'
+                    ? 'bg-foreground text-background font-bold shadow-xs'
                     : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
                 }`}
               >

@@ -115,7 +115,7 @@ export function FlatmateStandingsCard({
             return (
               <div
                 key={m.userId}
-                className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 p-3 rounded-xl border transition-all ${
                   m.isCurrentUser
                     ? 'bg-primary/5 border-primary/30'
                     : 'bg-surface-container border-border/40'
@@ -151,7 +151,7 @@ export function FlatmateStandingsCard({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0 w-full sm:w-auto pl-12 sm:pl-0">
                   {/* Action Button: Nudge / Settle for owing roommates */}
                   {isNegative && !m.isCurrentUser && (
                     <Button
@@ -171,7 +171,7 @@ export function FlatmateStandingsCard({
                           handleNudge(m.name, m.balance);
                         }
                       }}
-                      className="h-7 px-2 text-[11px] rounded-lg border-border/80 hover:bg-muted font-semibold flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
+                      className="min-h-[36px] px-2.5 text-[11px] rounded-lg border-border/80 hover:bg-muted font-semibold flex items-center gap-1 cursor-pointer active:scale-95 shadow-2xs"
                     >
                       <Bell className="w-3 h-3 text-primary" />
                       <span>Nudge</span>

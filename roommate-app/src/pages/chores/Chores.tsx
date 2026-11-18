@@ -345,7 +345,7 @@ export function Chores() {
         size="icon"
         onClick={() => setIsAddDialogOpen(true)}
         aria-label="Add new household chore"
-        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 min-w-[56px] min-h-[56px] bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
+        className="fixed bottom-24 lg:bottom-8 right-4 sm:right-6 w-14 h-14 min-w-[56px] min-h-[56px] bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-xl flex items-center justify-center z-40 active:scale-95 transition-all cursor-pointer group"
       >
         <Plus className="w-7 h-7 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
       </Button>

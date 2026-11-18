@@ -108,7 +108,7 @@ export function AuthForm({ mode, onSubmit, isLoading = false }: Readonly<AuthFor
         <div className="w-full max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* LEFT COLUMN: Heavy-Stock Resident Check-In Card (7 cols) */}
-            <div className="lg:col-span-7 relative bg-card rounded-2xl p-6 sm:p-8 shadow-xl border border-border flex flex-col gap-6">
+            <div className="lg:col-span-7 relative bg-card rounded-2xl p-4 sm:p-6 md:p-8 shadow-xl border border-border flex flex-col gap-6">
               {/* Washi Tape Accent at Top Center */}
               <div
                 className="absolute -top-3 left-1/2 -translate-x-1/2 w-28 h-6 bg-primary/20 backdrop-blur-xs rounded shadow-xs rotate-[-1deg] border border-primary/30 pointer-events-none z-10"

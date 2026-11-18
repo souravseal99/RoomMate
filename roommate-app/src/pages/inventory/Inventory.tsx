@@ -202,7 +202,7 @@ export default function Inventory() {
         size="icon"
         onClick={handleOpenAddDrawer}
         aria-label="Add custom supply item"
-        className="fixed bottom-20 md:bottom-8 right-6 w-14 h-14 min-h-[56px] min-w-[56px] rounded-2xl shadow-xl z-40 active:scale-95 group"
+        className="fixed bottom-24 lg:bottom-8 right-4 sm:right-6 w-14 h-14 min-h-[56px] min-w-[56px] rounded-2xl shadow-xl z-40 active:scale-95 group"
       >
         <Plus className="w-7 h-7 stroke-[2.5] group-hover:rotate-90 transition-transform duration-200" />
       </Button>

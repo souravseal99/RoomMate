@@ -184,7 +184,7 @@ export function QuickSplitDock({
                 type="button"
                 variant={isSelected ? 'default' : 'outline'}
                 onClick={() => handleSelectQuickAmount(val)}
-                className={`px-3 min-h-[38px] rounded-lg text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 h-auto py-1.5 ${
+                className={`px-3 min-h-[44px] rounded-lg text-xs font-mono font-bold transition-all cursor-pointer active:scale-95 h-auto py-2 ${
                   isSelected
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'bg-surface-container hover:bg-surface-container-high text-foreground border-transparent'
@@ -246,7 +246,7 @@ export function QuickSplitDock({
                 type="button"
                 variant={isActive ? 'default' : 'outline'}
                 onClick={() => setSelectedCategory(cat.key)}
-                className={`flex items-center gap-1.5 px-3 min-h-[40px] rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer active:scale-95 h-auto py-2 shrink-0 ${
+                className={`flex items-center gap-1.5 px-3 min-h-[44px] rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer active:scale-95 h-auto py-2 shrink-0 ${
                   isActive
                     ? 'bg-primary text-primary-foreground shadow-xs'
                     : 'bg-card text-muted-foreground hover:text-foreground hover:bg-card/80 border-border/50'
@@ -283,7 +283,7 @@ export function QuickSplitDock({
             type="button"
             variant="ghost"
             onClick={() => setSplitAll(true)}
-            className={`px-3 min-h-[36px] rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 h-auto py-1.5 ${
+            className={`px-3 min-h-[44px] rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 h-auto py-2 ${
               splitAll
                 ? 'bg-card text-foreground font-bold shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'
@@ -297,7 +297,7 @@ export function QuickSplitDock({
             type="button"
             variant="ghost"
             onClick={() => setSplitAll(false)}
-            className={`px-3 min-h-[36px] rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 h-auto py-1.5 ${
+            className={`px-3 min-h-[44px] rounded-lg text-xs font-semibold cursor-pointer transition-all flex items-center gap-1.5 h-auto py-2 ${
               !splitAll
                 ? 'bg-card text-foreground font-bold shadow-xs'
                 : 'text-muted-foreground hover:text-foreground'

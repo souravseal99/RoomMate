@@ -96,7 +96,7 @@ export function SharedActivityLedger({
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+          <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5">
             {(['All', 'Groceries', 'Utilities', 'Supplies'] as const).map((filter) => {
               const isActive = selectedFilter === filter;
               return (
@@ -186,7 +186,7 @@ export function SharedActivityLedger({
                   </div>
 
                   {/* Right: Amount and Actions */}
-                  <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pl-13 sm:pl-0">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 shrink-0 pl-13 sm:pl-0 w-full sm:w-auto">
                     <div className="text-right">
                       <div className="font-mono font-extrabold text-base text-foreground tabular-nums">
                         ${expense.amount.toFixed(2)}

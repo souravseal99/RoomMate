@@ -39,8 +39,8 @@ export function HouseholdTabBar({ activeTab, onTabChange }: HouseholdTabBarProps
   ];
 
   return (
-    <div className="w-full bg-surface-container p-1 rounded-full overflow-x-auto no-scrollbar border border-border select-none">
-      <div className="flex items-center gap-1 min-w-max" role="tablist">
+    <div className="w-full bg-surface-container p-1 rounded-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth border border-border select-none">
+      <div className="flex items-center gap-1 min-w-max pr-2" role="tablist">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

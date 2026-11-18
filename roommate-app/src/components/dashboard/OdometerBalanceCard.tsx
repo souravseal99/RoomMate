@@ -143,7 +143,7 @@ export function OdometerBalanceCard({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 items-stretch">
             {flatmatesList.length === 0 ? (
               <div className="py-6 px-4 text-center rounded-lg bg-card/60 border border-dashed border-border col-span-full">
                 <Users className="w-5 h-5 mx-auto text-muted-foreground mb-1.5 opacity-60" />
@@ -262,7 +262,7 @@ export function OdometerBalanceCard({
             ) : (
               recentBills.map((bill, idx) => (
                 <div key={bill.id || idx}>
-                  <div className="py-2.5 flex items-center justify-between gap-3">
+                  <div className="py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0 shadow-xs">
                         {bill.description.toLowerCase().includes('electric') ||
@@ -292,7 +292,7 @@ export function OdometerBalanceCard({
                         </p>
                       </div>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="text-left sm:text-right shrink-0 pl-10 sm:pl-0 flex sm:block items-baseline gap-2">
                       <span className="font-mono font-bold text-foreground text-xs sm:text-[13px] block tabular-nums">
                         ${bill.userShare.toFixed(2)}
                       </span>

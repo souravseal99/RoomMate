@@ -183,7 +183,7 @@ export function WhiteboardTimelineBoard({
                 </div>
 
                 {/* Card Action Controls */}
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/40">
                   <Button
                     type="button"
                     variant="outline"
@@ -292,7 +292,7 @@ export function WhiteboardTimelineBoard({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/40">
                   <Button
                     type="button"
                     variant="outline"

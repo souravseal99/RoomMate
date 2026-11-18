@@ -591,58 +591,60 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
           </div>
 
           {/* Dynamic 7-Day Matrix */}
-          <div className="grid grid-cols-7 gap-1 pt-0.5">
-            {weekDays.map((dayMetric, idx) => {
-              const isCompleted =
-                dayMetric.status === 'completed' || dayMetric.status === 'today-done';
-              const isPending = dayMetric.status === 'pending';
-              const isMissed = dayMetric.status === 'missed';
-              const isRest = dayMetric.status === 'rest';
+          <div className="overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pt-0.5">
+            <div className="grid grid-cols-7 gap-1 min-w-[280px]">
+              {weekDays.map((dayMetric, idx) => {
+                const isCompleted =
+                  dayMetric.status === 'completed' || dayMetric.status === 'today-done';
+                const isPending = dayMetric.status === 'pending';
+                const isMissed = dayMetric.status === 'missed';
+                const isRest = dayMetric.status === 'rest';
 
-              return (
-                <div
-                  key={`day-${dayMetric.date || dayMetric.day}-${idx}`}
-                  title={`${dayMetric.date || dayMetric.day}: ${dayMetric.completedCount}/${dayMetric.totalCount} completed (${dayMetric.status})`}
-                  className={cn(
-                    'flex flex-col items-center gap-1 p-1 rounded-lg border transition-all',
-                    dayMetric.isToday
-                      ? 'bg-primary/5 border-primary/40 shadow-xs'
-                      : isCompleted
-                        ? 'bg-card border-border'
-                        : isMissed
-                          ? 'bg-destructive/5 border-destructive/30'
-                          : 'bg-card border-border/60 opacity-60'
-                  )}
-                >
-                  <span
+                return (
+                  <div
+                    key={`day-${dayMetric.date || dayMetric.day}-${idx}`}
+                    title={`${dayMetric.date || dayMetric.day}: ${dayMetric.completedCount}/${dayMetric.totalCount} completed (${dayMetric.status})`}
                     className={cn(
-                      'text-[9px] font-mono',
+                      'flex flex-col items-center gap-1 p-1 rounded-lg border transition-all',
                       dayMetric.isToday
-                        ? 'text-primary font-bold'
-                        : isMissed
-                          ? 'text-destructive font-semibold'
-                          : 'text-muted-foreground'
+                        ? 'bg-primary/5 border-primary/40 shadow-xs'
+                        : isCompleted
+                          ? 'bg-card border-border'
+                          : isMissed
+                            ? 'bg-destructive/5 border-destructive/30'
+                            : 'bg-card border-border/60 opacity-60'
                     )}
                   >
-                    {dayMetric.day}
-                  </span>
-                  <span
-                    className={cn(
-                      'w-1.5 h-1.5 rounded-full',
-                      isPending
-                        ? 'bg-primary animate-pulse'
-                        : isCompleted
-                          ? 'bg-emerald-500'
+                    <span
+                      className={cn(
+                        'text-[9px] font-mono',
+                        dayMetric.isToday
+                          ? 'text-primary font-bold'
                           : isMissed
-                            ? 'bg-destructive'
-                            : isRest
-                              ? 'bg-muted-foreground/20'
-                              : 'bg-muted-foreground/30'
-                    )}
-                  />
-                </div>
-              );
-            })}
+                            ? 'text-destructive font-semibold'
+                            : 'text-muted-foreground'
+                      )}
+                    >
+                      {dayMetric.day}
+                    </span>
+                    <span
+                      className={cn(
+                        'w-1.5 h-1.5 rounded-full',
+                        isPending
+                          ? 'bg-primary animate-pulse'
+                          : isCompleted
+                            ? 'bg-emerald-500'
+                            : isMissed
+                              ? 'bg-destructive'
+                              : isRest
+                                ? 'bg-muted-foreground/20'
+                                : 'bg-muted-foreground/30'
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="pt-1.5 flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/60">

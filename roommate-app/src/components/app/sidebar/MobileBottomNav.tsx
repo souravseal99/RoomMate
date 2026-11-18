@@ -25,7 +25,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-surface/95 backdrop-blur-md rounded-t-2xl shadow-[0_-4px_20px_rgba(30,35,40,0.06)] border-t border-border/40 px-2 pt-1.5 pb-safe select-none transition-colors"
+      className="lg:hidden fixed bottom-0 left-0 w-full z-50 bg-surface/95 backdrop-blur-md rounded-t-2xl shadow-[0_-4px_20px_rgba(30,35,40,0.06)] border-t border-border/40 px-2 pt-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom,0.5rem))] select-none transition-colors"
     >
       <div className="flex justify-around items-center max-w-md mx-auto w-full">
         {mobileNavTabs.map((item) => {

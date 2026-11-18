@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import useHousehold from '@/hooks/useHousehold';
 import useAuth from '@/hooks/useAuth';
@@ -338,12 +339,12 @@ export function KitchenTableCard() {
               </span>
             </div>
 
-            <input
+            <Input
               type="text"
               value={dishName}
               onChange={(e) => setDishName(e.target.value)}
               placeholder="e.g. Thai Curry with Jasmine Rice..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-xs"
+              className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-card border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 shadow-xs"
             />
 
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -352,7 +353,7 @@ export function KitchenTableCard() {
                   key={chip}
                   type="button"
                   onClick={() => handleChipClick(chip)}
-                  className="min-h-[30px] text-[11px] font-medium px-2.5 py-1 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors cursor-pointer"
+                  className="min-h-[36px] text-xs font-medium px-3 py-1.5 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors cursor-pointer"
                 >
                   {chip}
                 </button>
@@ -512,12 +513,12 @@ export function KitchenTableCard() {
               </span>
             </div>
 
-            <input
+            <Input
               type="text"
               value={noticeTitle}
               onChange={(e) => setNoticeTitle(e.target.value)}
               placeholder="e.g. Landlord AC Inspection today at 2:00 PM..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-xs"
+              className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-card border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 shadow-xs"
             />
 
             {/* Urgency Radio Selector */}
@@ -609,12 +610,12 @@ export function KitchenTableCard() {
               </span>
             </div>
 
-            <input
+            <Input
               type="text"
               value={questionText}
               onChange={(e) => setQuestionText(e.target.value)}
               placeholder="e.g. Anyone have a spare HDMI cable I can borrow?..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-card border border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all shadow-xs"
+              className="w-full min-h-[44px] px-3.5 py-2.5 rounded-xl bg-card border-border text-foreground font-semibold text-sm placeholder:text-muted-foreground/50 shadow-xs"
             />
 
             <div className="flex items-center gap-1.5 flex-wrap">
@@ -623,7 +624,7 @@ export function KitchenTableCard() {
                   key={chip}
                   type="button"
                   onClick={() => handleQnaChipClick(chip)}
-                  className="min-h-[30px] text-[11px] font-medium px-2.5 py-1 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors cursor-pointer"
+                  className="min-h-[36px] text-xs font-medium px-3 py-1.5 rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors cursor-pointer"
                 >
                   {chip}
                 </button>
@@ -685,19 +686,19 @@ export function KitchenTableCard() {
 
                 {/* Reply Input Bar */}
                 <div className="flex items-center gap-2 pt-1">
-                  <input
+                  <Input
                     type="text"
                     value={replyInputText}
                     onChange={(e) => setReplyInputText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendReply()}
                     placeholder="Write a quick answer..."
-                    className="flex-1 min-h-[38px] px-3 py-1.5 rounded-xl bg-card border border-border text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    className="flex-1 min-h-[44px] px-3 py-1.5 rounded-xl bg-card border-border text-xs text-foreground"
                   />
                   <Button
                     type="button"
                     onClick={handleSendReply}
                     disabled={replyQnaMutation.isPending || !replyInputText.trim()}
-                    className="min-h-[38px] px-3 h-auto rounded-xl text-xs font-semibold bg-sky-600 text-white hover:bg-sky-700"
+                    className="min-h-[44px] px-3 h-auto rounded-xl text-xs font-semibold bg-sky-600 text-white hover:bg-sky-700"
                   >
                     Reply
                   </Button>

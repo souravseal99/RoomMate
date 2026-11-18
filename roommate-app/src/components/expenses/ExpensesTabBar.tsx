@@ -47,9 +47,9 @@ export function ExpensesTabBar({ activeTab, onTabChange, badgeCount = {} }: Expe
     <Card
       role="tablist"
       aria-label="Expenses & Settlement Navigation Tabs"
-      className="w-full bg-card rounded-2xl p-1.5 border-border shadow-xs overflow-x-auto select-none"
+      className="w-full bg-card rounded-2xl p-1.5 border-border shadow-xs overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden scroll-smooth select-none"
     >
-      <div className="flex items-center gap-1.5 min-w-max">
+      <div className="flex items-center gap-1.5 min-w-max pr-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

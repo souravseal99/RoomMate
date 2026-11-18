@@ -36,12 +36,12 @@ export function ExpensesSubHeader({
       </div>
 
       {/* Mode Action Pills */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
         <Button
           type="button"
           variant="outline"
           onClick={onExportCsv}
-          className="px-4 min-h-[44px] bg-surface-container hover:bg-surface-container-high text-foreground font-semibold text-xs rounded-full border-border/60 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-xs"
+          className="flex-1 sm:flex-initial px-4 min-h-[44px] bg-surface-container hover:bg-surface-container-high text-foreground font-semibold text-xs rounded-full border-border/60 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-xs"
         >
           <Download className="w-4 h-4 text-muted-foreground" />
           <span>Export CSV</span>
@@ -50,7 +50,7 @@ export function ExpensesSubHeader({
         <Button
           type="button"
           onClick={onOpenSundaySquareUp}
-          className="px-4 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-full shadow-sm border-b-2 border-primary/30 transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+          className="flex-1 sm:flex-initial px-4 min-h-[44px] bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-full shadow-sm border-b-2 border-primary/30 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
         >
           <RefreshCw className="w-4 h-4" />
           <span>Sunday Square-Up</span>

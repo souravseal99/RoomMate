@@ -205,7 +205,7 @@ export default function Profile() {
       </Card>
 
       {/* 2. Co-Living Reputation & Stats Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card className="rounded-2xl p-4 bg-card border-border shadow-2xs flex flex-col justify-between">
           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
@@ -232,7 +232,7 @@ export default function Profile() {
           </div>
         </Card>
 
-        <Card className="rounded-2xl p-4 bg-card border-border shadow-2xs flex flex-col justify-between col-span-2 sm:col-span-1">
+        <Card className="rounded-2xl p-4 bg-card border-border shadow-2xs flex flex-col justify-between">
           <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
             <Shield className="w-4 h-4 text-primary" />
             <span>Reputation</span>

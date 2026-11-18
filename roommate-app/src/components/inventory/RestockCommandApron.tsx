@@ -81,7 +81,7 @@ export function RestockCommandApron({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
             <div className="inline-flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-xl bg-card border border-border/60 text-foreground text-xs font-medium shadow-2xs">
               <CalendarClock className="w-4 h-4 text-primary shrink-0" />
               <span>
@@ -95,7 +95,7 @@ export function RestockCommandApron({
               type="button"
               onClick={onSyncAllToCart}
               disabled={isSyncing || lowCount === 0}
-              className="min-h-[44px] px-4 rounded-xl text-xs sm:text-sm font-bold gap-2"
+              className="min-h-[44px] px-4 rounded-xl text-xs sm:text-sm font-bold gap-2 justify-center"
             >
               <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
               <span>1-Tap Sync to Cart</span>

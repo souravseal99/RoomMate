@@ -10,8 +10,8 @@ function AuthenticatedLayout() {
       <AppHeader />
 
       {/* Main Canvas Area */}
-      <main className="flex-1 w-full pt-20 pb-24 md:pb-6 lg:pb-8 flex flex-col">
-        <div className="w-full max-w-[1520px] mx-auto px-4 md:px-8 py-6 flex-1 flex flex-col">
+      <main className="flex-1 w-full pt-20 pb-28 lg:pb-8 flex flex-col">
+        <div className="w-full max-w-[1520px] mx-auto px-4 sm:px-6 md:px-8 py-4 sm:py-6 flex-1 flex flex-col">
           <Outlet />
         </div>
       </main>
