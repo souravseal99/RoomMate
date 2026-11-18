@@ -86,7 +86,7 @@ export function ActivityFeedSection() {
       return (
         <span>
           <strong className="font-semibold text-foreground">{userName}</strong> logged{' '}
-          {amount && <strong className="font-mono text-foreground font-bold">{amount} </strong>}
+          {amount && <strong className="font-bold text-foreground tabular-nums">{amount} </strong>}
           <span>{desc}</span>
         </span>
       );
@@ -109,7 +109,7 @@ export function ActivityFeedSection() {
       return (
         <span>
           <strong className="font-semibold text-foreground">{userName}</strong> settled{' '}
-          {amount && <strong className="font-mono text-foreground font-bold">{amount} </strong>}
+          {amount && <strong className="font-bold text-foreground tabular-nums">{amount} </strong>}
           with <span className="font-medium text-foreground">{recipient}</span>
         </span>
       );
@@ -138,7 +138,7 @@ export function ActivityFeedSection() {
 
     if (item.type === 'CHORE_COMPLETED') {
       return (
-        <div className="flex items-center gap-1.5 text-[11px] mt-0.5 font-mono">
+        <div className="flex items-center gap-1.5 text-[11px] mt-0.5">
           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
             Duty completed &amp; verified
           </span>
@@ -150,7 +150,7 @@ export function ActivityFeedSection() {
 
     if (item.type === 'NUDGE') {
       return (
-        <div className="flex items-center gap-1.5 text-[11px] mt-0.5 font-mono">
+        <div className="flex items-center gap-1.5 text-[11px] mt-0.5">
           <span className="text-purple-600 dark:text-purple-400 font-semibold inline-flex items-center gap-1">
             <Bell className="w-3 h-3 stroke-[2.5]" /> Action required
           </span>
@@ -163,7 +163,7 @@ export function ActivityFeedSection() {
     if (item.type === 'SETTLEMENT') {
       const method = item.metadata?.method || 'ACH Transfer';
       return (
-        <p className="text-muted-foreground text-[11px] mt-0.5 font-mono">
+        <p className="text-muted-foreground text-[11px] mt-0.5">
           {timeStr} · {method}
         </p>
       );
@@ -172,7 +172,7 @@ export function ActivityFeedSection() {
     // Expense
     const notes = item.metadata?.category || item.description || 'Groceries & coffee';
     return (
-      <p className="text-muted-foreground text-[11px] mt-0.5 font-mono">
+      <p className="text-muted-foreground text-[11px] mt-0.5">
         {timeStr} · {notes}
       </p>
     );
@@ -190,7 +190,7 @@ export function ActivityFeedSection() {
           <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-xs">
             <Rss className="w-4 h-4 stroke-[2.2]" />
           </div>
-          <CardTitle className="text-xl tracking-widest font-semibold tracking-wider uppercase text-foreground font-mono">
+          <CardTitle className="text-base sm:text-lg font-bold tracking-tight text-foreground font-display">
             Pulse Activity
           </CardTitle>
         </div>
@@ -202,7 +202,7 @@ export function ActivityFeedSection() {
               type="button"
               onClick={() => setFilter(tab)}
               className={cn(
-                'px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer font-mono',
+                'px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all cursor-pointer',
                 filter === tab
                   ? 'bg-card text-foreground shadow-xs border border-border'
                   : 'text-muted-foreground hover:text-foreground'
@@ -218,11 +218,11 @@ export function ActivityFeedSection() {
       <CardContent className="p-0 max-h-80 overflow-scroll">
         <div className="flex flex-col">
           {isLoading && filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-muted-foreground font-mono">
+            <div className="py-8 text-center text-xs text-muted-foreground">
               Loading household activity...
             </div>
           ) : filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-muted-foreground font-mono">
+            <div className="py-8 text-center text-xs text-muted-foreground">
               No recent household activities found.
             </div>
           ) : (
@@ -265,14 +265,14 @@ export function ActivityFeedSection() {
                           type="button"
                           aria-label={`Reaction ${displayEmoji} ${reactionCount}. Click to pick or change emoji reaction.`}
                           className={cn(
-                            'min-h-[44px] h-auto px-2.5 py-1 text-xs rounded-full border transition-all active:scale-95 shrink-0 flex items-center gap-1.5 cursor-pointer font-mono shadow-xs',
+                            'min-h-[44px] h-auto px-2.5 py-1 text-xs rounded-full border transition-all active:scale-95 shrink-0 flex items-center gap-1.5 cursor-pointer shadow-xs',
                             item.userReacted
                               ? 'bg-primary/10 border-primary/40 text-primary font-bold hover:bg-primary/20'
                               : 'bg-card border-border hover:bg-surface-container text-foreground'
                           )}
                         >
                           <span className="text-sm leading-none">{displayEmoji}</span>
-                          <span className="text-xs font-semibold">{reactionCount}</span>
+                          <span className="text-xs font-bold tabular-nums">{reactionCount}</span>
                           <SmilePlus className="w-3 h-3 opacity-40 hover:opacity-100 transition-opacity ml-0.5" />
                         </button>
                       </PopoverTrigger>

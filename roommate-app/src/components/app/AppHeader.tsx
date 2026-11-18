@@ -62,13 +62,13 @@ export function AppHeader() {
     : 'Select Household';
   const memberCount = householdMembers?.length || activeHousehold?.members?.length || 1;
 
-  // Stitch Top Navigation Items
+  // Stitch Top Navigation Items with responsive full and compact labels
   const navItems = [
-    { label: 'Overview', path: '/dashboard' },
-    { label: 'Household & Spaces', path: '/households' },
-    { label: 'Expenses & Ledger', path: '/expenses' },
-    { label: 'Chores & Duties', path: '/chores' },
-    { label: 'Pantry & Inventory', path: '/inventory' },
+    { label: 'Overview', shortLabel: 'Overview', path: '/dashboard' },
+    { label: 'Household & Spaces', shortLabel: 'Spaces', path: '/households' },
+    { label: 'Expenses & Ledger', shortLabel: 'Expenses', path: '/expenses' },
+    { label: 'Chores & Duties', shortLabel: 'Chores', path: '/chores' },
+    { label: 'Pantry & Inventory', shortLabel: 'Pantry', path: '/inventory' },
   ];
 
   const isNavActive = (item: (typeof navItems)[0]) => {
@@ -82,7 +82,7 @@ export function AppHeader() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/40 shadow-xs transition-colors">
       <div className="h-20 max-w-[1520px] mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left Section: Brand Logo + Active Space Switcher + Vitals */}
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 min-w-0">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 lg:gap-4 shrink-0">
           {/* Logo & Tagline */}
           <Link
             to="/dashboard"
@@ -107,15 +107,15 @@ export function AppHeader() {
             <button
               type="button"
               onClick={() => setIsSpaceMenuOpen(!isSpaceMenuOpen)}
-              className="flex items-center gap-2 bg-surface-container-low hover:bg-surface-container-high px-3.5 py-1.5 rounded-full border border-border/50 text-foreground transition-all cursor-pointer min-h-[44px] active:scale-95 shadow-xs"
+              className="flex items-center gap-1.5 sm:gap-2 bg-surface-container-low hover:bg-surface-container-high px-2.5 sm:px-3.5 py-1.5 rounded-full border border-border/50 text-foreground transition-all cursor-pointer min-h-[44px] active:scale-95 shadow-xs"
               title="Active Space • Click to switch"
             >
               <Building className="w-4 h-4 text-primary shrink-0" />
-              <span className="text-xs font-bold truncate max-w-[120px] sm:max-w-[180px]">
+              <span className="text-xs font-bold truncate max-w-[90px] md:max-w-[120px] 2xl:max-w-[180px]">
                 {householdName}
               </span>
               {hasActiveHousehold && (
-                <span className="text-[10px] text-muted-foreground font-mono hidden sm:inline">
+                <span className="text-[10px] text-muted-foreground hidden 2xl:inline">
                   · {memberCount} {memberCount === 1 ? 'Flatmate' : 'Flatmates'}
                 </span>
               )}
@@ -189,7 +189,7 @@ export function AppHeader() {
         {/* Center Section: Stitch Floating Pill Navigation Bar (Desktop) */}
         <nav
           aria-label="Main Navigation"
-          className="hidden lg:flex items-center gap-1 p-1 bg-surface-container-low rounded-full border border-border/60 shadow-xs shrink-0"
+          className="hidden lg:flex items-center gap-0.5 xl:gap-1 p-1 bg-surface-container-low rounded-full border border-border/60 shadow-xs shrink-0"
         >
           {navItems.map((item) => {
             const active = isNavActive(item);
@@ -197,13 +197,14 @@ export function AppHeader() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[38px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
+                className={`px-3 xl:px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[38px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
                   active
                     ? 'bg-foreground text-background font-bold shadow-xs'
                     : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
                 }`}
               >
-                {item.label}
+                <span className="hidden xl:inline">{item.label}</span>
+                <span className="xl:hidden">{item.shortLabel}</span>
               </Link>
             );
           })}
@@ -240,7 +241,7 @@ export function AppHeader() {
                 <span className="text-xs font-bold text-foreground truncate max-w-[100px]">
                   {displayName}
                 </span>
-                <span className="text-[10px] text-muted-foreground font-mono truncate max-w-[100px]">
+                <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
                   {activeHousehold ? 'Active Member' : 'Unit #4B'}
                 </span>
               </div>

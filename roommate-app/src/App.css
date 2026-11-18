@@ -111,7 +111,7 @@
   --theme-font:
     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --theme-display: 'Plus Jakarta Sans', sans-serif;
-  --theme-mono: 'JetBrains Mono', monospace;
+  --theme-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #f4f2ec;
@@ -180,7 +180,7 @@
   --theme-font:
     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --theme-display: 'Plus Jakarta Sans', sans-serif;
-  --theme-mono: 'Space Grotesk', monospace;
+  --theme-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #f7f7f5;
@@ -249,7 +249,7 @@
   --theme-font:
     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --theme-display: 'Plus Jakarta Sans', sans-serif;
-  --theme-mono: 'JetBrains Mono', monospace;
+  --theme-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #14171a;
@@ -322,11 +322,13 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-feature-settings: 'zero' 0;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--theme-font);
+    font-feature-settings: 'zero' 0;
   }
 }
 
