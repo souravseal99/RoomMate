@@ -39,7 +39,7 @@ export function useUpdateProfileMutation() {
       queryClient.invalidateQueries({ queryKey: profileKeys.profile() });
 
       // Update TokenStore info if current user changed name
-      TokenStore.setAuthInfo({ name: data.name });
+      TokenStore.setAuthInfo({ accessToken: TokenStore.getToken(), name: data.name });
 
       eventBus.publish({
         type: APP_EVENTS.USER_PROFILE_UPDATED,

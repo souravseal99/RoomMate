@@ -32,7 +32,7 @@ export function Dashboard() {
     amount: 0,
   });
 
-  const { data: stats, isLoading, isError } = useDashboardQuery();
+  const { isLoading, isError } = useDashboardQuery();
   const { activeHouseholdId, activeHousehold } = useHousehold();
   const { data: chores = [] } = useHouseholdChoresQuery(activeHouseholdId);
   const { data: inventory = [] } = useInventoryQuery(activeHouseholdId);

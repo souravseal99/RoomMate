@@ -4,7 +4,6 @@ import {
   Shield,
   Home,
   CheckCircle2,
-  Lock,
   KeyRound,
   Trash2,
   Edit2,
@@ -53,7 +52,7 @@ import { toast } from 'sonner';
 
 export default function Profile() {
   const { name: authName, email: authEmail } = useAuth();
-  const { activeHousehold, switchHousehold } = useHousehold();
+  const { activeHousehold, switchActiveHousehold } = useHousehold();
   const activeHouseholdId = activeHousehold?.householdId || '';
 
   // Queries & Mutations
@@ -319,7 +318,7 @@ export default function Profile() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => switchHousehold(h.householdId)}
+                          onClick={() => switchActiveHousehold(h.householdId)}
                           className="min-h-[44px] px-3.5 rounded-xl bg-card hover:bg-surface-container text-foreground font-semibold text-xs border-border cursor-pointer active:scale-95 transition-all"
                         >
                           Switch Space
