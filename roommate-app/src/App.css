@@ -17,36 +17,65 @@
   transition: filter 300ms;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Brand Splash Animations (Pure CSS / Zero Runtime Overhead) */
+@keyframes brand-breathe {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
   }
-
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: translateY(-5px) scale(1.02);
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes aura-pulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.65;
   }
 }
 
-.card {
-  padding: 2em;
+@keyframes sheen-sweep {
+  0% {
+    transform: translateX(-160%) skewX(-25deg);
+  }
+  100% {
+    transform: translateX(280%) skewX(-25deg);
+  }
 }
 
-.read-the-docs {
-  color: #888;
+@keyframes shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-brand-breathe {
+  animation: brand-breathe 3.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-aura-pulse {
+  animation: aura-pulse 3s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-sheen-sweep {
+  animation: sheen-sweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+.animate-shimmer-slide {
+  animation: shimmer-slide 1.8s ease-in-out infinite;
+  will-change: transform;
 }
 
 @theme inline {

@@ -207,9 +207,17 @@ describe("Rate Limiter & Invite Protection Suite", () => {
   });
 
   describe("Global & Auth Express Limiters", () => {
-    it("should bypass globalLimiter for /health endpoint", async () => {
-      const result = await runLimiter(globalLimiter, { path: "/health" });
-      expect(result.passed).toBe(true);
+    it("should bypass globalLimiter for /health, /health/ready, and /ready endpoints", async () => {
+      const resHealth = await runLimiter(globalLimiter, { path: "/health" });
+      expect(resHealth.passed).toBe(true);
+
+      const resReady = await runLimiter(globalLimiter, {
+        path: "/health/ready",
+      });
+      expect(resReady.passed).toBe(true);
+
+      const resShortReady = await runLimiter(globalLimiter, { path: "/ready" });
+      expect(resShortReady.passed).toBe(true);
     });
 
     it("should block requests when rate limit exceeded", async () => {
