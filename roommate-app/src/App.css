@@ -17,18 +17,20 @@
   transition: filter 300ms;
 }
 
-/* Brand Splash Animations (Pure CSS / Zero Runtime Overhead) */
-@keyframes brand-breathe {
+/* Brand Splash Animations (Organic Hearth & Floating Emblem) */
+@keyframes brand-float-organic {
   0%,
   100% {
-    transform: translateY(0px) scale(1);
+    transform: translateY(0px) rotate(0deg) scale(1);
+    filter: drop-shadow(0 12px 20px rgba(208, 74, 27, 0.16));
   }
   50% {
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-8px) rotate(1deg) scale(1.03);
+    filter: drop-shadow(0 22px 30px rgba(208, 74, 27, 0.28));
   }
 }
 
-@keyframes aura-pulse {
+@keyframes hearth-radiance {
   0%,
   100% {
     transform: scale(0.92);
@@ -36,45 +38,50 @@
   }
   50% {
     transform: scale(1.18);
-    opacity: 0.65;
+    opacity: 0.7;
   }
 }
 
-@keyframes sheen-sweep {
+@keyframes hearth-ripple {
   0% {
-    transform: translateX(-160%) skewX(-25deg);
+    transform: scale(0.75);
+    opacity: 0.75;
   }
   100% {
-    transform: translateX(280%) skewX(-25deg);
+    transform: scale(1.9);
+    opacity: 0;
   }
 }
 
-@keyframes shimmer-slide {
+@keyframes fluid-track {
   0% {
     transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(45%);
   }
   100% {
     transform: translateX(200%);
   }
 }
 
-.animate-brand-breathe {
-  animation: brand-breathe 3.5s ease-in-out infinite;
-  will-change: transform;
+.animate-brand-float-organic {
+  animation: brand-float-organic 4.2s ease-in-out infinite;
+  will-change: transform, filter;
 }
 
-.animate-aura-pulse {
-  animation: aura-pulse 3s ease-in-out infinite;
+.animate-hearth-radiance {
+  animation: hearth-radiance 3.6s ease-in-out infinite;
   will-change: transform, opacity;
 }
 
-.animate-sheen-sweep {
-  animation: sheen-sweep 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  will-change: transform;
+.animate-hearth-ripple {
+  animation: hearth-ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  will-change: transform, opacity;
 }
 
-.animate-shimmer-slide {
-  animation: shimmer-slide 1.8s ease-in-out infinite;
+.animate-fluid-track {
+  animation: fluid-track 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   will-change: transform;
 }
 
