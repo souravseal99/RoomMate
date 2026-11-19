@@ -23,7 +23,7 @@ export function SundaySquareUpModal({
 }: SundaySquareUpModalProps) {
   const handleConfirm = () => {
     toast.success(
-      'Sunday Square-Up completed: All settled domestic balances have been consolidated and archived! 🎉'
+      'Sunday Square-Up completed: All settled domestic balances have been consolidated and archived.'
     );
     onOpenChange(false);
   };

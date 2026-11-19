@@ -83,14 +83,6 @@ function formatCompletedTime(dateStr?: string | null): string {
   }
 }
 
-function getChoreKarma(chore?: ChoreItem | null): number {
-  if (!chore) return 15;
-  if (chore.karma) return chore.karma;
-  const base = chore.priority === 'HIGH' ? 25 : chore.priority === 'LOW' ? 10 : 15;
-  const mult = chore.frequency === 'monthly' ? 1.5 : chore.frequency === 'weekly' ? 1.2 : 1.0;
-  return Math.round(base * mult);
-}
-
 const DEFAULT_WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
@@ -139,9 +131,6 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
     ? stampedIds.has(activeChore.choreId) || activeChore.completed
     : false;
 
-  const activeKarma = getChoreKarma(activeChore);
-  const nextKarma = getChoreKarma(nextChore);
-
   const handleStampDuty = (choreToStamp?: ChoreItem | null) => {
     const target = choreToStamp || activeChore;
     if (!target) return;
@@ -151,7 +140,6 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
       return;
     }
 
-    const karmaEarned = getChoreKarma(target);
     setStampedIds((prev) => new Set(prev).add(target.choreId));
 
     if (activeHouseholdId) {
@@ -163,7 +151,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
         },
         {
           onSuccess: () => {
-            toast.success(`+${karmaEarned} House Karma earned! Duty verified.`, {
+            toast.success(`Duty completed and verified!`, {
               icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
             });
           },
@@ -178,7 +166,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
         }
       );
     } else {
-      toast.success(`+${karmaEarned} House Karma earned! Duty verified.`, {
+      toast.success(`Duty completed and verified!`, {
         icon: <Sparkles className="w-4 h-4 text-emerald-500" />,
       });
     }
@@ -240,9 +228,10 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
             icon: <Bell className="w-4 h-4 text-primary" />,
           });
         },
-        onError: (err: any) => {
+        onError: (err: unknown) => {
+          const axiosError = err as { response?: { data?: { message?: string } } };
           const msg =
-            err?.response?.data?.message ||
+            axiosError?.response?.data?.message ||
             `Gentle chore nudge sent to ${targetChore.assignedToName || 'flatmate'}!`;
           toast.success(msg, {
             icon: <Bell className="w-4 h-4 text-primary" />,
@@ -329,7 +318,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
 
       <CardContent className="p-0 space-y-3">
         <p className="text-muted-foreground text-xs leading-relaxed font-body">
-          Rotational duties. Stamp complete to claim House Karma &amp; log verification.
+          Rotational duties. Stamp complete to log duty verification.
         </p>
 
         {hasNoChores ? (
@@ -337,7 +326,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
             <CheckCircle2 className="w-7 h-7 text-muted-foreground/60 mx-auto" />
             <p className="text-xs font-semibold text-foreground">No rotational duties scheduled</p>
             <p className="text-[11px] text-muted-foreground">
-              Add chores in the Chores tab to start tracking flat duties and house karma.
+              Add chores in the Chores tab to start tracking flat duties and rotation.
             </p>
           </div>
         ) : (
@@ -410,7 +399,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                                 : 'bg-muted text-muted-foreground'
                             )}
                           >
-                            {activeChore.priority === 'HIGH' ? '⚡ URGENT' : 'ROTATION'}
+                            {activeChore.priority === 'HIGH' ? 'URGENT' : 'ROTATION'}
                           </Badge>
                         )}
                       </div>
@@ -433,16 +422,23 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                     <Badge
                       variant={isCard1Stamped ? 'secondary' : 'default'}
                       className={cn(
-                        'font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0',
+                        'font-mono px-2 py-0.5 rounded-md shadow-xs font-bold text-[11px] border-0 inline-flex items-center gap-1',
                         isCard1Stamped
                           ? 'bg-emerald-600 text-white'
                           : 'bg-primary text-primary-foreground'
                       )}
                     >
-                      {isCard1Stamped ? `STAMPED ✓ (+${activeKarma})` : `+${activeKarma} Karma`}
+                      {isCard1Stamped ? (
+                        <>
+                          <span>STAMPED</span>
+                          <Check className="w-3 h-3 stroke-[2.5]" />
+                        </>
+                      ) : (
+                        'PENDING'
+                      )}
                     </Badge>
                     <span className="text-[9px] font-semibold tracking-wider uppercase text-primary font-mono group-hover:underline">
-                      {isCard1Stamped ? 'Click to unstamp ↩' : 'Click to Stamp'}
+                      {isCard1Stamped ? 'Click to unstamp' : 'Click to Stamp'}
                     </span>
                   </div>
                 </div>
@@ -490,7 +486,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                     }
                     className="h-7 px-2.5 rounded-md text-[11px] font-semibold shrink-0 cursor-pointer shadow-xs"
                   >
-                    Stamp (+{nextKarma})
+                    Stamp
                   </Button>
                 ) : (
                   <Button
@@ -559,12 +555,13 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
                 <div className="flex flex-col items-end gap-1 shrink-0">
                   <Badge
                     variant="outline"
-                    className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono"
+                    className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 border border-emerald-500/20 px-2 py-0.5 rounded shrink-0 font-mono inline-flex items-center gap-1"
                   >
-                    STAMPED ✓ (+{getChoreKarma(recentCompletedChore)})
+                    <span>VERIFIED</span>
+                    <Check className="w-3 h-3 stroke-[2.5]" />
                   </Badge>
                   <span className="text-[9px] font-semibold tracking-wider uppercase text-muted-foreground group-hover:text-primary transition-colors font-mono">
-                    Click to unstamp ↩
+                    Click to unstamp
                   </span>
                 </div>
               </div>
@@ -572,7 +569,7 @@ export function DutyStampPunchcard({ urgentChore }: DutyStampPunchcardProps) {
               <div className="p-2.5 px-3 rounded-xl bg-muted/20 border border-dashed border-border/60 flex items-center gap-2 text-muted-foreground">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500/70 shrink-0" />
                 <span className="text-xs">
-                  Stamp your first chore to verify duty and earn House Karma!
+                  Complete your first chore to verify duty and flat rotation!
                 </span>
               </div>
             )}

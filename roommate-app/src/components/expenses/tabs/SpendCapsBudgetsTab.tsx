@@ -82,28 +82,24 @@ export function SpendCapsBudgetsTab({
   const budgetCategories = [
     {
       category: 'Food & Groceries',
-      emoji: '🛒',
       spent: groceriesSpent,
       cap: Math.round(totalBudgetCap * 0.45),
       color: 'bg-primary',
     },
     {
       category: 'Power, Gas & Wi-Fi',
-      emoji: '⚡',
       spent: utilitiesSpent,
       cap: Math.round(totalBudgetCap * 0.25),
       color: 'bg-secondary',
     },
     {
       category: 'Communal Cleaning & Supplies',
-      emoji: '🧻',
       spent: suppliesSpent,
       cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-amber-600',
     },
     {
       category: 'Takeout & Social Dining',
-      emoji: '🍕',
       spent: takeoutSpent,
       cap: Math.round(totalBudgetCap * 0.15),
       color: 'bg-emerald-600',
@@ -115,10 +111,10 @@ export function SpendCapsBudgetsTab({
       {/* 1. Header Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Monthly Shared Outlay
           </span>
-          <div className="font-display font-extrabold text-2xl text-foreground font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-foreground tabular-nums">
             ${totalSpent.toFixed(2)}
           </div>
           <span className="text-[11px] text-muted-foreground">
@@ -127,10 +123,10 @@ export function SpendCapsBudgetsTab({
         </Card>
 
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Fair Share Target
           </span>
-          <div className="font-display font-extrabold text-2xl text-primary font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-primary tabular-nums">
             ${perTenantShare.toFixed(2)}
           </div>
           <span className="text-[11px] text-muted-foreground">
@@ -139,10 +135,10 @@ export function SpendCapsBudgetsTab({
         </Card>
 
         <Card className="bg-card rounded-2xl p-5 border-border shadow-xs space-y-1">
-          <span className="text-xs text-muted-foreground font-mono uppercase tracking-wider">
+          <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
             Cap Health
           </span>
-          <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">
+          <div className="font-display font-extrabold text-2xl text-emerald-600 dark:text-emerald-400 tabular-nums">
             {utilizationPercentage}% Utilized
           </div>
           <span className="text-[11px] text-muted-foreground">
@@ -180,7 +176,6 @@ export function SpendCapsBudgetsTab({
               <div key={cat.category} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">{cat.emoji}</span>
                     <span className="font-bold text-foreground">{cat.category}</span>
                     {isNearCap && (
                       <Badge

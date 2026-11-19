@@ -12,7 +12,7 @@ interface FlatmateStandingsCardProps {
   balances: BalanceEntry[];
   householdMembers: HouseholdMember[];
   currentUserId: string;
-  onOpenSettleModal?: (target?: any) => void;
+  onOpenSettleModal?: (target?: unknown) => void;
 }
 
 export function FlatmateStandingsCard({
@@ -193,7 +193,7 @@ export function FlatmateStandingsCard({
                   {/* Amount Chip */}
                   <Badge
                     variant="outline"
-                    className={`px-3 py-1 rounded-lg font-mono font-bold text-xs tabular-nums ${
+                    className={`px-3 py-1 rounded-lg font-bold text-xs tabular-nums ${
                       isPositive
                         ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
                         : isNegative

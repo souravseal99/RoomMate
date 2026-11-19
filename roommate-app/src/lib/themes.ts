@@ -6,21 +6,21 @@ export const themes: ThemeConfig[] = [
     label: 'Warm Terracotta (Bento)',
     className: '',
     swatch: '#D04A1B',
-    fontLabel: 'Manrope',
+    fontLabel: 'Plus Jakarta Sans',
   },
   {
     name: 'bento-teal',
     label: 'Signal Teal (Bento)',
     className: 'theme-bento-teal',
     swatch: '#0F766E',
-    fontLabel: 'Manrope',
+    fontLabel: 'Plus Jakarta Sans',
   },
   {
     name: 'bento-obsidian',
     label: 'Obsidian Cockpit (Dark)',
     className: 'theme-bento-obsidian',
     swatch: '#E2622F',
-    fontLabel: 'Manrope',
+    fontLabel: 'Plus Jakarta Sans',
   },
 ];
 

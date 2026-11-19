@@ -26,7 +26,12 @@ import {
   useAcknowledgeNoticeMutation,
   useReplyQnaMutation,
 } from '@/hooks/queries/useHouseholdQueries';
-import type { KitchenTableMode } from '@/types/householdTypes';
+import type {
+  KitchenTableMode,
+  KitchenTableRsvp,
+  KitchenTableNoticeAck,
+  KitchenTableQnaReply,
+} from '@/types/householdTypes';
 
 const QUICK_DISH_CHIPS = ['Thai Curry', '+ Sourdough', '+ Veggie Stirfry', '+ Pasta'];
 const SERVING_TIMES = ['7:30', '8:00', '8:30'];
@@ -36,40 +41,39 @@ const QUICK_QNA_CHIPS = ['+ Borrow Item', '+ Lost & Found', '+ Quick Poll', '+ W
 const NOTICE_URGENCIES: Array<{
   id: 'URGENT' | 'MAINTENANCE' | 'GENERAL' | 'SOCIAL';
   label: string;
-  icon: string;
 }> = [
-  { id: 'URGENT', label: 'Urgent', icon: '⚠️' },
-  { id: 'MAINTENANCE', label: 'Maintenance', icon: '🔧' },
-  { id: 'GENERAL', label: 'Info', icon: 'ℹ️' },
-  { id: 'SOCIAL', label: 'Social', icon: '🎉' },
+  { id: 'URGENT', label: 'Urgent' },
+  { id: 'MAINTENANCE', label: 'Maintenance' },
+  { id: 'GENERAL', label: 'Info' },
+  { id: 'SOCIAL', label: 'Social' },
 ];
 
 const BOARD_MODES: Array<{
   id: KitchenTableMode;
   label: string;
   subtitle: string;
-  icon: string;
+  icon: React.ReactNode;
   badgeClass: string;
 }> = [
   {
     id: 'CHEF',
     label: 'Chef Mode',
     subtitle: "Tonight's dish & extras",
-    icon: '♨️',
+    icon: <UtensilsCrossed className="w-4 h-4" />,
     badgeClass: 'bg-primary/10 text-primary border-primary/20',
   },
   {
     id: 'QNA',
     label: 'Q&A Mode',
     subtitle: 'Flatmate questions & forum',
-    icon: '💬',
+    icon: <MessageSquare className="w-4 h-4" />,
     badgeClass: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20',
   },
   {
     id: 'NOTICE',
     label: 'Notice Mode',
     subtitle: 'House bulletin announcements',
-    icon: '📢',
+    icon: <Megaphone className="w-4 h-4" />,
     badgeClass: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
   },
 ];
@@ -117,34 +121,39 @@ export function KitchenTableCard() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Sync state when kitchenTable loads
-  useEffect(() => {
-    if (kitchenTable?.activeMode) {
+  // Sync form inputs when server data loads (React recommended pattern without useEffect)
+  const [prevTable, setPrevTable] = useState(kitchenTable);
+  if (kitchenTable && kitchenTable !== prevTable) {
+    setPrevTable(kitchenTable);
+    if (kitchenTable.activeMode) {
       setActiveMode(kitchenTable.activeMode);
     }
-    if (kitchenTable?.meal?.dishName) {
+    if (kitchenTable.meal?.dishName) {
       setDishName(kitchenTable.meal.dishName);
     }
-    if (kitchenTable?.meal?.servingTime) {
+    if (kitchenTable.meal?.servingTime) {
       setServingTime(kitchenTable.meal.servingTime);
     }
-    if (typeof kitchenTable?.meal?.extraPlates === 'number') {
+    if (typeof kitchenTable.meal?.extraPlates === 'number') {
       setExtraPlates(kitchenTable.meal.extraPlates);
     }
-  }, [kitchenTable]);
+  }
 
   // Active items
   const activeMeal = kitchenTable?.meal || (kitchenTable?.dishName ? kitchenTable : null);
   const activeNotice = kitchenTable?.notice;
   const activeQna = kitchenTable?.qna;
 
-  const attendingRsvps = activeMeal?.rsvps?.filter((rsvp: any) => rsvp.attending) || [];
-  const currentUserRsvp = activeMeal?.rsvps?.find((rsvp: any) => rsvp.userId === userId);
+  const attendingRsvps =
+    activeMeal?.rsvps?.filter((rsvp: KitchenTableRsvp) => rsvp.attending) || [];
+  const currentUserRsvp = activeMeal?.rsvps?.find(
+    (rsvp: KitchenTableRsvp) => rsvp.userId === userId
+  );
   const isAttending = currentUserRsvp ? currentUserRsvp.attending : false;
   const isChef = activeMeal?.chefId === userId;
 
   const noticeAcks = activeNotice?.acknowledgments || [];
-  const isUserAcked = noticeAcks.some((a: any) => a.userId === userId);
+  const isUserAcked = noticeAcks.some((a: KitchenTableNoticeAck) => a.userId === userId);
 
   const qnaReplies = activeQna?.replies || [];
 
@@ -309,7 +318,9 @@ export function KitchenTableCard() {
                           <span className="font-bold text-xs sm:text-sm text-foreground">
                             {mode.label}
                           </span>
-                          {isSelected && <span className="text-primary font-bold text-xs">✓</span>}
+                          {isSelected && (
+                            <Check className="w-3.5 h-3.5 text-primary stroke-[2.5]" />
+                          )}
                         </div>
                         <p className="text-[11px] text-muted-foreground truncate leading-tight mt-0.5">
                           {mode.subtitle}
@@ -471,7 +482,7 @@ export function KitchenTableCard() {
                     {isAttending ? (
                       <span className="flex items-center gap-1">
                         <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                        <span>Attending! 🍲</span>
+                        <span>Attending</span>
                       </span>
                     ) : (
                       <span>RSVP</span>
@@ -483,13 +494,14 @@ export function KitchenTableCard() {
                   <span className="text-[10px] font-mono text-muted-foreground uppercase">
                     Attending ({attendingRsvps.length}):
                   </span>
-                  {attendingRsvps.map((rsvp: any) => (
+                  {attendingRsvps.map((rsvp: KitchenTableRsvp) => (
                     <Badge
                       key={rsvp.userId}
                       variant="outline"
-                      className="text-[10px] bg-card px-2 py-0.5 border-border text-foreground font-medium"
+                      className="text-[10px] bg-card px-2 py-0.5 border-border text-foreground font-medium inline-flex items-center gap-1"
                     >
-                      {rsvp.userName} ✓
+                      <span>{rsvp.userName}</span>
+                      <Check className="w-3 h-3 text-emerald-600 stroke-[2.5]" />
                     </Badge>
                   ))}
                 </div>
@@ -534,13 +546,12 @@ export function KitchenTableCard() {
                       key={urg.id}
                       type="button"
                       onClick={() => setNoticeUrgency(urg.id)}
-                      className={`min-h-[38px] py-1.5 px-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                      className={`min-h-[38px] py-1.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
                         isSelected
                           ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40 shadow-xs'
                           : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      <span>{urg.icon}</span>
                       <span>{urg.label}</span>
                     </button>
                   );
@@ -586,7 +597,7 @@ export function KitchenTableCard() {
                       disabled={ackNoticeMutation.isPending}
                       className="min-h-[36px] h-8 text-xs font-semibold bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30"
                     >
-                      {ackNoticeMutation.isPending ? 'Marking...' : 'Mark as Seen ✓'}
+                      {ackNoticeMutation.isPending ? 'Marking...' : 'Mark as Seen'}
                     </Button>
                   )}
                 </div>
@@ -664,7 +675,7 @@ export function KitchenTableCard() {
 
                 {qnaReplies.length > 0 && (
                   <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
-                    {qnaReplies.map((rep: any) => (
+                    {qnaReplies.map((rep: KitchenTableQnaReply) => (
                       <div
                         key={rep.replyId}
                         className="p-2 bg-card rounded-lg border border-border text-xs space-y-0.5"

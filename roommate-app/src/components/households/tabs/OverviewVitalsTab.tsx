@@ -77,9 +77,9 @@ export function OverviewVitalsTab({ onNavigateTab, onOpenSettleModal }: Overview
   const handleRemindChore = () => {
     if (!upNextChore) return;
     const targetName = upNextChore.assignedToName || 'Roommate';
-    const nudgeMsg = `Hey ${targetName}! Friendly reminder to knock out "${upNextChore.description}" for our flat 🏠`;
+    const nudgeMsg = `Hey ${targetName}! Friendly reminder to knock out "${upNextChore.description}" for our household.`;
     navigator.clipboard.writeText(nudgeMsg);
-    toast.success(`Copied reminder for ${targetName} to clipboard! 📋`, {
+    toast.success(`Copied reminder for ${targetName} to clipboard`, {
       description: `"${upNextChore.description}"`,
       icon: <Send className="w-4 h-4 text-primary" />,
     });
@@ -97,7 +97,7 @@ export function OverviewVitalsTab({ onNavigateTab, onOpenSettleModal }: Overview
         toast.success(
           `Pushed ${lowStockItems.length} low-stock item${
             lowStockItems.length === 1 ? '' : 's'
-          } to shared cart! 🛒`
+          } to shared cart`
         );
       },
     });

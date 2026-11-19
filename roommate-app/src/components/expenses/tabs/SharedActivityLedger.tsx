@@ -111,13 +111,7 @@ export function SharedActivityLedger({
                       : 'bg-surface-container hover:bg-surface-container-high text-muted-foreground hover:text-foreground border-transparent'
                   }`}
                 >
-                  {filter === 'Groceries'
-                    ? '🛒 Groceries'
-                    : filter === 'Utilities'
-                      ? '⚡ Utilities'
-                      : filter === 'Supplies'
-                        ? '🧻 Supplies'
-                        : 'All'}
+                  {filter}
                 </Button>
               );
             })}

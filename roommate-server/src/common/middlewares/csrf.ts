@@ -35,6 +35,8 @@ export const {
       "/auth/register",
       "/auth/csrf-token",
       "/health",
+      "/health/ready",
+      "/ready",
       "/dev/seed",
     ]);
     const cleanPath = (req.path || "").split("?")[0].replace(/\/+$/, "") || "/";

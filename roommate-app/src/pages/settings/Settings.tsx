@@ -334,22 +334,22 @@ export default function Settings() {
 
             <div className="space-y-2 text-xs text-muted-foreground leading-relaxed pt-1">
               <div className="p-3 rounded-xl bg-surface-container-low border border-border/50 space-y-1">
-                <p className="font-bold text-foreground">🌙 Quiet Hours Rhythm</p>
+                <p className="font-bold text-foreground">Quiet Hours Schedule</p>
                 <p>
-                  11:00 PM – 8:00 AM on weekdays. Keep shared spaces peaceful before morning coffee.
+                  11:00 PM – 8:00 AM on weekdays. Keep shared spaces peaceful before morning hours.
                 </p>
               </div>
 
               <div className="p-3 rounded-xl bg-surface-container-low border border-border/50 space-y-1">
-                <p className="font-bold text-foreground">🍽️ 24-Hour Kitchen Sink Rule</p>
+                <p className="font-bold text-foreground">24-Hour Kitchen Sink Standard</p>
                 <p>Dishes unloaded into dishwasher or hand-washed within 24 hours of meal prep.</p>
               </div>
 
               <div className="p-3 rounded-xl bg-surface-container-low border border-border/50 space-y-1">
-                <p className="font-bold text-foreground">🧾 Transparent Expense Logging</p>
+                <p className="font-bold text-foreground">Transparent Expense Logging</p>
                 <p>
-                  Log shared groceries or utilities within 48 hours with receipt photo for karma
-                  credit.
+                  Log shared groceries or utilities within 48 hours with receipt details for easy
+                  settlement.
                 </p>
               </div>
             </div>

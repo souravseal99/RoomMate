@@ -1,4 +1,4 @@
-import { Minus, Plus, MoreVertical, Trash2, Edit2 } from 'lucide-react';
+import { Minus, Plus, MoreVertical, Trash2, Edit2, Package } from 'lucide-react';
 import type { InventoryItem } from '@/types/inventoryTypes';
 import {
   useUpdateInventoryMutation,
@@ -13,31 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-
-function getItemEmoji(name: string): string {
-  const lower = name.toLowerCase();
-  if (lower.includes('milk')) return '🥛';
-  if (lower.includes('egg')) return '🥚';
-  if (lower.includes('bread') || lower.includes('toast')) return '🍞';
-  if (lower.includes('coffee')) return '☕';
-  if (lower.includes('tea')) return '🍵';
-  if (lower.includes('paper') || lower.includes('tp') || lower.includes('towel')) return '🧻';
-  if (lower.includes('soap') || lower.includes('wash') || lower.includes('clean')) return '🧼';
-  if (lower.includes('oil') || lower.includes('olive')) return '🫒';
-  if (lower.includes('banana')) return '🍌';
-  if (lower.includes('apple')) return '🍎';
-  if (lower.includes('pasta') || lower.includes('noodle')) return '🍝';
-  if (lower.includes('cheese')) return '🧀';
-  if (lower.includes('rice')) return '🍚';
-  if (lower.includes('butter')) return '🧈';
-  if (lower.includes('water')) return '💧';
-  if (lower.includes('snack') || lower.includes('chip') || lower.includes('cookie')) return '🍪';
-  if (lower.includes('meat') || lower.includes('chicken') || lower.includes('beef')) return '🥩';
-  if (lower.includes('sauce') || lower.includes('ketchup')) return '🥫';
-  if (lower.includes('cereal')) return '🥣';
-  if (lower.includes('fruit') || lower.includes('berry')) return '🍓';
-  return '📦';
-}
 
 type Props = {
   item: InventoryItem;
@@ -88,9 +63,9 @@ export default function InventoryStockCard({ item, householdId, onEdit }: Props)
       {/* Left: Thumbnail & Details */}
       <div className="flex items-center gap-3 min-w-0 pr-2">
         <div
-          className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${categoryBg}`}
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${categoryBg}`}
         >
-          <span>{getItemEmoji(item.name)}</span>
+          <Package className="w-5 h-5 stroke-[2.2]" />
         </div>
 
         <div className="min-w-0">

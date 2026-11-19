@@ -131,7 +131,7 @@ export function DashboardHeroCockpit({
 
   return (
     <Card
-      aria-label="Dominant Glanceable Hero Region"
+      aria-label="Dashboard Overview"
       className="w-full bg-cockpit-gradient text-white rounded-2xl p-4 sm:p-5 lg:p-6 border border-white/10 shadow-md flex flex-col gap-3.5 select-none relative overflow-hidden"
     >
       {/* Ambient background glow mapped to active theme's primary color */}
@@ -231,7 +231,7 @@ export function DashboardHeroCockpit({
                   ? isUserDebtor
                     ? `Settle $${peerDebtAmount.toFixed(2)} with ${peerDebtName}`
                     : `Nudge ${peerDebtName} ($${peerDebtAmount.toFixed(2)})`
-                  : 'All Settled Up ✨'}
+                  : 'All Settled Up'}
               </span>
             </Button>
           </CardContent>
@@ -304,10 +304,10 @@ export function DashboardHeroCockpit({
                       }`}
                     >
                       {activeNotice.urgency === 'URGENT'
-                        ? 'Urgent ⚠️'
+                        ? 'Urgent'
                         : activeNotice.urgency === 'MAINTENANCE'
-                          ? 'Maintenance 🔧'
-                          : 'Notice 📢'}
+                          ? 'Maintenance'
+                          : 'Notice'}
                     </Badge>
                   </div>
                   <h2 className="font-bold text-[13px] text-white leading-tight tracking-tight pt-0.5 font-sans line-clamp-1">
@@ -328,7 +328,7 @@ export function DashboardHeroCockpit({
                   {isUserAcked ? (
                     <span className="text-emerald-400 font-semibold tracking-wide uppercase text-[10px] bg-emerald-950/40 px-2 py-0.5 rounded shrink-0 border border-emerald-500/30 font-sans flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      Seen ✓
+                      Seen
                     </span>
                   ) : (
                     <button
@@ -355,7 +355,7 @@ export function DashboardHeroCockpit({
                       variant="outline"
                       className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-950/60 text-sky-300 border-sky-500/30 font-sans"
                     >
-                      {isUserReplied ? 'Answered 💬' : 'Open Query ❓'}
+                      {isUserReplied ? 'Answered' : 'Open Query'}
                     </Badge>
                   </div>
                   <h2 className="font-bold text-[13px] text-white leading-tight tracking-tight pt-0.5 font-sans line-clamp-1">
@@ -394,14 +394,14 @@ export function DashboardHeroCockpit({
                           variant="outline"
                           className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/20 text-primary-fixed border-primary/30 font-sans"
                         >
-                          Chef ♨️
+                          Chef
                         </Badge>
                       ) : isUserAttending ? (
                         <Badge
                           variant="outline"
                           className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-300 border-emerald-500/20 font-sans"
                         >
-                          Going ✨
+                          Going
                         </Badge>
                       ) : (
                         <Badge

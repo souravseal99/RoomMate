@@ -104,7 +104,7 @@ export function InStoreShoppingCard({
 
   const handleShareList = async () => {
     const listText = cartItems.map((item) => `• ${item.itemName} (x${item.quantity})`).join('\n');
-    const shareMessage = `🛒 ${householdName} Grocery List:\n${listText}\n\nEstimated Total: $${estimatedTotal.toFixed(2)}`;
+    const shareMessage = `${householdName} Grocery List:\n${listText}\n\nEstimated Total: $${estimatedTotal.toFixed(2)}`;
 
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(shareMessage);

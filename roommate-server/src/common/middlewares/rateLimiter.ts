@@ -323,7 +323,10 @@ export const globalLimiter: RateLimitRequestHandler = rateLimit({
   limit: 120,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  skip: (req: Request) => req.path === "/health",
+  skip: (req: Request) =>
+    req.path === "/health" ||
+    req.path.startsWith("/health/") ||
+    req.path === "/ready",
   keyGenerator: (req: Request) => extractIp(req),
   store: new TokenBucketStore({
     capacity: 120,
@@ -462,7 +465,7 @@ export const authenticatedLimiter: RateLimitRequestHandler = rateLimit({
   standardHeaders: "draft-7",
   legacyHeaders: false,
   keyGenerator: (req: Request) => {
-    const user = (req as any).user;
+    const user = (req as Request & { user?: { userId?: string } }).user;
     if (user && user.userId) {
       return `usr:${user.userId}`;
     }

@@ -99,7 +99,7 @@ export default function TodayChoresCarousel({ chores }: Props) {
         </div>
       ) : (
         <div className="bg-card border border-border rounded-2xl p-6 text-center text-muted-foreground text-sm">
-          No chores scheduled for today ✨
+          No chores scheduled for today
         </div>
       )}
     </section>

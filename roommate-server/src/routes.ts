@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import userRoutes from "@src/users/user.routes";
 import authRoutes from "@src/auth/auth.routes";
 import householdRouter from "@src/households/household.routes";
@@ -16,28 +16,46 @@ import { devSeedLimiter } from "@common/middlewares/rateLimiter";
 
 const routes = Router();
 
-routes.get("/health", async (_request, response) => {
+// 1. Liveness Probe (Zero I/O, ultra-fast for platform orchestrators & pingers)
+routes.get("/health", (_request, response) => {
+  return response.status(200).json({
+    status: "healthy",
+    uptime: Math.round(process.uptime()),
+    dateTime: new Date(),
+  });
+});
+
+// 2. Readiness & Keep-Alive Warm-Up Probe (Executes DB query, keeps Render & DB warm)
+const handleReadinessCheck = async (_request: Request, response: Response) => {
+  const start = performance.now();
   try {
     await prisma.$queryRaw`SELECT 1`;
+    const latencyMs = Math.round(performance.now() - start);
 
     return response.status(200).json({
-      status: "healthy",
+      status: "ready",
       database: "connected",
+      latencyMs,
       dateTime: new Date(),
     });
   } catch (error) {
-    console.error("Health check failed:", error);
+    console.error("Readiness check failed:", error);
+    const latencyMs = Math.round(performance.now() - start);
     const isProduction = process.env.NODE_ENV === "production";
     return response.status(503).json({
       status: "unhealthy",
       database: "disconnected",
+      latencyMs,
       dateTime: new Date(),
       ...(isProduction
         ? {}
         : { error: error instanceof Error ? error.message : "Unknown error" }),
     });
   }
-});
+};
+
+routes.get("/health/ready", handleReadinessCheck);
+routes.get("/ready", handleReadinessCheck);
 
 routes.use("/user", userRoutes);
 

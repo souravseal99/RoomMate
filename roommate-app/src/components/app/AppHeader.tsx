@@ -23,13 +23,7 @@ export function AppHeader() {
   const currentPath = location.pathname;
 
   const { name, email, logout } = useAuth();
-  const {
-    households,
-    activeHousehold,
-    switchActiveHousehold,
-    hasActiveHousehold,
-    householdMembers,
-  } = useHousehold();
+  const { households, activeHousehold, switchActiveHousehold, hasActiveHousehold } = useHousehold();
   const { themeName, setTheme, availableThemes } = useTheme();
 
   const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
@@ -60,15 +54,14 @@ export function AppHeader() {
   const householdName = hasActiveHousehold
     ? activeHousehold?.name || 'My Household'
     : 'Select Household';
-  const memberCount = householdMembers?.length || activeHousehold?.members?.length || 1;
 
-  // Stitch Top Navigation Items
+  // Stitch Top Navigation Items with responsive full and compact labels
   const navItems = [
-    { label: 'Overview', path: '/dashboard' },
-    { label: 'Household & Spaces', path: '/households' },
-    { label: 'Expenses & Ledger', path: '/expenses' },
-    { label: 'Chores & Duties', path: '/chores' },
-    { label: 'Pantry & Inventory', path: '/inventory' },
+    { label: 'Overview', fullLabel: 'Overview', path: '/dashboard' },
+    { label: 'Spaces', fullLabel: 'Household & Spaces', path: '/households' },
+    { label: 'Expenses', fullLabel: 'Expenses & Ledger', path: '/expenses' },
+    { label: 'Chores', fullLabel: 'Chores & Duties', path: '/chores' },
+    { label: 'Pantry', fullLabel: 'Pantry & Inventory', path: '/inventory' },
   ];
 
   const isNavActive = (item: (typeof navItems)[0]) => {
@@ -82,7 +75,7 @@ export function AppHeader() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-b border-border/40 shadow-xs transition-colors">
       <div className="h-20 max-w-[1520px] mx-auto px-3 sm:px-4 md:px-8 flex items-center justify-between gap-2 sm:gap-4">
         {/* Left Section: Brand Logo + Active Space Switcher + Vitals */}
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 min-w-0">
+        <div className="flex items-center gap-2.5 sm:gap-3.5 lg:gap-4 shrink-0">
           {/* Logo & Tagline */}
           <Link
             to="/dashboard"
@@ -107,18 +100,13 @@ export function AppHeader() {
             <button
               type="button"
               onClick={() => setIsSpaceMenuOpen(!isSpaceMenuOpen)}
-              className="flex items-center gap-2 bg-surface-container-low hover:bg-surface-container-high px-3.5 py-1.5 rounded-full border border-border/50 text-foreground transition-all cursor-pointer min-h-[44px] active:scale-95 shadow-xs"
+              className="flex items-center gap-1.5 sm:gap-2 bg-surface-container-low hover:bg-surface-container-high px-2.5 sm:px-3.5 py-1.5 rounded-full border border-border/50 text-foreground transition-all cursor-pointer min-h-[44px] active:scale-95 shadow-xs"
               title="Active Space • Click to switch"
             >
               <Building className="w-4 h-4 text-primary shrink-0" />
-              <span className="text-xs font-bold truncate max-w-[120px] sm:max-w-[180px]">
+              <span className="text-xs font-bold truncate max-w-[100px] sm:max-w-[130px] 2xl:max-w-[180px]">
                 {householdName}
               </span>
-              {hasActiveHousehold && (
-                <span className="text-[10px] text-muted-foreground font-mono hidden sm:inline">
-                  · {memberCount} {memberCount === 1 ? 'Flatmate' : 'Flatmates'}
-                </span>
-              )}
               <ChevronDown
                 className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform ${
                   isSpaceMenuOpen ? 'rotate-180' : ''
@@ -177,8 +165,8 @@ export function AppHeader() {
             )}
           </div>
 
-          {/* Environmental Status Badges (Stitch Template - visible on xl+) */}
-          <div className="hidden xl:flex items-center gap-2 text-muted-foreground">
+          {/* Environmental Status Badges (Stitch Template - visible on 2xl+) */}
+          <div className="hidden 2xl:flex items-center gap-2 text-muted-foreground">
             <div className="flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1 rounded-full border border-border/40 text-[11px] font-bold uppercase tracking-wider">
               <Thermometer className="w-3.5 h-3.5 text-secondary" />
               <span>69°F</span>
@@ -189,7 +177,7 @@ export function AppHeader() {
         {/* Center Section: Stitch Floating Pill Navigation Bar (Desktop) */}
         <nav
           aria-label="Main Navigation"
-          className="hidden lg:flex items-center gap-1 p-1 bg-surface-container-low rounded-full border border-border/60 shadow-xs shrink-0"
+          className="hidden lg:flex items-center gap-0.5 xl:gap-1 p-1 bg-surface-container-low rounded-full border border-border/60 shadow-xs shrink-0"
         >
           {navItems.map((item) => {
             const active = isNavActive(item);
@@ -197,13 +185,14 @@ export function AppHeader() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[38px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
+                className={`px-3 xl:px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all min-h-[38px] flex items-center justify-center cursor-pointer select-none active:scale-95 ${
                   active
                     ? 'bg-foreground text-background font-bold shadow-xs'
                     : 'text-muted-foreground hover:text-foreground hover:bg-surface-container-highest'
                 }`}
               >
-                {item.label}
+                <span className="hidden 2xl:inline">{item.fullLabel}</span>
+                <span className="2xl:hidden">{item.label}</span>
               </Link>
             );
           })}
@@ -240,7 +229,7 @@ export function AppHeader() {
                 <span className="text-xs font-bold text-foreground truncate max-w-[100px]">
                   {displayName}
                 </span>
-                <span className="text-[10px] text-muted-foreground font-mono truncate max-w-[100px]">
+                <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">
                   {activeHousehold ? 'Active Member' : 'Unit #4B'}
                 </span>
               </div>

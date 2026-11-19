@@ -48,8 +48,8 @@ export function PantrySubHeader({
           </h1>
 
           <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-            Zero-mental-math shared pantry stock, 1-tap tactile steppers, and automated in-store
-            grocery checklist for {householdName}.
+            Shared pantry stock, quantity tracking, and automated grocery restock checklist for{' '}
+            {householdName}.
           </p>
         </div>
 

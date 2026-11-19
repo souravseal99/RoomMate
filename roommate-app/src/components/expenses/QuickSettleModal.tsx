@@ -92,7 +92,7 @@ export function QuickSettleModal({
         amount: Number(amount),
       });
 
-      toast.success(`Settlement recorded! You and ${payeeName} are all square 🎉`);
+      toast.success(`Settlement recorded! You and ${payeeName} are all square.`);
       onOpenChange(false);
     } catch (error: any) {
       console.error('Failed to record settlement:', error);

@@ -164,7 +164,7 @@ export function FairnessLedgerTab({ onRecordBill }: FairnessLedgerTabProps) {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success('Household ledger exported to CSV format! 📄');
+    toast.success('Household ledger exported to CSV format');
   };
 
   const handleRecordBill = () => {

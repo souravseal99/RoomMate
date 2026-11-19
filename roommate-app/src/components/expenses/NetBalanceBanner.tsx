@@ -74,7 +74,7 @@ export function NetBalanceBanner({
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
               {isPositive && 'Net Owed to You'}
               {isNegative && 'Net You Owe Flatmates'}
-              {isZero && 'All settled up! No debts pending ✨'}
+              {isZero && 'All settled up! No debts pending'}
             </p>
           </div>
         </div>

@@ -14,7 +14,7 @@ export function useChoreToggle() {
         completed: nextCompleted,
       });
       toast({
-        title: nextCompleted ? 'Chore Completed! 🎉' : 'Chore Reopened',
+        title: nextCompleted ? 'Chore Completed' : 'Chore Reopened',
         description: `"${chore.title}" has been updated.`,
       });
     } catch {

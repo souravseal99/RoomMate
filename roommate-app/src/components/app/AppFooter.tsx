@@ -7,7 +7,7 @@ export function AppFooter() {
     : 'RoomMate Space';
 
   return (
-    <footer className="w-full bg-surface-container-lowest border-t border-border/40 mt-auto shadow-xs text-muted-foreground transition-colors">
+    <footer className="hidden lg:block w-full bg-surface-container-lowest border-t border-border/40 mt-auto shadow-xs text-muted-foreground transition-colors">
       <div className="max-w-[1520px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left text-xs">
         {/* Left House OS Motto & Household Badge */}
         <div className="flex flex-col sm:flex-row items-center gap-2">

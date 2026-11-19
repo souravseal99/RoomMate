@@ -10,8 +10,8 @@ interface ChoresEmptyStateProps {
 
 export function ChoresEmptyState({
   onAddChore,
-  title = 'All clean! No chores on your plate right now ✨',
-  description = 'There are no active duties matching your filter. Relax or toss a new task on the whiteboard.',
+  title = 'All clean! No duties on your plate right now',
+  description = 'There are no active duties matching your filter. Relax or add a new chore to the board.',
 }: ChoresEmptyStateProps) {
   return (
     <Card className="flex flex-col items-center justify-center min-h-[280px] p-8 bg-card rounded-2xl border-dashed border-2 border-border/70 text-center select-none shadow-none space-y-3">

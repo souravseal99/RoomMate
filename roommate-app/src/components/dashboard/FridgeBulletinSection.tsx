@@ -27,7 +27,7 @@ export function FridgeBulletinSection() {
       bg: 'bg-amber-100/90 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-100',
       pin: 'bg-red-400',
       rotation: '-rotate-1',
-      text: 'Quiet study hours tonight from 8pm - 11pm! Midterms this week 📚',
+      text: 'Quiet study hours tonight from 8pm - 11pm. Midterms this week.',
       author: 'Alex',
     },
     {
@@ -35,7 +35,7 @@ export function FridgeBulletinSection() {
       bg: 'bg-sky-100/90 dark:bg-sky-900/30 border-sky-200 dark:border-sky-800 text-sky-950 dark:text-sky-100',
       pin: 'bg-blue-400',
       rotation: 'rotate-1',
-      text: 'Trash pickup is tomorrow morning. Please tie the bag tonight! 🗑️',
+      text: 'Trash pickup is tomorrow morning. Please tie the bag tonight.',
       author: 'Sam',
     },
   ];

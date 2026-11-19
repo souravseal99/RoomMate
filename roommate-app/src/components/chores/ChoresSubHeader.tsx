@@ -24,8 +24,7 @@ export function ChoresSubHeader({
         </h1>
 
         <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">
-          Glanceable whiteboard timeline • 1-tap checkoffs, zero-guilt filtering &amp; fair-share
-          flatmate rota
+          Shared duty board • Quick task checkoffs, roster filtering, and fair rota schedules
         </p>
       </div>
 
@@ -47,7 +46,7 @@ export function ChoresSubHeader({
           className="inline-flex items-center gap-2 px-5 min-h-[44px] rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-95"
         >
           <PlusCircle className="w-4 h-4" />
-          <span>Toss a Chore</span>
+          <span>Add Chore</span>
         </Button>
       </div>
     </section>

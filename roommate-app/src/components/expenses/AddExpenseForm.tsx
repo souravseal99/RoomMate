@@ -1,5 +1,18 @@
 import { useMemo, useState, type FormEvent, type ChangeEvent } from 'react';
-import { DollarSign, FileText, UserCheck, Users, Calculator, Check } from 'lucide-react';
+import {
+  DollarSign,
+  FileText,
+  UserCheck,
+  Users,
+  Calculator,
+  Check,
+  ShoppingCart,
+  Zap,
+  Home,
+  Utensils,
+  Package,
+  Sparkles,
+} from 'lucide-react';
 import expenseApi from '@/api/expenseApi';
 import useHousehold from '@/hooks/useHousehold';
 import useAuth from '@/hooks/useAuth';
@@ -17,12 +30,12 @@ type Props = {
 };
 
 const CATEGORY_PRESETS = [
-  { label: 'Groceries', icon: '🛒' },
-  { label: 'Utilities', icon: '⚡' },
-  { label: 'Rent', icon: '🏠' },
-  { label: 'Takeout', icon: '🍕' },
-  { label: 'Supplies', icon: '🧻' },
-  { label: 'Cleaning', icon: '🧼' },
+  { label: 'Groceries', icon: ShoppingCart, color: 'text-amber-500' },
+  { label: 'Utilities', icon: Zap, color: 'text-sky-500' },
+  { label: 'Rent', icon: Home, color: 'text-indigo-500' },
+  { label: 'Takeout', icon: Utensils, color: 'text-orange-500' },
+  { label: 'Supplies', icon: Package, color: 'text-purple-500' },
+  { label: 'Cleaning', icon: Sparkles, color: 'text-emerald-500' },
 ];
 
 export default function AddExpenseForm({
@@ -129,7 +142,7 @@ export default function AddExpenseForm({
       });
 
       if (resp && (resp.status === 201 || resp.status === 200)) {
-        toast.success('Expense recorded successfully! 🎉');
+        toast.success('Expense recorded successfully');
         getExpenses();
         onSuccess?.();
       } else {
@@ -156,18 +169,23 @@ export default function AddExpenseForm({
             <div className="flex flex-wrap gap-1.5">
               {CATEGORY_PRESETS.map((preset) => {
                 const isSelected = formData.description === preset.label;
+                const Icon = preset.icon;
                 return (
                   <button
                     key={preset.label}
                     type="button"
                     onClick={() => handlePresetClick(preset.label)}
-                    className={`min-h-[44px] px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer active:scale-95 border ${
+                    className={`min-h-[44px] px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 justify-center transition-all cursor-pointer active:scale-95 border ${
                       isSelected
                         ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                         : 'bg-card hover:bg-surface-container border-border/80 text-foreground'
                     }`}
                   >
-                    <span>{preset.icon}</span>
+                    <Icon
+                      className={`w-3.5 h-3.5 shrink-0 ${
+                        isSelected ? 'text-primary-foreground' : preset.color
+                      }`}
+                    />
                     <span>{preset.label}</span>
                   </button>
                 );

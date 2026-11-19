@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DollarSign, UserCheck, Users, Sparkles, Check } from 'lucide-react';
+import {
+  DollarSign,
+  UserCheck,
+  Users,
+  Sparkles,
+  Check,
+  ShoppingCart,
+  Zap,
+  Home,
+  Utensils,
+  Package,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +39,15 @@ import { useCreateExpenseMutation } from '@/hooks/queries/useExpenseQueries';
 import { formatCurrency, getInitials } from '@/utils/utils';
 import { toast } from 'sonner';
 import type { HouseholdMember } from '@/types/householdTypes';
+
+const CATEGORY_ICON_MAP: Record<string, { icon: typeof Sparkles; color: string }> = {
+  groceries: { icon: ShoppingCart, color: 'text-amber-500' },
+  utilities: { icon: Zap, color: 'text-sky-500' },
+  rent: { icon: Home, color: 'text-indigo-500' },
+  takeout: { icon: Utensils, color: 'text-orange-500' },
+  supplies: { icon: Package, color: 'text-purple-500' },
+  cleaning: { icon: Sparkles, color: 'text-emerald-500' },
+};
 
 interface AddExpenseDialogProps {
   open: boolean;
@@ -62,7 +82,7 @@ export function AddExpenseDialog({
     resolver: zodResolver(createExpenseSchema),
     defaultValues: {
       description: '',
-      amount: undefined as any,
+      amount: undefined as unknown as number,
       paidById: currentUserId || allMemberIds[0] || '',
       sharedWith: allMemberIds,
       category: '',
@@ -83,7 +103,7 @@ export function AddExpenseDialog({
       setSelectedCategory('');
       reset({
         description: '',
-        amount: undefined as any,
+        amount: undefined as unknown as number,
         paidById: defaultPayer,
         sharedWith: allMemberIds,
         category: '',
@@ -133,9 +153,10 @@ export function AddExpenseDialog({
         `Added ${formatCurrency(Number(data.amount))} ${data.description} (Split ${data.sharedWith.length} ways)`
       );
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { message?: string } } };
       console.error('Failed to log expense:', error);
-      toast.error(error?.response?.data?.message || 'Failed to log expense');
+      toast.error(axiosError?.response?.data?.message || 'Failed to log expense');
     }
   };
 
@@ -152,7 +173,12 @@ export function AddExpenseDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
+        <form
+          onSubmit={(e) => {
+            void handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4 pt-1"
+        >
           {/* Amount Field (Large digits) */}
           <div className="space-y-1.5">
             <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -184,18 +210,25 @@ export function AddExpenseDialog({
             <div className="flex flex-wrap gap-1.5">
               {EXPENSE_CATEGORIES.map((cat) => {
                 const isSelected = selectedCategory === cat.id;
+                const iconConfig = CATEGORY_ICON_MAP[cat.id];
+                const Icon = iconConfig?.icon || Sparkles;
+                const color = iconConfig?.color || 'text-primary';
                 return (
                   <button
                     key={cat.id}
                     type="button"
                     onClick={() => handleCategorySelect(cat)}
-                    className={`text-xs px-2.5 py-1 rounded-full border transition-all cursor-pointer font-medium flex items-center gap-1 ${
+                    className={`min-h-[44px] text-xs px-3.5 py-1.5 rounded-full border transition-all cursor-pointer font-semibold flex items-center gap-1.5 justify-center ${
                       isSelected
-                        ? 'bg-primary text-primary-foreground border-primary'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs'
                         : 'bg-surface-container text-foreground border-border hover:bg-surface-container-high'
                     }`}
                   >
-                    <span>{cat.emoji}</span>
+                    <Icon
+                      className={`w-3.5 h-3.5 shrink-0 ${
+                        isSelected ? 'text-primary-foreground' : color
+                      }`}
+                    />
                     <span>{cat.label}</span>
                   </button>
                 );

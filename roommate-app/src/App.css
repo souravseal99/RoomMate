@@ -17,36 +17,72 @@
   transition: filter 300ms;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Brand Splash Animations (Organic Hearth & Floating Emblem) */
+@keyframes brand-float-organic {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+    filter: drop-shadow(0 12px 20px rgba(208, 74, 27, 0.16));
   }
-
-  to {
-    transform: rotate(360deg);
+  50% {
+    transform: translateY(-8px) rotate(1deg) scale(1.03);
+    filter: drop-shadow(0 22px 30px rgba(208, 74, 27, 0.28));
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes hearth-radiance {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 0.7;
   }
 }
 
-.card {
-  padding: 2em;
+@keyframes hearth-ripple {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 
-.read-the-docs {
-  color: #888;
+@keyframes fluid-track {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(45%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-brand-float-organic {
+  animation: brand-float-organic 4.2s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.animate-hearth-radiance {
+  animation: hearth-radiance 3.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-hearth-ripple {
+  animation: hearth-ripple 3s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  will-change: transform, opacity;
+}
+
+.animate-fluid-track {
+  animation: fluid-track 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
 }
 
 @theme inline {
@@ -108,9 +144,11 @@
 }
 
 :root {
-  --theme-font: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --theme-display: 'Manrope', sans-serif;
-  --theme-mono: 'JetBrains Mono', monospace;
+  --theme-font:
+    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --theme-display: 'Plus Jakarta Sans', sans-serif;
+  --theme-mono:
+    'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #f4f2ec;
@@ -176,9 +214,11 @@
 }
 
 .theme-bento-teal {
-  --theme-font: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --theme-display: 'Manrope', sans-serif;
-  --theme-mono: 'Space Grotesk', monospace;
+  --theme-font:
+    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --theme-display: 'Plus Jakarta Sans', sans-serif;
+  --theme-mono:
+    'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #f7f7f5;
@@ -244,9 +284,11 @@
 }
 
 .theme-bento-obsidian {
-  --theme-font: 'Manrope', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --theme-display: 'Manrope', sans-serif;
-  --theme-mono: 'JetBrains Mono', monospace;
+  --theme-font:
+    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --theme-display: 'Plus Jakarta Sans', sans-serif;
+  --theme-mono:
+    'Plus Jakarta Sans', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --radius: 0.5rem;
 
   --background: #14171a;
@@ -319,11 +361,13 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-feature-settings: 'zero' 0;
   }
 
   body {
     @apply bg-background text-foreground;
     font-family: var(--theme-font);
+    font-feature-settings: 'zero' 0;
   }
 }
 
